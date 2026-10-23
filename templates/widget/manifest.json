@@ -1,8 +1,8 @@
 {
 	"author": "Mathod95",
-	"id": "com.mathod95.nouveau-widget",
-	"name": "Nouveau widget",
-	"description": "Description du widget.",
+	"id": "com.mathod95.new-widget",
+	"name": "New widget",
+	"description": "Widget description.",
 	"version": "0.1.0",
 	"preview_icon": "resources/icon.svg",
 	"min_app_version": "5.47",

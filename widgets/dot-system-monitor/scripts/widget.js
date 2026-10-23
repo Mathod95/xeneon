@@ -1,4 +1,4 @@
-/* EDGE / DOT – System Monitor for CORSAIR XENEON EDGE (iCUE widget) */
+/* EDGE / DOT – Dot System Monitor for CORSAIR XENEON EDGE (iCUE widget) */
 (function () {
 	"use strict";
 

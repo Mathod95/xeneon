@@ -1,4 +1,4 @@
-# System Monitor
+# Dot System Monitor
 
 **Statut :** 🟡 en cours (v1.1.0)
 

@@ -4,7 +4,7 @@ Contexte du projet pour Claude Code. À lire avant toute modification.
 
 ## Le projet
 
-Collection de widgets iCUE pour l’écran tactile **CORSAIR XENEON EDGE** (2560 × 720, 14,5"), tous dans un même **style dot-matrix**. Propriétaire : Mathod95. Langue de travail : **français** (docs, commits, échanges) ; textes affichés dans les widgets en anglais sauf indication contraire.
+Collection de widgets iCUE pour l’écran tactile **CORSAIR XENEON EDGE** (2560 × 720, 14,5"), tous dans un même **style dot-matrix**. Propriétaire : Mathod95. Langue de travail : **français** (docs, commits, échanges). **Tout le contenu des widgets est en anglais** : `lang="en"`, textes affichés, libellés et groupes des réglages iCUE, nom et description du `manifest.json`.
 
 La liste des widgets et leur description est dans `README.md`. Chaque widget a sa fiche dans `widgets/<slug>/README.md` et ses mocks dans `widgets/<slug>/mockups/`.
 
@@ -45,7 +45,7 @@ Un dossier de widget sans `manifest.json` est une fiche seule : la CI l’ignore
 
 ## Règles de conception (détail dans docs/DESIGN.md)
 
-- Dot-matrix partout (police 5 × 7 dessinée en canvas, voir `widgets/system-monitor/scripts/widget.js`, fonction `drawDots`).
+- Dot-matrix partout (police 5 × 7 dessinée en canvas, voir `widgets/dot-system-monitor/scripts/widget.js`, fonction `drawDots`).
 - **Une mise en page par taille**, pas de simple mise à l’échelle :
 
 | Taille | Horizontal | Vertical |
@@ -76,7 +76,7 @@ Beaucoup de widgets ont besoin d’accès que iCUE ne donne pas. Ils passeront p
 | homelab | Dot Homelab, Dot Plex | Radarr, Sonarr, Seerr, Plex… (un sous-module par application) |
 | ics | Dot Calendar (repli) | récupérer les ICS si le serveur bloque l’accès direct |
 
-Sans compagnon : System Monitor, Dot Fans (Sensors), Dot Clock, Dot Weather (Open-Meteo direct), Dot Home Assistant (WebSocket direct + jeton), Dot Notes (localStorage).
+Sans compagnon : Dot System Monitor, Dot Fans (Sensors), Dot Clock, Dot Weather (Open-Meteo direct), Dot Home Assistant (WebSocket direct + jeton), Dot Notes (localStorage), Dot Spotify (plugin Media iCUE).
 
 Compilation Windows : `cargo build --release` sous Windows, ou depuis Linux/WSL avec la cible `x86_64-pc-windows-gnu` et le linker `x86_64-w64-mingw32-gcc`. Pas de dépendances externes inutiles ; appels Win32 directs acceptés.
 
@@ -85,11 +85,11 @@ Compilation Windows : `cargo build --release` sous Windows, ou depuis Linux/WSL 
 - Aucune API iCUE ne permet de changer de page ni à un widget d’en piloter un autre (vérifié dans la doc officielle et les projets communautaires).
 - Gestes natifs : swipe gauche/droite = page suivante/précédente ; swipe haut/bas le long du bord = retour à la page initiale. Jusqu’à 30 pages.
 - Plan : un widget launcher (miniatures + noms) sur la **page 1** ; au toucher, il demande au compagnon « page N » ; le compagnon injecte N−1 swipes tactiles (`InjectTouchInput`) sur l’écran de l’Edge. Retour au launcher par le geste natif.
-- **À valider** : iCUE accepte-t-il un swipe simulé ? Un programme de test a été écrit (essais : tactile au centre, tactile en haut, glisser souris ; conseil : relancer en administrateur si échec). Attention au vol de focus avec la méthode souris.
+- **À valider** : iCUE accepte-t-il un swipe simulé (tactile ou glisser souris) ? Attention au vol de focus avec la souris.
 
 ## État des widgets
 
-- **System Monitor** v1.1.0 : fonctionnel (FPS + 4 capteurs + historique, dot-matrix). Mise en page faite pour L/XL ; **S, M et vertical à refaire**. À migrer sur `sizes.js` du template.
+- **Dot System Monitor** v1.1.0 : fonctionnel (FPS + 4 capteurs + historique, dot-matrix). Mise en page faite pour L/XL ; **S, M et vertical à refaire**. À migrer sur `sizes.js` du template.
 - **Dot Audio, Dot Calendar, Dot Launcher, Dot Clock** : spécifiés avec mocks.
 - Autres : fiche seule (idée).
 - **Prochaine étape** : définir la charte graphique (`docs/DESIGN.md`) à partir du mock de charte fourni par Mathod95, puis en faire le template de base de tous les widgets.

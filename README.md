@@ -6,7 +6,7 @@ Widgets iCUE pour l’écran tactile CORSAIR XENEON EDGE.
 
 | Name | Description |
 |---|---|
-| [System Monitor](widgets/system-monitor) | FPS du jeu en cours et 4 capteurs matériels (CPU, GPU) en direct, avec historique consultable au toucher. Style dot-matrix. |
+| [Dot System Monitor](widgets/dot-system-monitor) | FPS du jeu en cours et 4 capteurs matériels (CPU, GPU) en direct, avec historique consultable au toucher. Style dot-matrix. |
 | [Dot Audio](widgets/dot-audio) | Volume général, mixeur par application, coupure de tous les micros en un tap, changement de périphérique audio, lecture en cours et égaliseur. Style dot-matrix, thèmes de couleur, toutes tailles en horizontal et vertical. |
 | [Dot Calendar](widgets/dot-calendar) | Horloge dot-matrix, calendrier du mois, semaine, agenda et compte à rebours avant le prochain événement, avec bouton JOIN pour Meet, Zoom et Teams. Calendriers Google, Outlook et iCloud via liens ICS privés, jours fériés hors ligne. Thèmes clair et sombre, couleur d’accent au choix, les 8 tailles Edge. |
 | [Dot Launcher](widgets/dot-launcher) | Lanceur de jeux Steam : jusqu’à 8 jeux ajoutés par lien ou app ID, lancés en un tap, double tap ou appui long au choix. Jaquettes issues de la bibliothèque Steam, dernier jeu joué mis en avant, titre personnalisable. Style dot-matrix. |

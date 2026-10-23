@@ -25,6 +25,6 @@ D’où viennent les données : plugin iCUE (capteurs, FPS, média…), API exte
 Les options que l’utilisateur peut changer dans le panneau de réglages.
 
 ## Maquette
-Lien ou image (dans `docs/widgets/img/`).
+Images dans `widgets/<slug>/mockups/` (exclues du paquet), listées ici avec un lien.
 
 ## Questions ouvertes
