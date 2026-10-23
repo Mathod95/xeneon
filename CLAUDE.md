@@ -11,7 +11,7 @@ La liste des widgets et leur description est dans `README.md`. Chaque widget a s
 ## Façon de travailler avec Mathod95
 
 - Ne pas poser de questions : avancer avec des choix raisonnables et les signaler en une ligne.
-- Réponses courtes. Quand il ajoute un widget : mettre à jour le tableau du `README.md` (colonnes Name, Description) et créer `widgets/<slug>/` avec sa fiche et ses mocks.
+- Réponses courtes. Quand il ajoute un widget : mettre à jour le tableau du `README.md` (colonnes Name, Description ; ne pas y répéter « style dot-matrix », déjà dit en tête, et garder les colonnes alignées) et créer `widgets/<slug>/` avec sa fiche et ses mocks.
 - Arborescence montrée en n’affichant que le premier niveau des widgets.
 - Les mocks fournis peuvent ne pas être au style dot : ce sont des références de fonctionnalités, le style est toujours à refaire en dot-matrix.
 
@@ -22,11 +22,15 @@ widgets/<slug>/          un widget iCUE (index.html, manifest.json, resources/, 
   README.md              fiche : statut, contenu, données, tailles, notes, mocks
   mockups/               mocks de référence (exclus du paquet)
 templates/widget/        modèle de départ, avec détection des 8 tailles (scripts/sizes.js)
+docs/                    site de documentation Zensical (index.md, DESIGN.md, SPEC-TEMPLATE.md)
 docs/DESIGN.md           charte graphique (référence unique, en cours de définition)
 docs/SPEC-TEMPLATE.md    fiche type d’un widget
+zensical.toml            configuration de la doc (menu `nav` à tenir à jour)
 scripts/                 new-widget, package-widgets (.sh et .ps1)
-.github/workflows/       CI : valide et empaquette les widgets ; tag v* → release
+.github/workflows/       CI : build.yml valide et empaquette les widgets (tag v* → release) ; docs.yml publie la doc sur GitHub Pages
 ```
+
+Documentation : [Zensical](https://zensical.org), installé dans `.venv/` (`python3 -m venv .venv && .venv/bin/pip install zensical`). Aperçu : `.venv/bin/zensical serve` (http://localhost:8000) ; build : `.venv/bin/zensical build --clean` (sortie dans `site/`). `.venv/`, `site/` et `.cache/` sont ignorés par Git.
 
 Un dossier de widget sans `manifest.json` est une fiche seule : la CI l’ignore. Créer le code avec `./scripts/new-widget.sh <slug> "<Nom>"` (le dossier ne doit pas exister ; sinon copier `templates/widget` à la main sans écraser README.md ni mockups/).
 

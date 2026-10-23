@@ -8,3 +8,8 @@ dist/
 Thumbs.db
 node_modules/
 .build/
+# Docs Zensical
+.venv/
+site/
+.cache/
+__pycache__/
