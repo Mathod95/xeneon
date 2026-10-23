@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Dot Clock</title>
+		<link rel="icon" type="image/svg+xml" href="resources/icon.svg" />
+
+		<meta name="x-icue-property" content="clockFormat" data-label="'Clock format'" data-type="combobox" data-default="'24'" data-values="[{'key':'24','value':'24 h'},{'key':'12','value':'12 h (AM / PM)'}]" />
+		<meta name="x-icue-property" content="ampmPosition" data-label="'AM/PM position'" data-type="combobox" data-default="'top'" data-values="[{'key':'top','value':'Top'},{'key':'bottom','value':'Bottom'}]" />
+		<meta name="x-icue-property" content="showSeconds" data-label="'Show seconds'" data-type="switch" data-default="true" />
+		<meta name="x-icue-property" content="dotFont" data-label="'Dot font'" data-type="combobox" data-default="'bold'" data-values="[{'key':'bold','value':'Bold (2-dot strokes)'},{'key':'thin','value':'Thin (1-dot strokes)'}]" />
+		<meta name="x-icue-property" content="showUnlitDots" data-label="'Show unlit dots'" data-type="switch" data-default="true" />
+		<meta name="x-icue-property" content="showUnlitSecondsDots" data-label="'Show unlit seconds dots'" data-type="switch" data-default="true" />
+
+		<meta name="x-icue-property" content="timeZone" data-label="'Time zone'" data-type="combobox" data-default="'local'" data-values="[{'key':'local','value':'Local (PC time)'},{'key':'UTC','value':'UTC'},{'key':'Europe/London','value':'London'},{'key':'Europe/Lisbon','value':'Lisbon'},{'key':'Europe/Paris','value':'Paris'},{'key':'Europe/Brussels','value':'Brussels'},{'key':'Europe/Berlin','value':'Berlin'},{'key':'Europe/Zurich','value':'Zurich'},{'key':'Europe/Madrid','value':'Madrid'},{'key':'Europe/Rome','value':'Rome'},{'key':'Europe/Athens','value':'Athens'},{'key':'Europe/Moscow','value':'Moscow'},{'key':'Africa/Casablanca','value':'Casablanca'},{'key':'Africa/Cairo','value':'Cairo'},{'key':'Africa/Johannesburg','value':'Johannesburg'},{'key':'Asia/Dubai','value':'Dubai'},{'key':'Asia/Kolkata','value':'Kolkata'},{'key':'Asia/Bangkok','value':'Bangkok'},{'key':'Asia/Singapore','value':'Singapore'},{'key':'Asia/Hong_Kong','value':'Hong Kong'},{'key':'Asia/Shanghai','value':'Shanghai'},{'key':'Asia/Seoul','value':'Seoul'},{'key':'Asia/Tokyo','value':'Tokyo'},{'key':'Australia/Sydney','value':'Sydney'},{'key':'Pacific/Auckland','value':'Auckland'},{'key':'Pacific/Honolulu','value':'Honolulu'},{'key':'America/Los_Angeles','value':'Los Angeles'},{'key':'America/Denver','value':'Denver'},{'key':'America/Chicago','value':'Chicago'},{'key':'America/Mexico_City','value':'Mexico City'},{'key':'America/New_York','value':'New York'},{'key':'America/Toronto','value':'Toronto'},{'key':'America/Sao_Paulo','value':'Sao Paulo'},{'key':'America/Argentina/Buenos_Aires','value':'Buenos Aires'}]" />
+		<meta name="x-icue-property" content="timeZoneLabel" data-label="'Time zone label'" data-type="combobox" data-default="'city'" data-values="[{'key':'city','value':'City (PARIS)'},{'key':'abbr','value':'Abbreviation (CEST)'},{'key':'offset','value':'Offset (UTC+2)'},{'key':'cityOffset','value':'City + offset (PARIS UTC+2)'},{'key':'custom','value':'Custom text'},{'key':'none','value':'Hidden'}]" />
+		<meta name="x-icue-property" content="customTimeZoneLabel" data-label="'Custom time zone label'" data-type="textfield" data-default="'HOME'" />
+		<meta name="x-icue-property" content="dateFormat" data-label="'Date format (YYYY YY MMMM MMM MM M DD D WWWW WWW)'" data-type="textfield" data-default="'WWW, MMMM DD, YYYY'" />
+		<meta name="x-icue-property" content="footerText" data-label="'Footer text (empty to hide)'" data-type="textfield" data-default="'TIME, SIMPLY.'" />
+
+		<meta name="x-icue-property" content="accentColor" data-label="'Accent color'" data-type="color" data-default="'#10B981'" />
+		<meta name="x-icue-property" content="litDotColor" data-label="'Lit dot color'" data-type="color" data-default="'#F2F0E9'" />
+		<meta name="x-icue-property" content="unlitDotColor" data-label="'Unlit dot color'" data-type="color" data-default="'#1C1C1C'" />
+		<meta name="x-icue-property" content="labelColor" data-label="'Label color'" data-type="color" data-default="'#B8B6B0'" />
+
+		<script type="application/json" id="x-icue-groups">
+			[
+				{ "title": "'Clock'", "properties": ["clockFormat", "ampmPosition", "showSeconds", "dotFont", "showUnlitDots", "showUnlitSecondsDots"] },
+				{ "title": "'Date and time zone'", "properties": ["timeZone", "timeZoneLabel", "customTimeZoneLabel", "dateFormat", "footerText"] },
+				{ "title": "'Colors'", "properties": ["accentColor", "litDotColor", "unlitDotColor", "labelColor"] }
+			]
+		</script>
+
+		<link rel="stylesheet" href="styles/main.css" />
+	</head>
+	<body>
+		<div class="stage" id="stage">
+			<span class="lbl-dot" id="nameDot"></span>
+			<p class="lbl lbl-name" id="name">DOT CLOCK</p>
+			<p class="lbl lbl-tz" id="tz"></p>
+			<p class="lbl lbl-date" id="date"></p>
+			<p class="lbl lbl-footer" id="footer"></p>
+			<canvas class="dots" id="dots"></canvas>
+		</div>
+		<script src="scripts/sizes.js"></script>
+		<script src="scripts/font.js"></script>
+		<script src="scripts/widget.js"></script>
+	</body>
+</html>

@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Maquette de référence du Dot Clock (artefact de revue de design). Ouvrir dans un navigateur. -->
+<style>body { margin: 0; }</style>
+</head>
+<body>
+<title>Dot Clock</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&family=IBM+Plex+Sans:wght@400;500;600&family=Open+Sans:wght@400;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap">
+<style>
+/* Layout : maquette de référence en taille réelle XL avec ses réglages, puis tableau des choix. Univers sombre de la charte, un seul thème. */
+:root {
+  --page: #111111;
+  --panel: #0a0a0a;
+  --line: #262626;
+  --text: #e6e6e6;
+  --muted: #8c8c8c;
+  --accent: #e5484d;
+  --brand: #10b981;
+  --mono: "IBM Plex Mono", "Cascadia Mono", Consolas, monospace;
+  --sans: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { background: var(--page); color: var(--text); }
+body {
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.55;
+  padding-block: 40px 72px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 1480px; margin: 0 auto; display: grid; gap: 40px; }
+
+header { display: grid; gap: 10px; }
+.eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); display: flex; align-items: center; gap: 10px; }
+.eyebrow::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+h1 { font-family: var(--mono); font-weight: 500; font-size: clamp(28px, 4vw, 44px); line-height: 1.1; margin: 0; letter-spacing: -.01em; text-wrap: balance; }
+
+figure { margin: 0; display: grid; gap: 12px; min-width: 0; }
+.tag { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.tag b { color: var(--text); font-weight: 500; font-size: 14px; }
+figcaption { color: var(--muted); font-size: 14px; }
+
+/* tableau des choix */
+.diff-head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; }
+h2 { font-family: var(--mono); font-weight: 500; font-size: 13px; letter-spacing: .14em; text-transform: uppercase; margin: 0; }
+.hint { color: var(--muted); font-size: 14px; margin: 0; }
+.table-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; }
+table { width: 100%; border-collapse: collapse; min-width: 640px; }
+th, td { text-align: left; padding: 14px 16px; vertical-align: top; border-bottom: 1px solid var(--line); }
+tr:last-child td { border-bottom: 0; }
+thead th { font-family: var(--mono); font-weight: 500; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); background: var(--panel); }
+td:first-child { font-family: var(--mono); color: var(--muted); width: 3.5em; font-variant-numeric: tabular-nums; }
+td:nth-child(2) { font-weight: 500; width: 15em; }
+tr.todo td:nth-child(3) { color: var(--muted); }
+.sw { display: inline-block; width: 12px; height: 12px; border-radius: 50%; vertical-align: -1px; margin-right: 6px; border: 1px solid var(--line); }
+code { font-family: var(--mono); font-size: 13px; color: var(--text); }
+
+/* réglages simulés */
+.settings { display: flex; flex-wrap: wrap; gap: 12px 28px; align-items: center; padding: 14px 16px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); }
+.settings label { display: inline-flex; align-items: center; gap: 10px; font-family: var(--mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); cursor: pointer; }
+.settings input[type=color] { width: 36px; height: 28px; padding: 0; border: 1px solid var(--line); border-radius: 6px; background: none; cursor: pointer; }
+.settings input[type=checkbox], .settings input[type=radio] { width: 18px; height: 18px; accent-color: var(--brand); cursor: pointer; }
+.settings select { font-family: var(--mono); font-size: 13px; color: var(--text); background: #141414; border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; }
+.settings input[type=text] { font-family: var(--mono); font-size: 13px; letter-spacing: .06em; color: var(--text); background: #141414; border: 1px solid var(--line); border-radius: 6px; padding: 6px 10px; width: 16em; max-width: 100%; }
+.settings input[type=text]:focus-visible, .preset:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+.settings .grp { display: inline-flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.settings .grp > span { font-family: var(--mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--text); }
+.preset { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; padding: 6px 10px; border-radius: 6px; border: 1px solid var(--line); background: transparent; color: var(--text); cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+.preset i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+.legend { color: var(--muted); font-size: 13px; margin: 0; }
+.legend code { font-size: 12px; }
+
+/* maquettes 1920 × 960 mises à l'échelle */
+.frame { position: relative; width: 100%; max-width: 100%; aspect-ratio: 2 / 1; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: #111111; }
+.stage { position: absolute; left: 0; top: 0; width: 1920px; height: 960px; transform-origin: 0 0; --c-accent: #10b981; --c-label: #b8b6b0; }
+.stage p { position: absolute; margin: 0; white-space: nowrap; }
+.s-dot { position: absolute; width: 14px; height: 14px; border-radius: 50%; left: 81px; top: 65px; background: var(--brand); }
+.s-brand { left: 114px; top: 56px; font-family: "Segoe UI", Selawik, "Open Sans", system-ui, sans-serif; font-size: 28px; font-weight: 700; line-height: 36px; color: #f2f2f2; }
+.s-title, .s-sub { line-height: 1; font-family: "Segoe UI", Selawik, "Open Sans", system-ui, sans-serif; }
+.s-title { left: 80px; top: 142px; font-size: 72px; font-weight: 700; color: #f2f0e9; letter-spacing: -.005em; }
+.s-sub { left: 85px; top: 235px; font-size: 25px; font-weight: 400; color: #b8b6b0; }
+.s-card { position: absolute; left: 220px; top: 300px; width: 1479px; height: 610px; background: #080808; }
+.s-canvas { position: absolute; left: 0; top: 0; width: 100%; height: 100%; }
+.c-lbl { font-family: "Fira Code", Consolas, monospace; font-variant-ligatures: none; font-size: 14px; line-height: 20px; letter-spacing: .2em; color: var(--c-label); }
+.c-cdot { position: absolute; width: 8px; height: 8px; border-radius: 50%; left: 257px; top: 345px; background: var(--c-accent); }
+.c-name { left: 278px; top: 338px; }
+.c-tz { right: 263px; top: 340px; font-size: 13px; }
+.c-date { left: 257px; top: 849px; font-size: 17px; line-height: 24px; letter-spacing: .08em; }
+.c-motto { right: 263px; top: 852px; font-size: 13px; }
+
+/* tailles réelles S, M, L : même échelle que XL pour garder les proportions */
+.sizebar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; }
+.sizebar > span { font-family: var(--mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-right: 6px; }
+.sizebar .preset[aria-pressed="true"] { background: var(--text); color: #0a0a0a; border-color: var(--text); }
+.view-s, .view-m { width: calc(840 / 2536 * 100%); }
+.view-l { width: calc(1688 / 2536 * 100%); }
+.view-xl { width: 100%; }
+.frame-s { aspect-ratio: 840 / 344; background: #080808; }
+.frame-m { aspect-ratio: 840 / 696; background: #080808; }
+.frame-l { aspect-ratio: 1688 / 696; background: #080808; }
+.stage-s { width: 840px; height: 344px; background: #080808; }
+.stage-m { width: 840px; height: 696px; background: #080808; }
+.stage-l { width: 1688px; height: 696px; background: #080808; }
+.x-lbl.x-br { top: auto; bottom: 44px; }
+@media (max-width: 700px) { .view-s, .view-m, .view-l { width: 100%; } }
+
+/* taille réelle XL : 2536 × 696, le widget seul */
+.frame-xl { aspect-ratio: 2536 / 696; background: #080808; }
+.stage-xl { width: 2536px; height: 696px; background: #080808; }
+.x-lbl { font-family: "Fira Code", Consolas, monospace; font-variant-ligatures: none; font-size: 18px; line-height: 24px; letter-spacing: .2em; color: var(--c-label); }
+.x-cdot { position: absolute; width: 10px; height: 10px; border-radius: 50%; left: 56px; top: 51px; background: var(--c-accent); }
+.x-name { left: 80px; top: 44px; }
+.x-tz { right: 56px; top: 44px; }
+.x-date { left: 56px; bottom: 42px; font-size: 22px; line-height: 28px; letter-spacing: .08em; }
+.x-motto { right: 56px; bottom: 44px; }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Widget iCUE · CORSAIR XENEON EDGE</div>
+    <h1>Dot Clock</h1>
+  </header>
+
+  <figure>
+    <div class="tag"><b>Maquette de référence</b><span id="sizeTag">Version 1.0 · taille réelle XL 2536 × 696 px</span></div>
+    <div class="sizebar" role="radiogroup" aria-label="Taille du widget">
+      <span>Widget size</span>
+      <button type="button" class="preset" data-size="s" aria-pressed="false">S · 840 × 344</button>
+      <button type="button" class="preset" data-size="m" aria-pressed="false">M · 840 × 696</button>
+      <button type="button" class="preset" data-size="l" aria-pressed="false">L · 1688 × 696</button>
+      <button type="button" class="preset" data-size="xl" aria-pressed="true">XL · 2536 × 696</button>
+    </div>
+    <div class="view view-xl" data-view="xl">
+      <div class="frame frame-xl" id="frameXL">
+        <div class="stage stage-xl" id="stageXL">
+          <span class="x-cdot"></span>
+          <p class="x-lbl x-name">DOT CLOCK</p>
+          <p class="x-lbl x-tz tzl">PARIS</p>
+          <p class="x-lbl x-date datel">MON, SEPTEMBER 21, 2026</p>
+          <p class="x-lbl x-motto motto">TIME, SIMPLY.</p>
+          <canvas class="s-canvas" id="dotsXL" width="2536" height="696"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="view view-s" data-view="s" hidden>
+      <div class="frame frame-s" id="frameS">
+        <div class="stage stage-s" id="stageS">
+          <p class="x-lbl x-date datel">MON, SEPTEMBER 21, 2026</p>
+          <p class="x-lbl x-tz x-br tzl">PARIS</p>
+          <canvas class="s-canvas" id="dotsS" width="840" height="344"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="view view-m" data-view="m" hidden>
+      <div class="frame frame-m" id="frameM">
+        <div class="stage stage-m" id="stageM">
+          <span class="x-cdot"></span>
+          <p class="x-lbl x-name">DOT CLOCK</p>
+          <p class="x-lbl x-tz tzl">PARIS</p>
+          <p class="x-lbl x-date datel">MON, SEPTEMBER 21, 2026</p>
+          <p class="x-lbl x-motto motto">TIME, SIMPLY.</p>
+          <canvas class="s-canvas" id="dotsM" width="840" height="696"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="view view-l" data-view="l" hidden>
+      <div class="frame frame-l" id="frameL">
+        <div class="stage stage-l" id="stageL">
+          <span class="x-cdot"></span>
+          <p class="x-lbl x-name">DOT CLOCK</p>
+          <p class="x-lbl x-tz tzl">PARIS</p>
+          <p class="x-lbl x-date datel">MON, SEPTEMBER 21, 2026</p>
+          <p class="x-lbl x-motto motto">TIME, SIMPLY.</p>
+          <canvas class="s-canvas" id="dotsL" width="1688" height="696"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="settings" aria-label="Réglages iCUE simulés">
+      <label><input type="checkbox" id="showUnlit" checked> Show unlit dots</label>
+      <label>Unlit dot color <input type="color" id="unlitColor" value="#1c1c1c"></label>
+      <label>Lit dot color <input type="color" id="litColor" value="#f2f0e9"></label>
+      <label>Accent color <input type="color" id="accentColor" value="#10b981"></label>
+      <label>Label color <input type="color" id="labelColor" value="#b8b6b0"></label>
+      <label><input type="checkbox" id="showSeconds" checked> Show seconds</label>
+      <label><input type="checkbox" id="showUnlitSec" checked> Show unlit seconds dots</label>
+      <label>Time zone label <select id="tzLabel">
+        <option value="city" selected>City · PARIS</option>
+        <option value="abbr">Abbreviation · CEST</option>
+        <option value="offset">Offset · UTC+2</option>
+        <option value="cityOffset">City + offset · PARIS UTC+2</option>
+        <option value="custom">Custom text</option>
+        <option value="none">Hidden</option>
+      </select></label>
+      <label id="tzCustomWrap" hidden>Custom label <input type="text" id="tzCustom" value="HOME" maxlength="20" spellcheck="false"></label>
+      <label>Footer text <input type="text" id="footerText" value="TIME, SIMPLY." maxlength="30" spellcheck="false"></label>
+      <button type="button" class="preset" data-accent="#10b981"><i style="background:#10b981"></i>Émeraude</button>
+      <button type="button" class="preset" data-accent="#ed403b"><i style="background:#ed403b"></i>Rouge A</button>
+      <div class="grp" role="radiogroup" aria-label="Clock format">
+        <span>Clock format</span>
+        <label><input type="radio" name="fmt12" id="fmt12h" value="12"> 12 h</label>
+        <label><input type="radio" name="fmt12" id="fmt24h" value="24" checked> 24 h</label>
+      </div>
+      <div class="grp" role="radiogroup" aria-label="Heure d'exemple">
+        <span>Exemple</span>
+        <label><input type="radio" name="sample12" id="sampleAm" value="10" checked> 10:08:36</label>
+        <label><input type="radio" name="sample12" id="samplePm" value="22"> 22:08:36</label>
+      </div>
+      <div class="grp" role="radiogroup" aria-label="AM/PM position">
+        <span>AM/PM position</span>
+        <label><input type="radio" name="ampmPos" id="ampmTop" value="top" checked> Top</label>
+        <label><input type="radio" name="ampmPos" id="ampmBottom" value="bottom"> Bottom</label>
+      </div>
+      <div class="grp" role="radiogroup" aria-label="Dot font">
+        <span>Dot font</span>
+        <label><input type="radio" name="dotFont" id="fontBold" value="bold" checked> Grasse</label>
+        <label><input type="radio" name="dotFont" id="fontThin" value="thin"> Fine</label>
+      </div>
+      <label>Date format <input type="text" id="dateFormat" value="WWW, MMMM DD, YYYY" maxlength="40" spellcheck="false"></label>
+      <div class="grp">
+        <button type="button" class="preset" data-fmt="WWW, MMMM DD, YYYY">WWW, MMMM DD, YYYY</button>
+        <button type="button" class="preset" data-fmt="MM/DD/YYYY">MM/DD/YYYY</button>
+        <button type="button" class="preset" data-fmt="DD/MM/YYYY">DD/MM/YYYY</button>
+        <button type="button" class="preset" data-fmt="YYYY-MM-DD">YYYY-MM-DD</button>
+        <button type="button" class="preset" data-fmt="MM.DD.YY">MM.DD.YY</button>
+        <button type="button" class="preset" data-fmt="WWWW DD MMMM YYYY">WWWW DD MMMM YYYY</button>
+      </div>
+      <p class="legend">Repères : <code>YYYY</code> 2026 · <code>YY</code> 26 · <code>MMMM</code> SEPTEMBER · <code>MMM</code> SEP · <code>MM</code> 09 · <code>M</code> 9 · <code>DD</code> 21 · <code>D</code> 21 · <code>WWWW</code> MONDAY · <code>WWW</code> MON. Majuscules ou minuscules, au choix.</p>
+    </div>
+    <figcaption><span id="sizeNote">Le widget seul, tel qu'il occupe un emplacement XL de l'Edge.</span> Libellés à 18 px, date à 22 px, à l'échelle de l'XL pour toutes les tailles. En 12 h, AM ou PM s'affiche en petits points au-dessus ou en dessous des secondes, dans la couleur des points allumés.</figcaption>
+  </figure>
+
+  <section style="display:grid;gap:14px">
+    <div class="diff-head">
+      <h2>Choix de design</h2>
+      <p class="hint">Complété au fur et à mesure.</p>
+    </div>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>#</th><th>Élément</th><th>Choix retenu</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>Marque</td><td><span class="sw" style="background:#10b981"></span>Point vert émeraude <code>#10B981</code> et « MATHOD » en Segoe UI Bold. Le point reste fixe en vert émeraude, il ne suit pas « Accent color ».</td></tr>
+          <tr><td>2</td><td>Titre et sous-titre</td><td>« Time, simply. » en Segoe UI Bold, couleur <span class="sw" style="background:#f2f0e9"></span><code>#F2F0E9</code>, et « A dot-matrix clock for CORSAIR XENEON EDGE. » en Segoe UI Regular, couleur <span class="sw" style="background:#b8b6b0"></span><code>#B8B6B0</code></td></tr>
+          <tr><td>3</td><td>Fond du widget</td><td>Carte à angles droits, sans bordure, fond <code>#080808</code></td></tr>
+          <tr><td>4</td><td>Points éteints des chiffres</td><td>Les deux, au choix par un réglage iCUE « Show unlit dots » (interrupteur) : désactivé = masqués (A), activé = visibles (B). Activé par défaut.<br><span class="sw" style="background:#1c1c1c"></span>Couleur réglable dans iCUE « Unlit dot color », par défaut celle de B <code>#1C1C1C</code>.</td></tr>
+          <tr><td>5</td><td>Couleur des points allumés</td><td><span class="sw" style="background:#f2f0e9"></span>Couleur réglable dans iCUE « Lit dot color », par défaut le blanc chaud de A <code>#F2F0E9</code>.</td></tr>
+          <tr><td>6</td><td>Couleur d'accent</td><td><span class="sw" style="background:#10b981"></span>Par défaut le vert émeraude de la marque <code>#10B981</code>, réglable dans iCUE « Accent color ».<br><span class="sw" style="background:#ed403b"></span>Le rouge de A <code>#ED403B</code> est gardé comme autre couleur proposée.</td></tr>
+          <tr><td>7</td><td>Polices</td><td><b>Mocks et branding</b> (MATHOD, titres, sous-titres) : Segoe UI, Bold pour les titres, Regular pour le texte.<br><b>Widget</b> : Fira Code pour les libellés en monospace (DOT CLOCK, fuseau, date, devise), en capitales espacées, embarquée dans le widget en .woff2, ligatures désactivées pour que « -- » reste lisible ; sans-serif pour les phrases ; dot-matrix pour l'heure.</td></tr>
+          <tr><td>8</td><td>Secondes</td><td>En couleur d'accent (« Accent color »).<br>Réglage iCUE « Show seconds » (interrupteur) pour les afficher ou non, activé par défaut.<br>Réglage iCUE « Show unlit seconds dots » (interrupteur) pour afficher ou non leurs points éteints, activé par défaut, couleur « Unlit dot color ».</td></tr>
+          <tr><td>9</td><td>Disposition du widget</td><td>HH:MM au centre avec deux-points en couleur d'accent, secondes à droite, « DOT CLOCK » et fuseau en haut, date en bas à gauche, devise en bas à droite</td></tr>
+          <tr><td>10</td><td>Couleur des libellés</td><td><span class="sw" style="background:#b8b6b0"></span>Couleur réglable dans iCUE « Label color », par défaut celle de A <code>#B8B6B0</code>.</td></tr>
+          <tr><td>11</td><td>Fond de la page</td><td><span class="sw" style="background:#111111"></span><code>#111111</code></td></tr>
+          <tr><td>12</td><td>Point devant « DOT CLOCK »</td><td>En couleur d'accent, il change avec « Accent color ».</td></tr>
+          <tr><td>13</td><td>Fuseau horaire</td><td>Heure locale du PC par défaut. Réglage iCUE « Time zone » pour choisir un autre fuseau.<br>Réglage iCUE « Time zone label » pour le libellé en haut à droite : ville (PARIS, par défaut), abréviation (CEST), décalage (UTC+2), ville + décalage (PARIS UTC+2), texte libre, ou masqué. L'abréviation et le décalage suivent l'heure d'été automatiquement (CEST / CET, UTC+2 / UTC+1).</td></tr>
+          <tr><td>14</td><td>Format de l'heure</td><td>Réglage iCUE « Clock format » : 24 h par défaut, ou 12 h.<br>En 12 h, AM ou PM en petits points dans la couleur des points allumés, au-dessus ou en dessous des secondes selon le réglage iCUE « AM/PM position » (Top par défaut).</td></tr>
+          <tr><td>15</td><td>Format de la date</td><td>Réglage iCUE « Date format » (champ texte), « WWW, MMMM DD, YYYY » par défaut. Repères : YYYY, YY, MMMM, MMM, MM, M, DD, D, WWWW, WWW, en majuscules ou minuscules.<br>Formats proposés : WWW, MMMM DD, YYYY · MM/DD/YYYY · DD/MM/YYYY · YYYY-MM-DD · MM.DD.YY · WWWW DD MMMM YYYY.</td></tr>
+          <tr><td>16</td><td>Devise</td><td>Réglage iCUE « Footer text » (champ texte), « TIME, SIMPLY. » par défaut. Masquée si le champ est vide.</td></tr>
+          <tr><td>17</td><td>Taille des textes</td><td>Dans le widget réel, libellés à 18 px minimum (date à 22 px), voir la maquette XL. MATHOD, le titre et le sous-titre ne servent qu'à la maquette et au branding.</td></tr>
+          <tr><td>18</td><td>Police dot</td><td>Deux polices en grille 5 × 7, au choix par un réglage iCUE « Dot font » : grasse (traits de 2 points, par défaut) ou fine (traits de 1 point). Chiffres 0 à 9 et lettres A, P, M dans les deux. Le « 1 » gras fait 4 colonnes, centré dans une case de 5.</td></tr>
+          <tr><td>19</td><td>Tailles S, M, L et vertical</td><td>Horizontal validé, une mise en page par taille (choix « Widget size » dans la maquette de référence) :<br><b>XL</b> : la maquette de référence.<br><b>S</b> : l'heure seule en grand, date et fuseau en bas, sans « DOT CLOCK » ni devise.<br><b>M</b> : HH:MM sur toute la largeur, secondes et AM/PM centrées en dessous, libellés dans les angles.<br><b>L</b> : même disposition que XL.<br>Vertical : en attente.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  function v(id) { return document.getElementById(id); }
+
+  // mise à l'échelle des scènes
+  function scaler(frameId, stageId, w) {
+    var frame = v(frameId), stage = v(stageId);
+    function fit() { stage.style.transform = "scale(" + frame.clientWidth / w + ")"; }
+    if (window.ResizeObserver) new ResizeObserver(fit).observe(frame); else window.addEventListener("resize", fit);
+    fit();
+  }
+  scaler("frameXL", "stageXL", 2536);
+  scaler("frameL", "stageL", 1688);
+  scaler("frameS", "stageS", 840);
+  scaler("frameM", "stageM", 840);
+
+  // cale le titre et le sous-titre sur les largeurs de la version A (442 px et 544 px)
+  function matchAll() {
+    document.querySelectorAll(".fit-title, .fit-sub").forEach(function (el) {
+      var width = el.classList.contains("fit-title") ? 442 : 544;
+      el.style.fontSize = "";
+      var fs = parseFloat(getComputedStyle(el).fontSize);
+      el.style.fontSize = (fs * width / el.offsetWidth) + "px";
+    });
+  }
+  matchAll();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(matchAll);
+
+  // police dot-matrix grasse 5 × 7 (0, 1, 3, 6, 8 relevés sur les mocks ; le reste dessiné dans le même style)
+  var FONT = {
+    "0": [".###.", "##.##", "##.##", "##.##", "##.##", "##.##", ".###."],
+    "1": [".##.", "###.", ".##.", ".##.", ".##.", ".##.", "####"],
+    "2": [".###.", "##.##", "...##", "..##.", ".##..", "##...", "#####"],
+    "3": [".###.", "##.##", "...##", "..##.", "...##", "##.##", ".###."],
+    "4": ["...##", "..###", ".####", "##.##", "#####", "...##", "...##"],
+    "5": ["#####", "##...", "####.", "...##", "...##", "##.##", ".###."],
+    "6": [".###.", "##...", "##...", "####.", "##.##", "##.##", ".###."],
+    "7": ["#####", "...##", "..##.", "..##.", ".##..", ".##..", ".##.."],
+    "8": [".###.", "##.##", "##.##", ".###.", "##.##", "##.##", ".###."],
+    "9": [".###.", "##.##", "##.##", ".####", "...##", "...##", ".###."],
+    "A": [".###.", "##.##", "##.##", "#####", "##.##", "##.##", "##.##"],
+    "P": ["####.", "##.##", "##.##", "####.", "##...", "##...", "##..."],
+    "M": ["#...#", "##.##", "#####", "#.#.#", "#...#", "#...#", "#...#"],
+    " ": [".....", ".....", ".....", ".....", ".....", ".....", "....."]
+  };
+  // police fine : traits de 1 point
+  var THIN = {
+    "0": [".###.", "#...#", "#...#", "#...#", "#...#", "#...#", ".###."],
+    "1": ["..#..", ".##..", "..#..", "..#..", "..#..", "..#..", ".###."],
+    "2": [".###.", "#...#", "....#", "...#.", "..#..", ".#...", "#####"],
+    "3": [".###.", "#...#", "....#", "..##.", "....#", "#...#", ".###."],
+    "4": ["...#.", "..##.", ".#.#.", "#..#.", "#####", "...#.", "...#."],
+    "5": ["#####", "#....", "####.", "....#", "....#", "#...#", ".###."],
+    "6": ["..##.", ".#...", "#....", "####.", "#...#", "#...#", ".###."],
+    "7": ["#####", "....#", "...#.", "..#..", ".#...", ".#...", ".#..."],
+    "8": [".###.", "#...#", "#...#", ".###.", "#...#", "#...#", ".###."],
+    "9": [".###.", "#...#", "#...#", ".####", "....#", "...#.", ".##.."],
+    "A": [".###.", "#...#", "#...#", "#####", "#...#", "#...#", "#...#"],
+    "P": ["####.", "#...#", "#...#", "####.", "#....", "#....", "#...."],
+    "M": ["#...#", "##.##", "#.#.#", "#.#.#", "#...#", "#...#", "#...#"],
+    " ": [".....", ".....", ".....", ".....", ".....", ".....", "....."]
+  };
+
+  // dessine un glyphe centré dans une case de 5 colonnes ; les colonnes vides de la case restent éteintes
+  function cell(ctx, ch, x, y, p, r, on, off, font) {
+    var g = (font || FONT)[ch] || FONT[" "], w = g[0].length, dx = (5 - w) / 2;
+    // glyphe plus étroit centré sur la grille : on le complète à 5 colonnes pour que ses points éteints remplissent la case
+    if (dx === Math.floor(dx) && dx > 0) {
+      var padS = new Array(dx + 1).join(".");
+      g = g.map(function (row) { return padS + row + padS; }); w = 5; dx = 0;
+    }
+    for (var row = 0; row < 7; row++) {
+      for (var col = 0; col < w; col++) {
+        var lit = g[row][col] === "#";
+        if (!lit && !off) continue;
+        ctx.beginPath(); ctx.fillStyle = lit ? on : off;
+        ctx.arc(x + (col + dx) * p, y + row * p, r, 0, Math.PI * 2); ctx.fill();
+      }
+    }
+  }
+
+  // géométrie relevée sur le mock à l'échelle 1 (case 1 à x0, première ligne à y0)
+  function drawTime(ctx, o) {
+    var k = o.k, P = 36.7 * k, R = 13.6 * k, x0 = o.x0, y0 = o.y0;
+    var xs = [0, 191.8, 448.8, 640.8];
+    var chars = o.hh + o.mm;
+    var F = o.font || FONT;
+    for (var i = 0; i < 4; i++) cell(ctx, chars[i], x0 + xs[i] * k, y0, P, R, o.on, o.off, F);
+    ctx.fillStyle = o.acc;
+    [60, 161].forEach(function (dy) { ctx.beginPath(); ctx.arc(x0 + 388.8 * k, y0 + dy * k, 14 * k, 0, Math.PI * 2); ctx.fill(); });
+    var sx = x0 + 837.3 * k, p = 10.35 * k, r = 3.6 * k;
+    if (o.showSec) {
+      cell(ctx, o.ss[0], sx, y0 + 79.5 * k, p, r, o.acc, o.offSec, F);
+      cell(ctx, o.ss[1], sx + 6 * p, y0 + 79.5 * k, p, r, o.acc, o.offSec, F);
+    }
+    if (o.ampm) {
+      // en haut : aligné sur le haut des chiffres ; en bas : aligné sur leur bas
+      var ay = y0 + (o.ampmPos === "bottom" ? 168.1 : -10) * k;
+      cell(ctx, o.ampm[0], sx, ay, p, r, o.on, o.offSec, F);
+      cell(ctx, o.ampm[1], sx + 6 * p, ay, p, r, o.on, o.offSec, F);
+    }
+  }
+
+  function settings() {
+    var showSec = v("showSeconds").checked;
+    return {
+      on: v("litColor").value,
+      off: v("showUnlit").checked ? v("unlitColor").value : null,
+      acc: v("accentColor").value,
+      label: v("labelColor").value,
+      showSec: showSec,
+      offSec: v("showUnlitSec").checked ? v("unlitColor").value : null
+    };
+  }
+
+  // format de date à repères
+  var MONTHS = ["JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE", "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"];
+  var DAYS = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"];
+  function pad(n) { return (n < 10 ? "0" : "") + n; }
+  function formatDate(d, fmt) {
+    return fmt.replace(/YYYY|YY|MMMM|MMM|MM|M|DD|D|WWWW|WWW/gi, function (t) {
+      switch (t.toUpperCase()) {
+        case "YYYY": return String(d.getFullYear());
+        case "YY": return String(d.getFullYear()).slice(-2);
+        case "MMMM": return MONTHS[d.getMonth()];
+        case "MMM": return MONTHS[d.getMonth()].slice(0, 3);
+        case "MM": return pad(d.getMonth() + 1);
+        case "M": return String(d.getMonth() + 1);
+        case "DD": return pad(d.getDate());
+        case "D": return String(d.getDate());
+        case "WWWW": return DAYS[d.getDay()];
+        case "WWW": return DAYS[d.getDay()].slice(0, 3);
+      }
+      return t;
+    }).toUpperCase();
+  }
+  var SAMPLE_DATE = new Date(2026, 8, 21);
+
+  function render() {
+    var s = settings();
+    v("showUnlitSec").disabled = !s.showSec;
+    ["stageXL", "stageL", "stageS", "stageM"].forEach(function (id) {
+      v(id).style.setProperty("--c-accent", s.acc);
+      v(id).style.setProperty("--c-label", s.label);
+    });
+    var footer = v("footerText").value.trim().toUpperCase();
+    var tzMode = v("tzLabel").value, tzText = {
+      city: "PARIS", abbr: "CEST", offset: "UTC+2", cityOffset: "PARIS UTC+2",
+      custom: v("tzCustom").value.trim().toUpperCase(), none: ""
+    }[tzMode];
+    v("tzCustomWrap").hidden = tzMode !== "custom";
+    document.querySelectorAll(".tzl").forEach(function (el) { el.textContent = tzText; el.hidden = !tzText; });
+    document.querySelectorAll(".motto").forEach(function (el) { el.textContent = footer; el.hidden = !footer; });
+
+    var base = { on: s.on, off: s.off, acc: s.acc, showSec: s.showSec, offSec: s.offSec, hh: "10", mm: "08", ss: "36", ampm: null };
+
+    var h24 = parseInt(document.querySelector("input[name=sample12]:checked").value, 10);
+    var is12 = document.querySelector("input[name=fmt12]:checked").value === "12";
+    var hh = is12 ? ((h24 % 12) || 12) : h24;
+    var o = Object.assign({}, base, {
+      hh: is12 ? (hh < 10 ? " " + hh : String(hh)) : pad(hh),
+      ampm: is12 ? (h24 < 12 ? "AM" : "PM") : null,
+      ampmPos: document.querySelector("input[name=ampmPos]:checked").value,
+      font: document.querySelector("input[name=dotFont]:checked").value === "thin" ? THIN : FONT
+    });
+    function canvas(id, w, h) { var c = v(id).getContext("2d"); c.clearRect(0, 0, w, h); return c; }
+
+    // XL et L : bloc horaire à 1,14 × la taille du mock, centré
+    var k = 1.14;
+    drawTime(canvas("dotsXL", 2536, 696), Object.assign({}, o, { k: k, x0: 1268 - 465.4 * k, y0: 348 - 110 * k }));
+    drawTime(canvas("dotsL", 1688, 696), Object.assign({}, o, { k: k, x0: 844 - 465.4 * k, y0: 348 - 110 * k }));
+
+    // S : bloc horaire à 0,72, au-dessus de la ligne date / fuseau
+    k = 0.72;
+    drawTime(canvas("dotsS", 840, 344), Object.assign({}, o, { k: k, x0: 420 - 465.4 * k, y0: 138 - 110 * k }));
+
+    // M : HH:MM sur toute la largeur, secondes et AM/PM centrées en dessous
+    k = 0.93;
+    var cm = canvas("dotsM", 840, 696), P = 36.7 * k, R = 13.6 * k, p = 12.5, r = 4.4;
+    var row = [];
+    if (o.showSec) row.push({ t: o.ss, c: o.acc });
+    if (o.ampm) row.push({ t: o.ampm, c: o.on });
+    var digitsH = 6 * P + 2 * R, rowH = 6 * p + 2 * r, gap = 40;
+    var top = (696 - (digitsH + (row.length ? gap + rowH : 0))) / 2;
+    drawTime(cm, Object.assign({}, o, { k: k, x0: 420 - 393.8 * k, y0: top + R, showSec: false, ampm: null }));
+    var rowW = row.length * 10 * p + (row.length - 1) * 4 * p, rx = 420 - rowW / 2, ry = top + digitsH + gap + r;
+    row.forEach(function (it, i) {
+      var x = rx + i * 14 * p;
+      cell(cm, it.t[0], x, ry, p, r, it.c, o.offSec, o.font);
+      cell(cm, it.t[1], x + 6 * p, ry, p, r, it.c, o.offSec, o.font);
+    });
+
+    var dateText = formatDate(SAMPLE_DATE, v("dateFormat").value || "WWW, MMMM DD, YYYY");
+    document.querySelectorAll(".datel").forEach(function (el) { el.textContent = dateText; });
+  }
+
+
+  ["showUnlit", "unlitColor", "litColor", "accentColor", "labelColor", "showSeconds", "showUnlitSec", "tzLabel", "tzCustom", "footerText", "dateFormat", "fmt12h", "fmt24h", "sampleAm", "samplePm", "ampmTop", "ampmBottom", "fontBold", "fontThin"].forEach(function (id) {
+    v(id).addEventListener("input", render);
+    v(id).addEventListener("change", render);
+  });
+  document.querySelectorAll(".preset[data-accent]").forEach(function (b) {
+    b.addEventListener("click", function () { v("accentColor").value = b.getAttribute("data-accent"); render(); });
+  });
+  document.querySelectorAll(".preset[data-fmt]").forEach(function (b) {
+    b.addEventListener("click", function () { v("dateFormat").value = b.getAttribute("data-fmt"); render(); });
+  });
+  var SIZES = {
+    s: { tag: "S 840 × 344 px", note: "L'heure seule en grand, la date et le fuseau en bas, sans « DOT CLOCK » ni devise." },
+    m: { tag: "M 840 × 696 px", note: "HH:MM sur toute la largeur, les secondes (et AM/PM) centrées en dessous." },
+    l: { tag: "L 1688 × 696 px", note: "Même disposition que XL, sur une largeur réduite." },
+    xl: { tag: "XL 2536 × 696 px", note: "Le widget seul, tel qu'il occupe un emplacement XL de l'Edge." }
+  };
+  document.querySelectorAll(".sizebar .preset").forEach(function (b) {
+    b.addEventListener("click", function () {
+      var size = b.getAttribute("data-size");
+      document.querySelectorAll(".sizebar .preset").forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+      document.querySelectorAll(".view").forEach(function (el) { el.hidden = el.getAttribute("data-view") !== size; });
+      v("sizeTag").textContent = "Version 1.0 · taille réelle " + SIZES[size].tag;
+      v("sizeNote").textContent = SIZES[size].note;
+    });
+  });
+
+  render();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(render);
+})();
+</script>
+
+</body>
+</html>
