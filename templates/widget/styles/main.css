@@ -1,0 +1,17 @@
+:root {
+	--bg: #0a0a0a;
+	--text: #e6e6e6;
+	--muted: #8c8c8c;
+	--accent: #e5484d;
+	--mono: "Cascadia Mono", Consolas, "DejaVu Sans Mono", monospace;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 100%; height: 100%; overflow: hidden; background: var(--bg); color: var(--text); font-family: var(--mono); user-select: none; }
+.app { height: 100%; display: grid; place-items: center; padding: 2rem; }
+.size { font-size: 3rem; letter-spacing: 0.08em; }
+
+/* Mises en page par taille : chaque bloc est indépendant */
+html[data-size="s"] .size { font-size: 2.4rem; }
+html[data-size="m"] .size { color: var(--text); }
+html[data-size="l"] .size { color: var(--text); }
+html[data-size="xl"] .size { color: var(--accent); }

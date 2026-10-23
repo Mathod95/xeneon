@@ -2,12 +2,24 @@
 
 Widgets et outils pour l’écran tactile **CORSAIR XENEON EDGE** (iCUE).
 
-## Contenu
+## Organisation du repo
 
-| Dossier | Description |
-|---|---|
-| `widgets/edge-dot` | **Edge Dot – System Monitor** : FPS en direct, 4 capteurs matériels et historique tactile, style dot-matrix. |
-| `tools/edge-swipe-test` | Petit programme Rust (Windows) qui vérifie si iCUE accepte un swipe simulé, première brique du futur launcher de pages. |
+```
+xeneon/
+├── widgets/              un dossier par widget iCUE (empaqueté par la CI)
+│   └── system-monitor/
+├── templates/widget/     modèle de départ, avec détection des tailles S/M/L/XL
+├── tools/                programmes Rust (Windows)
+│   └── edge-swipe-test/  test : iCUE accepte-t-il un swipe simulé ?
+├── docs/
+│   ├── WIDGETS.md        catalogue et statut de chaque widget
+│   ├── SPEC-TEMPLATE.md  fiche à remplir pour un nouveau widget
+│   └── widgets/          une fiche par widget
+├── scripts/              créer, valider et empaqueter les widgets
+└── .github/workflows/    build automatique et releases
+```
+
+Voir le [catalogue des widgets](docs/WIDGETS.md).
 
 ## Installer un widget
 
@@ -17,7 +29,14 @@ Téléchargez le fichier `.icuewidget` depuis l’onglet **Releases** (ou les ar
 
 ### Widgets
 
-Chaque widget est un dossier dans `widgets/` contenant au minimum `index.html`, `manifest.json` et une icône.
+Chaque widget est un dossier dans `widgets/` contenant au minimum `index.html`, `manifest.json` et une icône. Pour en créer un à partir du modèle :
+
+```bash
+./scripts/new-widget.sh steam-launcher "Steam Launcher"      # Linux / macOS
+.\scripts\new-widget.ps1 steam-launcher "Steam Launcher"     # Windows
+```
+
+Puis pour valider et empaqueter tous les widgets :
 
 ```bash
 npm install -g icuewidget-cli     # CLI officiel Corsair

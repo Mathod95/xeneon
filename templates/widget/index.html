@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="fr">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Nouveau widget</title>
+		<link rel="icon" type="image/svg+xml" href="resources/icon.svg" />
+
+		<meta name="x-icue-property" content="accentColor" data-label="'Couleur d’accent'" data-type="color" data-default="'#E5484D'" />
+		<meta name="x-icue-property" content="textColor" data-label="'Couleur du texte'" data-type="color" data-default="'#E6E6E6'" />
+		<meta name="x-icue-property" content="backgroundColor" data-label="'Couleur de fond'" data-type="color" data-default="'#0A0A0A'" />
+
+		<script type="application/json" id="x-icue-groups">
+			[
+				{ "title": "'Apparence'", "properties": ["accentColor", "textColor", "backgroundColor"] }
+			]
+		</script>
+
+		<link rel="stylesheet" href="styles/main.css" />
+	</head>
+	<body>
+		<div class="app" id="app">
+			<p class="size" id="sizeLabel">–</p>
+		</div>
+		<script src="scripts/sizes.js"></script>
+		<script src="scripts/widget.js"></script>
+	</body>
+</html>

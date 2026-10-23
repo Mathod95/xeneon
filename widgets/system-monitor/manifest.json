@@ -1,7 +1,7 @@
 {
 	"author": "Mathod95",
-	"id": "com.mathod95.edgedot",
-	"name": "Edge Dot – System Monitor",
+	"id": "com.mathod95.systemmonitor",
+	"name": "System Monitor",
 	"description": "FPS en direct, 4 capteurs matériels et historique tactile, en style dot-matrix.",
 	"version": "1.1.0",
 	"preview_icon": "resources/icon.svg",
