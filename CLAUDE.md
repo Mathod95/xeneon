@@ -59,7 +59,8 @@ Un dossier de widget sans `manifest.json` est une fiche seule : la CI l’ignore
 | L | 1688 × 696 | 696 × 1688 |
 | XL | 2536 × 696 | 696 × 2536 |
 
-  `templates/widget/scripts/sizes.js` pose `data-size` (s/m/l/xl) et `data-orientation` (h/v) sur `<html>`.
+  `templates/widget/scripts/sizes.js` pose `data-size` (s/m/l/xl) et `data-orientation` (h/v) sur `<html>`, d’après le rapport largeur / hauteur (l’aperçu de l’éditeur iCUE est réduit) ; S et L horizontaux sont séparés par la hauteur.
+- Ne pas nommer une propriété `accentColor`, `textColor` ou `backgroundColor` si sa valeur par défaut doit s’appliquer : iCUE les remplace par le style de page tant que « Style personnalisé » est désactivé.
 - Textes ≥ 18 px, zones tactiles ≥ 60 × 60 px. Couleurs via variables CSS (`--bg`, `--text`, `--accent`) pilotées par les réglages iCUE.
 - **Dans iCUE, jamais de données simulées** : afficher `--` ou un état explicite (« NO GAME DETECTED »). Le mode démo n’existe que si le widget est ouvert hors iCUE (navigateur), pour l’aperçu.
 
@@ -94,7 +95,7 @@ Compilation Windows : `cargo build --release` sous Windows, ou depuis Linux/WSL 
 ## État des widgets
 
 - **Dot System Monitor** v1.1.0 : fonctionnel (FPS + 4 capteurs + historique, dot-matrix). Mise en page faite pour L/XL ; **S, M et vertical à refaire**. À migrer sur `sizes.js` du template.
-- **Dot Clock** v0.1.0 : codé (S, M, L, XL horizontal ; vertical provisoire). Référence : `widgets/dot-clock/mockups/reference.html`.
+- **Dot Clock** v0.1.1 : codé (S, M, L, XL horizontal ; vertical provisoire). Référence : `widgets/dot-clock/mockups/reference.html`.
 - **Dot Audio, Dot Calendar, Dot Launcher** : spécifiés avec mocks.
 - Autres : fiche seule (idée).
 - **Prochaine étape** : définir la charte graphique (`docs/DESIGN.md`) à partir du mock de charte fourni par Mathod95, puis en faire le template de base de tous les widgets.

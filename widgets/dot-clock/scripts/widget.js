@@ -54,7 +54,7 @@
 			tzCustom: String(get("customTimeZoneLabel", "HOME")),
 			dateFormat: String(get("dateFormat", "WWW, MMMM DD, YYYY")) || "WWW, MMMM DD, YYYY",
 			footer: String(get("footerText", "TIME, SIMPLY.")),
-			accent: get("accentColor", "#10B981") || "#10B981",
+			accent: get("dotAccentColor", "#10B981") || "#10B981",
 			lit: get("litDotColor", "#F2F0E9") || "#F2F0E9",
 			unlit: get("unlitDotColor", "#1C1C1C") || "#1C1C1C",
 			label: get("labelColor", "#B8B6B0") || "#B8B6B0"

@@ -3,7 +3,7 @@
 	"id": "com.mathod95.dot-clock",
 	"name": "Dot Clock",
 	"description": "Dot-matrix clock with seconds, 12/24 h, custom date format and time zone.",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"preview_icon": "resources/icon.svg",
 	"min_app_version": "5.47",
 	"min_framework_version": "1.0.0",
