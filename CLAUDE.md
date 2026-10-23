@@ -80,8 +80,9 @@ Beaucoup de widgets ont besoin d’accès que iCUE ne donne pas. Ils passeront p
 | mail | Dot Mail | IMAP |
 | homelab | Dot Homelab, Dot Plex | Radarr, Sonarr, Seerr, Plex… (un sous-module par application) |
 | ics | Dot Calendar (repli) | récupérer les ICS si le serveur bloque l’accès direct |
+| notes | Dot Notes (optionnel) | sauvegarde et synchronisation des notes dans un fichier (`%APPDATA%\Xeneon\notes.json`), partage d’une liste entre widgets, édition depuis le PC ; le widget garde son stockage local et marche sans le compagnon |
 
-Sans compagnon : Dot System Monitor, Dot Fans (Sensors), Dot Clock, Dot Weather (Open-Meteo direct), Dot Home Assistant (WebSocket direct + jeton), Dot Notes (localStorage), Dot Spotify (plugin Media iCUE).
+Sans compagnon : Dot System Monitor, Dot Fans (Sensors), Dot Clock, Dot Weather (Open-Meteo direct), Dot Home Assistant (WebSocket direct + jeton), Dot Notes (localStorage par `uniqueId` ; module notes du compagnon en option), Dot Spotify (plugin Media iCUE).
 
 Compilation Windows : `cargo build --release` sous Windows, ou depuis Linux/WSL avec la cible `x86_64-pc-windows-gnu` et le linker `x86_64-w64-mingw32-gcc`. Pas de dépendances externes inutiles ; appels Win32 directs acceptés.
 
