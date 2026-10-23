@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Maquette de référence du Dot Spotify (artefact de revue de design). Ouvrir dans un navigateur. -->
+<style>body { margin: 0; }</style>
+</head>
+<body>
+<title>Dot Spotify</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap">
+<style>
+/* Layout : maquette de référence en taille réelle (choix S, M, L, XL) avec ses réglages, puis tableau des choix. Même univers que Dot Clock, un seul thème sombre. */
+:root {
+  --page: #111111;
+  --panel: #0a0a0a;
+  --line: #262626;
+  --text: #e6e6e6;
+  --muted: #8c8c8c;
+  --brand: #10b981;
+  --mono: "IBM Plex Mono", "Cascadia Mono", Consolas, monospace;
+  --sans: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { background: var(--page); color: var(--text); }
+body {
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.55;
+  padding-block: 40px 72px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 1480px; margin: 0 auto; display: grid; gap: 40px; }
+header { display: grid; gap: 10px; }
+.eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); display: flex; align-items: center; gap: 10px; }
+.eyebrow::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--brand); }
+h1 { font-family: var(--mono); font-weight: 500; font-size: clamp(28px, 4vw, 44px); line-height: 1.1; margin: 0; letter-spacing: -.01em; }
+.lede { color: var(--muted); max-width: 70ch; margin: 0; }
+
+figure { margin: 0; display: grid; gap: 12px; min-width: 0; }
+.tag { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.tag b { color: var(--text); font-weight: 500; font-size: 14px; }
+figcaption { color: var(--muted); font-size: 14px; }
+
+/* tableau */
+.diff-head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; }
+h2 { font-family: var(--mono); font-weight: 500; font-size: 13px; letter-spacing: .14em; text-transform: uppercase; margin: 0; }
+.hint { color: var(--muted); font-size: 14px; margin: 0; }
+.table-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; }
+table { width: 100%; border-collapse: collapse; min-width: 640px; }
+th, td { text-align: left; padding: 14px 16px; vertical-align: top; border-bottom: 1px solid var(--line); }
+tr:last-child td { border-bottom: 0; }
+thead th { font-family: var(--mono); font-weight: 500; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); background: var(--panel); }
+td:first-child { font-family: var(--mono); color: var(--muted); width: 3.5em; font-variant-numeric: tabular-nums; }
+td:nth-child(2) { font-weight: 500; width: 15em; }
+tr.todo td:nth-child(3) { color: var(--muted); }
+.sw { display: inline-block; width: 12px; height: 12px; border-radius: 50%; vertical-align: -1px; margin-right: 6px; border: 1px solid var(--line); }
+code { font-family: var(--mono); font-size: 13px; color: var(--text); }
+
+/* réglages simulés */
+.settings { display: flex; flex-wrap: wrap; gap: 12px 28px; align-items: center; padding: 14px 16px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); }
+.settings label { display: inline-flex; align-items: center; gap: 10px; font-family: var(--mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); cursor: pointer; }
+.settings input[type=color] { width: 36px; height: 28px; padding: 0; border: 1px solid var(--line); border-radius: 6px; background: none; cursor: pointer; }
+.settings input[type=checkbox], .settings input[type=radio] { width: 18px; height: 18px; accent-color: var(--brand); cursor: pointer; }
+.settings .grp { display: inline-flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.settings .grp > span { font-family: var(--mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--text); }
+.preset { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; padding: 6px 10px; border-radius: 6px; border: 1px solid var(--line); background: transparent; color: var(--text); cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+.preset i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+.preset:focus-visible, .ctl:focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; }
+.sizebar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; }
+.sizebar > span { font-family: var(--mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-right: 6px; }
+.sizebar .preset[aria-pressed="true"] { background: var(--text); color: #0a0a0a; border-color: var(--text); }
+
+/* cadre à l'échelle de l'XL : la largeur suit la vraie largeur de l'emplacement */
+.frame { position: relative; max-width: 100%; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: #080808; }
+.frame.xl { width: 100%; aspect-ratio: 2536 / 696; }
+.frame.l { width: calc(1688 / 2536 * 100%); aspect-ratio: 1688 / 696; }
+.frame.m { width: calc(840 / 2536 * 100%); aspect-ratio: 840 / 696; }
+.frame.s { width: calc(840 / 2536 * 100%); aspect-ratio: 840 / 344; }
+@media (max-width: 700px) { .frame.l, .frame.m, .frame.s { width: 100%; } }
+
+/* ---------- le widget : scène en pixels réels de l'emplacement ---------- */
+.stage { position: absolute; left: 0; top: 0; transform-origin: 0 0; background: #080808; --accent: #10b981; --lit: #f2f0e9; --label: #b8b6b0; --unlit: #1c1c1c; }
+.stage.xl { width: 2536px; height: 696px; }
+.stage.l { width: 1688px; height: 696px; }
+.stage.m { width: 840px; height: 696px; }
+.stage.s { width: 840px; height: 344px; }
+.stage > * { position: absolute; }
+.w-lbl { margin: 0; white-space: nowrap; font-family: "Fira Code", Consolas, monospace; font-variant-ligatures: none; font-size: 18px; line-height: 24px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); }
+.w-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); }
+.stage.playing .w-dot { animation: pulse 1.6s ease-in-out infinite; }
+@keyframes pulse { 50% { opacity: .3; } }
+@media (prefers-reduced-motion: reduce) { .stage.playing .w-dot { animation: none; } }
+.w-meta { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.w-title, .w-artist, .w-album { margin: 0; font-family: "Fira Code", Consolas, monospace; font-variant-ligatures: none; text-transform: uppercase; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.w-title { font-weight: 500; color: var(--lit); letter-spacing: .02em; }
+.w-artist { color: var(--label); letter-spacing: .08em; }
+.w-album { color: var(--label); opacity: .65; letter-spacing: .08em; }
+.w-ctls { display: flex; align-items: center; }
+.ctl { display: grid; place-items: center; padding: 0; border-radius: 50%; border: 2px solid #2a2a2a; background: transparent; color: var(--lit); cursor: pointer; }
+.ctl svg { width: 38%; height: 38%; fill: currentColor; }
+.ctl.play { background: var(--lit); border-color: var(--lit); color: #080808; }
+.ctl.play svg { width: 34%; height: 34%; }
+.ctl:active { transform: scale(.96); }
+.stage.idle .ctl { opacity: .3; pointer-events: none; }
+
+/* XL : pochette à gauche, texte au centre, commandes à droite */
+.stage.xl .w-cover { left: 48px; top: 48px; width: 600px; height: 600px; }
+.stage.xl .w-dot { left: 704px; top: 59px; }
+.stage.xl .w-name { left: 728px; top: 52px; }
+.stage.xl .w-state { right: 56px; top: 52px; }
+.stage.xl .w-meta { left: 704px; top: 262px; width: 1180px; }
+.stage.xl .w-title { font-size: 64px; line-height: 80px; }
+.stage.xl .w-artist { font-size: 28px; line-height: 36px; }
+.stage.xl .w-album { font-size: 22px; line-height: 28px; }
+.stage.xl .w-ctls { right: 56px; top: 264px; gap: 32px; }
+.stage.xl .ctl { width: 112px; height: 112px; }
+.stage.xl .ctl.play { width: 168px; height: 168px; }
+.stage.xl .w-ctls { top: 264px; }
+
+/* L : pochette à gauche, texte puis commandes en dessous */
+.stage.l .w-cover { left: 48px; top: 48px; width: 600px; height: 600px; }
+.stage.l .w-dot { left: 704px; top: 59px; }
+.stage.l .w-name { left: 728px; top: 52px; }
+.stage.l .w-state { right: 56px; top: 52px; }
+.stage.l .w-meta { left: 704px; top: 176px; width: 928px; }
+.stage.l .w-title { font-size: 56px; line-height: 70px; }
+.stage.l .w-artist { font-size: 26px; line-height: 34px; }
+.stage.l .w-album { font-size: 22px; line-height: 28px; }
+.stage.l .w-ctls { left: 704px; bottom: 48px; gap: 28px; }
+.stage.l .ctl { width: 96px; height: 96px; }
+.stage.l .ctl.play { width: 136px; height: 136px; }
+
+/* M : pochette et texte côte à côte, commandes centrées en bas */
+.stage.m .w-dot { left: 56px; top: 51px; }
+.stage.m .w-name { left: 80px; top: 44px; }
+.stage.m .w-state { right: 56px; top: 44px; }
+.stage.m .w-cover { left: 56px; top: 100px; width: 320px; height: 320px; }
+.stage.m .w-meta { left: 408px; top: 108px; width: 376px; gap: 12px; }
+.stage.m .w-title { font-size: 36px; line-height: 46px; white-space: normal; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; }
+.stage.m .w-artist { font-size: 22px; line-height: 28px; }
+.stage.m .w-album { font-size: 18px; line-height: 24px; }
+.stage.m .w-ctls { left: 0; right: 0; bottom: 64px; justify-content: center; gap: 40px; }
+.stage.m .ctl { width: 104px; height: 104px; }
+.stage.m .ctl.play { width: 144px; height: 144px; }
+
+/* S : pochette, titre et commandes, sans libellés */
+.stage.s .w-dot, .stage.s .w-name, .stage.s .w-state, .stage.s .w-album { display: none; }
+.stage.s .w-cover { left: 48px; top: 48px; width: 248px; height: 248px; }
+.stage.s .w-meta { left: 336px; top: 52px; width: 456px; gap: 8px; }
+.stage.s .w-title { font-size: 36px; line-height: 46px; }
+.stage.s .w-artist { font-size: 20px; line-height: 26px; }
+.stage.s .w-ctls { left: 336px; bottom: 48px; gap: 24px; }
+.stage.s .ctl { width: 80px; height: 80px; }
+.stage.s .ctl.play { width: 104px; height: 104px; }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Widget iCUE · CORSAIR XENEON EDGE</div>
+    <h1>Dot Spotify</h1>
+    <p class="lede">Première proposition, à valider point par point dans le tableau. Elle reprend la charte du Dot Clock : fond <code>#080808</code>, points blanc chaud, accent émeraude, libellés en Fira Code. Les titres et les pochettes sont des exemples fictifs.</p>
+  </header>
+
+  <figure>
+    <div class="tag"><b>Maquette de référence</b><span id="sizeTag">Version 0.1 · taille réelle XL 2536 × 696 px</span></div>
+    <div class="sizebar" role="radiogroup" aria-label="Taille du widget">
+      <span>Widget size</span>
+      <button type="button" class="preset" data-size="s" aria-pressed="false">S · 840 × 344</button>
+      <button type="button" class="preset" data-size="m" aria-pressed="false">M · 840 × 696</button>
+      <button type="button" class="preset" data-size="l" aria-pressed="false">L · 1688 × 696</button>
+      <button type="button" class="preset" data-size="xl" aria-pressed="true">XL · 2536 × 696</button>
+    </div>
+    <div class="frame xl" id="frame">
+      <div class="stage xl playing" id="stage">
+        <canvas class="w-cover" id="cover" aria-label="Pochette en trame de points"></canvas>
+        <span class="w-dot"></span>
+        <p class="w-lbl w-name">DOT SPOTIFY</p>
+        <p class="w-lbl w-state" id="state">PLAYING</p>
+        <div class="w-meta">
+          <p class="w-title" id="title">Neon Grid</p>
+          <p class="w-artist" id="artist">The Pixels</p>
+          <p class="w-album" id="album">Low Resolution</p>
+        </div>
+        <div class="w-ctls">
+          <button type="button" class="ctl" id="prevBtn" aria-label="Previous track"><svg viewBox="0 0 24 24"><path d="M5 4h3v16H5zM20 4v16L9 12z"/></svg></button>
+          <button type="button" class="ctl play" id="playBtn" aria-label="Play / pause"><svg viewBox="0 0 24 24" id="playIcon"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg></button>
+          <button type="button" class="ctl" id="nextBtn" aria-label="Next track"><svg viewBox="0 0 24 24"><path d="M16 4h3v16h-3zM4 4v16l11-8z"/></svg></button>
+        </div>
+      </div>
+    </div>
+    <div class="settings" aria-label="Réglages iCUE simulés">
+      <div class="grp" role="radiogroup" aria-label="Exemple">
+        <span>Exemple</span>
+        <label><input type="radio" name="sample" id="sPlaying" value="playing" checked> Playing</label>
+        <label><input type="radio" name="sample" id="sPaused" value="paused"> Paused</label>
+        <label><input type="radio" name="sample" id="sIdle" value="idle"> Nothing playing</label>
+      </div>
+      <div class="grp" role="radiogroup" aria-label="Cover style">
+        <span>Cover style</span>
+        <label><input type="radio" name="coverStyle" id="cMono" value="mono" checked> Mono</label>
+        <label><input type="radio" name="coverStyle" id="cColor" value="color"> Color</label>
+      </div>
+      <div class="grp" role="radiogroup" aria-label="Cover dot size">
+        <span>Cover dot size</span>
+        <label><input type="radio" name="dotSize" id="dFine" value="9"> Fine</label>
+        <label><input type="radio" name="dotSize" id="dMedium" value="13" checked> Medium</label>
+        <label><input type="radio" name="dotSize" id="dCoarse" value="18"> Coarse</label>
+      </div>
+      <label><input type="checkbox" id="showUnlit" checked> Show unlit dots</label>
+      <label><input type="checkbox" id="showAlbum" checked> Show album</label>
+      <label>Accent color <input type="color" id="accentColor" value="#10b981"></label>
+      <label>Lit dot color <input type="color" id="litColor" value="#f2f0e9"></label>
+      <label>Unlit dot color <input type="color" id="unlitColor" value="#1c1c1c"></label>
+      <label>Label color <input type="color" id="labelColor" value="#b8b6b0"></label>
+      <button type="button" class="preset" data-accent="#10b981"><i style="background:#10b981"></i>Émeraude</button>
+      <button type="button" class="preset" data-accent="#1db954"><i style="background:#1db954"></i>Vert Spotify</button>
+      <button type="button" class="preset" data-accent="#ed403b"><i style="background:#ed403b"></i>Rouge A</button>
+    </div>
+    <figcaption><span id="sizeNote">Pochette à gauche, titre au centre, commandes à droite.</span> Les boutons de la maquette marchent : précédent et suivant changent de morceau, le bouton central met en pause.</figcaption>
+  </figure>
+
+  <section style="display:grid;gap:14px">
+    <div class="diff-head">
+      <h2>Choix de design</h2>
+      <p class="hint">Tout est à valider. Complété au fur et à mesure.</p>
+    </div>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>#</th><th>Élément</th><th>Proposition</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>Données</td><td>Plugin iCUE Media (<code>widgetbuilder.mediadataprovider:Media:1.1</code>) : titre, artiste, album, pochette (PNG en base64) et état lecture / pause. Commandes : précédent, lecture / pause, suivant. Sans compagnon.</td></tr>
+          <tr class="todo"><td>2</td><td>Progression du morceau</td><td>Impossible avec le plugin iCUE : il ne donne ni la position, ni la durée. Option future : API Web Spotify (compte Spotify, jeton à stocker, sans doute via le compagnon). Pas de fausse barre de progression en attendant.</td></tr>
+          <tr class="todo"><td>3</td><td>Source de la musique</td><td>Le plugin lit le lecteur actif de Windows, pas seulement Spotify (navigateur, Apple Music, VLC…), et ne dit pas quelle application joue. Garder le nom « Dot Spotify » ou passer à « Dot Media » ?</td></tr>
+          <tr class="todo"><td>4</td><td>Pochette</td><td>Rendue en trame de points, comme le veut la charte. Réglage « Cover style » : Mono (points de la couleur « Lit dot color », taille selon la luminosité) ou Color (points aux couleurs de la pochette). Réglage « Cover dot size » : Fine, Medium (par défaut), Coarse.</td></tr>
+          <tr class="todo"><td>5</td><td>Titre, artiste, album</td><td>Fira Code en capitales : titre en Medium dans la couleur des points allumés, artiste et album dans la couleur des libellés. Une ligne avec « … » quand c'est trop long (jusqu'à 3 lignes en M). Album masquable (« Show album »). Défilement des titres longs à étudier.</td></tr>
+          <tr class="todo"><td>6</td><td>Commandes</td><td>Trois boutons ronds : précédent, lecture / pause (plein, plus grand), suivant. Zones tactiles de 80 à 168 px selon la taille, au-dessus du minimum de 60 px. Le widget devient interactif (<code>interactive: true</code>).</td></tr>
+          <tr class="todo"><td>7</td><td>Libellés</td><td>« DOT SPOTIFY » en haut à gauche avec un point en couleur d'accent qui pulse pendant la lecture, état en haut à droite (PLAYING, PAUSED, IDLE). Fira Code 18 px, comme Dot Clock.</td></tr>
+          <tr class="todo"><td>8</td><td>Couleurs</td><td>Mêmes réglages que Dot Clock : « Accent color » (vert émeraude par défaut, vert Spotify <code>#1DB954</code> et rouge A proposés), « Lit dot color », « Unlit dot color », « Label color ». Fond <code>#080808</code>.</td></tr>
+          <tr class="todo"><td>9</td><td>Rien en lecture</td><td>« NOTHING PLAYING » à la place du titre, « START PLAYBACK ON YOUR PC » en dessous, pochette réduite à la grille éteinte, état IDLE, commandes grisées. Jamais de morceau inventé dans iCUE.</td></tr>
+          <tr class="todo"><td>10</td><td>Tailles</td><td><b>XL</b> : pochette 600 px à gauche, texte au centre, commandes à droite.<br><b>L</b> : pochette à gauche, texte puis commandes en dessous.<br><b>M</b> : pochette 320 px et texte côte à côte, commandes centrées en bas.<br><b>S</b> : pochette 248 px, titre, artiste et commandes, sans libellés.<br>Vertical : à concevoir.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  function v(id) { return document.getElementById(id); }
+  var SIZES = {
+    xl: { w: 2536, h: 696, cover: 600, tag: "XL 2536 × 696 px", note: "Pochette à gauche, titre au centre, commandes à droite." },
+    l: { w: 1688, h: 696, cover: 600, tag: "L 1688 × 696 px", note: "Pochette à gauche, texte puis commandes en dessous." },
+    m: { w: 840, h: 696, cover: 320, tag: "M 840 × 696 px", note: "Pochette et texte côte à côte, commandes centrées en bas." },
+    s: { w: 840, h: 344, cover: 248, tag: "S 840 × 344 px", note: "Pochette, titre, artiste et commandes, sans libellés." }
+  };
+  var size = "xl";
+  var frame = v("frame"), stage = v("stage");
+
+  function fit() { stage.style.transform = "scale(" + frame.clientWidth / SIZES[size].w + ")"; }
+  if (window.ResizeObserver) new ResizeObserver(fit).observe(frame); else window.addEventListener("resize", fit);
+
+  // ---------- pochettes d'exemple, dessinées à la main (aucune vraie pochette)
+  function makeCover(paint) { var c = document.createElement("canvas"); c.width = c.height = 256; paint(c.getContext("2d")); return c; }
+  var TRACKS = [
+    { title: "Neon Grid", artist: "The Pixels", album: "Low Resolution", art: makeCover(function (g) {
+      var bg = g.createLinearGradient(0, 0, 256, 256); bg.addColorStop(0, "#1b1446"); bg.addColorStop(1, "#4a1d5e");
+      g.fillStyle = bg; g.fillRect(0, 0, 256, 256);
+      var sun = g.createRadialGradient(96, 104, 6, 96, 104, 86); sun.addColorStop(0, "#ffd38a"); sun.addColorStop(.55, "#ff6a5c"); sun.addColorStop(1, "rgba(255,80,90,0)");
+      g.fillStyle = sun; g.beginPath(); g.arc(96, 104, 86, 0, Math.PI * 2); g.fill();
+      var moon = g.createRadialGradient(194, 186, 2, 194, 186, 44); moon.addColorStop(0, "#9ff3e4"); moon.addColorStop(1, "rgba(60,200,190,0)");
+      g.fillStyle = moon; g.beginPath(); g.arc(194, 186, 44, 0, Math.PI * 2); g.fill();
+    }) },
+    { title: "Analog Dreams Under a Very Long Summer Sky", artist: "Mira Lane", album: "Tape Hiss", art: makeCover(function (g) {
+      var bg = g.createLinearGradient(0, 0, 0, 256); bg.addColorStop(0, "#f3c98b"); bg.addColorStop(1, "#c4553a");
+      g.fillStyle = bg; g.fillRect(0, 0, 256, 256);
+      g.fillStyle = "#fff4d6"; g.beginPath(); g.arc(128, 120, 58, 0, Math.PI * 2); g.fill();
+      g.fillStyle = "#3b1f2b";
+      for (var i = 0; i < 6; i++) g.fillRect(0, 150 + i * 18, 256, 8 - i);
+    }) },
+    { title: "Low Tide", artist: "Harbor Lights", album: "Undertow", art: makeCover(function (g) {
+      var bg = g.createLinearGradient(0, 0, 0, 256); bg.addColorStop(0, "#0d2b45"); bg.addColorStop(1, "#1c6e8c");
+      g.fillStyle = bg; g.fillRect(0, 0, 256, 256);
+      for (var k = 0; k < 5; k++) {
+        g.strokeStyle = "rgba(180,235,255," + (0.85 - k * 0.15) + ")"; g.lineWidth = 10 - k;
+        g.beginPath();
+        for (var x = 0; x <= 256; x += 4) { var y = 70 + k * 38 + Math.sin(x / 26 + k) * 14; if (x === 0) g.moveTo(x, y); else g.lineTo(x, y); }
+        g.stroke();
+      }
+    }) }
+  ];
+  var track = 0;
+
+  // ---------- trame de points
+  function drawCover(state, s) {
+    var cv = v("cover"), px = SIZES[size].cover, dpr = 2;
+    cv.width = px * dpr; cv.height = px * dpr;
+    var ctx = cv.getContext("2d");
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, px, px);
+    var pitch = parseInt(document.querySelector("input[name=dotSize]:checked").value, 10) * (px / 600 > 0.5 ? 1 : 0.75);
+    var n = Math.floor(px / pitch), off = (px - n * pitch) / 2 + pitch / 2, maxR = pitch * 0.46;
+    var data = null;
+    if (state !== "idle") {
+      var sm = document.createElement("canvas"); sm.width = sm.height = n;
+      var sg = sm.getContext("2d"); sg.imageSmoothingQuality = "high";
+      sg.drawImage(TRACKS[track].art, 0, 0, n, n);
+      data = sg.getImageData(0, 0, n, n).data;
+    }
+    var color = document.querySelector("input[name=coverStyle]:checked").value === "color";
+    // niveaux automatiques : on étire la luminosité de la pochette sur toute la plage, pour que les pochettes sombres restent lisibles
+    var lo = 1, hi = 0;
+    if (data) for (var q = 0; q < data.length; q += 4) {
+      var lq = (0.2126 * data[q] + 0.7152 * data[q + 1] + 0.0722 * data[q + 2]) / 255;
+      if (lq < lo) lo = lq; if (lq > hi) hi = lq;
+    }
+    var span = Math.max(hi - lo, 0.2);
+    for (var yy = 0; yy < n; yy++) for (var xx = 0; xx < n; xx++) {
+      var cx = off + xx * pitch, cy = off + yy * pitch;
+      if (s.unlit) { ctx.fillStyle = s.unlit; ctx.beginPath(); ctx.arc(cx, cy, maxR, 0, Math.PI * 2); ctx.fill(); }
+      if (!data) continue;
+      var i = (yy * n + xx) * 4, r = data[i], g = data[i + 1], b = data[i + 2];
+      var lum = Math.min(1, Math.max(0, ((0.2126 * r + 0.7152 * g + 0.0722 * b) / 255 - lo) / span));
+      var rad = color ? maxR * (0.35 + 0.65 * Math.pow(lum, 0.7)) : maxR * Math.pow(lum, 0.9);
+      if (rad < 0.6) continue;
+      ctx.fillStyle = color ? "rgb(" + r + "," + g + "," + b + ")" : s.lit;
+      ctx.beginPath(); ctx.arc(cx, cy, rad, 0, Math.PI * 2); ctx.fill();
+    }
+  }
+
+  var PLAY = '<path d="M7 4v16l13-8z"/>', PAUSE = '<path d="M6 4h4v16H6zM14 4h4v16h-4z"/>';
+
+  function render() {
+    var state = document.querySelector("input[name=sample]:checked").value;
+    var s = {
+      lit: v("litColor").value,
+      unlit: v("showUnlit").checked ? v("unlitColor").value : null,
+      accent: v("accentColor").value,
+      label: v("labelColor").value
+    };
+    stage.className = "stage " + size + " " + state;
+    stage.style.setProperty("--accent", s.accent);
+    stage.style.setProperty("--lit", s.lit);
+    stage.style.setProperty("--label", s.label);
+    var t = TRACKS[track];
+    v("title").textContent = state === "idle" ? "Nothing playing" : t.title;
+    v("artist").textContent = state === "idle" ? "Start playback on your PC" : t.artist;
+    v("album").textContent = t.album;
+    v("album").hidden = state === "idle" || !v("showAlbum").checked;
+    v("state").textContent = { playing: "PLAYING", paused: "PAUSED", idle: "IDLE" }[state];
+    v("playIcon").innerHTML = state === "playing" ? PAUSE : PLAY;
+    drawCover(state, s);
+  }
+
+  // ---------- interactions de la maquette
+  function setSample(val) { v({ playing: "sPlaying", paused: "sPaused", idle: "sIdle" }[val]).checked = true; render(); }
+  v("playBtn").addEventListener("click", function () {
+    setSample(document.querySelector("input[name=sample]:checked").value === "playing" ? "paused" : "playing");
+  });
+  v("nextBtn").addEventListener("click", function () { track = (track + 1) % TRACKS.length; render(); });
+  v("prevBtn").addEventListener("click", function () { track = (track + TRACKS.length - 1) % TRACKS.length; render(); });
+
+  ["sPlaying", "sPaused", "sIdle", "cMono", "cColor", "dFine", "dMedium", "dCoarse", "showUnlit", "showAlbum", "accentColor", "litColor", "unlitColor", "labelColor"].forEach(function (id) {
+    v(id).addEventListener("input", render);
+    v(id).addEventListener("change", render);
+  });
+  document.querySelectorAll(".preset[data-accent]").forEach(function (b) {
+    b.addEventListener("click", function () { v("accentColor").value = b.getAttribute("data-accent"); render(); });
+  });
+  document.querySelectorAll(".sizebar .preset").forEach(function (b) {
+    b.addEventListener("click", function () {
+      size = b.getAttribute("data-size");
+      document.querySelectorAll(".sizebar .preset").forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+      frame.className = "frame " + size;
+      v("sizeTag").textContent = "Version 0.1 · taille réelle " + SIZES[size].tag;
+      v("sizeNote").textContent = SIZES[size].note;
+      render(); fit();
+    });
+  });
+
+  render(); fit();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(render);
+})();
+</script>
+
+</body>
+</html>
