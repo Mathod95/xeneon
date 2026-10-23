@@ -1,7 +1,7 @@
 # Nom du widget
 
 **Statut :** ⚪ idée
-**Dossier :** `widgets/<slug>`
+**Fichier :** `widgets/<slug>/README.md` (mocks dans `widgets/<slug>/mockups/`)
 
 ## But
 Ce que le widget affiche ou permet de faire, en une ou deux phrases.

@@ -28,23 +28,10 @@ jobs:
           name: widgets
           path: dist/*.icuewidget
 
-  tools:
-    name: Outils Rust (Windows)
-    runs-on: windows-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Compiler edge-swipe-test
-        working-directory: tools/edge-swipe-test
-        run: cargo build --release
-      - uses: actions/upload-artifact@v4
-        with:
-          name: tools
-          path: tools/edge-swipe-test/target/release/edge-swipe-test.exe
-
   release:
     name: Publier la release
     if: startsWith(github.ref, 'refs/tags/v')
-    needs: [widgets, tools]
+    needs: [widgets]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v4

@@ -1,71 +1,26 @@
 # Xeneon
 
-Widgets et outils pour l’écran tactile **CORSAIR XENEON EDGE** (iCUE).
+Widgets iCUE pour l’écran tactile CORSAIR XENEON EDGE.
 
-## Organisation du repo
+## Widgets
 
-```
-xeneon/
-├── widgets/              un dossier par widget iCUE (empaqueté par la CI)
-│   └── system-monitor/
-├── templates/widget/     modèle de départ, avec détection des tailles S/M/L/XL
-├── tools/                programmes Rust (Windows)
-│   └── edge-swipe-test/  test : iCUE accepte-t-il un swipe simulé ?
-├── docs/
-│   ├── WIDGETS.md        catalogue et statut de chaque widget
-│   ├── SPEC-TEMPLATE.md  fiche à remplir pour un nouveau widget
-│   └── widgets/          une fiche par widget
-├── scripts/              créer, valider et empaqueter les widgets
-└── .github/workflows/    build automatique et releases
-```
-
-Voir le [catalogue des widgets](docs/WIDGETS.md).
-
-## Installer un widget
-
-Téléchargez le fichier `.icuewidget` depuis l’onglet **Releases** (ou les artefacts de la dernière exécution **Actions**), puis dans iCUE : section **Widgets** → **+** → glissez le fichier. Requiert iCUE 5.47 ou plus récent.
-
-## Développer
-
-### Widgets
-
-Chaque widget est un dossier dans `widgets/` contenant au minimum `index.html`, `manifest.json` et une icône. Pour en créer un à partir du modèle :
-
-```bash
-./scripts/new-widget.sh steam-launcher "Steam Launcher"      # Linux / macOS
-.\scripts\new-widget.ps1 steam-launcher "Steam Launcher"     # Windows
-```
-
-Puis pour valider et empaqueter tous les widgets :
-
-```bash
-npm install -g icuewidget-cli     # CLI officiel Corsair
-./scripts/package-widgets.sh      # Linux / macOS
-.\scripts\package-widgets.ps1     # Windows
-```
-
-Les paquets sont générés dans `dist/`. Ouvrir `index.html` dans un navigateur affiche un aperçu avec des données simulées ; dans iCUE, seules les vraies données sont affichées.
-
-Tailles d’emplacement sur le XENEON EDGE :
-
-| Taille | Horizontal | Vertical |
-|---|---|---|
-| S | 840 × 344 | 696 × 416 |
-| M | 840 × 696 | 696 × 840 |
-| L | 1688 × 696 | 696 × 1688 |
-| XL | 2536 × 696 | 696 × 2536 |
-
-### Outils Rust
-
-```bash
-cd tools/edge-swipe-test
-cargo build --release
-```
-
-## Intégration continue
-
-À chaque push, GitHub Actions valide et empaquette tous les widgets, et compile les outils Rust pour Windows. Pousser un tag `v*` (par exemple `v1.1.0`) publie automatiquement une release avec tous les fichiers.
-
-## Documentation de référence
-
-- Spécification des widgets iCUE : https://docs.elgato.com/icue/widgets/
+| Name | Description |
+|---|---|
+| [System Monitor](widgets/system-monitor) | FPS du jeu en cours et 4 capteurs matériels (CPU, GPU) en direct, avec historique consultable au toucher. Style dot-matrix. |
+| [Dot Audio](widgets/dot-audio) | Volume général, mixeur par application, coupure de tous les micros en un tap, changement de périphérique audio, lecture en cours et égaliseur. Style dot-matrix, thèmes de couleur, toutes tailles en horizontal et vertical. |
+| [Dot Calendar](widgets/dot-calendar) | Horloge dot-matrix, calendrier du mois, semaine, agenda et compte à rebours avant le prochain événement, avec bouton JOIN pour Meet, Zoom et Teams. Calendriers Google, Outlook et iCloud via liens ICS privés, jours fériés hors ligne. Thèmes clair et sombre, couleur d’accent au choix, les 8 tailles Edge. |
+| [Dot Launcher](widgets/dot-launcher) | Lanceur de jeux Steam : jusqu’à 8 jeux ajoutés par lien ou app ID, lancés en un tap, double tap ou appui long au choix. Jaquettes issues de la bibliothèque Steam, dernier jeu joué mis en avant, titre personnalisable. Style dot-matrix. |
+| [Dot Spotify](widgets/dot-spotify) | Lecteur Spotify. Style dot-matrix. |
+| [Dot Clock](widgets/dot-clock) | Grande horloge dot-matrix : heures et minutes en gros points, deux-points et secondes en couleur d’accent, date complète et fuseau horaire. Style dot-matrix. |
+| [Dot Bambu Lab](widgets/dot-bambulab) | Suivi d’imprimante 3D Bambu Lab. Style dot-matrix. |
+| [Dot Discord](widgets/dot-discord) | Contrôle Discord. Style dot-matrix. |
+| [Dot Home Assistant](widgets/dot-homeassistant) | Pilotage de la maison via Home Assistant. Style dot-matrix. |
+| [Dot Weather](widgets/dot-weather) | Météo actuelle et prévisions. Style dot-matrix. |
+| [Dot Fans](widgets/dot-fans) | Vitesse de tous les ventilateurs et de la pompe en temps réel, avec moyenne et historique. Style dot-matrix. |
+| [Dot Apps](widgets/dot-apps) | Lanceur d’applications Windows : une grille d’icônes, un tap pour ouvrir l’application. Style dot-matrix. |
+| [Dot Battery](widgets/dot-battery) | Niveau de batterie des périphériques sans fil : casque Logitech, appareils CORSAIR et appareils Bluetooth. Pourcentage, état de charge et alerte de batterie faible. Style dot-matrix. |
+| [Dot Network](widgets/dot-network) | Ping en continu vers les serveurs choisis avec historique de latence et perte de paquets, débit montant et descendant en direct, et speedtest lancé d’un tap. Style dot-matrix. |
+| [Dot Mail](widgets/dot-mail) | Compteur de mails non lus et aperçu des derniers messages reçus (expéditeur, objet), sur une ou plusieurs boîtes. Style dot-matrix. |
+| [Dot Homelab](widgets/dot-homelab) | Tableau de bord des services auto-hébergés : téléchargements en cours et prochaines sorties de Radarr et Sonarr, demandes en attente de Seerr, état en ligne/hors ligne des autres applications. Style dot-matrix. |
+| [Dot Notes](widgets/dot-notes) | Notes rapides et listes de tâches à cocher au toucher, gardées d’une session à l’autre. Style dot-matrix. |
+| [Dot Plex](widgets/dot-plex) | Lectures en cours sur le serveur Plex (qui regarde quoi, progression, qualité), derniers ajouts et « À suivre ». Style dot-matrix. |
