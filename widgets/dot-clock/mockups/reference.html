@@ -225,16 +225,19 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
         <label><input type="radio" name="dotFont" id="fontBold" value="bold" checked> Grasse</label>
         <label><input type="radio" name="dotFont" id="fontThin" value="thin"> Fine</label>
       </div>
-      <label>Date format <input type="text" id="dateFormat" value="WWW, MMMM DD, YYYY" maxlength="40" spellcheck="false"></label>
-      <div class="grp">
-        <button type="button" class="preset" data-fmt="WWW, MMMM DD, YYYY">WWW, MMMM DD, YYYY</button>
-        <button type="button" class="preset" data-fmt="MM/DD/YYYY">MM/DD/YYYY</button>
-        <button type="button" class="preset" data-fmt="DD/MM/YYYY">DD/MM/YYYY</button>
-        <button type="button" class="preset" data-fmt="YYYY-MM-DD">YYYY-MM-DD</button>
-        <button type="button" class="preset" data-fmt="MM.DD.YY">MM.DD.YY</button>
-        <button type="button" class="preset" data-fmt="WWWW DD MMMM YYYY">WWWW DD MMMM YYYY</button>
-      </div>
-      <p class="legend">Repères : <code>YYYY</code> 2026 · <code>YY</code> 26 · <code>MMMM</code> SEPTEMBER · <code>MMM</code> SEP · <code>MM</code> 09 · <code>M</code> 9 · <code>DD</code> 21 · <code>D</code> 21 · <code>WWWW</code> MONDAY · <code>WWW</code> MON. Majuscules ou minuscules, au choix.</p>
+      <label>Date format <select id="dateFormat">
+        <option value="WWW, MMMM DD, YYYY" selected>MON, SEPTEMBER 21, 2026</option>
+        <option value="WWWW DD MMMM YYYY">MONDAY 21 SEPTEMBER 2026</option>
+        <option value="WWW DD MMM YYYY">MON 21 SEP 2026</option>
+        <option value="MM/DD/YYYY">09/21/2026</option>
+        <option value="DD/MM/YYYY">21/09/2026</option>
+        <option value="YYYY-MM-DD">2026-09-21</option>
+        <option value="DD.MM.YY">21.09.26</option>
+        <option value="MM.DD.YY">09.21.26</option>
+        <option value="custom">Custom format</option>
+      </select></label>
+      <label id="dateCustomWrap" hidden>Custom date format <input type="text" id="dateCustom" value="WWW, MMMM DD, YYYY" maxlength="40" spellcheck="false"></label>
+      <p class="legend">Repères du format libre : <code>YYYY</code> 2026 · <code>YY</code> 26 · <code>MMMM</code> SEPTEMBER · <code>MMM</code> SEP · <code>MM</code> 09 · <code>M</code> 9 · <code>DD</code> 21 · <code>D</code> 21 · <code>WWWW</code> MONDAY · <code>WWW</code> MON. Majuscules ou minuscules, au choix.</p>
     </div>
     <figcaption><span id="sizeNote">Le widget seul, tel qu'il occupe un emplacement XL de l'Edge.</span> Libellés à 18 px, date à 22 px, à l'échelle de l'XL pour toutes les tailles. En 12 h, AM ou PM s'affiche en petits points au-dessus ou en dessous des secondes, dans la couleur des points allumés.</figcaption>
   </figure>
@@ -260,9 +263,9 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
           <tr><td>10</td><td>Couleur des libellés</td><td><span class="sw" style="background:#b8b6b0"></span>Couleur réglable dans iCUE « Label color », par défaut celle de A <code>#B8B6B0</code>.</td></tr>
           <tr><td>11</td><td>Fond de la page</td><td><span class="sw" style="background:#111111"></span><code>#111111</code></td></tr>
           <tr><td>12</td><td>Point devant « DOT CLOCK »</td><td>En couleur d'accent, il change avec « Accent color ».</td></tr>
-          <tr><td>13</td><td>Fuseau horaire</td><td>Heure locale du PC par défaut. Réglage iCUE « Time zone » pour choisir un autre fuseau.<br>Réglage iCUE « Time zone label » pour le libellé en haut à droite : ville (PARIS, par défaut), abréviation (CEST), décalage (UTC+2), ville + décalage (PARIS UTC+2), texte libre, ou masqué. L'abréviation et le décalage suivent l'heure d'été automatiquement (CEST / CET, UTC+2 / UTC+1).</td></tr>
+          <tr><td>13</td><td>Fuseau horaire</td><td>Heure locale du PC par défaut. Réglage iCUE « Time zone » pour choisir un autre fuseau.<br>Réglage iCUE « Time zone label » pour le libellé en haut à droite : ville (PARIS, par défaut), abréviation (CEST), décalage (UTC+2), ville + décalage (PARIS UTC+2), texte libre (champ « Custom time zone label », par exemple HOME ou BUREAU), ou masqué. L'abréviation et le décalage suivent l'heure d'été automatiquement (CEST / CET, UTC+2 / UTC+1).</td></tr>
           <tr><td>14</td><td>Format de l'heure</td><td>Réglage iCUE « Clock format » : 24 h par défaut, ou 12 h.<br>En 12 h, AM ou PM en petits points dans la couleur des points allumés, au-dessus ou en dessous des secondes selon le réglage iCUE « AM/PM position » (Top par défaut).</td></tr>
-          <tr><td>15</td><td>Format de la date</td><td>Réglage iCUE « Date format » (champ texte), « WWW, MMMM DD, YYYY » par défaut. Repères : YYYY, YY, MMMM, MMM, MM, M, DD, D, WWWW, WWW, en majuscules ou minuscules.<br>Formats proposés : WWW, MMMM DD, YYYY · MM/DD/YYYY · DD/MM/YYYY · YYYY-MM-DD · MM.DD.YY · WWWW DD MMMM YYYY.</td></tr>
+          <tr><td>15</td><td>Format de la date</td><td>Réglage iCUE « Date format » (liste), « WWW, MMMM DD, YYYY » par défaut : WWW, MMMM DD, YYYY · WWWW DD MMMM YYYY · WWW DD MMM YYYY · MM/DD/YYYY · DD/MM/YYYY · YYYY-MM-DD · DD.MM.YY · MM.DD.YY · Custom format.<br>Avec « Custom format », le champ « Custom date format » prend un format libre. Repères : YYYY, YY, MMMM, MMM, MM, M, DD, D, WWWW, WWW, en majuscules ou minuscules.</td></tr>
           <tr><td>16</td><td>Devise</td><td>Réglage iCUE « Footer text » (champ texte), « TIME, SIMPLY. » par défaut. Masquée si le champ est vide.</td></tr>
           <tr><td>17</td><td>Taille des textes</td><td>Dans le widget réel, libellés à 18 px minimum (date à 22 px), voir la maquette XL. MATHOD, le titre et le sous-titre ne servent qu'à la maquette et au branding.</td></tr>
           <tr><td>18</td><td>Police dot</td><td>Deux polices en grille 5 × 7, au choix par un réglage iCUE « Dot font » : grasse (traits de 2 points, par défaut) ou fine (traits de 1 point). Chiffres 0 à 9 et lettres A, P, M dans les deux. Le « 1 » gras fait 4 colonnes, centré dans une case de 5.</td></tr>
@@ -466,12 +469,15 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
       cell(cm, it.t[1], x + 6 * p, ry, p, r, it.c, o.offSec, o.font);
     });
 
-    var dateText = formatDate(SAMPLE_DATE, v("dateFormat").value || "WWW, MMMM DD, YYYY");
+    var fmt = v("dateFormat").value;
+    v("dateCustomWrap").hidden = fmt !== "custom";
+    if (fmt === "custom") fmt = v("dateCustom").value.trim() || "WWW, MMMM DD, YYYY";
+    var dateText = formatDate(SAMPLE_DATE, fmt);
     document.querySelectorAll(".datel").forEach(function (el) { el.textContent = dateText; });
   }
 
 
-  ["showUnlit", "unlitColor", "litColor", "accentColor", "labelColor", "showSeconds", "showUnlitSec", "tzLabel", "tzCustom", "footerText", "dateFormat", "fmt12h", "fmt24h", "sampleAm", "samplePm", "ampmTop", "ampmBottom", "fontBold", "fontThin"].forEach(function (id) {
+  ["showUnlit", "unlitColor", "litColor", "accentColor", "labelColor", "showSeconds", "showUnlitSec", "tzLabel", "tzCustom", "footerText", "dateFormat", "dateCustom", "fmt12h", "fmt24h", "sampleAm", "samplePm", "ampmTop", "ampmBottom", "fontBold", "fontThin"].forEach(function (id) {
     v(id).addEventListener("input", render);
     v(id).addEventListener("change", render);
   });

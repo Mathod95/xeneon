@@ -95,7 +95,7 @@ Compilation Windows : `cargo build --release` sous Windows, ou depuis Linux/WSL 
 ## État des widgets
 
 - **Dot System Monitor** v1.1.0 : fonctionnel (FPS + 4 capteurs + historique, dot-matrix). Mise en page faite pour L/XL ; **S, M et vertical à refaire**. À migrer sur `sizes.js` du template.
-- **Dot Clock** v0.1.1 : codé (S, M, L, XL horizontal ; vertical provisoire). Référence : `widgets/dot-clock/mockups/reference.html`.
+- **Dot Clock** v0.1.2 : codé (S, M, L, XL horizontal ; vertical provisoire). Référence : `widgets/dot-clock/mockups/reference.html`.
 - **Dot Audio, Dot Calendar, Dot Launcher** : spécifiés avec mocks.
 - Autres : fiche seule (idée).
 - **Prochaine étape** : définir la charte graphique (`docs/DESIGN.md`) à partir du mock de charte fourni par Mathod95, puis en faire le template de base de tous les widgets.

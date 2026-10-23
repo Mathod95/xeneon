@@ -1,6 +1,6 @@
 # Dot Clock
 
-**Statut :** 🟡 en cours (v0.1.1)
+**Statut :** 🟡 en cours (v0.1.2)
 
 Grande horloge dot-matrix : heures et minutes en gros points, deux-points et secondes en couleur d’accent, date et fuseau horaire.
 
@@ -29,8 +29,9 @@ La référence visuelle est [`mockups/reference.html`](mockups/reference.html) (
 | Clock | Show unlit seconds dots | activé |
 | Date and time zone | Time zone (Local + 33 fuseaux) | Local |
 | Date and time zone | Time zone label (City, Abbreviation, Offset, City + offset, Custom text, Hidden) | City |
-| Date and time zone | Custom time zone label | HOME |
-| Date and time zone | Date format (repères YYYY YY MMMM MMM MM M DD D WWWW WWW) | `WWW, MMMM DD, YYYY` |
+| Date and time zone | Custom time zone label (utilisé si « Custom text ») | HOME |
+| Date and time zone | Date format (liste : `WWW, MMMM DD, YYYY` · `WWWW DD MMMM YYYY` · `WWW DD MMM YYYY` · `MM/DD/YYYY` · `DD/MM/YYYY` · `YYYY-MM-DD` · `DD.MM.YY` · `MM.DD.YY` · Custom format) | `WWW, MMMM DD, YYYY` |
+| Date and time zone | Custom date format (utilisé si « Custom format », repères YYYY YY MMMM MMM MM M DD D WWWW WWW) | `WWW, MMMM DD, YYYY` |
 | Date and time zone | Footer text (vide = masqué) | TIME, SIMPLY. |
 | Colors | Accent color (propriété `dotAccentColor`, indépendante du style de page iCUE) | `#10B981` |
 | Colors | Lit dot color | `#F2F0E9` |

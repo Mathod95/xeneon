@@ -52,7 +52,12 @@
 			timeZone: String(get("timeZone", "local") || "local"),
 			tzLabel: String(get("timeZoneLabel", "city")),
 			tzCustom: String(get("customTimeZoneLabel", "HOME")),
-			dateFormat: String(get("dateFormat", "WWW, MMMM DD, YYYY")) || "WWW, MMMM DD, YYYY",
+			// liste de formats ; « custom » prend le champ libre (une ancienne valeur libre reste acceptée telle quelle)
+			dateFormat: (function () {
+				var f = String(get("dateFormat", "WWW, MMMM DD, YYYY"));
+				if (f === "custom") f = String(get("customDateFormat", "WWW, MMMM DD, YYYY"));
+				return f.trim() || "WWW, MMMM DD, YYYY";
+			})(),
 			footer: String(get("footerText", "TIME, SIMPLY.")),
 			accent: get("dotAccentColor", "#10B981") || "#10B981",
 			lit: get("litDotColor", "#F2F0E9") || "#F2F0E9",
