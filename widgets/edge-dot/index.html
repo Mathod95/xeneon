@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Edge Dot – System Monitor</title>
+		<link rel="icon" type="image/svg+xml" href="resources/icon.svg" />
+
+		<meta name="x-icue-property" content="sensorCpuTemp" data-label="'Capteur 1 (CPU package)'" data-type="sensors-combobox" data-default="plugins.Sensorsdataprovider.getDefaultSensorIdBlock('temperature', 'cpu-temp')" />
+		<meta name="x-icue-property" content="sensorCpuLoad" data-label="'Capteur 2 (CPU load)'" data-type="sensors-combobox" data-default="plugins.Sensorsdataprovider.getDefaultSensorIdBlock('load', '')" />
+		<meta name="x-icue-property" content="sensorGpuTemp" data-label="'Capteur 3 (GPU temperature)'" data-type="sensors-combobox" data-default="plugins.Sensorsdataprovider.getDefaultSensorIdBlock('temperature', 'gpu-temp')" />
+		<meta name="x-icue-property" content="sensorGpuLoad" data-label="'Capteur 4 (GPU load)'" data-type="sensors-combobox" data-default="plugins.Sensorsdataprovider.getDefaultSensorIdBlock('load', 'gpu-load')" />
+
+		<meta name="x-icue-property" content="accentColor" data-label="'Couleur d’accent'" data-type="color" data-default="'#E5484D'" />
+		<meta name="x-icue-property" content="textColor" data-label="'Couleur du texte'" data-type="color" data-default="'#E6E6E6'" />
+		<meta name="x-icue-property" content="backgroundColor" data-label="'Couleur de fond'" data-type="color" data-default="'#0A0A0A'" />
+
+		<script type="application/json" id="x-icue-groups">
+			[
+				{ "title": "'Capteurs'", "properties": ["sensorCpuTemp", "sensorCpuLoad", "sensorGpuTemp", "sensorGpuLoad"] },
+				{ "title": "'Apparence'", "properties": ["accentColor", "textColor", "backgroundColor"] }
+			]
+		</script>
+
+		<link rel="stylesheet" href="styles/main.css" />
+	</head>
+	<body>
+		<div class="app" id="app">
+			<header class="top">
+				<div class="brand">
+					<span class="logo" aria-hidden="true"><i></i><i></i><i></i></span>
+					<span class="brand-name">EDGE / DOT</span>
+					<span class="brand-sub">SYSTEM MONITOR / 01</span>
+				</div>
+				<div class="top-right">
+					<span id="modeLabel">LIVE / ICUE</span>
+					<button class="icon-btn" id="gearBtn" aria-label="Settings">
+						<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+					</button>
+				</div>
+				<div class="popover" id="popover" hidden="hidden">
+					<div class="pop-row">
+						<span>HISTORY</span>
+						<div class="seg" id="segWindow">
+							<button data-win="60">1 MIN</button>
+							<button data-win="300">5 MIN</button>
+							<button data-win="900">15 MIN</button>
+						</div>
+					</div>
+				</div>
+			</header>
+
+			<main class="grid">
+				<section class="fps-col">
+					<div class="eyebrow"><span class="live-dot"></span><span id="fpsTag">DEMO / FRAMERATE</span></div>
+					<div class="game" id="gameName">CYBERPUNK 2077</div>
+					<div class="fps-big">
+						<canvas id="fpsCanvas"></canvas>
+						<span class="unit">FPS</span>
+					</div>
+					<div class="muted" id="fpsSource">SIMULATED / DEMO DATA</div>
+					<div class="stats3">
+						<div><span>MIN</span><b id="fpsMin">–</b></div>
+						<div class="c"><span>AVG</span><b id="fpsAvg">–</b></div>
+						<div class="r"><span>MAX</span><b id="fpsMax">–</b></div>
+					</div>
+					<canvas class="spark" id="fpsSpark"></canvas>
+					<button class="link" id="fpsHistoryBtn">VIEW FPS HISTORY <span aria-hidden="true">↗</span></button>
+				</section>
+
+				<section class="hw-col">
+					<div class="row-head"><span>HARDWARE</span><span id="sensorCount">4 SENSORS</span></div>
+					<div class="cards" id="cards"></div>
+					<div class="pager"><span>←</span><span>01 / 01</span><span>→</span></div>
+				</section>
+
+				<section class="hist">
+					<div class="row-head"><span>HISTORY</span><span id="histWindow">5 MIN</span></div>
+					<div class="hist-title"><span id="histName">FRAMERATE</span><span id="histUnit">FPS</span></div>
+					<div class="hist-chart">
+						<canvas id="histCanvas"></canvas>
+						<span class="axis top" id="histTop">160</span>
+						<span class="axis bottom">0</span>
+					</div>
+					<div class="hist-x"><span id="histFrom">−5 MIN</span><span>NOW</span></div>
+					<div class="stats3">
+						<div><span>LOW</span><b id="histLow">–</b></div>
+						<div class="c"><span>AVERAGE</span><b id="histAvg">–</b></div>
+						<div class="r"><span>PEAK</span><b id="histPeak">–</b></div>
+					</div>
+					<p class="hint">TAP A SENSOR TO INSPECT ITS HISTORY.</p>
+				</section>
+			</main>
+
+			<footer class="bottom">
+				<span id="footLeft">DEMO / SIMULATED DATA</span>
+				<span id="footRight">1 SEC / 5 MIN HISTORY</span>
+			</footer>
+		</div>
+
+		<script src="scripts/widget.js"></script>
+	</body>
+</html>

@@ -1,0 +1,9 @@
+# Build Rust
+target/
+# Paquets générés
+dist/
+*.icuewidget
+# Divers
+.DS_Store
+Thumbs.db
+node_modules/
