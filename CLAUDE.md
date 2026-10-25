@@ -48,6 +48,8 @@ Un dossier de widget sans `manifest.json` est une fiche seule : la CI l’ignore
   - `widgetbuilder.fpsdataprovider:Fps:1.0` — FPS et processus au premier plan.
   - Également disponibles : Media (lecture en cours), Liens (ouvrir une URL), notifications, Stream Deck, actions d’appareil.
 - Stockage : `localStorage` du widget pour les données locales (Dot Notes).
+- **Saisie au clavier** (vérifié sur l’Edge avec Dot Frametest et Dot Typetest, octobre 2026) : toucher l’Edge ne donne pas le clavier à iCUE ; iCUE ne le prend que quand un champ de la page du widget reçoit le focus. Il faut la structure de la Checklist Corsair : `"features": ["sensor-screen"]` dans `supported_devices`, `<meta name="x-icue-interactive" />` (plus `x-icue-restrictions` et `x-icue-widget-group`) dans le `<head>`, un `translation.json`, au moins une `x-icue-property`, et `icueEvents = {…}` sans `var` ni `window.`. Sans ça, les touches partent dans la dernière fenêtre active de Windows.
+- **Réseau et iframes** (même test) : `fetch` vers `localhost` et `127.0.0.1` avec permission et port, iframe locale ou distante (GitHub Pages), `postMessage` dans les deux sens et toucher dans l’iframe fonctionnent (le toucher arrive comme souris). Le clavier n’entre **pas** dans une iframe : le widget garde le focus dans un champ invisible et renvoie les touches à l’iframe (pont clavier, voir Dot Frametest 0.0.6). `uniqueId` se lit avec `typeof uniqueId`, pas sur `window`. Le widget est un fichier local (`%APPDATA%\Corsair\CUE5\html_widgets\…`), moteur QtWebEngine 6.9.3.
 
 ## Règles de conception (détail dans docs/DESIGN.md)
 
