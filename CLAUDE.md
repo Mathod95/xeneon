@@ -71,12 +71,12 @@ Un dossier de widget sans `manifest.json` est une fiche seule : la CI l’ignore
 
 ## Le compagnon Rust (à construire)
 
-Beaucoup de widgets ont besoin d’accès que iCUE ne donne pas. Ils passeront par **un seul programme compagnon Rust pour Windows**, en arrière-plan (zone de notification, démarrage avec Windows), qui écoute **uniquement sur 127.0.0.1** et que les widgets appellent en HTTP/WebSocket local. Organisation en modules indépendants. Secrets (mots de passe, jetons, clés d’API) stockés chiffrés côté PC (DPAPI), jamais dans les réglages iCUE.
+Le compagnon sert l’interface et la configuration de Dot Hub (voir « Architecture » plus bas) et donne les accès que iCUE ne donne pas. C’est **un seul programme Rust pour Windows**, en arrière-plan (zone de notification, démarrage avec Windows), qui écoute **uniquement sur 127.0.0.1** et que Dot Hub appelle en HTTP/WebSocket local. Organisation en modules indépendants. Secrets (mots de passe, jetons, clés d’API) stockés chiffrés côté PC (DPAPI), jamais dans les réglages iCUE.
 
 | Module | Widgets | Rôle |
 |---|---|---|
 | audio | Dot Audio | volume, mixeur par app, mute de tous les micros, périphériques par défaut (API audio Windows) ; égaliseur via Equalizer APO |
-| pages | Dot Home | simuler des swipes sur l’Edge pour changer de page (voir plus bas) |
+| hub | Dot Hub | sert l’interface web de Dot Hub et de ses modules, la configuration (fichier + page de réglages sur le PC) et l’état de chaque instance (`uniqueId` → module affiché, réglages) |
 | apps | Dot Apps, Dot Launcher (repli) | lancer des programmes / `steam://` |
 | bambulab | Dot Bambu Lab | MQTT TLS en réseau local (IP + code d’accès) |
 | discord | Dot Discord | RPC local (accès réservé aux apps approuvées) ; repli : raccourcis clavier |
@@ -87,18 +87,28 @@ Beaucoup de widgets ont besoin d’accès que iCUE ne donne pas. Ils passeront p
 | ics | Dot Calendar (repli) | récupérer les ICS si le serveur bloque l’accès direct |
 | ia | Dot IA | limites d’utilisation Claude de plusieurs comptes (session 5 h, hebdo) ; source à vérifier (pas d’API publique documentée) |
 | github | Dot GitHub | contributions (GraphQL), pull requests, notifications et runs Actions (REST) ; token classique chiffré ; ouvre les pages GitHub dans le navigateur du PC |
-| notes | Dot Notes (optionnel) | sauvegarde et synchronisation des notes dans un fichier (`%APPDATA%\Xeneon\notes.json`), partage d’une liste entre widgets, édition depuis le PC ; le widget garde son stockage local et marche sans le compagnon |
+| notes | Dot Notes | notes et listes enregistrées dans un fichier (`%APPDATA%\Xeneon\notes.json`), partagées entre instances, modifiables depuis le PC |
 
-Sans compagnon : Dot System Monitor, Dot Fans (Sensors), Dot Clock, Dot Calculator, Dot Weather (Open-Meteo direct), Dot Home Assistant (WebSocket direct + jeton), Dot Notes (localStorage par `uniqueId` ; module notes du compagnon en option), Dot Spotify (plugin Media iCUE).
+Sans compagnon : seul Dot Clock, widget autonome pour l’instant. Tous les modules de Dot Hub passent par le compagnon, même ceux qui n’ont besoin d’aucun accès Windows (Weather, Calculator, Notes…), puisqu’il sert leur interface. Les données iCUE (capteurs, FPS, Media) sont relayées par la coquille de Dot Hub.
 
 Compilation Windows : `cargo build --release` sous Windows, ou depuis Linux/WSL avec la cible `x86_64-pc-windows-gnu` et le linker `x86_64-w64-mingw32-gcc`. Pas de dépendances externes inutiles ; appels Win32 directs acceptés.
 
-## Navigation entre pages iCUE — décisions
+## Architecture — décision (25 octobre 2026)
+
+- **Dot Clock reste pour l’instant un widget iCUE autonome**, tel qu’il est, sans compagnon. Il rejoindra Dot Hub par la suite : son code (rendu en points, polices, mises en page, fuseaux) deviendra le module Clock.
+- **Tous les autres widgets deviennent des modules de Dot Hub**, un seul widget iCUE, servi par le compagnon. Un seul paquet à installer et à maintenir, une seule configuration (dans le compagnon), plus de plugins séparés dans iCUE.
+- Dot Hub = une **coquille iCUE** minimale + une **interface web servie par le compagnon** (iframe ou redirection vers `http://localhost:<port>`, les deux vérifiées sur l’Edge avec `tests/dot-frametest`).
+  - La coquille a la structure de la Checklist (clavier), fait le **pont clavier** vers l’iframe, transmet `uniqueId`, la taille de l’emplacement et les données des plugins iCUE (capteurs, FPS, Media), qui ne sont accessibles que dans la coquille.
+  - Plusieurs Dot Hub peuvent être posés sur une page : chaque instance est identifiée par son `uniqueId`, et le compagnon garde son module et sa configuration.
+  - Dot Home devient l’accueil interne de Dot Hub : changer de module ne demande plus de changer de page iCUE.
+  - Sans compagnon, Dot Hub affiche seulement « COMPANION NOT RUNNING ».
+- Les fiches `widgets/<slug>/` et leurs maquettes restent la référence de design de chaque module.
+
+## Navigation entre pages iCUE
 
 - Aucune API iCUE ne permet de changer de page ni à un widget d’en piloter un autre (vérifié dans la doc officielle et les projets communautaires).
 - Gestes natifs : swipe gauche/droite = page suivante/précédente ; swipe haut/bas le long du bord = retour à la page initiale. Jusqu’à 30 pages.
-- Plan : un widget launcher (miniatures + noms) sur la **page 1** ; au toucher, il demande au compagnon « page N » ; le compagnon injecte N−1 swipes tactiles (`InjectTouchInput`) sur l’écran de l’Edge. Retour au launcher par le geste natif.
-- **À valider** : iCUE accepte-t-il un swipe simulé (tactile ou glisser souris) ? Attention au vol de focus avec la souris.
+- Avec Dot Hub, le changement de page iCUE n’est plus nécessaire. L’ancien plan (le compagnon simule des swipes avec `InjectTouchInput`) est abandonné.
 
 ## État des widgets
 
