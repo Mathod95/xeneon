@@ -38,6 +38,7 @@ jobs:
         with:
           path: out
           merge-multiple: true
+      # seule la coquille Dot Hub est publiée : les autres widgets sont des modules servis par le compagnon
       - uses: softprops/action-gh-release@v2
         with:
-          files: out/*
+          files: out/dot-hub.icuewidget
