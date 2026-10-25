@@ -3,7 +3,7 @@
  * - lit les réglages de l'instance dans le compagnon et les expose comme le ferait iCUE
  *   (une variable globale par x-icue-property, puis icueEvents.onDataUpdated) ;
  * - suit les changements faits dans la page de réglages (sondage toutes les 2 s) ;
- * - appui long (1 s) n'importe où : retour à l'accueil Dot Home ;
+ * - appui long (1 s) n'importe où, ou toucher un élément data-hub-home : retour à l'accueil Dot Home ;
  * - « Identify » depuis la page de réglages : affiche le nom de l'instance ;
  * - pont clavier : un champ de saisie du module demande le clavier à la coquille iCUE.
  */
@@ -70,6 +70,31 @@
 	document.addEventListener("pointermove", function (e) { if (Math.abs(e.clientX - x0) + Math.abs(e.clientY - y0) > 24) cancel(); });
 	document.addEventListener("pointerup", cancel);
 	document.addEventListener("pointercancel", cancel);
+
+	// ---------------------------------------------------------------- lien vers Dot Home
+	// Les éléments marqués data-hub-home (ex. « ● DOT CLOCK ») ramènent à l'accueil.
+	// Une zone invisible d'au moins 60 px les recouvre, pour un toucher facile.
+	var homeZone = document.createElement("button");
+	homeZone.type = "button";
+	homeZone.setAttribute("aria-label", "Dot Home");
+	homeZone.style.cssText = "position:fixed;z-index:9999;display:none;padding:0;margin:0;border:0;background:transparent;cursor:pointer;-webkit-tap-highlight-color:transparent";
+	homeZone.addEventListener("click", function () { location.href = "/home?uid=" + encodeURIComponent(uid); });
+	document.body.appendChild(homeZone);
+	function placeHomeZone() {
+		var els = Array.prototype.filter.call(document.querySelectorAll("[data-hub-home]"), function (e) { return !e.hidden && e.getClientRects().length; });
+		if (!els.length) { homeZone.style.display = "none"; return; }
+		var l = Infinity, t = Infinity, r = -Infinity, b = -Infinity;
+		els.forEach(function (e) { var k = e.getBoundingClientRect(); l = Math.min(l, k.left); t = Math.min(t, k.top); r = Math.max(r, k.right); b = Math.max(b, k.bottom); });
+		var w = Math.max(60, r - l + 24), h = Math.max(60, b - t + 24), cx = (l + r) / 2, cy = (t + b) / 2;
+		homeZone.style.display = "block";
+		homeZone.style.left = Math.max(0, cx - w / 2) + "px";
+		homeZone.style.top = Math.max(0, cy - h / 2) + "px";
+		homeZone.style.width = w + "px";
+		homeZone.style.height = h + "px";
+	}
+	window.addEventListener("resize", placeHomeZone);
+	setInterval(placeHomeZone, 1000);
+	setTimeout(placeHomeZone, 50);
 
 	// ---------------------------------------------------------------- pont clavier
 	var field = null, bridged = false;

@@ -18,7 +18,7 @@
 		<meta name="x-icue-property" content="customTimeZoneLabel" data-label="'Custom time zone label'" data-type="textfield" data-default="'HOME'" />
 		<meta name="x-icue-property" content="dateFormat" data-label="'Date format'" data-type="combobox" data-default="'WWW, MMMM DD, YYYY'" data-values="[{'key':'WWW, MMMM DD, YYYY','value':'MON, SEPTEMBER 21, 2026'},{'key':'WWWW DD MMMM YYYY','value':'MONDAY 21 SEPTEMBER 2026'},{'key':'WWW DD MMM YYYY','value':'MON 21 SEP 2026'},{'key':'MM/DD/YYYY','value':'09/21/2026'},{'key':'DD/MM/YYYY','value':'21/09/2026'},{'key':'YYYY-MM-DD','value':'2026-09-21'},{'key':'DD.MM.YY','value':'21.09.26'},{'key':'MM.DD.YY','value':'09.21.26'},{'key':'custom','value':'Custom format'}]" />
 		<meta name="x-icue-property" content="customDateFormat" data-label="'Custom date format (YYYY YY MMMM MMM MM M DD D WWWW WWW)'" data-type="textfield" data-default="'WWW, MMMM DD, YYYY'" />
-		<meta name="x-icue-property" content="footerText" data-label="'Footer text (empty to hide)'" data-type="textfield" data-default="'TIME, SIMPLY.'" />
+		<meta name="x-icue-property" content="footerText" data-label="'Footer text (empty to hide)'" data-type="textfield" data-default="'MADE BY MATHOD &amp; CLAUDE'" />
 
 		<meta name="x-icue-property" content="dotAccentColor" data-label="'Accent color'" data-type="color" data-default="'#10B981'" />
 		<meta name="x-icue-property" content="litDotColor" data-label="'Lit dot color'" data-type="color" data-default="'#F2F0E9'" />
@@ -37,8 +37,8 @@
 	</head>
 	<body>
 		<div class="stage" id="stage">
-			<span class="lbl-dot" id="nameDot"></span>
-			<p class="lbl lbl-name" id="name">DOT CLOCK</p>
+			<span class="lbl-dot" id="nameDot" data-hub-home=""></span>
+			<p class="lbl lbl-name" id="name" data-hub-home="">DOT CLOCK</p>
 			<p class="lbl lbl-tz" id="tz"></p>
 			<p class="lbl lbl-date" id="date"></p>
 			<p class="lbl lbl-footer" id="footer"></p>

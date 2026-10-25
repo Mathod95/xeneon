@@ -32,7 +32,7 @@ La référence visuelle est [`mockups/reference.html`](mockups/reference.html) (
 | Date and time zone | Custom time zone label (utilisé si « Custom text ») | HOME |
 | Date and time zone | Date format (liste : `WWW, MMMM DD, YYYY` · `WWWW DD MMMM YYYY` · `WWW DD MMM YYYY` · `MM/DD/YYYY` · `DD/MM/YYYY` · `YYYY-MM-DD` · `DD.MM.YY` · `MM.DD.YY` · Custom format) | `WWW, MMMM DD, YYYY` |
 | Date and time zone | Custom date format (utilisé si « Custom format », repères YYYY YY MMMM MMM MM M DD D WWWW WWW) | `WWW, MMMM DD, YYYY` |
-| Date and time zone | Footer text (vide = masqué) | TIME, SIMPLY. |
+| Date and time zone | Footer text (vide = masqué) | MADE BY MATHOD & CLAUDE |
 | Colors | Accent color (propriété `dotAccentColor`, indépendante du style de page iCUE) | `#10B981` |
 | Colors | Lit dot color | `#F2F0E9` |
 | Colors | Unlit dot color | `#1C1C1C` |

@@ -58,7 +58,7 @@
 				if (f === "custom") f = String(get("customDateFormat", "WWW, MMMM DD, YYYY"));
 				return f.trim() || "WWW, MMMM DD, YYYY";
 			})(),
-			footer: String(get("footerText", "TIME, SIMPLY.")),
+			footer: String(get("footerText", "MADE BY MATHOD & CLAUDE")),
 			accent: get("dotAccentColor", "#10B981") || "#10B981",
 			lit: get("litDotColor", "#F2F0E9") || "#F2F0E9",
 			unlit: get("unlitDotColor", "#1C1C1C") || "#1C1C1C",
