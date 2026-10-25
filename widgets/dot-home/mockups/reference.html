@@ -227,22 +227,26 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
     fans: ["..###..", ".#.#.#.", "#..#..#", "#######", "#..#..#", ".#.#.#.", "..###.."],
     music: ["..#####", "..#...#", "..#...#", "..#...#", "###..##", "###.###", "###.###"],
     plex: [".##....", "..##...", "...##..", "....##.", "...##..", "..##...", ".##...."],
+    github: ["#...#..", "#...#..", "#..#...", "#.#....", "##.....", "#......", "#......"],
+    calc: [".#...#.", "###.###", ".#.....", ".......", "#.#.###", ".#.....", "#.#.###"],
     home: ["...#...", "..###..", ".#####.", "#######", ".#...#.", ".#.#.#.", ".#####."]
   };
   var CATALOG = [
     { key: "clock", name: "Dot Clock" }, { key: "notes", name: "Dot Notes" }, { key: "ia", name: "Dot IA" },
     { key: "monitor", name: "System Monitor" }, { key: "audio", name: "Dot Audio" }, { key: "calendar", name: "Dot Calendar" },
-    { key: "weather", name: "Dot Weather" }, { key: "fans", name: "Dot Fans" }, { key: "music", name: "Dot Spotify" }, { key: "plex", name: "Dot Plex" }
+    { key: "weather", name: "Dot Weather" }, { key: "fans", name: "Dot Fans" }, { key: "music", name: "Dot Spotify" }, { key: "plex", name: "Dot Plex" },
+    { key: "github", name: "Dot GitHub" }, { key: "calc", name: "Dot Calculator" }
   ];
   function sample() {
     return [
       { key: "clock", name: "Dot Clock", page: 2 }, { key: "notes", name: "Dot Notes", page: 3 }, { key: "ia", name: "Dot IA", page: 4 },
-      { key: "monitor", name: "System Monitor", page: 5 }, { key: "audio", name: "Dot Audio", page: 6 }, { key: "calendar", name: "Dot Calendar", page: 7 }
+      { key: "monitor", name: "System Monitor", page: 5 }, { key: "audio", name: "Dot Audio", page: 6 }, { key: "calendar", name: "Dot Calendar", page: 7 },
+      { key: "github", name: "Dot GitHub", page: 8 }, { key: "calc", name: "Dot Calculator", page: 9 }
     ];
   }
   var tiles = sample();
-  try { var saved = JSON.parse(localStorage.getItem("dothome-v1") || "null"); if (Array.isArray(saved) && saved.length) tiles = saved; } catch (e) {}
-  function save() { try { localStorage.setItem("dothome-v1", JSON.stringify(tiles)); } catch (e) {} }
+  try { var saved = JSON.parse(localStorage.getItem("dothome-v2") || "null"); if (Array.isArray(saved) && saved.length) tiles = saved; } catch (e) {}
+  function save() { try { localStorage.setItem("dothome-v2", JSON.stringify(tiles)); } catch (e) {} }
 
   function settings() {
     return {
@@ -256,7 +260,7 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
     };
   }
   function live(key) {
-    return { clock: "14:32", notes: "5 TO DO", ia: "23 %", monitor: "64 °C", audio: "72 %", calendar: "IN 18 MIN" }[key] || "";
+    return { clock: "14:32", notes: "5 TO DO", ia: "23 %", monitor: "64 °C", audio: "72 %", calendar: "IN 18 MIN", github: "5 PRS", calc: "844" }[key] || "";
   }
 
   function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; }
@@ -387,6 +391,3 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(render);
 })();
 </script>
-
-</body>
-</html>
