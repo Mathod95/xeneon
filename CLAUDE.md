@@ -24,15 +24,15 @@ widgets/<slug>/          un widget iCUE (index.html, manifest.json, resources/, 
   README.md              fiche : statut, contenu, données, tailles, notes, mocks
   mockups/               mocks de référence (exclus du paquet)
 templates/widget/        modèle de départ, avec détection des 8 tailles (scripts/sizes.js)
-docs/                    site de documentation Zensical (index.md, DESIGN.md, SPEC-TEMPLATE.md)
+docs/                    documentation Markdown (DESIGN.md, SPEC-TEMPLATE.md)
 docs/DESIGN.md           charte graphique (référence unique, en cours de définition)
 docs/SPEC-TEMPLATE.md    fiche type d’un widget
-zensical.toml            configuration de la doc (menu `nav` à tenir à jour)
+tools/build_site.py      génère le site GitHub Pages (`site/`) à partir des `widgets/*/mockups/reference.html`
 scripts/                 new-widget, package-widgets (.sh et .ps1)
 .github/workflows/       CI : build.yml valide et empaquette les widgets (tag v* → release) ; docs.yml publie la doc sur GitHub Pages
 ```
 
-Documentation : [Zensical](https://zensical.org), installé dans `.venv/` (`python3 -m venv .venv && .venv/bin/pip install zensical`). Aperçu : `.venv/bin/zensical serve` (http://localhost:8000) ; build : `.venv/bin/zensical build --clean` (sortie dans `site/`). `.venv/`, `site/` et `.cache/` sont ignorés par Git.
+Site GitHub Pages (https://mathod95.github.io/xeneon/) : une page d’accueil qui liste les maquettes de référence, chacune servie sur `/<slug>/`. Généré par `python3 tools/build_site.py` (sortie dans `site/`, ignoré par Git) et déployé par `.github/workflows/docs.yml` à chaque push sur `main`. Un widget apparaît dès qu’il a un `mockups/reference.html`.
 
 Un dossier de widget sans `manifest.json` est une fiche seule : la CI l’ignore. Créer le code avec `./scripts/new-widget.sh <slug> "<Nom>"` (le dossier ne doit pas exister ; sinon copier `templates/widget` à la main sans écraser README.md ni mockups/).
 
