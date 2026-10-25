@@ -132,7 +132,7 @@ def main():
             (SITE / slug / "preview.jpg").write_bytes(shots[slug])
         count += 1
 
-    full = home("", "Dot Widgets · Mathod", {k: k + "/preview.jpg" for k in shots})
+    full = home("", "Dot Hub · Mathod", {k: k + "/preview.jpg" for k in shots})
     cut = full.index('<div class="wrap">')
     page = (
         "<!DOCTYPE html>\n<html lang=\"fr\">\n<head>\n<meta charset=\"utf-8\">\n"

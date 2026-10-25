@@ -46,7 +46,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outlin
 
 /* titre */
 .hero { display: grid; gap: 22px; }
-.hero canvas { display: block; width: 100%; max-width: 1080px; height: auto; }
+.hero canvas { display: block; width: 100%; max-width: 760px; height: auto; justify-self: center; }
 .tagline { font-family: var(--mono); font-size: clamp(17px, 2.2vw, 24px); margin: 0; color: var(--lit); text-wrap: balance; }
 .tagline i { font-style: normal; color: var(--accent); padding: 0 .5em; }
 .stats { display: flex; flex-wrap: wrap; gap: 8px 28px; margin: 0; padding: 0; list-style: none; font-family: var(--mono); font-size: 14px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); }
@@ -129,9 +129,9 @@ footer a { color: var(--label); text-decoration: none; }
   </div>
 
   <section class="hero" aria-labelledby="title">
-    <h1 id="title" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Dot Widgets</h1>
+    <h1 id="title" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Dot Hub</h1>
     <canvas id="titleDots" width="2160" height="300" aria-hidden="true"></canvas>
-    <p class="tagline">Widgets iCUE pour le CORSAIR XENEON EDGE<i>●</i>2560 × 720, tactile, Dot style.</p>
+    <p class="tagline">Widget iCUE pour le CORSAIR XENEON EDGE<i>●</i>2560 × 720, tactile, Dot style.</p>
     <ul class="stats" id="stats"></ul>
   </section>
 
@@ -191,6 +191,9 @@ footer a { color: var(--label); text-decoration: none; }
     G: [".###.", "#...#", "#....", "#.###", "#...#", "#...#", ".####"],
     E: ["#####", "#....", "#....", "####.", "#....", "#....", "#####"],
     S: [".####", "#....", "#....", ".###.", "....#", "....#", "####."],
+    H: ["#...#", "#...#", "#...#", "#####", "#...#", "#...#", "#...#"],
+    U: ["#...#", "#...#", "#...#", "#...#", "#...#", "#...#", ".###."],
+    B: ["####.", "#...#", "#...#", "####.", "#...#", "#...#", "####."],
     " ": ["..", "..", "..", "..", "..", "..", ".."]
   };
   function drawTitle(text) {
@@ -374,7 +377,7 @@ footer a { color: var(--label); text-decoration: none; }
   document.getElementById("homeBtn").addEventListener("click", function () { go(0); });
   buildEdge(); go(0); fitEdge();
 
-  drawTitle("DOT WIDGETS");
+  drawTitle("DOT HUB");
   stats();
   render();
 })();
