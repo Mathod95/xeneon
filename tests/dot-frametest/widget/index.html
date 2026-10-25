@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Dot Frametest</title>
+		<link rel="icon" type="image/svg+xml" href="resources/icon.svg" />
+		<meta name="x-icue-restrictions" data-restrictions='[{ "device": "dashboard_lcd" }]' />
+		<meta name="x-icue-interactive" />
+		<meta name="x-icue-widget-group" content="tr('Frametest')" />
+		<meta name="x-icue-property" content="label" data-label="tr('Label')" data-type="textfield" data-default="'test'" />
+		<script id="x-icue-groups" type="application/json">
+		[ { "title": "tr('Options')", "properties": ["label"] } ]
+		</script>
+		<style>
+			* { box-sizing: border-box; }
+			html, body { margin: 0; height: 100%; background: #080808; color: #f2f0e9; font: 20px Consolas, monospace; overflow: hidden; }
+			body { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); gap: 16px; padding: 20px; }
+			h1 { grid-column: 1 / -1; margin: 0; font-size: 18px; letter-spacing: .2em; color: #b8b6b0; display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+			h1::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: #10b981; }
+			button { font: inherit; font-size: 16px; letter-spacing: .14em; height: 60px; padding: 0 20px; border-radius: 999px; border: 2px solid #2a2a2a; background: #141414; color: #f2f0e9; cursor: pointer; }
+			button:active { border-color: #10b981; }
+			.col { display: grid; grid-template-rows: auto minmax(0, 1fr); gap: 10px; min-height: 0; }
+			.col:first-of-type { grid-template-rows: auto auto minmax(0, 1fr); }
+			#kb { position: fixed; left: 0; bottom: 0; width: 2px; height: 2px; opacity: 0; border: 0; padding: 0; }
+			#pad { font: inherit; height: 56px; padding: 0 14px; border-radius: 12px; border: 2px solid #2a2a2a; background: #141414; color: #f2f0e9; }
+			#pad:focus { border-color: #10b981; outline: none; }
+			.col > p { margin: 0; font-size: 16px; letter-spacing: .16em; color: #b8b6b0; }
+			#tests { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; align-content: start; font-size: 18px; }
+			#tests li { display: flex; justify-content: space-between; gap: 12px; padding: 8px 12px; border-radius: 10px; background: #0e0e0e; }
+			.pass { color: #10b981; } .fail { color: #ed403b; } .wait { color: #f5b942; }
+			iframe { width: 100%; height: 100%; border: 2px dashed #2a2a2a; border-radius: 12px; background: #0e0e0e; }
+			#log { margin: 0; overflow: hidden; color: #b8b6b0; font-size: 15px; white-space: pre-wrap; word-break: break-all; }
+		</style>
+	</head>
+	<body>
+		<h1>DOT FRAMETEST <button type="button" id="again">RUN AGAIN</button> <button type="button" id="redirect">TEST REDIRECT</button></h1>
+		<div class="col">
+			<input id="pad" placeholder="TAP HERE, THEN TYPE (WIDGET)" />
+			<input id="kb" aria-hidden="true" tabindex="-1" autocomplete="off" />
+			<ul id="tests"></ul>
+			<pre id="log"></pre>
+		</div>
+		<div class="col">
+			<p>LOCAL IFRAME · LOCALHOST:8765</p>
+			<iframe id="local" title="Local page"></iframe>
+		</div>
+		<div class="col">
+			<p>REMOTE IFRAME · GITHUB PAGES</p>
+			<iframe id="remote" title="Remote page"></iframe>
+		</div>
+		<script>
+			(function () {
+				var PORT = 8765, lines = [], state = {};
+				var log = document.getElementById("log"), tests = document.getElementById("tests");
+				var NAMES = [
+					["fetchLocal", "FETCH localhost"],
+					["fetch127", "FETCH 127.0.0.1"],
+					["frameLoad", "IFRAME local loads"],
+					["frameMsg", "IFRAME → widget msg"],
+					["frameAck", "widget → IFRAME msg"],
+					["frameTouch", "TOUCH inside IFRAME"],
+					["frameKey", "KEYS inside IFRAME (native)"],
+					["bridgeKey", "KEYS via BRIDGE"],
+					["widgetKey", "KEYS in WIDGET field"],
+					["uniqueId", "uniqueId injected"],
+					["remoteLoad", "IFRAME remote loads"]
+				];
+				function add(t) { lines.unshift(new Date().toLocaleTimeString() + "  " + t); lines = lines.slice(0, 14); log.textContent = lines.join("\n"); }
+				function set(k, v, note) {
+					state[k] = v;
+					tests.innerHTML = "";
+					NAMES.forEach(function (n) {
+						var li = document.createElement("li"), s = state[n[0]] || "WAIT";
+						var a = document.createElement("span"); a.textContent = n[1];
+						var b = document.createElement("span"); b.textContent = s; b.className = s === "PASS" ? "pass" : s === "FAIL" ? "fail" : "wait";
+						li.appendChild(a); li.appendChild(b); tests.appendChild(li);
+					});
+					if (note) add(n2(k) + " " + v + " · " + note);
+				}
+				function n2(k) { for (var i = 0; i < NAMES.length; i++) if (NAMES[i][0] === k) return NAMES[i][1]; return k; }
+
+				function ping(host, key) {
+					var ctrl = window.AbortController ? new AbortController() : null;
+					var timer = setTimeout(function () { if (ctrl) ctrl.abort(); }, 4000);
+					fetch("http://" + host + ":" + PORT + "/ping", ctrl ? { signal: ctrl.signal } : {})
+						.then(function (r) { return r.json(); })
+						.then(function (j) { clearTimeout(timer); set(key, "PASS", "server " + j.server); })
+						.catch(function (e) { clearTimeout(timer); set(key, "FAIL", String(e && e.message || e)); });
+				}
+
+				var local = document.getElementById("local"), remote = document.getElementById("remote");
+				local.addEventListener("load", function () { set("frameLoad", "PASS", "load event"); });
+				local.addEventListener("error", function () { set("frameLoad", "FAIL", "error event"); });
+				remote.addEventListener("load", function () { set("remoteLoad", "PASS", "load event (check that the site is visible)"); });
+				remote.addEventListener("error", function () { set("remoteLoad", "FAIL", "error event"); });
+
+				window.addEventListener("message", function (e) {
+					var d = e.data || {};
+					if (d.type === "hello") { set("frameMsg", "PASS", "from " + e.origin); local.contentWindow.postMessage({ type: "icue", uniqueId: uid() || "none" }, "*"); }
+					else if (d.type === "ack") set("frameAck", "PASS", "iframe got uniqueId " + d.uniqueId);
+					else if (d.type === "touch") set("frameTouch", "PASS", d.detail);
+					else if (d.type === "key") set("frameKey", "PASS", d.detail);
+					else if (d.type === "kbd-want") { kb.value = ""; kb.focus(); add("BRIDGE: iframe field wants keyboard · active " + (document.activeElement && document.activeElement.id)); }
+					else if (d.type === "kbd-got") set("bridgeKey", "PASS", "iframe field now: " + d.value);
+				});
+
+				function uid() {
+					try { var v = Function("return typeof uniqueId !== 'undefined' ? uniqueId : (window.uniqueId || '')")(); return v ? String(v) : ""; } catch (e) { return ""; }
+				}
+				var pad = document.getElementById("pad"), kb = document.getElementById("kb");
+				// pont clavier : le widget garde le clavier et envoie le texte au champ de l'iframe
+				var SPECIAL = ["Backspace", "Delete", "Enter", "Escape", "Tab", "ArrowLeft", "ArrowRight", "Home", "End"];
+				kb.addEventListener("keydown", function (e) {
+					if (SPECIAL.indexOf(e.key) >= 0) { e.preventDefault(); local.contentWindow.postMessage({ type: "kbd-key", key: e.key }, "*"); }
+				});
+				kb.addEventListener("input", function () {
+					if (kb.value) { local.contentWindow.postMessage({ type: "kbd-text", text: kb.value }, "*"); kb.value = ""; }
+				});
+				pad.addEventListener("focus", function () { add("WIDGET field FOCUS"); });
+				pad.addEventListener("pointerup", function () { setTimeout(function () { pad.focus(); add("focus() called, active: " + (document.activeElement && document.activeElement.id) + ", hasFocus: " + document.hasFocus()); }, 0); });
+				pad.addEventListener("input", function () { set("widgetKey", "PASS", "input " + pad.value.slice(-12)); });
+				window.addEventListener("focus", function () { add("WINDOW focus"); });
+				window.addEventListener("blur", function () { add("WINDOW blur"); });
+				pad.addEventListener("blur", function () { add("WIDGET field BLUR"); });
+				pad.addEventListener("keydown", function (e) { set("widgetKey", "PASS", "key " + e.key); });
+				document.addEventListener("keydown", function (e) { if (e.target !== pad) add("DOC keydown " + e.key); });
+				icueEvents = { onICUEInitialized: function () { add("icueEvents: initialized"); set("uniqueId", uid() ? "PASS" : "FAIL", uid() || "not found"); }, onDataUpdated: function () { add("icueEvents: data updated"); } };
+				function run() {
+					state = {}; set("", "");
+					var u = uid(); if (u) set("uniqueId", "PASS", u); else set("uniqueId", "FAIL", "not found");
+					add("WIDGET URL " + location.href);
+					add("UA " + navigator.userAgent.replace(/.*(QtWebEngine\/[\d.]+).*/, "$1"));
+					ping("localhost", "fetchLocal");
+					ping("127.0.0.1", "fetch127");
+					local.src = "about:blank";
+					remote.src = "about:blank";
+					setTimeout(function () {
+						local.src = "http://localhost:" + PORT + "/frame?t=" + Date.now();
+						remote.src = "https://mathod95.github.io/xeneon/";
+					}, 100);
+					setTimeout(function () {
+						["frameLoad", "frameMsg", "frameAck"].forEach(function (k) { if (!state[k]) set(k, "FAIL", "no answer after 6 s"); });
+					}, 6000);
+				}
+				document.getElementById("again").addEventListener("click", run);
+				document.getElementById("redirect").addEventListener("click", function () {
+					add("REDIRECT → localhost:" + PORT);
+					try { localStorage.setItem("frametest-redirect", String(Date.now())); } catch (x) {}
+					location.href = "http://localhost:" + PORT + "/redirect?back=" + encodeURIComponent(location.href);
+				});
+				try { var r = localStorage.getItem("frametest-redirect"); if (r) { add("BACK FROM REDIRECT (" + Math.round((Date.now() - r) / 1000) + " s)"); localStorage.removeItem("frametest-redirect"); } } catch (x) {}
+				run();
+			})();
+		</script>
+	</body>
+</html>

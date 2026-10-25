@@ -1,0 +1,40 @@
+{
+  "author": "Mathod95",
+  "id": "com.mathod95.dot-frametest",
+  "name": "Dot Frametest",
+  "description": "Test widget: can a widget load a local web page (fetch, iframe, redirect)?",
+  "version": "0.0.6",
+  "preview_icon": "resources/icon.svg",
+  "min_app_version": "5.47",
+  "min_framework_version": "1.0.0",
+  "os": [
+    {
+      "platform": "windows"
+    }
+  ],
+  "supported_devices": [
+    {
+      "type": "dashboard_lcd",
+      "features": [
+        "sensor-screen"
+      ]
+    }
+  ],
+  "interactive": true,
+  "permissions": [
+    {
+      "type": "url",
+      "domain": "localhost",
+      "port": 8765
+    },
+    {
+      "type": "url",
+      "domain": "127.0.0.1",
+      "port": 8765
+    },
+    {
+      "type": "url",
+      "domain": "mathod95.github.io"
+    }
+  ]
+}
