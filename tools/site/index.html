@@ -1,0 +1,257 @@
+<title>__TITLE__</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap">
+<style>
+/* Layout : en-tête MATHOD, titre en gros points sur une grille de points, chiffres clés, filtres, puis une carte par widget. Un seul thème sombre, celui des widgets. */
+:root {
+  --bg: #080808;
+  --panel: #0e0e0e;
+  --line: #1f1f1f;
+  --lit: #f2f0e9;
+  --label: #b8b6b0;
+  --muted: #7d7b76;
+  --unlit: #1c1c1c;
+  --accent: #10b981;
+  --wip: #f5b942;
+  --spec: #a78bfa;
+  --design: #5aa9e6;
+  --idea: #6b6b6b;
+  --mono: "Fira Code", "Cascadia Mono", Consolas, monospace;
+  --brand: "Segoe UI", Selawik, system-ui, sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { background: var(--bg); }
+body {
+  margin: 0; background: var(--bg); color: var(--lit);
+  font-family: var(--brand); font-size: 16px; line-height: 1.55;
+  background-image: radial-gradient(circle, #161616 1.2px, transparent 1.6px);
+  background-size: 22px 22px;
+  padding-block: 28px 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 1240px; margin: 0 auto; display: grid; gap: 48px; }
+a { color: inherit; }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+/* en-tête */
+.top { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 700; letter-spacing: .22em; font-size: 15px; }
+.brand::before { content: ""; width: 12px; height: 12px; border-radius: 50%; background: var(--accent); }
+.ext { font-family: var(--mono); font-size: 13px; letter-spacing: .16em; text-transform: uppercase; color: var(--label); text-decoration: none; padding: 10px 16px; border: 1px solid var(--line); border-radius: 999px; background: var(--bg); }
+.ext:hover { color: var(--lit); border-color: #333; }
+
+/* titre */
+.hero { display: grid; gap: 22px; }
+.hero canvas { display: block; width: 100%; max-width: 1080px; height: auto; }
+.tagline { font-family: var(--mono); font-size: clamp(17px, 2.2vw, 24px); margin: 0; color: var(--lit); text-wrap: balance; }
+.tagline i { font-style: normal; color: var(--accent); padding: 0 .5em; }
+.stats { display: flex; flex-wrap: wrap; gap: 8px 28px; margin: 0; padding: 0; list-style: none; font-family: var(--mono); font-size: 14px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); }
+.stats b { color: var(--accent); font-weight: 500; font-size: 18px; margin-right: .5em; font-variant-numeric: tabular-nums; }
+
+/* filtres */
+.bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 24px; }
+.bar h2 { margin: 0; font-family: var(--mono); font-weight: 500; font-size: 13px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { font-family: var(--mono); font-size: 12px; letter-spacing: .16em; text-transform: uppercase; padding: 10px 16px; border-radius: 999px; border: 1px solid var(--line); background: var(--bg); color: var(--label); cursor: pointer; }
+.chip[aria-pressed="true"] { background: var(--lit); border-color: var(--lit); color: var(--bg); }
+
+/* cartes */
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); gap: 14px; }
+.card { display: grid; grid-template-rows: auto auto 1fr auto; gap: 14px; padding: 22px; min-width: 0; border: 1px solid var(--line); border-radius: 18px; background: var(--panel); }
+.card.has { border-color: #262626; }
+.card.has:hover { border-color: var(--accent); }
+.card .row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.card canvas { display: block; width: 70px; height: 70px; }
+.status { display: inline-flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--label); white-space: nowrap; }
+.status::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--c, var(--idea)); }
+.card h3 { margin: 0; font-size: 21px; font-weight: 700; letter-spacing: .02em; text-wrap: balance; }
+.card p { margin: 0; color: var(--label); font-size: 15px; min-width: 0; }
+.foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; padding-top: 14px; border-top: 1px solid var(--line); font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; }
+.comp { color: var(--muted); }
+.comp b { color: var(--label); font-weight: 500; }
+.links { display: flex; gap: 16px; }
+.links a { text-decoration: none; color: var(--label); }
+.links a:hover { color: var(--lit); }
+.links a.mock { color: var(--accent); }
+.empty { color: var(--muted); }
+.none { color: var(--label); font-family: var(--mono); }
+
+footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px 24px; font-family: var(--mono); font-size: 13px; letter-spacing: .24em; text-transform: uppercase; }
+footer .red { color: var(--accent); }
+footer a { color: var(--label); text-decoration: none; }
+</style>
+
+<div class="wrap">
+  <div class="top">
+    <span class="brand">MATHOD</span>
+    <a class="ext" href="https://github.com/Mathod95/xeneon" target="_blank" rel="noopener">GitHub ↗</a>
+  </div>
+
+  <section class="hero" aria-labelledby="title">
+    <h1 id="title" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Dot Widgets</h1>
+    <canvas id="titleDots" width="2160" height="300" aria-hidden="true"></canvas>
+    <p class="tagline">Widgets iCUE pour la CORSAIR XENEON EDGE<i>●</i>2560 × 720, tactile, tout en points.</p>
+    <ul class="stats" id="stats"></ul>
+  </section>
+
+  <section style="display:grid;gap:18px" aria-label="Widgets">
+    <div class="bar">
+      <h2>Les widgets</h2>
+      <div class="chips" role="group" aria-label="Filtrer">
+        <button type="button" class="chip" data-f="all" aria-pressed="true">Tous</button>
+        <button type="button" class="chip" data-f="mock" aria-pressed="false">Avec maquette</button>
+        <button type="button" class="chip" data-f="wip" aria-pressed="false">En cours</button>
+        <button type="button" class="chip" data-f="solo" aria-pressed="false">Sans compagnon</button>
+      </div>
+    </div>
+    <div class="grid" id="grid"></div>
+    <p class="none" id="none" hidden>Aucun widget pour ce filtre.</p>
+  </section>
+
+  <footer>
+    <span class="red">For Xeneon Edge · Touch · Dot-matrix</span>
+    <a href="https://github.com/Mathod95/xeneon" target="_blank" rel="noopener">Mathod95/xeneon</a>
+  </footer>
+</div>
+
+<script id="data" type="application/json">__DATA__</script>
+<script>
+(function () {
+  "use strict";
+  var BASE = "__BASE__";
+  var REPO = "https://github.com/Mathod95/xeneon/tree/main/widgets/";
+  var WIDGETS = JSON.parse(document.getElementById("data").textContent);
+
+  // police 5 × 7 points pour le titre
+  var F = {
+    D: ["####.", "#...#", "#...#", "#...#", "#...#", "#...#", "####."],
+    O: [".###.", "#...#", "#...#", "#...#", "#...#", "#...#", ".###."],
+    T: ["#####", "..#..", "..#..", "..#..", "..#..", "..#..", "..#.."],
+    W: ["#...#", "#...#", "#...#", "#.#.#", "#.#.#", "##.##", "#...#"],
+    I: ["###", ".#.", ".#.", ".#.", ".#.", ".#.", "###"],
+    G: [".###.", "#...#", "#....", "#.###", "#...#", "#...#", ".####"],
+    E: ["#####", "#....", "#....", "####.", "#....", "#....", "#####"],
+    S: [".####", "#....", "#....", ".###.", "....#", "....#", "####."],
+    " ": ["..", "..", "..", "..", "..", "..", ".."]
+  };
+  function drawTitle(text) {
+    var cv = document.getElementById("titleDots"), ctx = cv.getContext("2d");
+    var cols = [];
+    text.split("").forEach(function (ch, i) {
+      var g = F[ch];
+      for (var c = 0; c < g[0].length; c++) cols.push(g.map(function (r) { return r[c] === "#"; }));
+      if (i < text.length - 1) cols.push([false, false, false, false, false, false, false]);
+    });
+    var pad = 1, total = cols.length + pad * 2, rows = 7 + pad * 2;
+    var pitch = cv.width / total, r = pitch * 0.36;
+    cv.height = Math.round(rows * pitch);
+    ctx.clearRect(0, 0, cv.width, cv.height);
+    for (var x = 0; x < total; x++) for (var y = 0; y < rows; y++) {
+      var col = cols[x - pad], on = col && y >= pad && y < 7 + pad && col[y - pad];
+      ctx.beginPath();
+      ctx.fillStyle = on ? "#f2f0e9" : "#171717";
+      ctx.arc(x * pitch + pitch / 2, y * pitch + pitch / 2, on ? r : r * 0.8, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    // le point d'accent, comme le logo
+    ctx.beginPath(); ctx.fillStyle = "#10b981";
+    ctx.arc((total - 0.5) * pitch, (rows - 1.5) * pitch, r, 0, Math.PI * 2); ctx.fill();
+  }
+
+  // pictogrammes 7 × 7 points, un par widget
+  var PICS = {
+    "dot-system-monitor": ["......#", ".....##", "....###", "...####", "..#####", ".######", "#######"],
+    "dot-audio": ["...#...", "..##.#.", "####..#", "####..#", "####..#", "..##.#.", "...#..."],
+    "dot-calendar": ["#######", "#.....#", "#######", "#.#.#.#", "#######", "#.#.#.#", "#######"],
+    "dot-launcher": ["###.###", "###.###", "###.###", ".......", "###.###", "###.###", "###.###"],
+    "dot-spotify": ["..#####", "..#...#", "..#...#", "..#...#", "###..##", "###.###", "###.###"],
+    "dot-clock": [".#####.", "#..#..#", "#..#..#", "#..###.", "#.....#", "#.....#", ".#####."],
+    "dot-bambulab": ["#######", "#.....#", "#.###.#", "#..#..#", "#.....#", "#.###.#", "#######"],
+    "dot-discord": [".#####.", "#.....#", "#.#.#.#", "#.....#", ".#####.", "..#....", ".#....."],
+    "dot-homeassistant": ["...#...", "..#.#..", ".#...#.", "#..#..#", ".#.#.#.", ".#...#.", ".#####."],
+    "dot-weather": ["#..#..#", ".#...#.", "..###..", "#.###.#", "..###..", ".#...#.", "#..#..#"],
+    "dot-fans": ["..###..", ".#.#.#.", "#..#..#", "#######", "#..#..#", ".#.#.#.", "..###.."],
+    "dot-apps": ["#.#.#.#", ".......", "#.#.#.#", ".......", "#.#.#.#", ".......", "#.#.#.#"],
+    "dot-battery": [".......", "######.", "####..#", "####..#", "######.", ".......", "......."],
+    "dot-network": ["......#", "....#.#", "....#.#", "..#.#.#", "..#.#.#", "#.#.#.#", "#.#.#.#"],
+    "dot-mail": ["#######", "##...##", "#.#.#.#", "#..#..#", "#.....#", "#.....#", "#######"],
+    "dot-homelab": ["#######", "#.#...#", "#######", "#.#...#", "#######", "#.#...#", "#######"],
+    "dot-notes": ["##.####", ".......", "##.####", ".......", "##.####", ".......", "##.###."],
+    "dot-plex": [".##....", "..##...", "...##..", "....##.", "...##..", "..##...", ".##...."],
+    "dot-ia": ["...#...", "...#...", "#..#..#", ".#####.", "#..#..#", "...#...", "...#..."],
+    "dot-home": ["...#...", "..###..", ".#####.", "#######", ".#...#.", ".#.#.#.", ".#####."],
+    "dot-github": ["#...#..", "#...#..", "#..#...", "#.#....", "##.....", "#......", "#......"],
+    "dot-calculator": [".#...#.", "###.###", ".#.....", ".......", "#.#.###", ".#.....", "#.#.###"]
+  };
+  var BLANK = [".......", ".......", "...#...", "..###..", "...#...", ".......", "......."];
+  function pic(slug, color) {
+    var g = PICS[slug] || BLANK, cv = document.createElement("canvas"), px = 140, p = px / 7, r = p * 0.36;
+    cv.width = px; cv.height = px;
+    var ctx = cv.getContext("2d");
+    for (var y = 0; y < 7; y++) for (var x = 0; x < 7; x++) {
+      ctx.beginPath(); ctx.fillStyle = g[y][x] === "#" ? color : "#1c1c1c";
+      ctx.arc(x * p + p / 2, y * p + p / 2, r, 0, Math.PI * 2); ctx.fill();
+    }
+    cv.setAttribute("aria-hidden", "true");
+    return cv;
+  }
+
+  var KIND = { wip: "var(--wip)", spec: "var(--spec)", design: "var(--design)", idea: "var(--idea)" };
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; }
+
+  function stats() {
+    var ul = document.getElementById("stats");
+    [[WIDGETS.length, "widgets"], [WIDGETS.filter(function (w) { return w.mockup; }).length, "maquettes"], [WIDGETS.filter(function (w) { return w.kind === "wip"; }).length, "en cours"], [WIDGETS.filter(function (w) { return w.comp === "Non"; }).length, "sans compagnon"]].forEach(function (s) {
+      var li = el("li"); li.appendChild(el("b", "", String(s[0]))); li.appendChild(document.createTextNode(s[1])); ul.appendChild(li);
+    });
+  }
+
+  var filter = "all";
+  function render() {
+    var grid = document.getElementById("grid");
+    grid.innerHTML = "";
+    var list = WIDGETS.filter(function (w) {
+      return filter === "all" || (filter === "mock" && w.mockup) || (filter === "wip" && w.kind === "wip") || (filter === "solo" && w.comp === "Non");
+    });
+    list.forEach(function (w) {
+      var card = el("article", "card" + (w.mockup ? " has" : ""));
+      var row = el("div", "row");
+      var cv = pic(w.slug, w.mockup ? "#f2f0e9" : "#5f5d58");
+      row.appendChild(cv);
+      var st = el("span", "status", w.status); st.style.setProperty("--c", KIND[w.kind] || KIND.idea);
+      row.appendChild(st);
+      card.appendChild(row);
+      card.appendChild(el("h3", "", w.name));
+      card.appendChild(el("p", "", w.desc));
+      var foot = el("div", "foot");
+      var comp = el("span", "comp", "Compagnon "); comp.appendChild(el("b", "", w.comp)); foot.appendChild(comp);
+      var links = el("span", "links");
+      if (w.mockup) {
+        var a = el("a", "mock", "Maquette →"); a.href = BASE + w.slug + "/"; links.appendChild(a);
+        card.addEventListener("mouseenter", function () { row.replaceChild(pic(w.slug, "#10b981"), row.firstChild); });
+        card.addEventListener("mouseleave", function () { row.replaceChild(pic(w.slug, "#f2f0e9"), row.firstChild); });
+      }
+      var f = el("a", "", "Fiche ↗"); f.href = REPO + w.slug; f.target = "_blank"; f.rel = "noopener"; links.appendChild(f);
+      foot.appendChild(links);
+      card.appendChild(foot);
+      grid.appendChild(card);
+    });
+    document.getElementById("none").hidden = list.length > 0;
+  }
+  document.querySelectorAll(".chip").forEach(function (b) {
+    b.addEventListener("click", function () {
+      filter = b.getAttribute("data-f");
+      document.querySelectorAll(".chip").forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+      render();
+    });
+  });
+
+  drawTitle("DOT WIDGETS");
+  stats();
+  render();
+})();
+</script>

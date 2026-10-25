@@ -1,88 +1,98 @@
 #!/usr/bin/env python3
-"""Construit le site GitHub Pages à partir des maquettes de référence.
+"""Construit le site GitHub Pages.
 
-Chaque widgets/<slug>/mockups/reference.html est copié dans site/<slug>/index.html,
-et site/index.html liste les maquettes trouvées.
+- site/index.html : page d'accueil (tools/site/index.html) remplie avec la liste
+  des widgets du README, leur statut et la présence d'une maquette ;
+- site/<slug>/index.html : copie de widgets/<slug>/mockups/reference.html.
+
+Option --fragment FICHIER : écrit seulement la page d'accueil, sans en-tête HTML,
+avec des liens absolus vers le site en ligne (pour l'aperçu en artefact).
 """
-import html
+import argparse
+import json
 import pathlib
 import re
 import shutil
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 SITE = ROOT / "site"
+TEMPLATE = ROOT / "tools" / "site" / "index.html"
+LIVE = "https://mathod95.github.io/xeneon/"
 
 
-def widget_info(widget_dir):
-    readme = widget_dir / "README.md"
-    name = widget_dir.name.replace("-", " ").title()
-    status = ""
-    if readme.exists():
-        text = readme.read_text(encoding="utf-8")
-        m = re.search(r"^# (.+)$", text, re.M)
-        if m:
-            name = m.group(1).strip()
-        m = re.search(r"\*\*Statut :\*\*\s*(.+)$", text, re.M)
-        if m:
-            status = m.group(1).strip()
-    return name, status
+def status_of(slug):
+    readme = ROOT / "widgets" / slug / "README.md"
+    text = readme.read_text(encoding="utf-8") if readme.exists() else ""
+    m = re.search(r"\*\*Statut :\*\*\s*(.+)$", text, re.M)
+    raw = m.group(1).strip() if m else "idée"
+    label = re.sub(r"^[^\w(]+", "", raw).strip()
+    low = label.lower()
+    if "en cours" in low:
+        kind = "wip"
+    elif "spécifié" in low:
+        kind = "spec"
+    elif "conception" in low:
+        kind = "design"
+    else:
+        kind = "idea"
+    return label, kind
+
+
+def widgets():
+    rows = []
+    text = (ROOT / "README.md").read_text(encoding="utf-8")
+    for line in text.splitlines():
+        m = re.match(r"\|\s*\[(.+?)\]\(widgets/([\w-]+)\)\s*\|(.*)\|(.*)\|\s*$", line)
+        if not m:
+            continue
+        name, slug, desc, comp = m.group(1), m.group(2), m.group(3).strip(), m.group(4).strip()
+        label, kind = status_of(slug)
+        rows.append({
+            "name": name,
+            "slug": slug,
+            "desc": desc,
+            "comp": comp,
+            "status": label,
+            "kind": kind,
+            "mockup": (ROOT / "widgets" / slug / "mockups" / "reference.html").exists(),
+        })
+    return rows
+
+
+def home(base, title):
+    data = json.dumps(widgets(), ensure_ascii=False).replace("</", "<\\/")
+    page = TEMPLATE.read_text(encoding="utf-8")
+    return page.replace("__DATA__", data).replace("__BASE__", base).replace("__TITLE__", title)
 
 
 def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--fragment")
+    args = ap.parse_args()
+
+    if args.fragment:
+        pathlib.Path(args.fragment).write_text(home(LIVE, "Dot Page"), encoding="utf-8")
+        return
+
     if SITE.exists():
         shutil.rmtree(SITE)
     SITE.mkdir()
-
-    items = []
+    count = 0
     for ref in sorted(ROOT.glob("widgets/*/mockups/reference.html")):
-        widget_dir = ref.parent.parent
-        slug = widget_dir.name
+        slug = ref.parent.parent.name
         (SITE / slug).mkdir()
         shutil.copyfile(ref, SITE / slug / "index.html")
-        name, status = widget_info(widget_dir)
-        items.append(
-            f'<a class="card" href="{slug}/"><span class="name">{html.escape(name)}</span>'
-            f'<span class="status">{html.escape(status)}</span></a>'
-        )
+        count += 1
 
-    page = f"""<!DOCTYPE html>
-<html lang="fr">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Xeneon Widgets</title>
-<style>
-  :root {{ --page:#111111; --card:#080808; --line:#1C1C1C; --text:#F2F0E9; --muted:#B8B6B0; --accent:#10B981; }}
-  * {{ box-sizing:border-box; }}
-  body {{ margin:0; background:var(--page); color:var(--text);
-         font-family:"Segoe UI", Selawik, system-ui, sans-serif; }}
-  main {{ max-width:960px; margin:0 auto; padding:48px 16px; }}
-  .brand {{ display:flex; align-items:center; gap:10px; font-weight:700; letter-spacing:.2em; }}
-  .brand::before {{ content:""; width:12px; height:12px; border-radius:50%; background:var(--accent); }}
-  h1 {{ font-size:32px; margin:32px 0 4px; }}
-  p {{ color:var(--muted); margin:0 0 32px; }}
-  .grid {{ display:grid; grid-template-columns:repeat(auto-fill, minmax(260px, 1fr)); gap:16px; }}
-  .card {{ display:flex; flex-direction:column; gap:8px; padding:24px; background:var(--card);
-          border:1px solid var(--line); border-radius:12px; color:inherit; text-decoration:none; }}
-  .card:hover {{ border-color:var(--accent); }}
-  .name {{ font-size:20px; font-weight:700; }}
-  .status {{ color:var(--muted); font-size:14px; }}
-</style>
-</head>
-<body>
-<main>
-  <div class="brand">MATHOD</div>
-  <h1>Xeneon Widgets</h1>
-  <p>Maquettes de référence des widgets iCUE pour la CORSAIR XENEON EDGE.</p>
-  <div class="grid">
-    {chr(10).join("    " + i for i in items).strip()}
-  </div>
-</main>
-</body>
-</html>
-"""
+    full = home("", "Dot Widgets · Mathod")
+    cut = full.index('<div class="wrap">')
+    page = (
+        "<!DOCTYPE html>\n<html lang=\"fr\">\n<head>\n<meta charset=\"utf-8\">\n"
+        "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1, viewport-fit=cover\">\n"
+        + full[:cut] + "</head>\n<body>\n" + full[cut:] + "\n</body>\n</html>\n"
+    )
     (SITE / "index.html").write_text(page, encoding="utf-8")
-    print(f"{len(items)} maquette(s) -> {SITE}")
+    print(f"{len(widgets())} widget(s), {count} maquette(s) -> {SITE}")
 
 
 if __name__ == "__main__":

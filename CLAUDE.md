@@ -27,12 +27,12 @@ templates/widget/        modèle de départ, avec détection des 8 tailles (scri
 docs/                    documentation Markdown (DESIGN.md, SPEC-TEMPLATE.md)
 docs/DESIGN.md           charte graphique (référence unique, en cours de définition)
 docs/SPEC-TEMPLATE.md    fiche type d’un widget
-tools/build_site.py      génère le site GitHub Pages (`site/`) à partir des `widgets/*/mockups/reference.html`
+tools/build_site.py      génère le site GitHub Pages (`site/`) : accueil `tools/site/index.html` + maquettes de référence
 scripts/                 new-widget, package-widgets (.sh et .ps1)
 .github/workflows/       CI : build.yml valide et empaquette les widgets (tag v* → release) ; docs.yml publie la doc sur GitHub Pages
 ```
 
-Site GitHub Pages (https://mathod95.github.io/xeneon/) : une page d’accueil qui liste les maquettes de référence, chacune servie sur `/<slug>/`. Généré par `python3 tools/build_site.py` (sortie dans `site/`, ignoré par Git) et déployé par `.github/workflows/docs.yml` à chaque push sur `main`. Un widget apparaît dès qu’il a un `mockups/reference.html`.
+Site GitHub Pages (https://mathod95.github.io/xeneon/) : page d’accueil au style dot (`tools/site/index.html`), remplie avec le tableau du README, le statut de chaque fiche et la présence d’une maquette ; chaque maquette de référence est servie sur `/<slug>/`. Généré par `python3 tools/build_site.py` (sortie dans `site/`, ignoré par Git ; `--fragment FICHIER` pour l’aperçu en artefact) et déployé par `.github/workflows/docs.yml` à chaque push sur `main`. Le README et les fiches sont donc la source : les tenir à jour suffit.
 
 Un dossier de widget sans `manifest.json` est une fiche seule : la CI l’ignore. Créer le code avec `./scripts/new-widget.sh <slug> "<Nom>"` (le dossier ne doit pas exister ; sinon copier `templates/widget` à la main sans écraser README.md ni mockups/).
 
