@@ -297,10 +297,10 @@ footer a { color: var(--label); text-decoration: none; }
     });
     document.getElementById("none").hidden = list.length > 0;
   }
-  document.querySelectorAll(".chip").forEach(function (b) {
+  document.querySelectorAll(".chip[data-f]").forEach(function (b) {
     b.addEventListener("click", function () {
       filter = b.getAttribute("data-f");
-      document.querySelectorAll(".chip").forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+      document.querySelectorAll(".chip[data-f]").forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
       render();
     });
   });
