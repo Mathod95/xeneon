@@ -23,11 +23,10 @@ FPS du jeu en cours et 4 capteurs matériels (CPU, GPU) en direct, avec historiq
 - [ ] M : FPS en haut, cartes capteurs 2 × 2 en dessous
 - [x] L : mock d’origine (FPS · capteurs · historique)
 - [x] XL : idem L, à enrichir (historique plus large ou 2ᵉ rangée de capteurs)
-- [ ] Vertical
 
 ## Notes
 
-- Mise en page actuelle pensée pour L ; S, M et vertical à refaire (voir tailles).
+- Mise en page actuelle pensée pour L ; S et M à refaire (voir tailles).
 - Le capteur « CPU load » par défaut peut tomber sur un capteur GPU selon le PC (réglable dans iCUE).
 
 ## Mocks

@@ -26,7 +26,6 @@ La référence visuelle est [`mockups/reference.html`](mockups/reference.html) (
 - [ ] L : même disposition, plus serrée
 - [ ] M : onglets, barre de points, liste sur une colonne
 - [ ] S : onglet actif, liste sur 2 colonnes
-- [ ] Vertical : à concevoir
 
 ## Mocks
 

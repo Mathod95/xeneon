@@ -59,14 +59,16 @@ Un dossier de widget sans `manifest.json` est une fiche seule : la CI l’ignore
 - Dot-matrix partout (police 5 × 7 dessinée en canvas, voir `widgets/dot-system-monitor/scripts/widget.js`, fonction `drawDots`).
 - **Une mise en page par taille**, pas de simple mise à l’échelle :
 
-| Taille | Horizontal | Vertical |
-|---|---|---|
-| S | 840 × 344 | 696 × 416 |
-| M | 840 × 696 | 696 × 840 |
-| L | 1688 × 696 | 696 × 1688 |
-| XL | 2536 × 696 | 696 × 2536 |
+| Taille | Emplacement |
+|---|---|
+| S | 840 × 344 |
+| M | 840 × 696 |
+| L | 1688 × 696 |
+| XL | 2536 × 696 |
 
-  `templates/widget/scripts/sizes.js` pose `data-size` (s/m/l/xl) et `data-orientation` (h/v) sur `<html>`, d’après le rapport largeur / hauteur (l’aperçu de l’éditeur iCUE est réduit) ; S et L horizontaux sont séparés par la hauteur.
+**Jamais de vertical** : on ne conçoit ni ne code de mise en page verticale.
+
+  `templates/widget/scripts/sizes.js` pose `data-size` (s/m/l/xl) sur `<html>`, d’après le rapport largeur / hauteur (l’aperçu de l’éditeur iCUE est réduit) ; S et L horizontaux sont séparés par la hauteur.
 - Ne pas nommer une propriété `accentColor`, `textColor` ou `backgroundColor` si sa valeur par défaut doit s’appliquer : iCUE les remplace par le style de page tant que « Style personnalisé » est désactivé.
 - Textes ≥ 18 px, zones tactiles ≥ 60 × 60 px. Couleurs via variables CSS (`--bg`, `--text`, `--accent`) pilotées par les réglages iCUE.
 - **Dans iCUE, jamais de données simulées** : afficher `--` ou un état explicite (« NO GAME DETECTED »). Le mode démo n’existe que si le widget est ouvert hors iCUE (navigateur), pour l’aperçu.
@@ -114,8 +116,8 @@ Compilation Windows : `cargo build --release` sous Windows, ou depuis Linux/WSL 
 
 ## État des widgets
 
-- **Dot System Monitor** v1.1.0 : fonctionnel (FPS + 4 capteurs + historique, dot-matrix). Mise en page faite pour L/XL ; **S, M et vertical à refaire**. À migrer sur `sizes.js` du template.
-- **Dot Clock** v0.1.2 : codé (S, M, L, XL horizontal ; vertical provisoire). Référence : `widgets/dot-clock/mockups/reference.html`.
+- **Dot System Monitor** v1.1.0 : fonctionnel (FPS + 4 capteurs + historique, dot-matrix). Mise en page faite pour L/XL ; **S et M à refaire**. À migrer sur `sizes.js` du template.
+- **Dot Clock** v0.1.2 : codé (S, M, L, XL). Référence : `widgets/dot-clock/mockups/reference.html`.
 - **Dot Hub** + **Dot Companion** : v0.1, première version de bout en bout avec le module Clock (coquille, accueil, réglages sur le PC, pont clavier). L’exe Windows est compilé par GitHub Actions.
 - **Dot Notes, Dot Weather, Dot IA, Dot Home, Dot GitHub, Dot Calculator, Dot Spotify** : en conception, maquette de référence dans `widgets/<slug>/mockups/reference.html` (choix de design à valider ; Dot Spotify mis de côté).
 - **Dot Audio, Dot Calendar, Dot Launcher** : spécifiés avec mocks.

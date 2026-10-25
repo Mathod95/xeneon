@@ -10,13 +10,13 @@
 - **Typographie** : libellés en capitales espacées (police monospace), valeurs en dot-matrix.
 - **Images** (pochettes, jaquettes, affiches) rendues en trame de points (demi-teinte).
 - **Lisibilité** : textes ≥ 18 px, zones tactiles ≥ 60 × 60 px.
-- **Une mise en page par taille** (S, M, L, XL, horizontal et vertical), jamais un simple redimensionnement.
+- **Une mise en page par taille** (S, M, L, XL), jamais un simple redimensionnement. **Jamais de vertical.**
 
 ## Tailles d’emplacement XENEON EDGE
 
-| Taille | Horizontal | Vertical |
-|---|---|---|
-| S | 840 × 344 | 696 × 416 |
-| M | 840 × 696 | 696 × 840 |
-| L | 1688 × 696 | 696 × 1688 |
-| XL | 2536 × 696 | 696 × 2536 |
+| Taille | Emplacement |
+|---|---|
+| S | 840 × 344 |
+| M | 840 × 696 |
+| L | 1688 × 696 |
+| XL | 2536 × 696 |

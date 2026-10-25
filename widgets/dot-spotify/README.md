@@ -19,7 +19,6 @@ La référence visuelle est [`mockups/reference.html`](mockups/reference.html) (
 - [ ] L (1688 × 696) : pochette à gauche, texte puis commandes en dessous
 - [ ] M (840 × 696) : pochette 320 px et texte côte à côte, commandes centrées en bas
 - [ ] S (840 × 344) : pochette 248 px, titre, artiste et commandes, sans libellés
-- [ ] Vertical : à concevoir
 
 ## Mocks
 

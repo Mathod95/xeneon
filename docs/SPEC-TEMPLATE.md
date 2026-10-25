@@ -13,7 +13,6 @@ Cocher les tailles à prendre en charge et décrire ce qui change entre elles.
 - [ ] M (840 × 696)
 - [ ] L (1688 × 696)
 - [ ] XL (2536 × 696)
-- [ ] Vertical
 
 ## Contenu et interactions
 Ce qu’on voit, ce qu’on peut toucher, ce qui se passe au toucher.

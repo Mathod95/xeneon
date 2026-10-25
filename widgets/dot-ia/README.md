@@ -24,7 +24,6 @@ La référence visuelle est [`mockups/reference.html`](mockups/reference.html) (
 - [ ] L : deux panneaux, chiffre au-dessus des barres
 - [ ] M : deux bandeaux l’un sous l’autre
 - [ ] S : deux panneaux compacts
-- [ ] Vertical : à concevoir
 
 ## Mocks
 

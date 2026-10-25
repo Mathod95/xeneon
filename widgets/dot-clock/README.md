@@ -46,7 +46,6 @@ Fond du widget fixe : `#080808`.
 - [x] L (1688 × 696) : même disposition que XL
 - [x] M (840 × 696) : HH:MM sur toute la largeur, secondes et AM/PM centrées en dessous
 - [x] S (840 × 344) : heure seule, date et fuseau en bas, sans « DOT CLOCK » ni texte libre
-- [ ] Vertical : mise en page provisoire calculée, à concevoir
 
 ## Notes
 

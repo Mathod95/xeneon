@@ -23,7 +23,7 @@ Volume général, mixeur par application, coupure de tous les micros, changement
 
 ## Tailles
 
-- [ ] S · M · L · XL horizontal et vertical (voir `mockups/06-layouts.png`)
+- [ ] S · M · L · XL (voir `mockups/06-layouts.png`, sans les mises en page verticales)
 
 ## Mocks
 

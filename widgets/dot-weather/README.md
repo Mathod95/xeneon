@@ -25,7 +25,6 @@ La référence visuelle est [`mockups/reference.html`](mockups/reference.html) (
 - [ ] L : météo actuelle à gauche, 5 jours à droite
 - [ ] M : météo actuelle en haut, 5 jours en colonnes en bas
 - [ ] S : pictogramme, température, condition
-- [ ] Vertical : à concevoir
 
 ## Mocks
 

@@ -25,7 +25,6 @@ La référence visuelle est [`mockups/reference.html`](mockups/reference.html) (
 - [ ] L : 2 rangées de 4
 - [ ] M : 3 rangées de 2
 - [ ] S : 4 tuiles sur une rangée
-- [ ] Vertical : à concevoir
 
 ## Mocks
 

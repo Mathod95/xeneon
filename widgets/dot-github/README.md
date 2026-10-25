@@ -25,7 +25,6 @@ La référence visuelle est [`mockups/reference.html`](mockups/reference.html) (
 - [ ] L : graphe 8 mois et statistiques à gauche, onglets à droite
 - [ ] M : trois compteurs en haut, graphe 6 mois en bas ; un compteur ouvre sa liste
 - [ ] S : graphe 6 mois et série à gauche, compteurs à droite
-- [ ] Vertical : à concevoir
 
 ## Mocks
 
