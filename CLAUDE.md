@@ -15,6 +15,7 @@ La liste des widgets et leur description est dans `README.md`. Chaque widget a s
 - Arborescence montrée en n’affichant que le premier niveau des widgets.
 - Git : commits directement sur `main`, en français. **Ne jamais pousser sans validation explicite de Mathod95** : commiter en local, montrer ce qui change, attendre son accord.
 - Pour concevoir un widget : un artefact « maquette de référence » (taille réelle S, M, L, XL, réglages simulés, tableau des choix de design), copié dans `widgets/<slug>/mockups/reference.html`. Le tableau README a une colonne Compagnon (Oui / Optionnel / Non) à tenir à jour.
+- **Le code doit toujours être iso aux maquettes de référence** (artefacts `widgets/<slug>/mockups/reference.html`) : mêmes tailles d’emplacement, mêmes positions, mêmes valeurs CSS. Reprendre leur CSS et leur logique de rendu plutôt que de réinventer une mise en page. Toute différence voulue est signalée.
 - Les mocks fournis peuvent ne pas être au style dot : ce sont des références de fonctionnalités, le style est toujours à refaire en dot-matrix.
 
 ## Organisation

@@ -4,50 +4,117 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Dot Home</title>
+<!-- Iso à la maquette de référence widgets/dot-home/mockups/reference.html (mêmes tailles, mêmes valeurs) -->
 <style>
 @font-face { font-family: "Fira Code"; src: url("/m/clock/resources/fonts/FiraCode-Regular.woff2") format("woff2"); font-weight: 400; }
 @font-face { font-family: "Fira Code"; src: url("/m/clock/resources/fonts/FiraCode-Medium.woff2") format("woff2"); font-weight: 500; }
-:root { --bg: #080808; --lit: #f2f0e9; --label: #b8b6b0; --unlit: #1c1c1c; --accent: #10b981; --u: min(1vw, 2.6vh); }
 * { box-sizing: border-box; margin: 0; }
-html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(--lit); font-family: "Fira Code", Consolas, monospace; font-variant-ligatures: none; user-select: none; }
-body { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; gap: calc(var(--u) * 1.6); padding: calc(var(--u) * 2) calc(var(--u) * 2.4); }
-.lbl { font-size: max(14px, calc(var(--u) * 1.1)); letter-spacing: .2em; text-transform: uppercase; color: var(--label); white-space: nowrap; }
-.head { display: flex; align-items: center; gap: 12px; }
-.head::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--accent); flex: none; }
+html, body { width: 100%; height: 100%; overflow: hidden; background: #080808; user-select: none; }
+.stage { position: absolute; left: 0; top: 0; transform-origin: 0 0; background: #080808; --accent: #10b981; --lit: #f2f0e9; --label: #b8b6b0; --unlit: #1c1c1c; font-family: "Fira Code", Consolas, monospace; font-variant-ligatures: none; }
+.stage button { font-family: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.stage button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.lbl { margin: 0; white-space: nowrap; font-size: 18px; line-height: 24px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); }
+.head { position: absolute; left: 56px; right: 56px; top: 30px; height: 60px; display: flex; align-items: center; gap: 14px; }
+.head .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); }
 .head .grow { flex: 1; }
-.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(var(--u) * 22)), 1fr)); grid-auto-rows: minmax(0, 1fr); gap: calc(var(--u) * 1.2); min-height: 0; }
-.tile { display: grid; grid-template-rows: minmax(0, 1fr) auto; gap: 12px; padding: calc(var(--u) * 1.4); min-height: 60px; border: 2px solid #1d1d1d; border-radius: 18px; background: transparent; color: var(--lit); font: inherit; text-align: left; cursor: pointer; }
-.tile:active, .tile.on { border-color: var(--accent); background: #0d0d0d; }
+
+/* tuiles */
+.tiles { position: absolute; left: 40px; right: 40px; top: 112px; bottom: 40px; display: grid; gap: 20px; }
+.stage.xl .tiles { grid-template-columns: repeat(5, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(0, 1fr)); }
+.stage.l .tiles { grid-template-columns: repeat(4, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(0, 1fr)); }
+.stage.m .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: repeat(3, minmax(0, 1fr)); gap: 16px; top: 104px; }
+.stage.s .head { display: none; }
+.stage.s .tiles { top: 24px; bottom: 24px; left: 24px; right: 24px; gap: 14px; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-template-rows: 1fr; }
+.stage.v .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: 240px; grid-template-rows: none; align-content: start; }
+.tile { position: relative; display: grid; grid-template-rows: 1fr auto; gap: 14px; padding: 22px 24px; min-width: 0; min-height: 0; border: 2px solid #1d1d1d; border-radius: 18px; background: transparent; text-align: left; color: var(--lit); }
+.tile:active, .tile.going { border-color: var(--accent); background: #0d0d0d; }
 .tile .pic { display: grid; place-items: center; min-height: 0; }
-.tile canvas { max-width: 100%; max-height: 100%; aspect-ratio: 1; }
-.tile .name { font-size: max(16px, calc(var(--u) * 1.5)); letter-spacing: .12em; text-transform: uppercase; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.empty { display: grid; place-items: center; }
+.tile .pic canvas { display: block; }
+.tile .meta { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; min-width: 0; }
+.tile .name { font-size: 24px; letter-spacing: .12em; text-transform: uppercase; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tile .live { position: absolute; top: 18px; right: 22px; font-size: 18px; letter-spacing: .14em; color: var(--accent); }
+.stage.m .tile { grid-template-columns: auto minmax(0, 1fr); grid-template-rows: 1fr; align-items: center; gap: 18px; padding: 14px 20px; }
+.stage.m .tile .meta { flex-direction: column; gap: 4px; }
+.stage.m .tile .live { display: none; }
+.stage.s .tile { padding: 16px; gap: 10px; }
+.stage.s .tile .name { font-size: 20px; letter-spacing: .08em; }
+.stage.s .tile .live { display: none; }
 </style>
 </head>
 <body>
-<div class="head"><p class="lbl">DOT HUB · HOME</p><span class="grow"></span><p class="lbl" id="hint">TAP A MODULE · LONG PRESS TO COME BACK</p></div>
-<div class="tiles" id="tiles"></div>
-<p class="lbl" id="foot">SETTINGS ON YOUR PC · HTTP://127.0.0.1:47800/SETTINGS</p>
+<div class="stage" id="stage"></div>
 <script>
 (function () {
 	"use strict";
 	var uid = new URLSearchParams(location.search).get("uid") || "";
-	var PICS = {
-		clock: [".#####.", "#..#..#", "#..#..#", "#..###.", "#.....#", "#.....#", ".#####."]
+	var stage = document.getElementById("stage");
+	var SLOTS = {
+		h: { s: [840, 344], m: [840, 696], l: [1688, 696], xl: [2536, 696] },
+		v: { s: [696, 416], m: [696, 840], l: [696, 1688], xl: [696, 2536] }
 	};
-	var BLANK = [".......", ".......", "...#...", "..###..", "...#...", ".......", "......."];
-	function pic(id) {
-		var g = PICS[id] || BLANK, cv = document.createElement("canvas"), px = 280, p = px / 7, r = p * 0.36;
-		cv.width = px; cv.height = px;
-		var ctx = cv.getContext("2d");
+	var PITCH = { xl: 19, l: 13, m: 9, s: 12 };
+	// même détection que widgets/dot-clock/scripts/sizes.js (rapport largeur / hauteur)
+	function classify(w, h) {
+		var r = w / h;
+		if (r >= 2.98) return { size: "xl", o: "h" };
+		if (r >= 2.02) return { size: h >= 489 ? "l" : "s", o: "h" };
+		if (r >= 1.42) return { size: "s", o: "v" };
+		if (r >= 1.0) return { size: "m", o: "h" };
+		if (r >= 0.584) return { size: "m", o: "v" };
+		if (r >= 0.336) return { size: "l", o: "v" };
+		return { size: "xl", o: "v" };
+	}
+	// pictogrammes 7 × 7 points, ceux de la maquette Dot Home
+	var PICS = {
+		clock: [".#####.", "#..#..#", "#..#..#", "#..###.", "#.....#", "#.....#", ".#####."],
+		home: ["...#...", "..###..", ".#####.", "#######", ".#...#.", ".#.#.#.", ".#####."]
+	};
+	function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; }
+	function pic(key, pitch) {
+		var g = PICS[key] || PICS.home, cv = document.createElement("canvas"), dpr = 2, w = 7 * pitch, r = pitch * 0.38;
+		cv.width = w * dpr; cv.height = w * dpr; cv.style.width = w + "px"; cv.style.height = w + "px";
+		var ctx = cv.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 		for (var y = 0; y < 7; y++) for (var x = 0; x < 7; x++) {
 			ctx.beginPath(); ctx.fillStyle = g[y][x] === "#" ? "#f2f0e9" : "#1c1c1c";
-			ctx.arc(x * p + p / 2, y * p + p / 2, r, 0, Math.PI * 2); ctx.fill();
+			ctx.arc(x * pitch + pitch / 2, y * pitch + pitch / 2, r, 0, Math.PI * 2); ctx.fill();
 		}
 		return cv;
 	}
-	function choose(id, el) {
-		el.classList.add("on");
+	function live(id) {
+		if (id === "clock") { var d = new Date(); return (d.getHours() < 10 ? "0" : "") + d.getHours() + ":" + (d.getMinutes() < 10 ? "0" : "") + d.getMinutes(); }
+		return "";
+	}
+
+	var modules = [], inst = {};
+	function render() {
+		var c = classify(window.innerWidth || 2536, window.innerHeight || 696), dims = SLOTS[c.o][c.size];
+		var W = dims[0], H = dims[1], scale = Math.min(window.innerWidth / W, window.innerHeight / H) || 1;
+		stage.className = "stage " + c.size + (c.o === "v" ? " v" : "");
+		stage.style.width = W + "px"; stage.style.height = H + "px";
+		stage.style.transform = "translate(" + (window.innerWidth - W * scale) / 2 + "px," + (window.innerHeight - H * scale) / 2 + "px) scale(" + scale + ")";
+		stage.innerHTML = "";
+
+		var head = el("div", "head");
+		head.appendChild(el("span", "dot"));
+		head.appendChild(el("p", "lbl", "DOT HOME" + (inst.name ? " · " + inst.name : "")));
+		head.appendChild(el("span", "grow"));
+		head.appendChild(el("p", "lbl", "SETTINGS · 127.0.0.1:47800/SETTINGS"));
+		stage.appendChild(head);
+
+		var grid = el("div", "tiles");
+		modules.forEach(function (m) {
+			var b = el("button", "tile"); b.type = "button";
+			b.setAttribute("aria-label", "Open " + m.name);
+			var p = el("div", "pic"); p.appendChild(pic(m.id, PITCH[c.size])); b.appendChild(p);
+			var meta = el("div", "meta"); meta.appendChild(el("span", "name", m.name)); b.appendChild(meta);
+			var lv = live(m.id); if (lv) b.appendChild(el("span", "live", lv));
+			b.addEventListener("click", function () { choose(m.id, b); });
+			grid.appendChild(b);
+		});
+		stage.appendChild(grid);
+	}
+	function choose(id, b) {
+		b.classList.add("going");
 		fetch("/api/instance/" + encodeURIComponent(uid), {
 			method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ module: id })
 		}).then(function () { location.href = "/i/" + encodeURIComponent(uid); });
@@ -55,19 +122,10 @@ body { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; gap: calc(va
 	Promise.all([
 		fetch("/api/modules").then(function (r) { return r.json(); }),
 		fetch("/api/instance/" + encodeURIComponent(uid)).then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; })
-	]).then(function (res) {
-		var mods = res[0], inst = res[1] || {}, box = document.getElementById("tiles");
-		if (inst.name) document.querySelector(".head .lbl").textContent = "DOT HUB · " + inst.name.toUpperCase();
-		mods.forEach(function (m) {
-			var b = document.createElement("button");
-			b.type = "button"; b.className = "tile" + (inst.module === m.id ? " on" : "");
-			var p = document.createElement("div"); p.className = "pic"; p.appendChild(pic(m.id)); b.appendChild(p);
-			var n = document.createElement("span"); n.className = "name"; n.textContent = m.name; b.appendChild(n);
-			b.addEventListener("click", function () { choose(m.id, b); });
-			box.appendChild(b);
-		});
-		if (!mods.length) { box.className = "empty lbl"; box.textContent = "NO MODULE AVAILABLE"; }
-	});
+	]).then(function (res) { modules = res[0]; inst = res[1] || {}; render(); });
+	window.addEventListener("resize", render);
+	setInterval(render, 30000);
+	if (document.fonts && document.fonts.ready) document.fonts.ready.then(render);
 })();
 </script>
 </body>
