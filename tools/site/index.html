@@ -80,6 +80,43 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outlin
 .empty { color: var(--muted); }
 .none { color: var(--label); font-family: var(--mono); }
 
+/* la Xeneon Edge : Dot Home en page 1, une page par widget */
+.edge-sec { display: grid; gap: 16px; }
+.hint { margin: 0; color: var(--label); font-size: 14px; }
+.edge { padding: clamp(6px, 1.2%, 18px); border-radius: clamp(10px, 1.6vw, 24px); background: linear-gradient(180deg, #161616, #0b0b0b); border: 1px solid #2a2a2a; box-shadow: 0 40px 80px -40px #000, inset 0 1px 0 #262626; }
+.screen { position: relative; aspect-ratio: 2560 / 720; max-width: 100%; overflow: hidden; border-radius: clamp(3px, .5vw, 8px); background: #000; touch-action: pan-y; cursor: grab; user-select: none; }
+.native { position: absolute; left: 0; top: 0; width: 2560px; height: 720px; transform-origin: 0 0; }
+.strip { position: absolute; left: 0; top: 0; height: 720px; display: flex; transition: transform .5s cubic-bezier(.2, .7, .2, 1); }
+@media (prefers-reduced-motion: reduce) { .strip { transition: none; } }
+.pg { position: relative; width: 2560px; height: 720px; flex: none; }
+.slot { position: absolute; left: 12px; top: 12px; width: 2536px; height: 696px; background: #080808; border-radius: 12px; overflow: hidden; font-family: var(--mono); font-variant-ligatures: none; color: var(--lit); }
+.slot img { display: block; width: 2536px; height: 696px; -webkit-user-drag: none; }
+.slot .lbl { margin: 0; font-size: 18px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); white-space: nowrap; }
+.dh-head { position: absolute; left: 56px; right: 56px; top: 30px; height: 60px; display: flex; align-items: center; gap: 14px; }
+.dh-head::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--accent); }
+.dh-head .grow { flex: 1; }
+.dh-tiles { position: absolute; left: 40px; right: 40px; top: 112px; bottom: 40px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(0, 1fr)); gap: 20px; }
+.dh-tile { position: relative; display: grid; grid-template-rows: 1fr auto; gap: 14px; padding: 22px 26px; min-width: 0; min-height: 0; border: 2px solid #1d1d1d; border-radius: 18px; background: transparent; color: var(--lit); text-align: left; font-family: inherit; cursor: pointer; }
+.dh-tile:hover, .dh-tile:focus-visible { border-color: var(--accent); background: #0d0d0d; outline: none; }
+.dh-tile .pic { display: grid; place-items: center; min-height: 0; }
+.dh-tile .pic canvas { width: 133px; height: 133px; }
+.dh-tile .meta { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.dh-tile .name { font-size: 26px; letter-spacing: .12em; text-transform: uppercase; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dh-tile .page { font-size: 18px; letter-spacing: .14em; color: var(--label); }
+.dh-tile.more { place-items: center; grid-template-rows: 1fr; border-style: dashed; color: var(--label); font-size: 22px; letter-spacing: .2em; }
+.ph { position: absolute; inset: 0; display: grid; place-items: center; align-content: center; gap: 30px; text-decoration: none; color: var(--lit); }
+.ph canvas { width: 280px; height: 280px; }
+.ph .lbl { font-size: 24px; }
+.pager { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 20px; }
+.dots { display: flex; flex-wrap: wrap; gap: 2px; }
+.dots button { width: 32px; height: 32px; display: grid; place-items: center; padding: 0; border: 0; background: transparent; cursor: pointer; }
+.dots button::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: #2a2a2a; }
+.dots button[aria-current="true"]::before { background: var(--lit); }
+.dots button:hover::before { background: var(--label); }
+.where { display: flex; align-items: center; gap: 14px; font-family: var(--mono); font-size: 13px; letter-spacing: .18em; text-transform: uppercase; color: var(--label); }
+.where a { color: var(--accent); text-decoration: none; }
+.nav { display: flex; gap: 8px; }
+
 footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px 24px; font-family: var(--mono); font-size: 13px; letter-spacing: .24em; text-transform: uppercase; }
 footer .red { color: var(--accent); }
 footer a { color: var(--label); text-decoration: none; }
@@ -98,7 +135,24 @@ footer a { color: var(--label); text-decoration: none; }
     <ul class="stats" id="stats"></ul>
   </section>
 
-  <section style="display:grid;gap:18px" aria-label="Widgets">
+  <section class="edge-sec" aria-label="Aperçu sur la Xeneon Edge">
+    <div class="bar">
+      <h2>Sur la Xeneon Edge</h2>
+      <p class="hint">Touche une tuile de Dot Home, ou glisse, pour changer de page.</p>
+    </div>
+    <div class="edge"><div class="screen" id="screen"><div class="native" id="native"><div class="strip" id="strip"></div></div></div></div>
+    <div class="pager">
+      <div class="dots" id="dots" role="group" aria-label="Pages"></div>
+      <div class="where"><span id="where"></span><a id="open" href="#" hidden>Maquette →</a></div>
+      <div class="nav">
+        <button type="button" class="chip" id="prev" aria-label="Page précédente">‹</button>
+        <button type="button" class="chip" id="homeBtn">Dot Home</button>
+        <button type="button" class="chip" id="next" aria-label="Page suivante">›</button>
+      </div>
+    </div>
+  </section>
+
+  <section style="display:grid;gap:18px" aria-label="Widgets" id="list">
     <div class="bar">
       <h2>Les widgets</h2>
       <div class="chips" role="group" aria-label="Filtrer">
@@ -119,6 +173,7 @@ footer a { color: var(--label); text-decoration: none; }
 </div>
 
 <script id="data" type="application/json">__DATA__</script>
+<script id="previews" type="application/json">__PREVIEWS__</script>
 <script>
 (function () {
   "use strict";
@@ -249,6 +304,75 @@ footer a { color: var(--label); text-decoration: none; }
       render();
     });
   });
+
+
+  // ---------- la Xeneon Edge
+  var SHOTS = JSON.parse(document.getElementById("previews").textContent);
+  var PAGES = WIDGETS.filter(function (w) { return w.mockup && w.slug !== "dot-home"; });
+  var cur = 0, strip = document.getElementById("strip"), screen = document.getElementById("screen"), native = document.getElementById("native");
+  function fitEdge() { native.style.transform = "scale(" + screen.clientWidth / 2560 + ")"; }
+  if (window.ResizeObserver) new ResizeObserver(fitEdge).observe(screen); else window.addEventListener("resize", fitEdge);
+  function buildEdge() {
+    var home = el("div", "pg"), slot = el("div", "slot");
+    var hd = el("div", "dh-head");
+    hd.appendChild(el("p", "lbl", "DOT HOME · PAGE 1")); hd.appendChild(el("span", "grow")); hd.appendChild(el("p", "lbl", "TAP A TILE"));
+    slot.appendChild(hd);
+    var tiles = el("div", "dh-tiles");
+    PAGES.slice(0, 7).forEach(function (w, i) {
+      var b = el("button", "dh-tile"); b.type = "button"; b.setAttribute("aria-label", "Page " + (i + 2) + ", " + w.name);
+      var pc = el("div", "pic"); pc.appendChild(pic(w.slug, "#f2f0e9")); b.appendChild(pc);
+      var meta = el("div", "meta"); meta.appendChild(el("span", "name", w.name)); meta.appendChild(el("span", "page", "P" + (i + 2))); b.appendChild(meta);
+      b.addEventListener("click", function () { if (!dragged) go(i + 1); });
+      tiles.appendChild(b);
+    });
+    var more = el("button", "dh-tile more", "ALL WIDGETS ↓"); more.type = "button";
+    more.addEventListener("click", function () { if (!dragged) document.getElementById("list").scrollIntoView({ behavior: "smooth" }); });
+    tiles.appendChild(more);
+    slot.appendChild(tiles);
+    home.appendChild(slot);
+    strip.appendChild(home);
+    PAGES.forEach(function (w) {
+      var pg = el("div", "pg"), sl = el("div", "slot");
+      if (SHOTS[w.slug]) {
+        var img = el("img"); img.src = SHOTS[w.slug]; img.alt = w.name + " en taille XL"; img.draggable = false;
+        sl.appendChild(img);
+      } else {
+        var a = el("a", "ph"); a.href = BASE + w.slug + "/";
+        a.appendChild(pic(w.slug, "#f2f0e9")); a.appendChild(el("p", "lbl", w.name + " · OUVRIR LA MAQUETTE →"));
+        sl.appendChild(a);
+      }
+      pg.appendChild(sl); strip.appendChild(pg);
+    });
+    var dots = document.getElementById("dots");
+    for (var i = 0; i <= PAGES.length; i++) (function (i) {
+      var d = el("button"); d.type = "button"; d.setAttribute("aria-label", "Page " + (i + 1));
+      d.addEventListener("click", function () { go(i); });
+      dots.appendChild(d);
+    })(i);
+  }
+  function go(i) {
+    cur = Math.max(0, Math.min(PAGES.length, i));
+    strip.style.transform = "translateX(" + (-cur * 2560) + "px)";
+    document.querySelectorAll("#dots button").forEach(function (d, k) { d.setAttribute("aria-current", k === cur ? "true" : "false"); });
+    var w = PAGES[cur - 1];
+    document.getElementById("where").textContent = "Page " + (cur + 1) + " · " + (w ? w.name : "Dot Home");
+    var open = document.getElementById("open");
+    open.hidden = !w; if (w) open.href = BASE + w.slug + "/";
+  }
+  // glisser pour changer de page
+  var x0 = null, dragged = false;
+  screen.addEventListener("pointerdown", function (e) { x0 = e.clientX; dragged = false; });
+  screen.addEventListener("pointermove", function (e) { if (x0 !== null && Math.abs(e.clientX - x0) > 12) dragged = true; });
+  window.addEventListener("pointerup", function (e) {
+    if (x0 === null) return;
+    var dx = e.clientX - x0; x0 = null;
+    if (Math.abs(dx) > 40) go(cur + (dx < 0 ? 1 : -1));
+    setTimeout(function () { dragged = false; }, 0);
+  });
+  document.getElementById("prev").addEventListener("click", function () { go(cur - 1); });
+  document.getElementById("next").addEventListener("click", function () { go(cur + 1); });
+  document.getElementById("homeBtn").addEventListener("click", function () { go(0); });
+  buildEdge(); go(0); fitEdge();
 
   drawTitle("DOT WIDGETS");
   stats();

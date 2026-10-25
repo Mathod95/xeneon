@@ -9,6 +9,7 @@ Option --fragment FICHIER : écrit seulement la page d'accueil, sans en-tête HT
 avec des liens absolus vers le site en ligne (pour l'aperçu en artefact).
 """
 import argparse
+import base64
 import json
 import pathlib
 import re
@@ -59,10 +60,51 @@ def widgets():
     return rows
 
 
-def home(base, title):
+SHOT_JS = """
+async () => {
+  const frame = document.getElementById('frame') || document.getElementById('frameXL');
+  const stage = document.getElementById('stage') || document.getElementById('stageXL');
+  if (!frame || !stage) return false;
+  document.querySelectorAll('.wrap').forEach(w => { w.style.maxWidth = 'none'; });
+  frame.style.maxWidth = 'none';
+  frame.style.width = (2536 + frame.offsetWidth - frame.clientWidth) + 'px';
+  window.dispatchEvent(new Event('resize'));
+  if (document.fonts) await document.fonts.ready;
+  await new Promise(r => setTimeout(r, 400));
+  return true;
+}
+"""
+
+
+def previews(slugs):
+    """Capture XL (2536 x 696) de chaque maquette, en JPEG. Vide si Playwright manque."""
+    try:
+        from playwright.sync_api import sync_playwright
+    except ImportError:
+        print("Playwright absent : pas d'aperçus")
+        return {}
+    out = {}
+    with sync_playwright() as p:
+        browser = p.chromium.launch()
+        page = browser.new_page(viewport={"width": 2800, "height": 1400})
+        for slug in slugs:
+            ref = ROOT / "widgets" / slug / "mockups" / "reference.html"
+            page.goto(ref.as_uri())
+            page.wait_for_timeout(300)
+            if not page.evaluate(SHOT_JS):
+                continue
+            stage = page.locator("#stage, #stageXL").first
+            out[slug] = stage.screenshot(type="jpeg", quality=88)
+        browser.close()
+    return out
+
+
+def home(base, title, shots):
     data = json.dumps(widgets(), ensure_ascii=False).replace("</", "<\\/")
+    prev = json.dumps(shots).replace("</", "<\\/")
     page = TEMPLATE.read_text(encoding="utf-8")
-    return page.replace("__DATA__", data).replace("__BASE__", base).replace("__TITLE__", title)
+    return (page.replace("__DATA__", data).replace("__PREVIEWS__", prev)
+            .replace("__BASE__", base).replace("__TITLE__", title))
 
 
 def main():
@@ -70,8 +112,12 @@ def main():
     ap.add_argument("--fragment")
     args = ap.parse_args()
 
+    slugs = [w["slug"] for w in widgets() if w["mockup"]]
+    shots = previews(slugs)
+
     if args.fragment:
-        pathlib.Path(args.fragment).write_text(home(LIVE, "Dot Page"), encoding="utf-8")
+        uris = {k: "data:image/jpeg;base64," + base64.b64encode(v).decode() for k, v in shots.items()}
+        pathlib.Path(args.fragment).write_text(home(LIVE, "Dot Page", uris), encoding="utf-8")
         return
 
     if SITE.exists():
@@ -82,9 +128,11 @@ def main():
         slug = ref.parent.parent.name
         (SITE / slug).mkdir()
         shutil.copyfile(ref, SITE / slug / "index.html")
+        if slug in shots:
+            (SITE / slug / "preview.jpg").write_bytes(shots[slug])
         count += 1
 
-    full = home("", "Dot Widgets · Mathod")
+    full = home("", "Dot Widgets · Mathod", {k: k + "/preview.jpg" for k in shots})
     cut = full.index('<div class="wrap">')
     page = (
         "<!DOCTYPE html>\n<html lang=\"fr\">\n<head>\n<meta charset=\"utf-8\">\n"
