@@ -196,28 +196,29 @@ footer a { color: var(--label); text-decoration: none; }
     B: ["####.", "#...#", "#...#", "####.", "#...#", "#...#", "####."],
     " ": ["..", "..", "..", "..", "..", "..", ".."]
   };
+  // titre en points ; le dernier mot (HUB) est en points éteints sur un fond de points allumés en couleur d'accent
   function drawTitle(text) {
     var cv = document.getElementById("titleDots"), ctx = cv.getContext("2d");
-    var cols = [];
+    var cols = [], lastWordCol = 0;
     text.split("").forEach(function (ch, i) {
+      if (ch === " ") lastWordCol = cols.length + F[" "][0].length;
       var g = F[ch];
       for (var c = 0; c < g[0].length; c++) cols.push(g.map(function (r) { return r[c] === "#"; }));
       if (i < text.length - 1) cols.push([false, false, false, false, false, false, false]);
     });
     var pad = 1, total = cols.length + pad * 2, rows = 7 + pad * 2;
+    var accentFrom = lastWordCol + pad;          // une colonne de fond avant la première lettre du dernier mot
     var pitch = cv.width / total, r = pitch * 0.36;
     cv.height = Math.round(rows * pitch);
     ctx.clearRect(0, 0, cv.width, cv.height);
     for (var x = 0; x < total; x++) for (var y = 0; y < rows; y++) {
       var col = cols[x - pad], on = col && y >= pad && y < 7 + pad && col[y - pad];
+      var inWord = x >= accentFrom, accent = inWord && !on, lit = on && !inWord;
       ctx.beginPath();
-      ctx.fillStyle = on ? "#f2f0e9" : "#171717";
-      ctx.arc(x * pitch + pitch / 2, y * pitch + pitch / 2, on ? r : r * 0.8, 0, Math.PI * 2);
+      ctx.fillStyle = lit ? "#f2f0e9" : accent ? "#10b981" : "#171717";
+      ctx.arc(x * pitch + pitch / 2, y * pitch + pitch / 2, lit || accent ? r : r * 0.8, 0, Math.PI * 2);
       ctx.fill();
     }
-    // le point d'accent, comme le logo
-    ctx.beginPath(); ctx.fillStyle = "#10b981";
-    ctx.arc((total - 0.5) * pitch, (rows - 1.5) * pitch, r, 0, Math.PI * 2); ctx.fill();
   }
 
   // pictogrammes 7 × 7 points, un par widget
