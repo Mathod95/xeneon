@@ -2,31 +2,33 @@
 
 **Statut :** 🔵 en conception
 
-Calculatrice tactile : résultat en gros points, expression au-dessus, historique à côté.
+Calculatrice et convertisseur en cinq onglets : CALC, UNITS, MONEY, BASE, TIME. Les nombres s’affichent en gros points.
 
 La référence visuelle est [`mockups/reference.html`](mockups/reference.html) (à ouvrir dans un navigateur) : maquette en taille réelle S, M, L, XL, fonctionnelle au toucher et au clavier, avec réglages simulés et tableau des choix de design, tous encore à valider.
 
 ## Contenu et interactions
 
-- + − × ÷, %, ±, décimales, DEL, C puis AC ; priorité des opérations respectée.
-- Résultat en gros points (police du Dot Clock), taille adaptée à la longueur, 12 chiffres au maximum.
-- XL : fonctions √, x², 1/x, π, ANS.
-- XL et L : historique, toucher une ligne reprend son résultat ; stockage local par `uniqueId`.
+- **CALC** : + − × ÷, %, ±, DEL, C puis AC, priorité des opérations ; en XL √, x², 1/x, π, ANS ; historique en XL et L.
+- **UNITS** : 15 catégories (longueur, poids, température, volume, surface, vitesse, données, débit, FPS ↔ temps d’image, durée, pression, énergie, puissance, consommation, angle).
+- **MONEY** : taux de référence du jour, gratuits et sans clé, gardés pour le hors ligne, date toujours affichée.
+- **BASE** : BIN, OCT, DEC, HEX sur des entiers de toute taille, touches A à F, largeur en bits.
+- **TIME** : ville principale en gros points, jusqu’à 12 villes, pas de ±15 min / ±1 h, barre des heures de travail.
+- Convertisseurs : deux champs, celui qu’on tape entouré ; toucher l’autre inverse le sens ; ↑↓ échange les unités ; liste de toutes les unités (toucher une ligne en fait la cible).
 - Clavier physique en plus du tactile (à confirmer avec Dot Keytest).
-- Réglages « Decimal separator » (Point / Comma) et « Digit grouping ».
+- Réglages « Decimal separator », « Digit grouping », « Clock format ».
 
 ## Données
 
-- Aucune : tout se passe dans le widget, sans compagnon.
+- Taux de change : source gratuite sans clé à choisir (API de devises sur jsDelivr ou Frankfurter). Permission réseau à déclarer. Pas de compagnon.
 
 ## Tailles (proposition)
 
-- [ ] XL : écran à gauche, clavier avec fonctions scientifiques au centre, historique à droite
-- [ ] L : écran et historique à gauche, clavier à droite
-- [ ] M : écran en haut, clavier en bas
-- [ ] S : écran à gauche, clavier compact 5 × 4 à droite
+- [ ] XL : écran ou champs, clavier, historique ou liste sur deux colonnes ; TIME grille de 4 × 3 villes
+- [ ] L : même chose plus serrée, liste sur une colonne
+- [ ] M : champs et liste à gauche, clavier à droite (BASE : clavier en bas)
+- [ ] S : champs à gauche, clavier à droite, sans liste
 - [ ] Vertical : à concevoir
 
 ## Mocks
 
-- [`reference.html`](mockups/reference.html) : maquette de référence (proposition v0.1)
+- [`reference.html`](mockups/reference.html) : maquette de référence (proposition v0.2)

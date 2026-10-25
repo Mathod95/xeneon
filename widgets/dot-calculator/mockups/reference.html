@@ -87,74 +87,123 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
 @media (max-width: 700px) { .frame.l, .frame.m, .frame.s { width: 100%; } }
 
 /* ---------- le widget : scène en pixels réels de l'emplacement ---------- */
-.stage { position: absolute; left: 0; top: 0; transform-origin: 0 0; background: #080808; --accent: #10b981; --lit: #f2f0e9; --label: #b8b6b0; --unlit: #1c1c1c; --fail: #ed403b; font-family: "Fira Code", Consolas, monospace; font-variant-ligatures: none; color: var(--lit); }
+.stage { position: absolute; left: 0; top: 0; transform-origin: 0 0; background: #080808; --accent: #10b981; --lit: #f2f0e9; --label: #b8b6b0; --unlit: #1c1c1c; --fail: #ed403b; --key: #151515; --card: #0d0d0d; font-family: "Fira Code", Consolas, monospace; font-variant-ligatures: none; color: var(--lit); overflow: hidden; }
 .stage.xl { width: 2536px; height: 696px; }
 .stage.l { width: 1688px; height: 696px; }
 .stage.m { width: 840px; height: 696px; }
 .stage.s { width: 840px; height: 344px; }
 .stage > * { position: absolute; }
 .stage button { font-family: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent; }
-.stage button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.stage button:focus-visible, .stage [role=button]:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 .lbl { margin: 0; white-space: nowrap; font-size: 18px; line-height: 24px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); }
-.val { margin: 0; white-space: nowrap; font-size: 26px; letter-spacing: .06em; color: var(--lit); }
+.val { margin: 0; white-space: nowrap; font-size: 26px; letter-spacing: .04em; color: var(--lit); }
 .warn { color: var(--fail) !important; }
-.head { left: 56px; right: 56px; top: 30px; height: 60px; display: flex; align-items: center; gap: 14px; }
-.head .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); }
-.head .grow { flex: 1; }
-canvas { display: block; }
+.acc { color: var(--accent) !important; }
+canvas { display: block; flex: none; }
+.scroll { overflow-y: auto; scrollbar-width: none; }
+.scroll::-webkit-scrollbar { display: none; }
 
-/* écran */
-.display { display: grid; align-content: end; justify-items: end; gap: 22px; }
-.display .expr { font-size: 26px; letter-spacing: .08em; color: var(--label); text-transform: none; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
-.display .note { min-height: 24px; }
+/* en-tête et onglets */
+.head { display: flex; align-items: center; gap: 14px; }
+.head .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); flex: none; }
+.head .grow { flex: 1; }
+.tabs { display: flex; gap: 8px; }
+.tab { height: 60px; padding: 0 20px; border-radius: 999px; border: 2px solid #262626; background: transparent; color: var(--label); font-size: 18px; letter-spacing: .14em; }
+.tab.on { background: var(--lit); border-color: var(--lit); color: #080808; font-weight: 500; }
+.stage.s .tab, .stage.m .tab { padding: 0 14px; letter-spacing: .1em; }
 
 /* clavier */
 .keys { display: grid; gap: 12px; }
-.key { border-radius: 16px; border: 2px solid #2a2a2a; background: transparent; color: var(--lit); font-size: 32px; letter-spacing: .02em; display: grid; place-items: center; min-height: 60px; padding: 0; }
-.key:active, .key.pressed { background: #161616; }
-.key.fn { color: var(--label); font-size: 26px; letter-spacing: .1em; }
-.key.sci { color: var(--label); font-size: 24px; letter-spacing: .04em; border-style: dashed; }
+.stage.s .keys { gap: 6px; }
+.key { border: 0; border-radius: 999px; background: var(--key); color: var(--lit); font-size: 32px; display: grid; place-items: center; min-height: 56px; padding: 0; }
+.key:active, .key.pressed { background: #222; }
+.key.fn { color: var(--label); font-size: 22px; letter-spacing: .1em; }
+.key.sci { background: transparent; border: 2px dashed #262626; color: var(--label); font-size: 22px; }
 .key.op { color: var(--accent); font-size: 38px; }
-.key.eq { background: var(--accent); border-color: var(--accent); color: #080808; font-size: 40px; }
-.key.eq:active, .key.eq.pressed { filter: brightness(.85); }
+.key.eq, .key.swap { background: var(--accent); color: #080808; font-size: 36px; font-weight: 500; }
+.key.eq:active, .key.swap:active, .key.eq.pressed, .key.swap.pressed { filter: brightness(.85); }
+.key:disabled { color: #2c2c2c; background: #0c0c0c; cursor: default; }
+.stage.s .key { font-size: 26px; }
+.stage.s .key.fn { font-size: 18px; }
+
+/* écran de la calculatrice */
+.display { display: grid; align-content: end; justify-items: end; gap: 18px; }
+.display .expr { font-size: 26px; letter-spacing: .08em; text-transform: none; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.stage.s .display .expr { font-size: 20px; }
+.display .note { min-height: 24px; }
 
 /* historique */
 .hist { display: grid; gap: 6px; align-content: start; }
 .hist .top { display: flex; justify-content: space-between; align-items: center; height: 60px; }
-.hist .clear { height: 60px; padding: 0 22px; border-radius: 999px; border: 2px solid #2a2a2a; background: transparent; color: var(--label); font-size: 18px; letter-spacing: .2em; }
-.hrow { display: grid; gap: 2px; justify-items: end; min-height: 72px; padding: 8px 16px; border-radius: 14px; border: 2px solid transparent; background: transparent; color: var(--lit); text-align: right; width: 100%; }
-.hrow:active { border-color: #2f2f2f; background: #0d0d0d; }
+.pill { height: 60px; padding: 0 22px; border-radius: 999px; border: 2px solid #262626; background: transparent; color: var(--label); font-size: 18px; letter-spacing: .16em; text-transform: uppercase; display: inline-flex; align-items: center; gap: 10px; }
+.hrow { display: grid; gap: 2px; justify-items: end; min-height: 64px; padding: 6px 16px; border-radius: 14px; border: 2px solid transparent; background: transparent; color: var(--lit); text-align: right; width: 100%; }
+.hrow:active { background: var(--card); }
 .hrow .lbl { text-transform: none; letter-spacing: .08em; max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
 
-/* XL */
-.stage.xl .display { left: 56px; width: 1000px; top: 120px; height: 520px; }
-.stage.xl .keys { left: 1110px; width: 820px; top: 108px; bottom: 40px; grid-template-columns: repeat(5, 1fr); grid-template-rows: repeat(5, 1fr); }
-.stage.xl .hist { left: 1990px; right: 40px; top: 96px; }
-/* L */
-.stage.l .display { left: 56px; width: 760px; top: 110px; height: 250px; }
-.stage.l .hist { left: 40px; width: 800px; top: 380px; }
-.stage.l .keys { left: 890px; right: 40px; top: 40px; bottom: 40px; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(5, 1fr); }
-/* M */
-.stage.m .display { left: 40px; right: 40px; top: 20px; height: 240px; gap: 16px; }
-.stage.m .keys { left: 32px; right: 32px; top: 276px; bottom: 28px; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(5, 1fr); gap: 10px; }
-/* S */
-.stage.s .display { left: 32px; width: 370px; top: 24px; bottom: 32px; }
-.stage.s .display .expr { font-size: 20px; }
-.stage.s .keys { left: 424px; right: 24px; top: 24px; bottom: 24px; grid-template-columns: repeat(5, 1fr); grid-template-rows: repeat(4, 1fr); gap: 10px; }
-.stage.s .key { font-size: 28px; border-radius: 14px; }
-.stage.s .key.fn { font-size: 20px; }
-.stage.s .key.op, .stage.s .key.eq { font-size: 32px; }
+/* convertisseurs : rangée d'info, champs, liste */
+.bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.fields { display: grid; gap: 12px; }
+.field { position: relative; display: flex; align-items: center; gap: 20px; padding: 0 28px 0 18px; border-radius: 20px; border: 2px solid #1f1f1f; background: var(--card); cursor: pointer; min-width: 0; }
+.field.src { border-color: var(--accent); }
+.field .num { flex: 1; display: flex; justify-content: flex-end; min-width: 0; }
+.badge { flex: none; display: grid; gap: 2px; justify-items: start; align-content: center; min-height: 60px; min-width: 96px; max-width: 240px; padding: 8px 16px; border-radius: 14px; border: 0; background: #1a1a1a; color: var(--lit); text-align: left; }
+.badge b { font-size: 24px; font-weight: 500; letter-spacing: .04em; }
+.badge span { max-width: 208px; overflow: hidden; text-overflow: ellipsis; }
+.stage.s .badge, .stage.m .badge { min-width: 84px; max-width: 120px; padding: 6px 12px; }
+.stage.s .badge span, .stage.m .badge span { display: none; }
+.list { display: grid; gap: 6px; align-content: start; }
+.list .lhead { display: flex; justify-content: space-between; gap: 16px; }
+.lrows { display: grid; gap: 6px; }
+.lrow { width: 100%; display: grid; grid-template-columns: 96px minmax(0, 1fr) auto; align-items: center; gap: 14px; min-height: 64px; padding: 0 18px; border-radius: 14px; border: 2px solid transparent; background: var(--card); color: var(--lit); text-align: left; }
+.lrow.tgt { border-color: var(--accent); }
+.lrow b { font-size: 22px; font-weight: 500; letter-spacing: .04em; }
+.lrow .lbl { overflow: hidden; text-overflow: ellipsis; font-size: 16px; }
+.lrow .v { font-size: 26px; white-space: nowrap; }
+.lrow.wrap .v { white-space: normal; word-break: break-all; text-align: right; font-size: 22px; line-height: 28px; padding: 8px 0; }
+
+/* sélecteur plein écran */
+.picker { background: #080808; display: grid; gap: 16px; align-content: start; }
+.picker .ptop { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { height: 60px; padding: 0 20px; border-radius: 999px; border: 2px solid #262626; background: transparent; color: var(--label); font-size: 18px; letter-spacing: .14em; text-transform: uppercase; }
+.chip.on { border-color: var(--accent); color: var(--lit); }
+.opts { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 8px; }
+.opt { display: grid; gap: 2px; justify-items: start; min-height: 72px; padding: 8px 18px; border-radius: 14px; border: 2px solid transparent; background: var(--card); color: var(--lit); text-align: left; }
+.opt.on { border-color: var(--accent); }
+.opt b { font-size: 24px; font-weight: 500; }
+.opt .lbl { font-size: 16px; max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+
+/* fuseaux horaires */
+.main { display: flex; flex-direction: column; gap: 14px; }
+.main .grow { flex: 1; }
+.main .bigtime { display: flex; align-items: flex-end; gap: 14px; }
+.main .info { display: flex; gap: 16px; flex-wrap: wrap; }
+.steps { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+.step { height: 60px; border: 0; border-radius: 999px; background: var(--key); color: var(--lit); font-size: 18px; letter-spacing: .1em; }
+.step.now { color: var(--accent); }
+.grid { display: grid; gap: 10px; align-content: start; }
+.city { display: grid; gap: 10px; align-content: center; padding: 14px 20px; border-radius: 16px; border: 2px solid transparent; background: var(--card); color: var(--lit); text-align: left; position: relative; }
+.city .row1 { display: flex; align-items: baseline; gap: 14px; }
+.city .name { font-size: 22px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.city .t { font-size: 36px; letter-spacing: .02em; }
+.city .ap { font-size: 16px; color: var(--label); }
+.city.edit { border-color: #2f2f2f; }
+.city .acts { display: flex; gap: 8px; }
+.city.add { border: 2px dashed #262626; background: transparent; justify-items: center; color: var(--label); }
+.stage.s .city { padding: 6px 16px; gap: 2px; }
+.stage.s .city .t { font-size: 28px; }
+.stage.s .city .name { font-size: 18px; }
 </style>
 
 <div class="wrap">
   <header>
     <div class="eyebrow">Widget iCUE · CORSAIR XENEON EDGE</div>
     <h1>Dot Calculator</h1>
-    <p class="lede">Proposition v0.1, à valider dans le tableau. Une calculatrice tactile : le résultat en gros points, l'expression au-dessus, l'historique à côté. Elle marche pour de vrai dans la maquette, au toucher et au clavier. Autonome, sans compagnon.</p>
+    <p class="lede">Proposition v0.2, à valider dans le tableau. Cinq onglets : calculatrice, unités, devises, bases et fuseaux horaires. Le résultat s'affiche en gros points, la saisie se fait au toucher ou au clavier. Tout marche dans la maquette ; les taux de change sont fictifs.</p>
   </header>
 
   <figure>
-    <div class="tag"><b>Maquette de référence</b><span id="sizeTag">Version 0.1 · taille réelle XL 2536 × 696 px</span></div>
+    <div class="tag"><b>Maquette de référence</b><span id="sizeTag">Version 0.2 · taille réelle XL 2536 × 696 px</span></div>
     <div class="sizebar" role="radiogroup" aria-label="Taille du widget">
       <span>Widget size</span>
       <button type="button" class="preset" data-size="s" aria-pressed="false">S · 840 × 344</button>
@@ -172,6 +221,11 @@ canvas { display: block; }
         <label><input type="radio" name="dec" value=","> Comma</label>
       </div>
       <label><input type="checkbox" id="grouping" checked> Digit grouping</label>
+      <div class="grp" role="radiogroup" aria-label="Clock format">
+        <span>Clock format</span>
+        <label><input type="radio" name="clock" value="24" checked> 24 h</label>
+        <label><input type="radio" name="clock" value="12"> 12 h</label>
+      </div>
       <label><input type="checkbox" id="showUnlit" checked> Show unlit dots</label>
       <label>Accent color <input type="color" id="accentColor" value="#10b981"></label>
       <label>Lit dot color <input type="color" id="litColor" value="#f2f0e9"></label>
@@ -180,7 +234,7 @@ canvas { display: block; }
       <button type="button" class="preset" data-accent="#10b981"><i style="background:#10b981"></i>Émeraude</button>
       <button type="button" class="preset" data-accent="#ed403b"><i style="background:#ed403b"></i>Rouge A</button>
     </div>
-    <figcaption><span id="sizeNote">Écran à gauche, clavier avec fonctions scientifiques au centre, historique à droite.</span> Tape au clavier : chiffres, + − * /, Entrée, Échap, Retour arrière. Touche une ligne d'historique pour reprendre son résultat.</figcaption>
+    <figcaption><span id="sizeNote">Touche un onglet pour changer de mode.</span> Dans les convertisseurs, la saisie va dans le champ entouré ; touche l'autre champ pour inverser le sens, l'étiquette d'unité pour en choisir une autre, une ligne de la liste pour en faire la cible. Au clavier : chiffres, opérateurs, Entrée, Échap, Retour arrière.</figcaption>
   </figure>
 
   <section style="display:grid;gap:14px">
@@ -192,16 +246,22 @@ canvas { display: block; }
       <table>
         <thead><tr><th>#</th><th>Élément</th><th>Proposition</th></tr></thead>
         <tbody>
-          <tr class="todo"><td>1</td><td>Opérations</td><td>+ − × ÷, pourcentage, changement de signe, décimales, retour arrière, C (efface la saisie) puis AC (efface tout). Priorité des opérations respectée : 2 + 3 × 4 = 14. L'expression complète s'affiche au-dessus du résultat.</td></tr>
-          <tr class="todo"><td>2</td><td>Écran</td><td>Résultat en gros points avec la police dot grasse de Dot Clock (plus le moins, le point, la virgule et E). La taille des points diminue quand le nombre s'allonge. 12 chiffres au maximum.</td></tr>
-          <tr class="todo"><td>3</td><td>Fonctions scientifiques</td><td>En XL seulement, une colonne en plus : √, x², 1/x, π et ANS (dernier résultat).</td></tr>
-          <tr class="todo"><td>4</td><td>Historique</td><td>En XL et L : les derniers calculs, le plus récent en haut. Toucher une ligne reprend son résultat. Gardé dans le stockage local du widget (par <code>uniqueId</code>, comme la Checklist de Corsair) ; CLEAR l'efface.</td></tr>
-          <tr class="todo"><td>5</td><td>Saisie</td><td>Touches de 60 px minimum, plus grandes dès que la place le permet. Clavier physique en plus : chiffres, opérateurs, Entrée ou =, Échap, Retour arrière. À confirmer sur l'Edge avec Dot Keytest.</td></tr>
-          <tr class="todo"><td>6</td><td>Séparateurs</td><td>Réglage « Decimal separator » : Point (par défaut) ou Comma. Réglage « Digit grouping » : chiffres groupés par 3 avec un espace étroit (activé par défaut).</td></tr>
-          <tr class="todo"><td>7</td><td>Erreurs</td><td>Division par zéro ou racine d'un négatif : « E » en gros points et le message en rouge. Au-delà de 12 chiffres : « OVERFLOW ». La touche suivante efface l'erreur.</td></tr>
-          <tr class="todo"><td>8</td><td>Couleurs</td><td>Mêmes réglages que Dot Clock : « Accent color », « Lit dot color », « Unlit dot color », « Label color ». Opérateurs en couleur d'accent, touche = remplie de la couleur d'accent. Fond <code>#080808</code>.</td></tr>
-          <tr class="todo"><td>9</td><td>Tailles</td><td><b>XL</b> : écran à gauche, clavier avec fonctions scientifiques au centre, historique à droite.<br><b>L</b> : écran et historique à gauche, clavier à droite.<br><b>M</b> : écran en haut, clavier en bas.<br><b>S</b> : écran à gauche, clavier compact 5 × 4 à droite.<br>Vertical : à concevoir.</td></tr>
-          <tr class="todo"><td>10</td><td>Compagnon</td><td>Non : tout se passe dans le widget.</td></tr>
+          <tr class="todo"><td>1</td><td>Onglets</td><td>CALC, UNITS, MONEY, BASE, TIME en haut à droite, dans toutes les tailles. L'onglet ouvert est gardé d'une session à l'autre. Réglage iCUE « Default tab » pour celui du démarrage.</td></tr>
+          <tr class="todo"><td>2</td><td>CALC</td><td>+ − × ÷, pourcentage, changement de signe, décimales, DEL, C puis AC. Priorité des opérations respectée : 2 + 3 × 4 = 14. L'expression complète s'affiche au-dessus du résultat. En XL, une colonne en plus : √, x², 1/x, π, ANS.</td></tr>
+          <tr class="todo"><td>3</td><td>Historique</td><td>CALC en XL et L : les derniers calculs, le plus récent en haut. Toucher une ligne reprend son résultat. Gardé dans le stockage local du widget (par <code>uniqueId</code>) ; CLEAR l'efface.</td></tr>
+          <tr class="todo"><td>4</td><td>Convertisseurs</td><td>UNITS, MONEY et BASE ont la même forme : deux champs, celui qu'on tape entouré de la couleur d'accent ; toucher l'autre champ inverse le sens ; ↑↓ échange les deux unités. En XL, L et M, une liste montre la valeur dans toutes les unités ; toucher une ligne en fait la cible.</td></tr>
+          <tr class="todo"><td>5</td><td>UNITS</td><td>15 catégories : longueur, poids, température, volume, surface, vitesse, données, débit, images par seconde (FPS ↔ temps d'image), durée, pression, énergie, puissance, consommation, angle. Inclut GB ↔ GiB, Mbit/s ↔ MB/s, tasses et cuillères.</td></tr>
+          <tr class="todo"><td>6</td><td>MONEY</td><td>Taux de référence du jour, gratuits, sans compte ni clé. Par exemple l'API de devises publiée sur jsDelivr (plus de 150 devises, crypto, or et argent) ou Frankfurter (taux BCE, une trentaine de devises). À choisir. Une mise à jour par jour, gardés pour le hors ligne ; la date des taux est toujours affichée. Permission réseau à déclarer.</td></tr>
+          <tr class="todo"><td>7</td><td>BASE</td><td>BIN, OCT, DEC, HEX sur des entiers de toute taille (BigInt). Touches A à F ; les touches qui n'existent pas dans la base tapée sont grisées. Largeur affichée (8, 16, 32, 64 BIT…). Groupes de 4 en hexadécimal et en binaire.</td></tr>
+          <tr class="todo"><td>8</td><td>TIME</td><td>Heure de la ville principale en gros points, jusqu'à 12 villes. −1H, −15M, NOW, +15M, +1H pour planifier un appel. Chaque ville montre son décalage, le jour (TOMORROW / YESTERDAY) et une barre de 24 points : heures de travail (9 h–18 h) allumées, heure affichée en couleur d'accent. Toucher une ville : la mettre en principale ou la retirer.</td></tr>
+          <tr class="todo"><td>9</td><td>Choisir une unité</td><td>Toucher l'étiquette d'un champ ouvre un sélecteur plein écran (catégories en haut pour UNITS). Le choix est gardé d'une session à l'autre.</td></tr>
+          <tr class="todo"><td>10</td><td>Écran</td><td>Nombres en gros points avec la police dot grasse de Dot Clock (plus le moins, le point, la virgule, les deux-points, A à F). La taille des points diminue quand le nombre s'allonge.</td></tr>
+          <tr class="todo"><td>11</td><td>Saisie</td><td>Touches en pilule, 60 px minimum (56 px en S faute de place). = et ↑↓ remplis de la couleur d'accent. Clavier physique en plus, à confirmer sur l'Edge avec Dot Keytest.</td></tr>
+          <tr class="todo"><td>12</td><td>Réglages</td><td>« Decimal separator » : Point (par défaut) ou Comma. « Digit grouping » : chiffres groupés par 3 (activé par défaut). « Clock format » : 24 h (par défaut) ou 12 h, pour TIME.</td></tr>
+          <tr class="todo"><td>13</td><td>Erreurs</td><td>Division par zéro ou racine d'un négatif : « E » en gros points et le message en rouge. Au-delà de 12 chiffres : « OVERFLOW ». Taux de change trop vieux (plus de 7 jours) : date en rouge.</td></tr>
+          <tr class="todo"><td>14</td><td>Couleurs</td><td>Mêmes réglages que Dot Clock : « Accent color », « Lit dot color », « Unlit dot color », « Label color ». Fond <code>#080808</code>.</td></tr>
+          <tr class="todo"><td>15</td><td>Tailles</td><td><b>XL</b> : CALC écran, clavier scientifique et historique ; convertisseurs champs, clavier et liste sur deux colonnes ; TIME ville principale et grille de 4 × 3 villes.<br><b>L</b> : la même chose en plus serré, liste sur une colonne, grille de 2 colonnes.<br><b>M</b> : champs et liste à gauche, clavier à droite (BASE : clavier en bas) ; TIME ville principale en haut, villes en bas.<br><b>S</b> : champs à gauche, clavier à droite, sans liste ; TIME heure à gauche, villes à droite.<br>Vertical : à concevoir.</td></tr>
+          <tr class="todo"><td>16</td><td>Compagnon</td><td>Non. Seul MONEY va sur le réseau, directement depuis le widget.</td></tr>
         </tbody>
       </table>
     </div>
@@ -212,20 +272,17 @@ canvas { display: block; }
 (function () {
   "use strict";
   function v(id) { return document.getElementById(id); }
-  var STD = [["AC", "⌫", "%", "÷"], ["7", "8", "9", "×"], ["4", "5", "6", "−"], ["1", "2", "3", "+"], ["±", "0", ".", "="]];
-  var SCI = ["√", "x²", "1/x", "π", "ANS"];
-  var SMALL = [["7", "8", "9", "÷", "AC"], ["4", "5", "6", "×", "⌫"], ["1", "2", "3", "−", "%"], ["0", ".", "±", "+", "="]];
   var SIZES = {
-    xl: { w: 2536, kmax: 1.0, dispW: 1000, hist: 6, tag: "XL 2536 × 696 px", note: "Écran à gauche, clavier avec fonctions scientifiques au centre, historique à droite." },
-    l: { w: 1688, kmax: 0.62, dispW: 760, hist: 3, tag: "L 1688 × 696 px", note: "Écran et historique à gauche, clavier à droite." },
-    m: { w: 840, kmax: 0.52, dispW: 760, hist: 0, tag: "M 840 × 696 px", note: "Écran en haut, clavier en bas." },
-    s: { w: 840, kmax: 0.5, dispW: 370, hist: 0, tag: "S 840 × 344 px", note: "Écran à gauche, clavier compact à droite." }
+    xl: { w: 2536, h: 696, tag: "XL 2536 × 696 px" },
+    l: { w: 1688, h: 696, tag: "L 1688 × 696 px" },
+    m: { w: 840, h: 696, tag: "M 840 × 696 px" },
+    s: { w: 840, h: 344, tag: "S 840 × 344 px" }
   };
-  var size = "xl", frame = v("frame"), stage = v("stage");
+  var size = "xl", mode = "calc", picker = null, frame = v("frame"), stage = v("stage");
   function fit() { stage.style.transform = "scale(" + frame.clientWidth / SIZES[size].w + ")"; }
   if (window.ResizeObserver) new ResizeObserver(fit).observe(frame); else window.addEventListener("resize", fit);
 
-  // ---------- police dot grasse du Dot Clock, plus les signes du calcul
+  // ---------- police dot grasse du Dot Clock, plus les signes
   var FONT = {
     "0": [".###.", "##.##", "##.##", "##.##", "##.##", "##.##", ".###."],
     "1": [".##.", "###.", ".##.", ".##.", ".##.", ".##.", "####"],
@@ -237,28 +294,24 @@ canvas { display: block; }
     "7": ["#####", "...##", "..##.", "..##.", ".##..", ".##..", ".##.."],
     "8": [".###.", "##.##", "##.##", ".###.", "##.##", "##.##", ".###."],
     "9": [".###.", "##.##", "##.##", ".####", "...##", "...##", ".###."],
+    "A": [".###.", "##.##", "##.##", "#####", "##.##", "##.##", "##.##"],
+    "B": ["####.", "##.##", "##.##", "####.", "##.##", "##.##", "####."],
+    "C": [".###.", "##.##", "##...", "##...", "##...", "##.##", ".###."],
+    "D": ["####.", "##.##", "##.##", "##.##", "##.##", "##.##", "####."],
+    "E": ["#####", "##...", "##...", "####.", "##...", "##...", "#####"],
+    "F": ["#####", "##...", "##...", "####.", "##...", "##...", "##..."],
     "-": ["....", "....", "....", "####", "....", "....", "...."],
     ".": ["..", "..", "..", "..", "..", "##", "##"],
     ",": ["..", "..", "..", "..", "##", "##", ".#"],
-    " ": ["", "", "", "", "", "", ""],
-    "E": ["#####", "##...", "##...", "####.", "##...", "##...", "#####"]
+    ":": ["..", "##", "##", "..", "##", "##", ".."],
+    " ": ["", "", "", "", "", "", ""]
   };
-
-  // ---------- état de la calculatrice
-  var tokens = [], cur = "0", fresh = true, shown = "", err = null, ans = 844;
-  var history = [
-    { e: ["2536", "×", "696"], r: 1765056 },
-    { e: ["1688", "÷", "2"], r: 844 },
-    { e: ["19.99", "×", "3"], r: 59.97 },
-    { e: ["√", "2"], r: 1.41421356237 },
-    { e: ["1765056", "÷", "3"], r: 588352 },
-    { e: ["120", "+", "15", "%"], r: 120.15 }
-  ];
 
   function settings() {
     return {
       dec: document.querySelector("input[name=dec]:checked").value,
       group: v("grouping").checked,
+      h12: document.querySelector("input[name=clock]:checked").value === "12",
       lit: v("litColor").value,
       unlitOn: v("showUnlit").checked,
       unlit: v("unlitColor").value,
@@ -267,6 +320,41 @@ canvas { display: block; }
     };
   }
 
+  // ---------- outils de dessin
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; }
+  function btn(cls, text, fn) { var b = el("button", cls, text); b.type = "button"; if (fn) b.addEventListener("click", fn); return b; }
+  function put(node, x, y, w, h) { node.style.left = x + "px"; node.style.top = y + "px"; if (w) node.style.width = w + "px"; if (h) node.style.height = h + "px"; stage.appendChild(node); return node; }
+  function canvasFor(w, h) {
+    var cv = document.createElement("canvas"), dpr = 2;
+    cv.width = Math.ceil(w * dpr); cv.height = Math.ceil(h * dpr); cv.style.width = w + "px"; cv.style.height = h + "px";
+    var ctx = cv.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { cv: cv, ctx: ctx };
+  }
+  function glyphW(cols, P, R) { return cols ? (cols - 1) * P + 2 * R : P * 0.6; }
+  function widthAt(text, k) {
+    var P = 36.7 * k, R = 13.6 * k, gap = 22 * k, w = 0;
+    for (var i = 0; i < text.length; i++) w += glyphW((FONT[text[i]] || FONT[" "])[0].length, P, R) + (i < text.length - 1 ? gap : 0);
+    return w;
+  }
+  function digits(text, kmax, maxW, s, color) {
+    text = String(text).toUpperCase();
+    var k = Math.min(kmax, maxW / widthAt(text, 1));
+    var P = 36.7 * k, R = 13.6 * k, gap = 22 * k;
+    var c = canvasFor(Math.max(1, widthAt(text, k)), 6 * P + 2 * R), x = 0;
+    for (var j = 0; j < text.length; j++) {
+      var g = FONT[text[j]] || FONT[" "], cols = g[0].length;
+      for (var row = 0; row < 7; row++) for (var cc = 0; cc < cols; cc++) {
+        var lit = g[row][cc] === "#";
+        if (!lit && !s.unlitOn) continue;
+        c.ctx.beginPath(); c.ctx.fillStyle = lit ? color : s.unlit;
+        c.ctx.arc(x + R + cc * P, R + row * P, R, 0, Math.PI * 2); c.ctx.fill();
+      }
+      x += glyphW(cols, P, R) + gap;
+    }
+    return c.cv;
+  }
+
+  // ---------- nombres
   function clean(n) { return parseFloat(n.toPrecision(12)); }
   function numStr(n) {
     if (!isFinite(n)) return null;
@@ -277,23 +365,92 @@ canvas { display: block; }
     if (s.indexOf("e") >= 0) s = n.toFixed(11).replace(/0+$/, "").replace(/\.$/, "");
     return s;
   }
-  // affichage : groupes de 3 chiffres et séparateur décimal choisi
-  function pretty(s, st, glyphSpace) {
+  // chaîne libre (résultat d'une conversion) : 10 chiffres significatifs, notation E au-delà
+  function convStr(n) {
+    if (!isFinite(n)) return null;
+    if (n === 0) return "0";
+    var a = Math.abs(n);
+    if (a >= 1e15 || a < 1e-6) {
+      var e = n.toExponential(5).split("e");
+      return e[0].replace(/0+$/, "").replace(/\.$/, "") + "E" + e[1].replace("+", "");
+    }
+    var s = String(parseFloat(n.toPrecision(10)));
+    if (s.indexOf("e") >= 0) s = n.toFixed(10).replace(/0+$/, "").replace(/\.$/, "");
+    return s;
+  }
+  // groupes de 3 chiffres et séparateur décimal choisi
+  function pretty(str, st, glyphSpace) {
+    var exp = "", s = str, ei = s.indexOf("E");
+    if (ei >= 0) { exp = s.slice(ei); s = s.slice(0, ei); }
     var neg = s[0] === "-"; if (neg) s = s.slice(1);
     var parts = s.split("."), int = parts[0];
     if (st.group) int = int.replace(/\B(?=(\d{3})+(?!\d))/g, glyphSpace ? " " : " ");
-    var out = int + (parts.length > 1 ? (st.dec === "," ? "," : ".") + parts[1] : "");
-    return (neg ? "-" : "") + out;
+    return (neg ? "-" : "") + int + (parts.length > 1 ? (st.dec === "," ? "," : ".") + parts[1] : "") + exp;
   }
+
+  // ---------- en-tête commun
+  var TABS = [["calc", "CALC"], ["units", "UNITS"], ["money", "MONEY"], ["base", "BASE"], ["time", "TIME"]];
+  function head() {
+    var Z = SIZES[size], small = size === "s" || size === "m";
+    var hd = el("div", "head");
+    hd.appendChild(el("span", "dot"));
+    hd.appendChild(el("p", "lbl", small ? "DOT" : "DOT CALCULATOR"));
+    hd.appendChild(el("span", "grow"));
+    var t = el("div", "tabs");
+    TABS.forEach(function (d) {
+      t.appendChild(btn("tab" + (mode === d[0] ? " on" : ""), d[1], function () { mode = d[0]; picker = null; render(); }));
+    });
+    hd.appendChild(t);
+    var m = size === "s" ? 20 : size === "m" ? 24 : 40;
+    put(hd, m, size === "s" ? 8 : 20, Z.w - 2 * m, 60);
+  }
+
+  // ---------- clavier générique : defs = [{k, label, cls, r, c, rs, off}]
+  function keypad(defs, cols, rows, onKey) {
+    var box = el("div", "keys");
+    box.style.gridTemplateColumns = "repeat(" + cols + ", 1fr)";
+    box.style.gridTemplateRows = "repeat(" + rows + ", 1fr)";
+    defs.forEach(function (d) {
+      var b = btn("key " + (d.cls || ""), d.label || d.k, function () { onKey(d.k); });
+      b.setAttribute("data-key", d.k);
+      b.style.gridColumn = (d.c + 1) + "";
+      b.style.gridRow = (d.r + 1) + (d.rs ? " / span " + d.rs : "");
+      if (d.off) b.disabled = true;
+      box.appendChild(b);
+    });
+    return box;
+  }
+  function grid(rows, extra) {
+    var out = [];
+    rows.forEach(function (row, r) { row.forEach(function (k, c) { if (k) out.push(Object.assign({ k: k, r: r, c: c }, (extra && extra(k)) || {})); }); });
+    return out;
+  }
+  function keyClass(k) {
+    if (k === "=") return { cls: "eq" };
+    if (k === "SWAP") return { cls: "swap", label: "↑↓" };
+    if ("+−×÷".indexOf(k) >= 0) return { cls: "op" };
+    if (["√", "x²", "1/x", "π", "ANS"].indexOf(k) >= 0) return { cls: "sci" };
+    if (k === "⌫") return { cls: "fn", label: "DEL" };
+    if (/^[0-9A-F.]$/.test(k)) return { cls: "num", label: k === "." ? settings().dec : k };
+    return { cls: "fn" };
+  }
+
+  // ================= CALC =================
+  var C = { tokens: ["1250", "+", "380", "×"], cur: "12", fresh: false, shown: "", err: null, ans: 844 };
+  var history = [
+    { e: ["2536", "×", "696"], r: 1765056 },
+    { e: ["1688", "÷", "2"], r: 844 },
+    { e: ["19.99", "×", "3"], r: 59.97 },
+    { e: ["√", "2"], r: 1.41421356237 },
+    { e: ["1765056", "÷", "3"], r: 588352 },
+    { e: ["120", "+", "15", "%"], r: 120.15 }
+  ];
   function exprText(e, st) {
     return e.map(function (t) { return /^-?[\d.]+$/.test(t) ? pretty(t, st, false) : t; }).join(" ").replace("√ ", "√").replace(" %", "%");
   }
-
   function evaluate(list) {
     var vals = [], ops = [];
-    for (var i = 0; i < list.length; i++) {
-      if (i % 2 === 0) vals.push(parseFloat(list[i])); else ops.push(list[i]);
-    }
+    for (var i = 0; i < list.length; i++) { if (i % 2 === 0) vals.push(parseFloat(list[i])); else ops.push(list[i]); }
     for (var j = 0; j < ops.length; ) {
       if (ops[j] === "×" || ops[j] === "÷") {
         if (ops[j] === "÷" && vals[j + 1] === 0) throw "CANNOT DIVIDE BY ZERO";
@@ -307,130 +464,470 @@ canvas { display: block; }
   }
   function setCur(n, label) {
     var s = numStr(n);
-    if (s === null) { err = "OVERFLOW"; return false; }
-    cur = s; fresh = true;
-    if (label) shown = label;
+    if (s === null) { C.err = "OVERFLOW"; return false; }
+    C.cur = s; C.fresh = true;
+    if (label) C.shown = label;
     return true;
   }
-
-  function press(k) {
-    if (err && k !== "AC") { err = null; tokens = []; cur = "0"; shown = ""; fresh = true; if (k === "⌫" || k === "C") { render(); return; } }
+  function calcKey(k) {
+    if (k === "AC" && !C.fresh) k = "C";
+    if (C.err && k !== "AC") { C.err = null; C.tokens = []; C.cur = "0"; C.shown = ""; C.fresh = true; if (k === "⌫" || k === "C") return; }
     var st = settings();
     if (/^\d$/.test(k)) {
-      if (fresh) { if (!tokens.length) shown = ""; cur = k; fresh = false; }
-      else if (cur.replace(/[-.]/g, "").length < 12) cur = cur === "0" ? k : cur === "-0" ? "-" + k : cur + k;
+      if (C.fresh) { if (!C.tokens.length) C.shown = ""; C.cur = k; C.fresh = false; }
+      else if (C.cur.replace(/[-.]/g, "").length < 12) C.cur = C.cur === "0" ? k : C.cur === "-0" ? "-" + k : C.cur + k;
     } else if (k === ".") {
-      if (fresh) { cur = "0."; fresh = false; } else if (cur.indexOf(".") < 0) cur += ".";
+      if (C.fresh) { C.cur = "0."; C.fresh = false; } else if (C.cur.indexOf(".") < 0) C.cur += ".";
     } else if (k === "⌫") {
-      if (!fresh) { cur = cur.length > 1 && cur !== "-0" ? cur.slice(0, -1) : "0"; if (cur === "-") cur = "0"; }
+      if (!C.fresh) { C.cur = C.cur.length > 1 && C.cur !== "-0" ? C.cur.slice(0, -1) : "0"; if (C.cur === "-") C.cur = "0"; }
     } else if (k === "AC" || k === "C") {
-      if (k === "C") { cur = "0"; fresh = true; } else { tokens = []; cur = "0"; fresh = true; shown = ""; err = null; }
+      if (k === "C") { C.cur = "0"; C.fresh = true; } else { C.tokens = []; C.cur = "0"; C.fresh = true; C.shown = ""; C.err = null; }
     } else if (k === "±") {
-      if (cur !== "0") cur = cur[0] === "-" ? cur.slice(1) : "-" + cur;
-    } else if (k === "%") {
-      setCur(parseFloat(cur) / 100);
-    } else if (k === "√") {
-      var x = parseFloat(cur);
-      if (x < 0) err = "NO ROOT OF A NEGATIVE"; else setCur(Math.sqrt(x), exprText(["√", cur], st));
-    } else if (k === "x²") { setCur(Math.pow(parseFloat(cur), 2), exprText([cur], st) + "²"); }
+      if (C.cur !== "0") C.cur = C.cur[0] === "-" ? C.cur.slice(1) : "-" + C.cur;
+    } else if (k === "%") { setCur(parseFloat(C.cur) / 100); }
+    else if (k === "√") {
+      var x = parseFloat(C.cur);
+      if (x < 0) C.err = "NO ROOT OF A NEGATIVE"; else setCur(Math.sqrt(x), exprText(["√", C.cur], st));
+    } else if (k === "x²") { setCur(Math.pow(parseFloat(C.cur), 2), exprText([C.cur], st) + "²"); }
     else if (k === "1/x") {
-      if (parseFloat(cur) === 0) err = "CANNOT DIVIDE BY ZERO"; else setCur(1 / parseFloat(cur), "1/" + exprText([cur], st));
-    } else if (k === "π") { setCur(Math.PI); fresh = false; }
-    else if (k === "ANS") { setCur(ans); fresh = false; }
+      if (parseFloat(C.cur) === 0) C.err = "CANNOT DIVIDE BY ZERO"; else setCur(1 / parseFloat(C.cur), "1/" + exprText([C.cur], st));
+    } else if (k === "π") { setCur(Math.PI); C.fresh = false; }
+    else if (k === "ANS") { setCur(C.ans); C.fresh = false; }
     else if ("+−×÷".indexOf(k) >= 0) {
-      if (fresh && tokens.length && tokens.length % 2 === 0) tokens[tokens.length - 1] = k;
-      else { tokens.push(cur.replace(/\.$/, "")); tokens.push(k); }
-      fresh = true; shown = "";
+      if (C.fresh && C.tokens.length && C.tokens.length % 2 === 0) C.tokens[C.tokens.length - 1] = k;
+      else { C.tokens.push(C.cur.replace(/\.$/, "")); C.tokens.push(k); }
+      C.fresh = true; C.shown = "";
     } else if (k === "=") {
-      if (!tokens.length) { render(); return; }
-      var list = tokens.concat([cur.replace(/\.$/, "")]);
+      if (!C.tokens.length) return;
+      var list = C.tokens.concat([C.cur.replace(/\.$/, "")]);
       try {
         var r = evaluate(list);
-        if (setCur(r, exprText(list, st) + " =")) {
-          ans = clean(r);
-          history.unshift({ e: list, r: ans });
-          history = history.slice(0, 20);
-        }
-      } catch (e) { err = e; }
-      tokens = [];
+        if (setCur(r, exprText(list, st) + " =")) { C.ans = clean(r); history.unshift({ e: list, r: C.ans }); history = history.slice(0, 20); }
+      } catch (e) { C.err = e; }
+      C.tokens = [];
     }
-    render();
+  }
+  var STD = [["AC", "⌫", "%", "÷"], ["7", "8", "9", "×"], ["4", "5", "6", "−"], ["1", "2", "3", "+"], ["±", "0", ".", "="]];
+  var SCI = ["√", "x²", "1/x", "π", "ANS"];
+  var SMALL = [["7", "8", "9", "÷", "AC"], ["4", "5", "6", "×", "⌫"], ["1", "2", "3", "−", "%"], ["0", ".", "±", "+", "="]];
+  function viewCalc(s) {
+    var L = {
+      xl: { d: [56, 100, 1000, 560], k: [1110, 100, 820, 572], h: [1990, 92, 506], kmax: 1.0, hist: 6 },
+      l: { d: [56, 100, 760, 250], k: [890, 100, 758, 572], h: [40, 370, 800], kmax: 0.62, hist: 3 },
+      m: { d: [40, 88, 760, 184], k: [24, 284, 792, 388], kmax: 0.42 },
+      s: { d: [20, 76, 380, 256], k: [412, 76, 408, 260], kmax: 0.45 }
+    }[size];
+    var d = el("div", "display");
+    var line = C.err ? "" : C.shown || exprText(C.tokens, s);
+    d.appendChild(el("p", "lbl expr", line || " "));
+    d.appendChild(digits(C.err ? "E" : pretty(C.cur, s, true), L.kmax, L.d[2], s, C.err ? "#ed403b" : s.lit));
+    d.appendChild(el("p", "lbl note" + (C.err ? " warn" : ""), C.err || ""));
+    put(d, L.d[0], L.d[1], L.d[2], L.d[3]);
+    var rows = size === "s" ? SMALL : size === "xl" ? STD.map(function (r, i) { return [SCI[i]].concat(r); }) : STD;
+    var defs = grid(rows, function (k) {
+      var o = keyClass(k);
+      if (k === "AC" && !C.fresh) o.label = "C";
+      return o;
+    });
+    put(keypad(defs, rows[0].length, rows.length, function (k) { calcKey(k); render(); }), L.k[0], L.k[1], L.k[2], L.k[3]);
+    if (L.hist) {
+      var h = el("div", "hist");
+      var top = el("div", "top");
+      top.appendChild(el("p", "lbl", "HISTORY"));
+      top.appendChild(btn("pill", "CLEAR", function () { history = []; render(); }));
+      h.appendChild(top);
+      if (!history.length) h.appendChild(el("p", "lbl", "NO CALCULATIONS YET"));
+      history.slice(0, L.hist).forEach(function (it) {
+        var b = btn("hrow", undefined, function () { C.err = null; setCur(it.r); C.fresh = false; render(); });
+        b.appendChild(el("span", "lbl", exprText(it.e, s) + " ="));
+        b.appendChild(el("span", "val", pretty(numStr(it.r), s, false)));
+        h.appendChild(b);
+      });
+      put(h, L.h[0], L.h[1], L.h[2]);
+    }
   }
 
-  // ---------- dessins
-  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; }
-  function canvasFor(w, h) {
-    var cv = document.createElement("canvas"), dpr = 2;
-    cv.width = Math.ceil(w * dpr); cv.height = Math.ceil(h * dpr); cv.style.width = w + "px"; cv.style.height = h + "px";
-    var ctx = cv.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    return { cv: cv, ctx: ctx };
+  // ================= UNITS =================
+  function lin(id, name, f) { return { id: id, name: name, f: f }; }
+  function fun(id, name, to, from) { return { id: id, name: name, to: to, from: from }; }
+  var CATS = [
+    { id: "length", name: "LENGTH", def: ["km", "mi", "42.195"], units: [lin("nm", "NANOMETRE", 1e-9), lin("µm", "MICROMETRE", 1e-6), lin("mm", "MILLIMETRE", 1e-3), lin("cm", "CENTIMETRE", 1e-2), lin("m", "METRE", 1), lin("km", "KILOMETRE", 1e3), lin("in", "INCH", 0.0254), lin("ft", "FOOT", 0.3048), lin("yd", "YARD", 0.9144), lin("mi", "MILE", 1609.344), lin("nmi", "NAUTICAL MILE", 1852)] },
+    { id: "weight", name: "WEIGHT", def: ["kg", "lb", "75"], units: [lin("mg", "MILLIGRAM", 1e-6), lin("g", "GRAM", 1e-3), lin("kg", "KILOGRAM", 1), lin("t", "TONNE", 1e3), lin("oz", "OUNCE", 0.028349523125), lin("lb", "POUND", 0.45359237), lin("st", "STONE", 6.35029318)] },
+    { id: "temp", name: "TEMPERATURE", def: ["°F", "°C", "72"], units: [fun("°C", "CELSIUS", function (x) { return x + 273.15; }, function (k) { return k - 273.15; }), fun("°F", "FAHRENHEIT", function (x) { return (x - 32) * 5 / 9 + 273.15; }, function (k) { return (k - 273.15) * 9 / 5 + 32; }), lin("K", "KELVIN", 1), lin("°R", "RANKINE", 5 / 9)] },
+    { id: "volume", name: "VOLUME", def: ["cup", "mL", "2"], units: [lin("mL", "MILLILITRE", 1e-3), lin("cL", "CENTILITRE", 1e-2), lin("L", "LITRE", 1), lin("m³", "CUBIC METRE", 1e3), lin("tsp", "TEASPOON", 0.00492892159375), lin("tbsp", "TABLESPOON", 0.01478676478125), lin("cup", "CUP (US)", 0.2365882365), lin("fl oz", "FLUID OUNCE", 0.0295735295625), lin("pt", "PINT (US)", 0.473176473), lin("gal", "GALLON (US)", 3.785411784)] },
+    { id: "area", name: "AREA", def: ["m²", "ft²", "50"], units: [lin("cm²", "SQUARE CENTIMETRE", 1e-4), lin("m²", "SQUARE METRE", 1), lin("ha", "HECTARE", 1e4), lin("km²", "SQUARE KILOMETRE", 1e6), lin("in²", "SQUARE INCH", 0.00064516), lin("ft²", "SQUARE FOOT", 0.09290304), lin("ac", "ACRE", 4046.8564224), lin("mi²", "SQUARE MILE", 2589988.110336)] },
+    { id: "speed", name: "SPEED", def: ["km/h", "mph", "130"], units: [lin("m/s", "METRE PER SECOND", 1), lin("km/h", "KILOMETRE PER HOUR", 1 / 3.6), lin("mph", "MILE PER HOUR", 0.44704), lin("kn", "KNOT", 1852 / 3600), lin("ft/s", "FOOT PER SECOND", 0.3048)] },
+    { id: "data", name: "DATA", def: ["GB", "GiB", "500"], units: [lin("bit", "BIT", 0.125), lin("B", "BYTE", 1), lin("kB", "KILOBYTE", 1e3), lin("MB", "MEGABYTE", 1e6), lin("GB", "GIGABYTE", 1e9), lin("TB", "TERABYTE", 1e12), lin("KiB", "KIBIBYTE", 1024), lin("MiB", "MEBIBYTE", 1048576), lin("GiB", "GIBIBYTE", 1073741824), lin("TiB", "TEBIBYTE", 1099511627776)] },
+    { id: "rate", name: "DATA RATE", def: ["Mbit/s", "MB/s", "940"], units: [lin("bit/s", "BIT PER SECOND", 1), lin("kbit/s", "KILOBIT PER SECOND", 1e3), lin("Mbit/s", "MEGABIT PER SECOND", 1e6), lin("Gbit/s", "GIGABIT PER SECOND", 1e9), lin("kB/s", "KILOBYTE PER SECOND", 8e3), lin("MB/s", "MEGABYTE PER SECOND", 8e6), lin("GB/s", "GIGABYTE PER SECOND", 8e9)] },
+    { id: "fps", name: "FRAME RATE", def: ["FPS", "ms", "144"], units: [lin("FPS", "FRAMES PER SECOND", 1), lin("Hz", "HERTZ", 1), fun("ms", "FRAME TIME", function (x) { return 1000 / x; }, function (f) { return 1000 / f; }), fun("µs", "FRAME TIME", function (x) { return 1e6 / x; }, function (f) { return 1e6 / f; })] },
+    { id: "time", name: "TIME", def: ["h", "min", "1.5"], units: [lin("ms", "MILLISECOND", 1e-3), lin("s", "SECOND", 1), lin("min", "MINUTE", 60), lin("h", "HOUR", 3600), lin("d", "DAY", 86400), lin("wk", "WEEK", 604800), lin("mo", "MONTH", 2629746), lin("yr", "YEAR", 31556952)] },
+    { id: "pressure", name: "PRESSURE", def: ["bar", "psi", "2.4"], units: [lin("Pa", "PASCAL", 1), lin("kPa", "KILOPASCAL", 1e3), lin("bar", "BAR", 1e5), lin("psi", "POUND PER SQ INCH", 6894.757293168), lin("atm", "ATMOSPHERE", 101325), lin("mmHg", "MILLIMETRE OF MERCURY", 133.322387415)] },
+    { id: "energy", name: "ENERGY", def: ["kcal", "kJ", "250"], units: [lin("J", "JOULE", 1), lin("kJ", "KILOJOULE", 1e3), lin("cal", "CALORIE", 4.184), lin("kcal", "KILOCALORIE", 4184), lin("Wh", "WATT HOUR", 3600), lin("kWh", "KILOWATT HOUR", 3.6e6), lin("BTU", "BRITISH THERMAL UNIT", 1055.05585262)] },
+    { id: "power", name: "POWER", def: ["hp", "kW", "300"], units: [lin("W", "WATT", 1), lin("kW", "KILOWATT", 1e3), lin("hp", "HORSEPOWER", 745.69987158227), lin("PS", "METRIC HORSEPOWER", 735.49875), lin("BTU/h", "BTU PER HOUR", 0.29307107)] },
+    { id: "fuel", name: "FUEL ECONOMY", def: ["L/100km", "mpg", "6.5"], units: [lin("km/L", "KILOMETRE PER LITRE", 1), fun("L/100km", "LITRES PER 100 KM", function (x) { return 100 / x; }, function (k) { return 100 / k; }), lin("mpg", "MILES PER GALLON (US)", 0.425143707), lin("mpg UK", "MILES PER GALLON (UK)", 0.354006189)] },
+    { id: "angle", name: "ANGLE", def: ["°", "rad", "90"], units: [lin("°", "DEGREE", 1), lin("rad", "RADIAN", 180 / Math.PI), lin("grad", "GRADIAN", 0.9), lin("turn", "TURN", 360), lin("′", "ARCMINUTE", 1 / 60), lin("″", "ARCSECOND", 1 / 3600)] }
+  ];
+  function catOf(id) { return CATS.filter(function (c) { return c.id === id; })[0]; }
+  function unitOf(cat, id) { return cat.units.filter(function (u) { return u.id === id; })[0]; }
+  function toBase(u, x) { return u.to ? u.to(x) : x * u.f; }
+  function fromBase(u, b) { return u.from ? u.from(b) : b / u.f; }
+
+  // ================= MONEY (taux fictifs, base 1 EUR) =================
+  var CUR = [
+    ["EUR", "EURO", 1], ["USD", "US DOLLAR", 1.162], ["GBP", "BRITISH POUND", 0.872], ["JPY", "JAPANESE YEN", 176.4], ["CHF", "SWISS FRANC", 0.928],
+    ["CAD", "CANADIAN DOLLAR", 1.628], ["AUD", "AUSTRALIAN DOLLAR", 1.781], ["CNY", "CHINESE YUAN", 8.31], ["INR", "INDIAN RUPEE", 102.6], ["KRW", "SOUTH KOREAN WON", 1652],
+    ["BRL", "BRAZILIAN REAL", 6.31], ["MXN", "MEXICAN PESO", 21.48], ["SEK", "SWEDISH KRONA", 11.02], ["NOK", "NORWEGIAN KRONE", 11.71], ["PLN", "POLISH ZLOTY", 4.252],
+    ["TRY", "TURKISH LIRA", 49.1], ["AED", "UAE DIRHAM", 4.267], ["SAR", "SAUDI RIYAL", 4.358], ["SGD", "SINGAPORE DOLLAR", 1.509], ["HKD", "HONG KONG DOLLAR", 9.03],
+    ["BTC", "BITCOIN", 0.0000107], ["ETH", "ETHER", 0.000301], ["XAU", "GOLD (OUNCE)", 0.000287], ["XAG", "SILVER (OUNCE)", 0.0241]
+  ].map(function (c) { return { id: c[0], name: c[1], rate: c[2], fiat: !/^(BTC|ETH|XAU|XAG)$/.test(c[0]) }; });
+  function curOf(id) { return CUR.filter(function (c) { return c.id === id; })[0]; }
+  function moneyStr(n, c) {
+    if (!isFinite(n)) return null;
+    if (c.fiat && Math.abs(n) < 1e13) return n.toFixed(2);
+    return convStr(n);
   }
-  function glyphW(cols, P, R) { return cols ? (cols - 1) * P + 2 * R : P * 0.6; }
-  function widthAt(text, k) {
-    var P = 36.7 * k, R = 13.6 * k, gap = 22 * k, w = 0;
-    for (var i = 0; i < text.length; i++) w += glyphW(FONT[text[i]][0].length, P, R) + (i < text.length - 1 ? gap : 0);
+
+  // ================= BASE =================
+  var BASES = [{ id: "BIN", name: "BINARY", r: 2 }, { id: "OCT", name: "OCTAL", r: 8 }, { id: "DEC", name: "DECIMAL", r: 10 }, { id: "HEX", name: "HEXADECIMAL", r: 16 }];
+  function baseOf(id) { return BASES.filter(function (b) { return b.id === id; })[0]; }
+  function parseBig(str, r) {
+    var neg = str[0] === "-", s = neg ? str.slice(1) : str, v = 0n, R = BigInt(r);
+    for (var i = 0; i < s.length; i++) v = v * R + BigInt(parseInt(s[i], 16));
+    return neg ? -v : v;
+  }
+  function bigStr(v, r) { var neg = v < 0n; return (neg ? "-" : "") + (neg ? -v : v).toString(r).toUpperCase(); }
+  function groupBase(str, id, st, glyphSpace) {
+    var neg = str[0] === "-", s = neg ? str.slice(1) : str, sp = glyphSpace ? " " : " ";
+    var n = id === "HEX" || id === "BIN" ? 4 : 3;
+    if (id === "DEC" && !st.group) n = 0;
+    if (n) s = s.replace(new RegExp("\\B(?=(.{" + n + "})+(?!.))", "g"), sp);
+    return (neg ? "-" : "") + s;
+  }
+  function bitWidth(v) {
+    var bits = (v < 0n ? -v : v).toString(2).length + (v < 0n ? 1 : 0), w = 8;
+    while (w < bits) w *= 2;
     return w;
   }
-  function digits(text, kmax, maxW, s, color) {
-    var k = Math.min(kmax, maxW / widthAt(text, 1));
-    var P = 36.7 * k, R = 13.6 * k, gap = 22 * k;
-    var c = canvasFor(widthAt(text, k), 6 * P + 2 * R), x = 0;
-    for (var j = 0; j < text.length; j++) {
-      var g = FONT[text[j]], cols = g[0].length;
-      for (var row = 0; row < 7; row++) for (var cc = 0; cc < cols; cc++) {
-        var lit = g[row][cc] === "#";
-        if (!lit && !s.unlitOn) continue;
-        c.ctx.beginPath(); c.ctx.fillStyle = lit ? color : s.unlit;
-        c.ctx.arc(x + R + cc * P, R + row * P, R, 0, Math.PI * 2); c.ctx.fill();
+
+  // ================= état des convertisseurs =================
+  var CV = {
+    units: { cat: "length", a: "km", b: "mi", src: "a", input: "42.195" },
+    money: { a: "USD", b: "EUR", src: "a", input: "250" },
+    base: { a: "DEC", b: "HEX", src: "a", input: "3735928559" }
+  };
+  // valeur de chaque côté, en chaîne brute
+  function convValues(m) {
+    var st = CV[m], srcU = st[st.src], dstSide = st.src === "a" ? "b" : "a";
+    var out = {}; out[st.src] = st.input;
+    if (m === "units") {
+      var cat = catOf(st.cat), x = parseFloat(st.input) || 0, b = toBase(unitOf(cat, srcU), x);
+      out.all = cat.units.map(function (u) { return { u: u, s: convStr(fromBase(u, b)) }; });
+      out[dstSide] = convStr(fromBase(unitOf(cat, st[dstSide]), b));
+    } else if (m === "money") {
+      var y = parseFloat(st.input) || 0, eur = y / curOf(srcU).rate;
+      out.all = CUR.map(function (c) { return { u: c, s: moneyStr(eur * c.rate, c) }; });
+      out[dstSide] = moneyStr(eur * curOf(st[dstSide]).rate, curOf(st[dstSide]));
+    } else {
+      var big = parseBig(st.input || "0", baseOf(srcU).r);
+      out.big = big;
+      out.all = BASES.map(function (bb) { return { u: bb, s: bigStr(big, bb.r) }; });
+      out[dstSide] = bigStr(big, baseOf(st[dstSide]).r);
+    }
+    return out;
+  }
+  function convKey(m, k) {
+    var st = CV[m], maxLen = m === "base" ? 32 : 12;
+    var isDigit = m === "base" ? /^[0-9A-F]$/.test(k) && parseInt(k, 16) < baseOf(st[st.src]).r : /^\d$/.test(k);
+    if (isDigit) {
+      if (st.input.replace(/[-.]/g, "").length >= maxLen) return;
+      st.input = st.input === "0" ? k : st.input === "-0" ? "-" + k : st.input + k;
+    } else if (k === "." && m !== "base") { if (st.input.indexOf(".") < 0) st.input += "."; }
+    else if (k === "⌫") { st.input = st.input.length > 1 ? st.input.slice(0, -1) : "0"; if (st.input === "-") st.input = "0"; }
+    else if (k === "AC") { st.input = "0"; }
+    else if (k === "±") { if (st.input !== "0") st.input = st.input[0] === "-" ? st.input.slice(1) : "-" + st.input; }
+    else if (k === "SWAP") { var t = st.a; st.a = st.b; st.b = t; }
+  }
+  function makeSource(m, side) {
+    var st = CV[m];
+    if (st.src === side) return;
+    var vals = convValues(m), raw = vals[side];
+    st.src = side;
+    if (raw === null || raw === undefined) raw = "0";
+    if (m !== "base" && /E/.test(raw)) raw = String(parseFloat(raw.replace("E", "e")));
+    st.input = m === "base" ? raw : (numStr(parseFloat(raw)) || "0");
+  }
+  function setTarget(m, id) {
+    var st = CV[m], dst = st.src === "a" ? "b" : "a";
+    if (st[st.src] === id) { st[st.src] = st[dst]; }
+    st[dst] = id;
+  }
+  function unitInfo(m, id) {
+    if (m === "units") { var u = unitOf(catOf(CV.units.cat), id); return { code: u.id, name: u.name }; }
+    if (m === "money") { var c = curOf(id); return { code: c.id, name: c.name }; }
+    var b = baseOf(id); return { code: b.id, name: b.name };
+  }
+
+  function viewConv(s) {
+    var m = mode, st = CV[m], vals = convValues(m), isBase = m === "base";
+    var L = isBase ? {
+      xl: { f: [40, 168, 1060, 504], k: [1124, 100, 560, 572], l: [1708, 100, 788, 572], cols: 1, kmax: 0.82 },
+      l: { f: [40, 168, 640, 504], k: [704, 100, 520, 572], l: [1248, 100, 400, 572], cols: 1, kmax: 0.6 },
+      m: { f: [24, 168, 792, 230], k: [24, 412, 792, 260], kmax: 0.38 },
+      s: { f: [20, 76, 392, 260], k: [424, 76, 396, 260], kmax: 0.36 }
+    }[size] : {
+      xl: { f: [40, 168, 1020, 504], k: [1084, 100, 420, 572], l: [1530, 100, 966, 572], cols: 2, kmax: 0.82 },
+      l: { f: [40, 168, 720, 504], k: [784, 100, 380, 572], l: [1188, 100, 460, 572], cols: 1, kmax: 0.62 },
+      m: { f: [24, 168, 468, 230], k: [508, 100, 308, 572], l: [24, 412, 468, 260], cols: 1, kmax: 0.38 },
+      s: { f: [20, 76, 392, 260], k: [424, 76, 396, 260], kmax: 0.36 }
+    }[size];
+
+    // rangée d'info au-dessus des champs
+    if (size !== "s") {
+      var bar = el("div", "bar");
+      if (m === "units") {
+        var chip = btn("pill", catOf(st.cat).name + " ▾", function () { picker = { side: st.src === "a" ? "b" : "a", cats: true }; render(); });
+        bar.appendChild(chip);
+        bar.appendChild(el("p", "lbl", catOf(st.cat).units.length + " UNITS"));
+      } else if (m === "money") {
+        bar.appendChild(el("p", "lbl", size === "m" ? "RATES 22 OCT" : "RATES 22 OCT · DAILY REFERENCE"));
+        if (size !== "m") bar.appendChild(el("p", "lbl", CUR.length + " CURRENCIES"));
+      } else {
+        bar.appendChild(el("p", "lbl", "INTEGER"));
+        bar.appendChild(el("p", "lbl acc", bitWidth(vals.big) + " BIT"));
       }
-      x += glyphW(cols, P, R) + gap;
+      put(bar, L.f[0], 100, L.f[2], 60);
+    }
+
+    // les deux champs
+    var fields = el("div", "fields");
+    fields.style.gridTemplateRows = "1fr 1fr";
+    ["a", "b"].forEach(function (side) {
+      var isSrc = st.src === side, info = unitInfo(m, st[side]);
+      var f = el("div", "field" + (isSrc ? " src" : ""));
+      f.setAttribute("role", "button"); f.tabIndex = 0;
+      f.setAttribute("aria-label", (isSrc ? "Input in " : "Type in ") + info.name);
+      var badge = btn("badge", undefined, function (e) { e.stopPropagation(); picker = { side: side }; render(); });
+      badge.appendChild(el("b", "", info.code));
+      badge.appendChild(el("span", "lbl", info.name));
+      f.appendChild(badge);
+      var raw = vals[side], ok = raw !== null && raw !== undefined;
+      var text = !ok ? "E" : isBase ? groupBase(raw, st[side], s, true) : pretty(raw, s, true);
+      var num = el("div", "num");
+      num.appendChild(digits(text, L.kmax, L.f[2] - (size === "s" || size === "m" ? 170 : 330), s, ok ? s.lit : "#ed403b"));
+      f.appendChild(num);
+      f.addEventListener("click", function () { makeSource(m, side); render(); });
+      fields.appendChild(f);
+    });
+    put(fields, L.f[0], L.f[1], L.f[2], L.f[3]);
+
+    // clavier
+    var defs;
+    if (isBase) {
+      var r = baseOf(st[st.src]).r;
+      defs = grid([["7", "8", "9", "A", "B"], ["4", "5", "6", "C", "D"], ["1", "2", "3", "E", "F"], ["±", "0", "⌫", "AC", "SWAP"]], function (k) {
+        var o = keyClass(k);
+        if (/^[0-9A-F]$/.test(k) && parseInt(k, 16) >= r) o.off = true;
+        return o;
+      });
+      put(keypad(defs, 5, 4, function (k) { convKey(m, k); render(); }), L.k[0], L.k[1], L.k[2], L.k[3]);
+    } else {
+      defs = grid([["7", "8", "9", "⌫"], ["4", "5", "6", "AC"], ["1", "2", "3", "SWAP"], ["±", "0", ".", null]], function (k) {
+        var o = keyClass(k); if (k === "SWAP") o.rs = 2; return o;
+      });
+      put(keypad(defs, 4, 4, function (k) { convKey(m, k); render(); }), L.k[0], L.k[1], L.k[2], L.k[3]);
+    }
+
+    // liste de toutes les unités
+    if (L.l) {
+      var list = el("div", "list");
+      var lh = el("div", "lhead");
+      var srcInfo = unitInfo(m, st[st.src]);
+      var srcText = isBase ? groupBase(st.input, st[st.src], s, false) : pretty(st.input, s, false);
+      lh.appendChild(el("p", "lbl", srcText + " " + srcInfo.code + " ="));
+      lh.appendChild(el("p", "lbl", "TAP TO SET"));
+      list.appendChild(lh);
+      var rows = el("div", "lrows scroll");
+      rows.style.gridTemplateColumns = "repeat(" + L.cols + ", minmax(0, 1fr))";
+      rows.style.maxHeight = (L.l[3] - 32) + "px";
+      var dst = st.src === "a" ? "b" : "a";
+      vals.all.forEach(function (it) {
+        if (it.u.id === st[st.src]) return;
+        var row = btn("lrow" + (it.u.id === st[dst] ? " tgt" : "") + (isBase ? " wrap" : ""), undefined, function () { setTarget(m, it.u.id); render(); });
+        row.appendChild(el("b", "", it.u.id));
+        row.appendChild(el("span", "lbl", it.u.name));
+        var txt = it.s === null ? "—" : isBase ? groupBase(it.s, it.u.id, s, false) : pretty(it.s, s, false);
+        row.appendChild(el("span", "v", txt));
+        rows.appendChild(row);
+      });
+      list.appendChild(rows);
+      put(list, L.l[0], L.l[1], L.l[2], L.l[3]);
+    }
+  }
+
+  function viewPicker(s) {
+    var Z = SIZES[size], mx = size === "s" ? 20 : size === "m" ? 24 : 40, y0 = size === "s" ? 76 : 96;
+    var p = el("div", "picker scroll");
+    var top = el("div", "ptop");
+    var label = mode === "time" ? (picker.city === -1 ? "MAIN CITY" : "ADD A CITY") : "CHOOSE " + (picker.side === CV[mode].src ? "INPUT" : "TARGET");
+    top.appendChild(el("p", "lbl", label));
+    top.appendChild(btn("pill", "‹ BACK", function () { picker = null; render(); }));
+    p.appendChild(top);
+    var opts = el("div", "opts");
+    if (mode === "time") {
+      var used = T.cities.map(function (c) { return c[1]; }).concat([T.main[1]]);
+      POOL.forEach(function (c) {
+        if (picker.city !== -1 && used.indexOf(c[1]) >= 0) return;
+        var o = btn("opt" + (c[1] === T.main[1] && picker.city === -1 ? " on" : ""), undefined, function () {
+          if (picker.city === -1) { var i = T.cities.map(function (x) { return x[1]; }).indexOf(c[1]); if (i >= 0) T.cities[i] = T.main; T.main = c; }
+          else T.cities.push(c);
+          picker = null; render();
+        });
+        o.appendChild(el("b", "", c[0]));
+        o.appendChild(el("span", "lbl", tzOffsetLabel(c[1])));
+        opts.appendChild(o);
+      });
+    } else {
+      var st = CV[mode];
+      if (mode === "units" && size !== "s") {
+        var chips = el("div", "chips");
+        CATS.forEach(function (c) {
+          chips.appendChild(btn("chip" + (c.id === st.cat ? " on" : ""), c.name, function () {
+            st.cat = c.id; st.a = c.def[0]; st.b = c.def[1]; st.src = "a"; st.input = c.def[2]; render();
+          }));
+        });
+        p.appendChild(chips);
+      } else if (mode === "units") {
+        var cb = el("div", "chips");
+        cb.appendChild(btn("chip on", catOf(st.cat).name + " ▸", function () {
+          var i = CATS.indexOf(catOf(st.cat)), c = CATS[(i + 1) % CATS.length];
+          st.cat = c.id; st.a = c.def[0]; st.b = c.def[1]; st.src = "a"; st.input = c.def[2]; render();
+        }));
+        p.appendChild(cb);
+      }
+      var items = mode === "units" ? catOf(st.cat).units : mode === "money" ? CUR : BASES;
+      items.forEach(function (u) {
+        var o = btn("opt" + (u.id === st[picker.side] ? " on" : ""), undefined, function () {
+          var other = picker.side === "a" ? "b" : "a";
+          if (st[other] === u.id) st[other] = st[picker.side];
+          st[picker.side] = u.id; picker = null; render();
+        });
+        o.appendChild(el("b", "", u.id));
+        o.appendChild(el("span", "lbl", u.name));
+        opts.appendChild(o);
+      });
+    }
+    p.appendChild(opts);
+    put(p, mx, y0, Z.w - 2 * mx, Z.h - y0 - 12);
+  }
+
+  // ================= TIME =================
+  var POOL = [["PARIS", "Europe/Paris"], ["LONDON", "Europe/London"], ["NEW YORK", "America/New_York"], ["TOKYO", "Asia/Tokyo"], ["SYDNEY", "Australia/Sydney"], ["DUBAI", "Asia/Dubai"], ["LOS ANGELES", "America/Los_Angeles"], ["SINGAPORE", "Asia/Singapore"], ["SÃO PAULO", "America/Sao_Paulo"], ["MUMBAI", "Asia/Kolkata"], ["BERLIN", "Europe/Berlin"], ["MONTREAL", "America/Toronto"], ["HONG KONG", "Asia/Hong_Kong"], ["REYKJAVIK", "Atlantic/Reykjavik"], ["AUCKLAND", "Pacific/Auckland"]];
+  var T = { main: POOL[0], cities: POOL.slice(1, 9), offset: 0, edit: -1 };
+  function parts(date, tz) {
+    var f = new Intl.DateTimeFormat("en-GB", { timeZone: tz, year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hourCycle: "h23", weekday: "short" });
+    var o = {}; f.formatToParts(date).forEach(function (p) { o[p.type] = p.value; });
+    return { y: +o.year, mo: +o.month, d: +o.day, h: +o.hour, mi: +o.minute, wd: o.weekday.toUpperCase() };
+  }
+  function tzOffset(tz, date) {
+    var p = parts(date || new Date(), tz);
+    return Math.round((Date.UTC(p.y, p.mo - 1, p.d, p.h, p.mi) - Math.floor((date || new Date()).getTime() / 60000) * 60000) / 60000);
+  }
+  function fmtOff(min, utc) {
+    var sign = min < 0 ? "−" : "+", a = Math.abs(min), h = Math.floor(a / 60), m = a % 60;
+    if (utc) return "UTC" + (min < 0 ? "-" : "+") + (h < 10 ? "0" : "") + h + ":" + (m < 10 ? "0" : "") + m;
+    if (!min) return "SAME TIME";
+    return sign + h + "H" + (m ? " " + m + "M" : "");
+  }
+  function tzOffsetLabel(tz) { return fmtOff(tzOffset(tz), true); }
+  function clock(p, h12) {
+    var h = p.h, ap = "";
+    if (h12) { ap = h < 12 ? "AM" : "PM"; h = h % 12 || 12; }
+    return { t: (h12 ? String(h) : (h < 10 ? "0" : "") + h) + ":" + (p.mi < 10 ? "0" : "") + p.mi, ap: ap };
+  }
+  function dayBar(p, w, s) {
+    var c = canvasFor(w, 14), pitch = w / 24, r = Math.min(5, pitch * 0.32);
+    for (var h = 0; h < 24; h++) {
+      var on = h >= 9 && h < 18, cur = h === p.h;
+      if (!on && !cur && !s.unlitOn) continue;
+      c.ctx.beginPath(); c.ctx.fillStyle = cur ? s.accent : on ? s.lit : s.unlit;
+      c.ctx.arc(h * pitch + pitch / 2, 7, cur ? r + 1.5 : r, 0, Math.PI * 2); c.ctx.fill();
     }
     return c.cv;
   }
+  var MON = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+  function viewTime(s) {
+    var L = {
+      xl: { m: [40, 100, 640, 572], g: [720, 100, 1776, 572], cols: 4, rows: 3, kmax: 1.0 },
+      l: { m: [40, 100, 540, 572], g: [620, 100, 1028, 572], cols: 2, rows: 4, kmax: 0.75 },
+      m: { m: [24, 92, 792, 290], g: [24, 394, 792, 278], cols: 2, rows: 2, kmax: 0.42 },
+      s: { m: [20, 76, 392, 260], g: [432, 76, 388, 260], cols: 1, rows: 3, kmax: 0.42 }
+    }[size];
+    var now = new Date(Date.now() + T.offset * 60000);
+    var mp = parts(now, T.main[1]), mc = clock(mp, s.h12), mainOff = tzOffset(T.main[1], now);
 
-  function display(s) {
-    var Z = SIZES[size], d = el("div", "display");
-    var line = err ? "" : shown || exprText(tokens, s);
-    d.appendChild(el("p", "lbl expr", line || " "));
-    var text = err ? "E" : pretty(cur, s, true);
-    d.appendChild(digits(text, Z.kmax, Z.dispW, s, err ? "#ed403b" : s.lit));
-    d.appendChild(el("p", "lbl note" + (err ? " warn" : ""), err || ""));
-    return d;
-  }
-  function keypad(s) {
-    var rows = size === "s" ? SMALL : STD, box = el("div", "keys");
-    rows.forEach(function (row, ri) {
-      var keys = size === "xl" ? [SCI[ri]].concat(row) : row;
-      keys.forEach(function (k) {
-        var label = k === "." ? s.dec : k === "⌫" ? "DEL" : k === "AC" && !fresh ? "C" : k;
-        var cls = k === "=" ? "eq" : "+−×÷".indexOf(k) >= 0 ? "op" : SCI.indexOf(k) >= 0 ? "sci" : /^[\d.]$/.test(k) ? "num" : "fn";
-        var b = el("button", "key " + cls, label); b.type = "button"; b.setAttribute("data-key", k);
-        b.setAttribute("aria-label", { "⌫": "Backspace", "±": "Change sign", "÷": "Divide", "×": "Multiply", "−": "Subtract", "+": "Add", "=": "Equals", ".": "Decimal separator" }[k] || label);
-        b.addEventListener("click", function () { press(k === "AC" && !fresh ? "C" : k); });
-        box.appendChild(b);
-      });
+    var main = el("div", "main");
+    var status = el("p", "lbl" + (T.offset ? " acc" : ""), T.offset ? (T.offset > 0 ? "+" : "−") + fmtOff(Math.abs(T.offset)).replace("+", "") : "● LIVE");
+    if (size !== "s") {
+      var bar = el("div", "bar");
+      bar.appendChild(btn("pill", T.main[0] + " ▾", function () { picker = { city: -1 }; render(); }));
+      bar.appendChild(status);
+      main.appendChild(bar);
+    }
+    var big = el("div", "bigtime");
+    var apW = s.h12 ? 60 : 0;
+    big.appendChild(digits(mc.t, L.kmax, L.m[2] - apW, s, s.lit));
+    if (s.h12) big.appendChild(el("p", "lbl", mc.ap));
+    main.appendChild(big);
+    var info = el("div", "info");
+    info.appendChild(el("p", "lbl", mp.wd + " " + mp.d + " " + MON[mp.mo - 1]));
+    info.appendChild(el("p", "lbl", size === "s" ? T.main[0] : fmtOff(mainOff, true)));
+    if (size === "s") info.appendChild(status);
+    main.appendChild(info);
+    main.appendChild(el("span", "grow"));
+    var steps = el("div", "steps");
+    [["−1H", -60], ["−15M", -15], ["NOW", 0], ["+15M", 15], ["+1H", 60]].forEach(function (d) {
+      steps.appendChild(btn("step" + (d[1] === 0 ? " now" : ""), d[0], function () { T.offset = d[1] === 0 ? 0 : T.offset + d[1]; render(); }));
     });
-    return box;
-  }
-  function historyPanel(s) {
-    var Z = SIZES[size], h = el("div", "hist");
-    var top = el("div", "top");
-    top.appendChild(el("p", "lbl", "HISTORY"));
-    var clr = el("button", "clear", "CLEAR"); clr.type = "button";
-    clr.addEventListener("click", function () { history = []; render(); });
-    top.appendChild(clr);
-    h.appendChild(top);
-    if (!history.length) h.appendChild(el("p", "lbl", "NO CALCULATIONS YET"));
-    history.slice(0, Z.hist).forEach(function (it) {
-      var b = el("button", "hrow"); b.type = "button";
-      b.appendChild(el("span", "lbl", exprText(it.e, s) + " ="));
-      b.appendChild(el("span", "val", pretty(numStr(it.r), s, false)));
-      b.addEventListener("click", function () { err = null; setCur(it.r); fresh = false; render(); });
-      h.appendChild(b);
+    main.appendChild(steps);
+    put(main, L.m[0], L.m[1], L.m[2], L.m[3]);
+
+    var g = el("div", "grid scroll");
+    g.style.gridTemplateColumns = "repeat(" + L.cols + ", minmax(0, 1fr))";
+    var cardH = (L.g[3] - (L.rows - 1) * 10) / L.rows;
+    g.style.gridAutoRows = cardH + "px";
+    var mainKey = mp.y * 400 + mp.mo * 31 + mp.d;
+    T.cities.forEach(function (c, i) {
+      var p = parts(now, c[1]), cl = clock(p, s.h12), off = tzOffset(c[1], now) - mainOff;
+      var key = p.y * 400 + p.mo * 31 + p.d, rel = key > mainKey ? " · TOMORROW" : key < mainKey ? " · YESTERDAY" : "";
+      var card = el("div", "city" + (T.edit === i ? " edit" : ""));
+      card.setAttribute("role", "button"); card.tabIndex = 0;
+      if (T.edit === i) {
+        card.appendChild(el("p", "name", c[0]));
+        var acts = el("div", "acts");
+        acts.appendChild(btn("pill", "SET AS MAIN", function (e) { e.stopPropagation(); T.cities[i] = T.main; T.main = c; T.edit = -1; render(); }));
+        acts.appendChild(btn("pill", "REMOVE", function (e) { e.stopPropagation(); T.cities.splice(i, 1); T.edit = -1; render(); }));
+        card.appendChild(acts);
+      } else {
+        var r1 = el("div", "row1");
+        r1.appendChild(el("span", "name", c[0]));
+        r1.appendChild(el("span", "t", cl.t));
+        if (cl.ap) r1.appendChild(el("span", "ap", cl.ap));
+        card.appendChild(r1);
+        card.appendChild(el("p", "lbl" + (rel ? " acc" : ""), fmtOff(off) + rel));
+        if (size !== "s") card.appendChild(dayBar(p, (L.g[2] - (L.cols - 1) * 10) / L.cols - 44, s));
+      }
+      card.addEventListener("click", function () { T.edit = T.edit === i ? -1 : i; render(); });
+      g.appendChild(card);
     });
-    return h;
+    if (T.cities.length < 12) {
+      var add = btn("city add", "+ ADD CITY", function () { picker = { city: T.cities.length }; render(); });
+      add.classList.add("lbl");
+      g.appendChild(add);
+    }
+    put(g, L.g[0], L.g[1], L.g[2], L.g[3]);
   }
 
+  // ================= rendu =================
   function render() {
     var s = settings();
     stage.className = "stage " + size;
@@ -438,28 +935,25 @@ canvas { display: block; }
     stage.style.setProperty("--lit", s.lit);
     stage.style.setProperty("--label", s.label);
     stage.innerHTML = "";
-    if (size === "xl") {
-      var hd = el("div", "head");
-      hd.appendChild(el("span", "dot"));
-      hd.appendChild(el("p", "lbl", "DOT CALCULATOR"));
-      hd.appendChild(el("span", "grow"));
-      stage.appendChild(hd);
-    }
-    stage.appendChild(display(s));
-    stage.appendChild(keypad(s));
-    if (SIZES[size].hist) stage.appendChild(historyPanel(s));
+    head();
+    if (picker) { viewPicker(s); return; }
+    if (mode === "calc") viewCalc(s);
+    else if (mode === "time") viewTime(s);
+    else viewConv(s);
   }
 
   // clavier physique
   var KEYMAP = { "+": "+", "-": "−", "*": "×", "x": "×", "/": "÷", "Enter": "=", "=": "=", "Backspace": "⌫", "Escape": "AC", "Delete": "AC", "%": "%", ".": ".", ",": "." };
   document.addEventListener("keydown", function (e) {
     var t = e.target; if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA")) return;
-    var k = /^\d$/.test(e.key) ? e.key : KEYMAP[e.key];
+    if (mode === "time" || picker) return;
+    var k = /^\d$/.test(e.key) ? e.key : mode === "base" && /^[a-fA-F]$/.test(e.key) ? e.key.toUpperCase() : KEYMAP[e.key];
     if (!k) return;
+    if (mode !== "calc" && "+−×÷=%".indexOf(k) >= 0) return;
     e.preventDefault();
-    if (k === "AC" && !fresh) k = "C";
-    press(k);
-    var b = stage.querySelector('[data-key="' + (k === "C" ? "AC" : k) + '"]');
+    if (mode === "calc") calcKey(k); else convKey(mode, k);
+    render();
+    var b = stage.querySelector('[data-key="' + k + '"]');
     if (b) { b.classList.add("pressed"); setTimeout(function () { b.classList.remove("pressed"); }, 120); }
   });
 
@@ -472,17 +966,15 @@ canvas { display: block; }
   });
   document.querySelectorAll(".sizebar .preset").forEach(function (b) {
     b.addEventListener("click", function () {
-      size = b.getAttribute("data-size");
+      size = b.getAttribute("data-size"); picker = null; T.edit = -1;
       document.querySelectorAll(".sizebar .preset").forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
       frame.className = "frame " + size;
-      v("sizeTag").textContent = "Version 0.1 · taille réelle " + SIZES[size].tag;
-      v("sizeNote").textContent = SIZES[size].note;
+      v("sizeTag").textContent = "Version 0.2 · taille réelle " + SIZES[size].tag;
       render(); fit();
     });
   });
+  setInterval(function () { if (mode === "time" && !picker && T.edit < 0) render(); }, 20000);
 
-  // état de départ : un calcul en cours
-  tokens = ["1250", "+", "380", "×"]; cur = "12"; fresh = false;
   render(); fit();
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(render);
 })();
