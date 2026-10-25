@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Maquette de référence du Dot Calculator (artefact de revue de design). Ouvrir dans un navigateur. -->
+<style>body { margin: 0; }</style>
+</head>
+<body>
+<title>Dot Calculator</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap">
+<style>
+/* Layout : maquette de référence en taille réelle (choix S, M, L, XL) avec ses réglages, puis tableau des choix. Même univers que Dot Clock, un seul thème sombre. */
+:root {
+  --page: #111111;
+  --panel: #0a0a0a;
+  --line: #262626;
+  --text: #e6e6e6;
+  --muted: #8c8c8c;
+  --brand: #10b981;
+  --mono: "IBM Plex Mono", "Cascadia Mono", Consolas, monospace;
+  --sans: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { background: var(--page); color: var(--text); }
+body {
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.55;
+  padding-block: 40px 72px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 1480px; margin: 0 auto; display: grid; gap: 40px; }
+header { display: grid; gap: 10px; }
+.eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); display: flex; align-items: center; gap: 10px; }
+.eyebrow::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--brand); }
+h1 { font-family: var(--mono); font-weight: 500; font-size: clamp(28px, 4vw, 44px); line-height: 1.1; margin: 0; letter-spacing: -.01em; }
+.lede { color: var(--muted); max-width: 72ch; margin: 0; }
+
+figure { margin: 0; display: grid; gap: 12px; min-width: 0; }
+.tag { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.tag b { color: var(--text); font-weight: 500; font-size: 14px; }
+figcaption { color: var(--muted); font-size: 14px; }
+
+/* tableau */
+.diff-head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; }
+h2 { font-family: var(--mono); font-weight: 500; font-size: 13px; letter-spacing: .14em; text-transform: uppercase; margin: 0; }
+.hint { color: var(--muted); font-size: 14px; margin: 0; }
+.table-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; }
+table { width: 100%; border-collapse: collapse; min-width: 640px; }
+th, td { text-align: left; padding: 14px 16px; vertical-align: top; border-bottom: 1px solid var(--line); }
+tr:last-child td { border-bottom: 0; }
+thead th { font-family: var(--mono); font-weight: 500; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); background: var(--panel); }
+td:first-child { font-family: var(--mono); color: var(--muted); width: 3.5em; font-variant-numeric: tabular-nums; }
+td:nth-child(2) { font-weight: 500; width: 15em; }
+tr.todo td:nth-child(3) { color: var(--muted); }
+code { font-family: var(--mono); font-size: 13px; color: var(--text); }
+
+/* réglages simulés */
+.settings { display: flex; flex-wrap: wrap; gap: 12px 28px; align-items: center; padding: 14px 16px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); }
+.settings label { display: inline-flex; align-items: center; gap: 10px; font-family: var(--mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); cursor: pointer; }
+.settings input[type=color] { width: 36px; height: 28px; padding: 0; border: 1px solid var(--line); border-radius: 6px; background: none; cursor: pointer; }
+.settings input[type=checkbox], .settings input[type=radio] { width: 18px; height: 18px; accent-color: var(--brand); cursor: pointer; }
+.settings input[type=text] { font-family: var(--mono); font-size: 13px; letter-spacing: .04em; color: var(--text); background: #141414; border: 1px solid var(--line); border-radius: 6px; padding: 6px 10px; width: 10em; }
+.settings .grp { display: inline-flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.settings .grp > span { font-family: var(--mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--text); }
+.settings input:focus-visible, .preset:focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; }
+.preset { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; padding: 6px 10px; border-radius: 6px; border: 1px solid var(--line); background: transparent; color: var(--text); cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+.preset i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+.sizebar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; }
+.sizebar > span { font-family: var(--mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-right: 6px; }
+.sizebar .preset[aria-pressed="true"] { background: var(--text); color: #0a0a0a; border-color: var(--text); }
+
+/* cadre à l'échelle de l'XL */
+.frame { position: relative; max-width: 100%; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: #080808; }
+.frame.xl { width: 100%; aspect-ratio: 2536 / 696; }
+.frame.l { width: calc(1688 / 2536 * 100%); aspect-ratio: 1688 / 696; }
+.frame.m { width: calc(840 / 2536 * 100%); aspect-ratio: 840 / 696; }
+.frame.s { width: calc(840 / 2536 * 100%); aspect-ratio: 840 / 344; }
+@media (max-width: 700px) { .frame.l, .frame.m, .frame.s { width: 100%; } }
+
+/* ---------- le widget : scène en pixels réels de l'emplacement ---------- */
+.stage { position: absolute; left: 0; top: 0; transform-origin: 0 0; background: #080808; --accent: #10b981; --lit: #f2f0e9; --label: #b8b6b0; --unlit: #1c1c1c; --fail: #ed403b; font-family: "Fira Code", Consolas, monospace; font-variant-ligatures: none; color: var(--lit); }
+.stage.xl { width: 2536px; height: 696px; }
+.stage.l { width: 1688px; height: 696px; }
+.stage.m { width: 840px; height: 696px; }
+.stage.s { width: 840px; height: 344px; }
+.stage > * { position: absolute; }
+.stage button { font-family: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.stage button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.lbl { margin: 0; white-space: nowrap; font-size: 18px; line-height: 24px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); }
+.val { margin: 0; white-space: nowrap; font-size: 26px; letter-spacing: .06em; color: var(--lit); }
+.warn { color: var(--fail) !important; }
+.head { left: 56px; right: 56px; top: 30px; height: 60px; display: flex; align-items: center; gap: 14px; }
+.head .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); }
+.head .grow { flex: 1; }
+canvas { display: block; }
+
+/* écran */
+.display { display: grid; align-content: end; justify-items: end; gap: 22px; }
+.display .expr { font-size: 26px; letter-spacing: .08em; color: var(--label); text-transform: none; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.display .note { min-height: 24px; }
+
+/* clavier */
+.keys { display: grid; gap: 12px; }
+.key { border-radius: 16px; border: 2px solid #2a2a2a; background: transparent; color: var(--lit); font-size: 32px; letter-spacing: .02em; display: grid; place-items: center; min-height: 60px; padding: 0; }
+.key:active, .key.pressed { background: #161616; }
+.key.fn { color: var(--label); font-size: 26px; letter-spacing: .1em; }
+.key.sci { color: var(--label); font-size: 24px; letter-spacing: .04em; border-style: dashed; }
+.key.op { color: var(--accent); font-size: 38px; }
+.key.eq { background: var(--accent); border-color: var(--accent); color: #080808; font-size: 40px; }
+.key.eq:active, .key.eq.pressed { filter: brightness(.85); }
+
+/* historique */
+.hist { display: grid; gap: 6px; align-content: start; }
+.hist .top { display: flex; justify-content: space-between; align-items: center; height: 60px; }
+.hist .clear { height: 60px; padding: 0 22px; border-radius: 999px; border: 2px solid #2a2a2a; background: transparent; color: var(--label); font-size: 18px; letter-spacing: .2em; }
+.hrow { display: grid; gap: 2px; justify-items: end; min-height: 72px; padding: 8px 16px; border-radius: 14px; border: 2px solid transparent; background: transparent; color: var(--lit); text-align: right; width: 100%; }
+.hrow:active { border-color: #2f2f2f; background: #0d0d0d; }
+.hrow .lbl { text-transform: none; letter-spacing: .08em; max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+
+/* XL */
+.stage.xl .display { left: 56px; width: 1000px; top: 120px; height: 520px; }
+.stage.xl .keys { left: 1110px; width: 820px; top: 108px; bottom: 40px; grid-template-columns: repeat(5, 1fr); grid-template-rows: repeat(5, 1fr); }
+.stage.xl .hist { left: 1990px; right: 40px; top: 96px; }
+/* L */
+.stage.l .display { left: 56px; width: 760px; top: 110px; height: 250px; }
+.stage.l .hist { left: 40px; width: 800px; top: 380px; }
+.stage.l .keys { left: 890px; right: 40px; top: 40px; bottom: 40px; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(5, 1fr); }
+/* M */
+.stage.m .display { left: 40px; right: 40px; top: 20px; height: 240px; gap: 16px; }
+.stage.m .keys { left: 32px; right: 32px; top: 276px; bottom: 28px; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(5, 1fr); gap: 10px; }
+/* S */
+.stage.s .display { left: 32px; width: 370px; top: 24px; bottom: 32px; }
+.stage.s .display .expr { font-size: 20px; }
+.stage.s .keys { left: 424px; right: 24px; top: 24px; bottom: 24px; grid-template-columns: repeat(5, 1fr); grid-template-rows: repeat(4, 1fr); gap: 10px; }
+.stage.s .key { font-size: 28px; border-radius: 14px; }
+.stage.s .key.fn { font-size: 20px; }
+.stage.s .key.op, .stage.s .key.eq { font-size: 32px; }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Widget iCUE · CORSAIR XENEON EDGE</div>
+    <h1>Dot Calculator</h1>
+    <p class="lede">Proposition v0.1, à valider dans le tableau. Une calculatrice tactile : le résultat en gros points, l'expression au-dessus, l'historique à côté. Elle marche pour de vrai dans la maquette, au toucher et au clavier. Autonome, sans compagnon.</p>
+  </header>
+
+  <figure>
+    <div class="tag"><b>Maquette de référence</b><span id="sizeTag">Version 0.1 · taille réelle XL 2536 × 696 px</span></div>
+    <div class="sizebar" role="radiogroup" aria-label="Taille du widget">
+      <span>Widget size</span>
+      <button type="button" class="preset" data-size="s" aria-pressed="false">S · 840 × 344</button>
+      <button type="button" class="preset" data-size="m" aria-pressed="false">M · 840 × 696</button>
+      <button type="button" class="preset" data-size="l" aria-pressed="false">L · 1688 × 696</button>
+      <button type="button" class="preset" data-size="xl" aria-pressed="true">XL · 2536 × 696</button>
+    </div>
+    <div class="frame xl" id="frame">
+      <div class="stage xl" id="stage"></div>
+    </div>
+    <div class="settings" aria-label="Réglages iCUE simulés">
+      <div class="grp" role="radiogroup" aria-label="Decimal separator">
+        <span>Decimal separator</span>
+        <label><input type="radio" name="dec" value="." checked> Point</label>
+        <label><input type="radio" name="dec" value=","> Comma</label>
+      </div>
+      <label><input type="checkbox" id="grouping" checked> Digit grouping</label>
+      <label><input type="checkbox" id="showUnlit" checked> Show unlit dots</label>
+      <label>Accent color <input type="color" id="accentColor" value="#10b981"></label>
+      <label>Lit dot color <input type="color" id="litColor" value="#f2f0e9"></label>
+      <label>Unlit dot color <input type="color" id="unlitColor" value="#1c1c1c"></label>
+      <label>Label color <input type="color" id="labelColor" value="#b8b6b0"></label>
+      <button type="button" class="preset" data-accent="#10b981"><i style="background:#10b981"></i>Émeraude</button>
+      <button type="button" class="preset" data-accent="#ed403b"><i style="background:#ed403b"></i>Rouge A</button>
+    </div>
+    <figcaption><span id="sizeNote">Écran à gauche, clavier avec fonctions scientifiques au centre, historique à droite.</span> Tape au clavier : chiffres, + − * /, Entrée, Échap, Retour arrière. Touche une ligne d'historique pour reprendre son résultat.</figcaption>
+  </figure>
+
+  <section style="display:grid;gap:14px">
+    <div class="diff-head">
+      <h2>Choix de design</h2>
+      <p class="hint">Tout est à valider. Complété au fur et à mesure.</p>
+    </div>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>#</th><th>Élément</th><th>Proposition</th></tr></thead>
+        <tbody>
+          <tr class="todo"><td>1</td><td>Opérations</td><td>+ − × ÷, pourcentage, changement de signe, décimales, retour arrière, C (efface la saisie) puis AC (efface tout). Priorité des opérations respectée : 2 + 3 × 4 = 14. L'expression complète s'affiche au-dessus du résultat.</td></tr>
+          <tr class="todo"><td>2</td><td>Écran</td><td>Résultat en gros points avec la police dot grasse de Dot Clock (plus le moins, le point, la virgule et E). La taille des points diminue quand le nombre s'allonge. 12 chiffres au maximum.</td></tr>
+          <tr class="todo"><td>3</td><td>Fonctions scientifiques</td><td>En XL seulement, une colonne en plus : √, x², 1/x, π et ANS (dernier résultat).</td></tr>
+          <tr class="todo"><td>4</td><td>Historique</td><td>En XL et L : les derniers calculs, le plus récent en haut. Toucher une ligne reprend son résultat. Gardé dans le stockage local du widget (par <code>uniqueId</code>, comme la Checklist de Corsair) ; CLEAR l'efface.</td></tr>
+          <tr class="todo"><td>5</td><td>Saisie</td><td>Touches de 60 px minimum, plus grandes dès que la place le permet. Clavier physique en plus : chiffres, opérateurs, Entrée ou =, Échap, Retour arrière. À confirmer sur l'Edge avec Dot Keytest.</td></tr>
+          <tr class="todo"><td>6</td><td>Séparateurs</td><td>Réglage « Decimal separator » : Point (par défaut) ou Comma. Réglage « Digit grouping » : chiffres groupés par 3 avec un espace étroit (activé par défaut).</td></tr>
+          <tr class="todo"><td>7</td><td>Erreurs</td><td>Division par zéro ou racine d'un négatif : « E » en gros points et le message en rouge. Au-delà de 12 chiffres : « OVERFLOW ». La touche suivante efface l'erreur.</td></tr>
+          <tr class="todo"><td>8</td><td>Couleurs</td><td>Mêmes réglages que Dot Clock : « Accent color », « Lit dot color », « Unlit dot color », « Label color ». Opérateurs en couleur d'accent, touche = remplie de la couleur d'accent. Fond <code>#080808</code>.</td></tr>
+          <tr class="todo"><td>9</td><td>Tailles</td><td><b>XL</b> : écran à gauche, clavier avec fonctions scientifiques au centre, historique à droite.<br><b>L</b> : écran et historique à gauche, clavier à droite.<br><b>M</b> : écran en haut, clavier en bas.<br><b>S</b> : écran à gauche, clavier compact 5 × 4 à droite.<br>Vertical : à concevoir.</td></tr>
+          <tr class="todo"><td>10</td><td>Compagnon</td><td>Non : tout se passe dans le widget.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  function v(id) { return document.getElementById(id); }
+  var STD = [["AC", "⌫", "%", "÷"], ["7", "8", "9", "×"], ["4", "5", "6", "−"], ["1", "2", "3", "+"], ["±", "0", ".", "="]];
+  var SCI = ["√", "x²", "1/x", "π", "ANS"];
+  var SMALL = [["7", "8", "9", "÷", "AC"], ["4", "5", "6", "×", "⌫"], ["1", "2", "3", "−", "%"], ["0", ".", "±", "+", "="]];
+  var SIZES = {
+    xl: { w: 2536, kmax: 1.0, dispW: 1000, hist: 6, tag: "XL 2536 × 696 px", note: "Écran à gauche, clavier avec fonctions scientifiques au centre, historique à droite." },
+    l: { w: 1688, kmax: 0.62, dispW: 760, hist: 3, tag: "L 1688 × 696 px", note: "Écran et historique à gauche, clavier à droite." },
+    m: { w: 840, kmax: 0.52, dispW: 760, hist: 0, tag: "M 840 × 696 px", note: "Écran en haut, clavier en bas." },
+    s: { w: 840, kmax: 0.5, dispW: 370, hist: 0, tag: "S 840 × 344 px", note: "Écran à gauche, clavier compact à droite." }
+  };
+  var size = "xl", frame = v("frame"), stage = v("stage");
+  function fit() { stage.style.transform = "scale(" + frame.clientWidth / SIZES[size].w + ")"; }
+  if (window.ResizeObserver) new ResizeObserver(fit).observe(frame); else window.addEventListener("resize", fit);
+
+  // ---------- police dot grasse du Dot Clock, plus les signes du calcul
+  var FONT = {
+    "0": [".###.", "##.##", "##.##", "##.##", "##.##", "##.##", ".###."],
+    "1": [".##.", "###.", ".##.", ".##.", ".##.", ".##.", "####"],
+    "2": [".###.", "##.##", "...##", "..##.", ".##..", "##...", "#####"],
+    "3": [".###.", "##.##", "...##", "..##.", "...##", "##.##", ".###."],
+    "4": ["...##", "..###", ".####", "##.##", "#####", "...##", "...##"],
+    "5": ["#####", "##...", "####.", "...##", "...##", "##.##", ".###."],
+    "6": [".###.", "##...", "##...", "####.", "##.##", "##.##", ".###."],
+    "7": ["#####", "...##", "..##.", "..##.", ".##..", ".##..", ".##.."],
+    "8": [".###.", "##.##", "##.##", ".###.", "##.##", "##.##", ".###."],
+    "9": [".###.", "##.##", "##.##", ".####", "...##", "...##", ".###."],
+    "-": ["....", "....", "....", "####", "....", "....", "...."],
+    ".": ["..", "..", "..", "..", "..", "##", "##"],
+    ",": ["..", "..", "..", "..", "##", "##", ".#"],
+    " ": ["", "", "", "", "", "", ""],
+    "E": ["#####", "##...", "##...", "####.", "##...", "##...", "#####"]
+  };
+
+  // ---------- état de la calculatrice
+  var tokens = [], cur = "0", fresh = true, shown = "", err = null, ans = 844;
+  var history = [
+    { e: ["2536", "×", "696"], r: 1765056 },
+    { e: ["1688", "÷", "2"], r: 844 },
+    { e: ["19.99", "×", "3"], r: 59.97 },
+    { e: ["√", "2"], r: 1.41421356237 },
+    { e: ["1765056", "÷", "3"], r: 588352 },
+    { e: ["120", "+", "15", "%"], r: 120.15 }
+  ];
+
+  function settings() {
+    return {
+      dec: document.querySelector("input[name=dec]:checked").value,
+      group: v("grouping").checked,
+      lit: v("litColor").value,
+      unlitOn: v("showUnlit").checked,
+      unlit: v("unlitColor").value,
+      accent: v("accentColor").value,
+      label: v("labelColor").value
+    };
+  }
+
+  function clean(n) { return parseFloat(n.toPrecision(12)); }
+  function numStr(n) {
+    if (!isFinite(n)) return null;
+    n = clean(n);
+    if (Math.abs(n) >= 1e12) return null;
+    if (Math.abs(n) < 1e-9) return "0";
+    var s = String(n);
+    if (s.indexOf("e") >= 0) s = n.toFixed(11).replace(/0+$/, "").replace(/\.$/, "");
+    return s;
+  }
+  // affichage : groupes de 3 chiffres et séparateur décimal choisi
+  function pretty(s, st, glyphSpace) {
+    var neg = s[0] === "-"; if (neg) s = s.slice(1);
+    var parts = s.split("."), int = parts[0];
+    if (st.group) int = int.replace(/\B(?=(\d{3})+(?!\d))/g, glyphSpace ? " " : " ");
+    var out = int + (parts.length > 1 ? (st.dec === "," ? "," : ".") + parts[1] : "");
+    return (neg ? "-" : "") + out;
+  }
+  function exprText(e, st) {
+    return e.map(function (t) { return /^-?[\d.]+$/.test(t) ? pretty(t, st, false) : t; }).join(" ").replace("√ ", "√").replace(" %", "%");
+  }
+
+  function evaluate(list) {
+    var vals = [], ops = [];
+    for (var i = 0; i < list.length; i++) {
+      if (i % 2 === 0) vals.push(parseFloat(list[i])); else ops.push(list[i]);
+    }
+    for (var j = 0; j < ops.length; ) {
+      if (ops[j] === "×" || ops[j] === "÷") {
+        if (ops[j] === "÷" && vals[j + 1] === 0) throw "CANNOT DIVIDE BY ZERO";
+        vals.splice(j, 2, ops[j] === "×" ? vals[j] * vals[j + 1] : vals[j] / vals[j + 1]);
+        ops.splice(j, 1);
+      } else j++;
+    }
+    var r = vals[0];
+    for (var k = 0; k < ops.length; k++) r = ops[k] === "+" ? r + vals[k + 1] : r - vals[k + 1];
+    return r;
+  }
+  function setCur(n, label) {
+    var s = numStr(n);
+    if (s === null) { err = "OVERFLOW"; return false; }
+    cur = s; fresh = true;
+    if (label) shown = label;
+    return true;
+  }
+
+  function press(k) {
+    if (err && k !== "AC") { err = null; tokens = []; cur = "0"; shown = ""; fresh = true; if (k === "⌫" || k === "C") { render(); return; } }
+    var st = settings();
+    if (/^\d$/.test(k)) {
+      if (fresh) { if (!tokens.length) shown = ""; cur = k; fresh = false; }
+      else if (cur.replace(/[-.]/g, "").length < 12) cur = cur === "0" ? k : cur === "-0" ? "-" + k : cur + k;
+    } else if (k === ".") {
+      if (fresh) { cur = "0."; fresh = false; } else if (cur.indexOf(".") < 0) cur += ".";
+    } else if (k === "⌫") {
+      if (!fresh) { cur = cur.length > 1 && cur !== "-0" ? cur.slice(0, -1) : "0"; if (cur === "-") cur = "0"; }
+    } else if (k === "AC" || k === "C") {
+      if (k === "C") { cur = "0"; fresh = true; } else { tokens = []; cur = "0"; fresh = true; shown = ""; err = null; }
+    } else if (k === "±") {
+      if (cur !== "0") cur = cur[0] === "-" ? cur.slice(1) : "-" + cur;
+    } else if (k === "%") {
+      setCur(parseFloat(cur) / 100);
+    } else if (k === "√") {
+      var x = parseFloat(cur);
+      if (x < 0) err = "NO ROOT OF A NEGATIVE"; else setCur(Math.sqrt(x), exprText(["√", cur], st));
+    } else if (k === "x²") { setCur(Math.pow(parseFloat(cur), 2), exprText([cur], st) + "²"); }
+    else if (k === "1/x") {
+      if (parseFloat(cur) === 0) err = "CANNOT DIVIDE BY ZERO"; else setCur(1 / parseFloat(cur), "1/" + exprText([cur], st));
+    } else if (k === "π") { setCur(Math.PI); fresh = false; }
+    else if (k === "ANS") { setCur(ans); fresh = false; }
+    else if ("+−×÷".indexOf(k) >= 0) {
+      if (fresh && tokens.length && tokens.length % 2 === 0) tokens[tokens.length - 1] = k;
+      else { tokens.push(cur.replace(/\.$/, "")); tokens.push(k); }
+      fresh = true; shown = "";
+    } else if (k === "=") {
+      if (!tokens.length) { render(); return; }
+      var list = tokens.concat([cur.replace(/\.$/, "")]);
+      try {
+        var r = evaluate(list);
+        if (setCur(r, exprText(list, st) + " =")) {
+          ans = clean(r);
+          history.unshift({ e: list, r: ans });
+          history = history.slice(0, 20);
+        }
+      } catch (e) { err = e; }
+      tokens = [];
+    }
+    render();
+  }
+
+  // ---------- dessins
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; }
+  function canvasFor(w, h) {
+    var cv = document.createElement("canvas"), dpr = 2;
+    cv.width = Math.ceil(w * dpr); cv.height = Math.ceil(h * dpr); cv.style.width = w + "px"; cv.style.height = h + "px";
+    var ctx = cv.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { cv: cv, ctx: ctx };
+  }
+  function glyphW(cols, P, R) { return cols ? (cols - 1) * P + 2 * R : P * 0.6; }
+  function widthAt(text, k) {
+    var P = 36.7 * k, R = 13.6 * k, gap = 22 * k, w = 0;
+    for (var i = 0; i < text.length; i++) w += glyphW(FONT[text[i]][0].length, P, R) + (i < text.length - 1 ? gap : 0);
+    return w;
+  }
+  function digits(text, kmax, maxW, s, color) {
+    var k = Math.min(kmax, maxW / widthAt(text, 1));
+    var P = 36.7 * k, R = 13.6 * k, gap = 22 * k;
+    var c = canvasFor(widthAt(text, k), 6 * P + 2 * R), x = 0;
+    for (var j = 0; j < text.length; j++) {
+      var g = FONT[text[j]], cols = g[0].length;
+      for (var row = 0; row < 7; row++) for (var cc = 0; cc < cols; cc++) {
+        var lit = g[row][cc] === "#";
+        if (!lit && !s.unlitOn) continue;
+        c.ctx.beginPath(); c.ctx.fillStyle = lit ? color : s.unlit;
+        c.ctx.arc(x + R + cc * P, R + row * P, R, 0, Math.PI * 2); c.ctx.fill();
+      }
+      x += glyphW(cols, P, R) + gap;
+    }
+    return c.cv;
+  }
+
+  function display(s) {
+    var Z = SIZES[size], d = el("div", "display");
+    var line = err ? "" : shown || exprText(tokens, s);
+    d.appendChild(el("p", "lbl expr", line || " "));
+    var text = err ? "E" : pretty(cur, s, true);
+    d.appendChild(digits(text, Z.kmax, Z.dispW, s, err ? "#ed403b" : s.lit));
+    d.appendChild(el("p", "lbl note" + (err ? " warn" : ""), err || ""));
+    return d;
+  }
+  function keypad(s) {
+    var rows = size === "s" ? SMALL : STD, box = el("div", "keys");
+    rows.forEach(function (row, ri) {
+      var keys = size === "xl" ? [SCI[ri]].concat(row) : row;
+      keys.forEach(function (k) {
+        var label = k === "." ? s.dec : k === "⌫" ? "DEL" : k === "AC" && !fresh ? "C" : k;
+        var cls = k === "=" ? "eq" : "+−×÷".indexOf(k) >= 0 ? "op" : SCI.indexOf(k) >= 0 ? "sci" : /^[\d.]$/.test(k) ? "num" : "fn";
+        var b = el("button", "key " + cls, label); b.type = "button"; b.setAttribute("data-key", k);
+        b.setAttribute("aria-label", { "⌫": "Backspace", "±": "Change sign", "÷": "Divide", "×": "Multiply", "−": "Subtract", "+": "Add", "=": "Equals", ".": "Decimal separator" }[k] || label);
+        b.addEventListener("click", function () { press(k === "AC" && !fresh ? "C" : k); });
+        box.appendChild(b);
+      });
+    });
+    return box;
+  }
+  function historyPanel(s) {
+    var Z = SIZES[size], h = el("div", "hist");
+    var top = el("div", "top");
+    top.appendChild(el("p", "lbl", "HISTORY"));
+    var clr = el("button", "clear", "CLEAR"); clr.type = "button";
+    clr.addEventListener("click", function () { history = []; render(); });
+    top.appendChild(clr);
+    h.appendChild(top);
+    if (!history.length) h.appendChild(el("p", "lbl", "NO CALCULATIONS YET"));
+    history.slice(0, Z.hist).forEach(function (it) {
+      var b = el("button", "hrow"); b.type = "button";
+      b.appendChild(el("span", "lbl", exprText(it.e, s) + " ="));
+      b.appendChild(el("span", "val", pretty(numStr(it.r), s, false)));
+      b.addEventListener("click", function () { err = null; setCur(it.r); fresh = false; render(); });
+      h.appendChild(b);
+    });
+    return h;
+  }
+
+  function render() {
+    var s = settings();
+    stage.className = "stage " + size;
+    stage.style.setProperty("--accent", s.accent);
+    stage.style.setProperty("--lit", s.lit);
+    stage.style.setProperty("--label", s.label);
+    stage.innerHTML = "";
+    if (size === "xl") {
+      var hd = el("div", "head");
+      hd.appendChild(el("span", "dot"));
+      hd.appendChild(el("p", "lbl", "DOT CALCULATOR"));
+      hd.appendChild(el("span", "grow"));
+      stage.appendChild(hd);
+    }
+    stage.appendChild(display(s));
+    stage.appendChild(keypad(s));
+    if (SIZES[size].hist) stage.appendChild(historyPanel(s));
+  }
+
+  // clavier physique
+  var KEYMAP = { "+": "+", "-": "−", "*": "×", "x": "×", "/": "÷", "Enter": "=", "=": "=", "Backspace": "⌫", "Escape": "AC", "Delete": "AC", "%": "%", ".": ".", ",": "." };
+  document.addEventListener("keydown", function (e) {
+    var t = e.target; if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA")) return;
+    var k = /^\d$/.test(e.key) ? e.key : KEYMAP[e.key];
+    if (!k) return;
+    e.preventDefault();
+    if (k === "AC" && !fresh) k = "C";
+    press(k);
+    var b = stage.querySelector('[data-key="' + (k === "C" ? "AC" : k) + '"]');
+    if (b) { b.classList.add("pressed"); setTimeout(function () { b.classList.remove("pressed"); }, 120); }
+  });
+
+  document.querySelectorAll(".settings input").forEach(function (i) {
+    i.addEventListener("input", render);
+    i.addEventListener("change", render);
+  });
+  document.querySelectorAll(".preset[data-accent]").forEach(function (b) {
+    b.addEventListener("click", function () { v("accentColor").value = b.getAttribute("data-accent"); render(); });
+  });
+  document.querySelectorAll(".sizebar .preset").forEach(function (b) {
+    b.addEventListener("click", function () {
+      size = b.getAttribute("data-size");
+      document.querySelectorAll(".sizebar .preset").forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+      frame.className = "frame " + size;
+      v("sizeTag").textContent = "Version 0.1 · taille réelle " + SIZES[size].tag;
+      v("sizeNote").textContent = SIZES[size].note;
+      render(); fit();
+    });
+  });
+
+  // état de départ : un calcul en cours
+  tokens = ["1250", "+", "380", "×"]; cur = "12"; fresh = false;
+  render(); fit();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(render);
+})();
+</script>
