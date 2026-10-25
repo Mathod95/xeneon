@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>tr('Dot Hub')</title>
+		<link rel="icon" type="image/svg+xml" href="resources/icon.svg" />
+		<!-- Structure de la Checklist Corsair : sans elle, iCUE ne donne pas le clavier au widget (voir CLAUDE.md) -->
+		<meta name="x-icue-restrictions" data-restrictions='[{ "device": "dashboard_lcd" }]' />
+		<meta name="x-icue-interactive" />
+		<meta name="x-icue-widget-group" content="tr('Dot Hub')" />
+		<meta name="x-icue-property" content="hubAccentColor" data-label="tr('Accent color')" data-type="color" data-default="'#10B981'" />
+		<script id="x-icue-groups" type="application/json">
+			[ { "title": "tr('Dot Hub options')", "properties": ["hubAccentColor"] } ]
+		</script>
+		<link rel="stylesheet" href="styles/main.css" />
+	</head>
+	<body>
+		<iframe id="app" title="Dot Hub" hidden="hidden"></iframe>
+		<div id="down" class="down">
+			<p class="brand"><span class="dot"></span>DOT HUB</p>
+			<p class="msg" id="msg">CONNECTING…</p>
+			<p class="sub" id="sub">WAITING FOR DOT COMPANION ON THIS PC</p>
+		</div>
+		<input id="kb" aria-hidden="true" tabindex="-1" autocomplete="off" />
+		<script src="scripts/shell.js"></script>
+	</body>
+</html>

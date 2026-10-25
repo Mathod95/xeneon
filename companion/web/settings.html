@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Dot Hub · Réglages</title>
+<style>
+@font-face { font-family: "Fira Code"; src: url("/m/clock/resources/fonts/FiraCode-Regular.woff2") format("woff2"); font-weight: 400; }
+@font-face { font-family: "Fira Code"; src: url("/m/clock/resources/fonts/FiraCode-Medium.woff2") format("woff2"); font-weight: 500; }
+:root { --bg: #0b0b0b; --panel: #121212; --line: #232323; --lit: #f2f0e9; --label: #b8b6b0; --muted: #7d7b76; --accent: #10b981; --red: #ed403b;
+  --mono: "Fira Code", Consolas, monospace; --brand: "Segoe UI", Selawik, system-ui, sans-serif; color-scheme: dark; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--lit); font: 15px/1.5 var(--brand); padding: 28px max(16px, 4vw) 64px; }
+.wrap { max-width: 1100px; margin: 0 auto; display: grid; gap: 28px; }
+.top { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 700; letter-spacing: .22em; }
+.brand::before { content: ""; width: 12px; height: 12px; border-radius: 50%; background: var(--accent); }
+h1 { margin: 0; font: 500 28px var(--mono); letter-spacing: .04em; }
+.lbl { font: 12px var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--label); }
+.hint { color: var(--muted); margin: 0; }
+.status { font: 12px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--accent); }
+.card { border: 1px solid var(--line); border-radius: 16px; background: var(--panel); padding: 20px; display: grid; gap: 18px; }
+.card header { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; }
+.card header .grow { flex: 1; }
+input[type=text], select { font: 14px var(--mono); color: var(--lit); background: #0b0b0b; border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; min-width: 0; }
+input[type=text].name { font-size: 16px; width: min(320px, 100%); }
+input[type=color] { width: 44px; height: 32px; border: 1px solid var(--line); border-radius: 8px; background: none; padding: 0; }
+input[type=checkbox] { width: 20px; height: 20px; accent-color: var(--accent); }
+button { font: 12px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--label); background: #0b0b0b; border: 1px solid var(--line); border-radius: 999px; padding: 9px 16px; cursor: pointer; }
+button:hover { color: var(--lit); border-color: #3a3a3a; }
+button.danger:hover { color: var(--red); border-color: var(--red); }
+.form { display: grid; gap: 26px; justify-items: start; }
+.form fieldset { width: 100%; }
+fieldset { border: 0; margin: 0; padding: 0; display: grid; gap: 12px; }
+legend { padding: 0; margin-bottom: 4px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); gap: 12px 24px; }
+.field { display: grid; gap: 6px; min-width: 0; }
+.field.inline { display: flex; align-items: center; gap: 12px; }
+.field span { color: var(--label); font-size: 14px; }
+.meta { font: 12px var(--mono); color: var(--muted); word-break: break-all; }
+.empty { color: var(--label); }
+a { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top"><span class="brand">MATHOD</span><span class="status" id="saved"></span></div>
+  <div style="display:grid;gap:8px">
+    <h1>Dot Hub · Réglages</h1>
+    <p class="hint">Une carte par Dot Hub posé dans iCUE. Les changements s'appliquent tout de suite sur l'Edge. Sur l'Edge, un appui long sur un module ramène à l'accueil.</p>
+  </div>
+  <div id="list" style="display:grid;gap:16px"></div>
+</div>
+<script>
+(function () {
+	"use strict";
+	var MODULES = [], SCHEMAS = {}, saveTimers = {};
+	function lit(v) { try { return Function("return (" + v + ")")(); } catch (e) { return v; } }
+	function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; }
+	function flash(t) { var s = document.getElementById("saved"); s.textContent = t; clearTimeout(flash.t); flash.t = setTimeout(function () { s.textContent = ""; }, 1500); }
+
+	// schéma d'un module = ses balises x-icue-property et x-icue-groups
+	function schema(id) {
+		if (SCHEMAS[id]) return Promise.resolve(SCHEMAS[id]);
+		return fetch("/m/" + id + "/index.html").then(function (r) { return r.text(); }).then(function (html) {
+			var doc = new DOMParser().parseFromString(html, "text/html"), props = {}, groups = [];
+			doc.querySelectorAll('meta[name="x-icue-property"]').forEach(function (m) {
+				var key = m.getAttribute("content");
+				props[key] = {
+					key: key, type: m.getAttribute("data-type"),
+					label: lit(m.getAttribute("data-label") || "''") || key,
+					def: lit(m.getAttribute("data-default") || "''"),
+					values: m.getAttribute("data-values") ? lit(m.getAttribute("data-values")) : null
+				};
+			});
+			var g = doc.getElementById("x-icue-groups");
+			try { groups = JSON.parse(g ? g.textContent : "[]"); } catch (e) { groups = []; }
+			groups = groups.map(function (x) { return { title: lit(x.title), keys: x.properties.filter(function (k) { return props[k]; }) }; });
+			var used = {}; groups.forEach(function (x) { x.keys.forEach(function (k) { used[k] = 1; }); });
+			var rest = Object.keys(props).filter(function (k) { return !used[k]; });
+			if (rest.length) groups.push({ title: "Other", keys: rest });
+			return (SCHEMAS[id] = { props: props, groups: groups });
+		});
+	}
+
+	function save(uid, patch) {
+		clearTimeout(saveTimers[uid]);
+		saveTimers[uid] = setTimeout(function () {
+			fetch("/api/instance/" + encodeURIComponent(uid), { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(patch) })
+				.then(function (r) { flash(r.ok ? "Enregistré" : "Erreur"); });
+		}, 250);
+	}
+
+	function input(p, value, onChange) {
+		var w;
+		if (p.type === "switch") {
+			w = el("input"); w.type = "checkbox"; w.checked = value === true || value === "true";
+			w.addEventListener("change", function () { onChange(w.checked); });
+		} else if (p.type === "color") {
+			w = el("input"); w.type = "color"; w.value = String(value || "#000000").slice(0, 7);
+			w.addEventListener("input", function () { onChange(w.value); });
+		} else if (p.type === "combobox" && p.values) {
+			w = el("select");
+			p.values.forEach(function (v) { var o = el("option", "", v.value); o.value = v.key; w.appendChild(o); });
+			w.value = value;
+			w.addEventListener("change", function () { onChange(w.value); });
+		} else {
+			w = el("input"); w.type = "text"; w.value = value == null ? "" : value;
+			w.addEventListener("input", function () { onChange(w.value); });
+		}
+		return w;
+	}
+
+	function card(uid, inst) {
+		var c = el("section", "card"), head = el("header");
+		var name = el("input", "name"); name.type = "text"; name.placeholder = "Nom de cette instance"; name.value = inst.name || "";
+		name.addEventListener("input", function () { save(uid, { name: name.value }); });
+		head.appendChild(name);
+		var sel = el("select");
+		var home = el("option", "", "Dot Home (accueil)"); home.value = ""; sel.appendChild(home);
+		MODULES.forEach(function (m) { var o = el("option", "", m.name); o.value = m.id; sel.appendChild(o); });
+		sel.value = inst.module || "";
+		head.appendChild(sel);
+		head.appendChild(el("span", "grow"));
+		var id = el("button", "", "Identifier");
+		id.addEventListener("click", function () { fetch("/api/instance/" + encodeURIComponent(uid) + "/identify", { method: "POST" }); flash("Nom affiché sur l'Edge"); });
+		head.appendChild(id);
+		var del = el("button", "danger", "Oublier");
+		del.addEventListener("click", function () {
+			if (!del.dataset.sure) { del.dataset.sure = "1"; del.textContent = "Confirmer ?"; return; }
+			fetch("/api/instance/" + encodeURIComponent(uid), { method: "DELETE" }).then(load);
+		});
+		head.appendChild(del);
+		c.appendChild(head);
+		var seen = inst.last_seen ? new Date(inst.last_seen).toLocaleString() : "jamais";
+		c.appendChild(el("p", "meta", "uniqueId " + uid + " · vu " + seen));
+		var body = el("div", "form"); c.appendChild(body);
+		var settings = Object.assign({}, inst.settings || {});
+
+		function renderForm(moduleId) {
+			body.innerHTML = "";
+			if (!moduleId) { body.appendChild(el("p", "empty", "Cette instance affiche l'accueil Dot Home : choisis un module ci-dessus ou directement sur l'Edge.")); return; }
+			schema(moduleId).then(function (sc) {
+				sc.groups.forEach(function (g) {
+					var fs = el("fieldset"); fs.appendChild(el("legend", "lbl", g.title));
+					var grid = el("div", "grid");
+					g.keys.forEach(function (k) {
+						var p = sc.props[k], v = Object.prototype.hasOwnProperty.call(settings, k) ? settings[k] : p.def;
+						var f = el("label", "field" + (p.type === "switch" || p.type === "color" ? " inline" : ""));
+						var w = input(p, v, function (nv) { settings[k] = nv; save(uid, { settings: settings }); });
+						if (f.className.indexOf("inline") >= 0) { f.appendChild(w); f.appendChild(el("span", "", p.label)); }
+						else { f.appendChild(el("span", "", p.label)); f.appendChild(w); }
+						grid.appendChild(f);
+					});
+					fs.appendChild(grid); body.appendChild(fs);
+				});
+				var reset = el("button", "", "Valeurs par défaut");
+				reset.addEventListener("click", function () { settings = {}; save(uid, { settings: settings }); renderForm(moduleId); });
+				body.appendChild(reset);
+			});
+		}
+		sel.addEventListener("change", function () { save(uid, { module: sel.value || null }); renderForm(sel.value); });
+		renderForm(inst.module);
+		return c;
+	}
+
+	function load() {
+		Promise.all([fetch("/api/modules").then(function (r) { return r.json(); }), fetch("/api/instances").then(function (r) { return r.json(); })])
+			.then(function (res) {
+				MODULES = res[0];
+				var list = document.getElementById("list"), inst = res[1] || {}, keys = Object.keys(inst);
+				list.innerHTML = "";
+				if (!keys.length) {
+					list.appendChild(el("p", "empty", "Aucun Dot Hub pour l'instant. Pose le widget Dot Hub dans iCUE sur l'Edge : il apparaîtra ici."));
+					return;
+				}
+				keys.sort(function (a, b) { return (inst[b].last_seen || 0) - (inst[a].last_seen || 0); })
+					.forEach(function (uid) { list.appendChild(card(uid, inst[uid])); });
+			});
+	}
+	load();
+})();
+</script>
+</body>
+</html>

@@ -30,6 +30,7 @@ docs/SPEC-TEMPLATE.md    fiche type d’un widget
 tools/build_site.py      génère le site GitHub Pages (`site/`) : accueil `tools/site/index.html` + maquettes de référence
 scripts/                 new-widget, package-widgets (.sh et .ps1)
 tests/dot-frametest/     widget de test (réseau, iframe, clavier, redirection) + serveur PowerShell ; hors CI
+companion/               Dot Companion (Rust) : serveur 127.0.0.1:47800, configuration, accueil, réglages, modules (voir companion/README.md)
 .github/workflows/       CI : build.yml valide et empaquette les widgets (tag v* → release) ; docs.yml publie la doc sur GitHub Pages
 ```
 
@@ -114,6 +115,7 @@ Compilation Windows : `cargo build --release` sous Windows, ou depuis Linux/WSL 
 
 - **Dot System Monitor** v1.1.0 : fonctionnel (FPS + 4 capteurs + historique, dot-matrix). Mise en page faite pour L/XL ; **S, M et vertical à refaire**. À migrer sur `sizes.js` du template.
 - **Dot Clock** v0.1.2 : codé (S, M, L, XL horizontal ; vertical provisoire). Référence : `widgets/dot-clock/mockups/reference.html`.
+- **Dot Hub** + **Dot Companion** : v0.1, première version de bout en bout avec le module Clock (coquille, accueil, réglages sur le PC, pont clavier). L’exe Windows est compilé par GitHub Actions.
 - **Dot Notes, Dot Weather, Dot IA, Dot Home, Dot GitHub, Dot Calculator, Dot Spotify** : en conception, maquette de référence dans `widgets/<slug>/mockups/reference.html` (choix de design à valider ; Dot Spotify mis de côté).
 - **Dot Audio, Dot Calendar, Dot Launcher** : spécifiés avec mocks.
 - Autres : fiche seule (idée).

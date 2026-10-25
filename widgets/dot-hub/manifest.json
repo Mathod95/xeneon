@@ -1,0 +1,36 @@
+{
+  "author": "Mathod95",
+  "id": "com.mathod95.dot-hub",
+  "name": "Dot Hub",
+  "description": "All Dot modules in one widget, served by Dot Companion on your PC.",
+  "version": "0.1.0",
+  "preview_icon": "resources/icon.svg",
+  "min_app_version": "5.47",
+  "min_framework_version": "1.0.0",
+  "os": [
+    {
+      "platform": "windows"
+    }
+  ],
+  "supported_devices": [
+    {
+      "type": "dashboard_lcd",
+      "features": [
+        "sensor-screen"
+      ]
+    }
+  ],
+  "interactive": true,
+  "permissions": [
+    {
+      "type": "url",
+      "domain": "127.0.0.1",
+      "port": 47800
+    },
+    {
+      "type": "url",
+      "domain": "localhost",
+      "port": 47800
+    }
+  ]
+}

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Dot Home</title>
+<style>
+@font-face { font-family: "Fira Code"; src: url("/m/clock/resources/fonts/FiraCode-Regular.woff2") format("woff2"); font-weight: 400; }
+@font-face { font-family: "Fira Code"; src: url("/m/clock/resources/fonts/FiraCode-Medium.woff2") format("woff2"); font-weight: 500; }
+:root { --bg: #080808; --lit: #f2f0e9; --label: #b8b6b0; --unlit: #1c1c1c; --accent: #10b981; --u: min(1vw, 2.6vh); }
+* { box-sizing: border-box; margin: 0; }
+html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(--lit); font-family: "Fira Code", Consolas, monospace; font-variant-ligatures: none; user-select: none; }
+body { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; gap: calc(var(--u) * 1.6); padding: calc(var(--u) * 2) calc(var(--u) * 2.4); }
+.lbl { font-size: max(14px, calc(var(--u) * 1.1)); letter-spacing: .2em; text-transform: uppercase; color: var(--label); white-space: nowrap; }
+.head { display: flex; align-items: center; gap: 12px; }
+.head::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--accent); flex: none; }
+.head .grow { flex: 1; }
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(var(--u) * 22)), 1fr)); grid-auto-rows: minmax(0, 1fr); gap: calc(var(--u) * 1.2); min-height: 0; }
+.tile { display: grid; grid-template-rows: minmax(0, 1fr) auto; gap: 12px; padding: calc(var(--u) * 1.4); min-height: 60px; border: 2px solid #1d1d1d; border-radius: 18px; background: transparent; color: var(--lit); font: inherit; text-align: left; cursor: pointer; }
+.tile:active, .tile.on { border-color: var(--accent); background: #0d0d0d; }
+.tile .pic { display: grid; place-items: center; min-height: 0; }
+.tile canvas { max-width: 100%; max-height: 100%; aspect-ratio: 1; }
+.tile .name { font-size: max(16px, calc(var(--u) * 1.5)); letter-spacing: .12em; text-transform: uppercase; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.empty { display: grid; place-items: center; }
+</style>
+</head>
+<body>
+<div class="head"><p class="lbl">DOT HUB · HOME</p><span class="grow"></span><p class="lbl" id="hint">TAP A MODULE · LONG PRESS TO COME BACK</p></div>
+<div class="tiles" id="tiles"></div>
+<p class="lbl" id="foot">SETTINGS ON YOUR PC · HTTP://127.0.0.1:47800/SETTINGS</p>
+<script>
+(function () {
+	"use strict";
+	var uid = new URLSearchParams(location.search).get("uid") || "";
+	var PICS = {
+		clock: [".#####.", "#..#..#", "#..#..#", "#..###.", "#.....#", "#.....#", ".#####."]
+	};
+	var BLANK = [".......", ".......", "...#...", "..###..", "...#...", ".......", "......."];
+	function pic(id) {
+		var g = PICS[id] || BLANK, cv = document.createElement("canvas"), px = 280, p = px / 7, r = p * 0.36;
+		cv.width = px; cv.height = px;
+		var ctx = cv.getContext("2d");
+		for (var y = 0; y < 7; y++) for (var x = 0; x < 7; x++) {
+			ctx.beginPath(); ctx.fillStyle = g[y][x] === "#" ? "#f2f0e9" : "#1c1c1c";
+			ctx.arc(x * p + p / 2, y * p + p / 2, r, 0, Math.PI * 2); ctx.fill();
+		}
+		return cv;
+	}
+	function choose(id, el) {
+		el.classList.add("on");
+		fetch("/api/instance/" + encodeURIComponent(uid), {
+			method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ module: id })
+		}).then(function () { location.href = "/i/" + encodeURIComponent(uid); });
+	}
+	Promise.all([
+		fetch("/api/modules").then(function (r) { return r.json(); }),
+		fetch("/api/instance/" + encodeURIComponent(uid)).then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; })
+	]).then(function (res) {
+		var mods = res[0], inst = res[1] || {}, box = document.getElementById("tiles");
+		if (inst.name) document.querySelector(".head .lbl").textContent = "DOT HUB · " + inst.name.toUpperCase();
+		mods.forEach(function (m) {
+			var b = document.createElement("button");
+			b.type = "button"; b.className = "tile" + (inst.module === m.id ? " on" : "");
+			var p = document.createElement("div"); p.className = "pic"; p.appendChild(pic(m.id)); b.appendChild(p);
+			var n = document.createElement("span"); n.className = "name"; n.textContent = m.name; b.appendChild(n);
+			b.addEventListener("click", function () { choose(m.id, b); });
+			box.appendChild(b);
+		});
+		if (!mods.length) { box.className = "empty lbl"; box.textContent = "NO MODULE AVAILABLE"; }
+	});
+})();
+</script>
+</body>
+</html>
