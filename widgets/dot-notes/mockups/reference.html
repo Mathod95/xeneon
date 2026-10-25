@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Maquette de référence du Dot Notes (artefact de revue de design). Ouvrir dans un navigateur. -->
+<style>body { margin: 0; }</style>
+</head>
+<body>
+<title>Dot Notes</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap">
+<style>
+/* Layout : maquette de référence en taille réelle (choix S, M, L, XL) avec ses réglages, puis tableau des choix. Même univers que Dot Clock, un seul thème sombre. */
+:root {
+  --page: #111111;
+  --panel: #0a0a0a;
+  --line: #262626;
+  --text: #e6e6e6;
+  --muted: #8c8c8c;
+  --brand: #10b981;
+  --mono: "IBM Plex Mono", "Cascadia Mono", Consolas, monospace;
+  --sans: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { background: var(--page); color: var(--text); }
+body {
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.55;
+  padding-block: 40px 72px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 1480px; margin: 0 auto; display: grid; gap: 40px; }
+header { display: grid; gap: 10px; }
+.eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); display: flex; align-items: center; gap: 10px; }
+.eyebrow::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--brand); }
+h1 { font-family: var(--mono); font-weight: 500; font-size: clamp(28px, 4vw, 44px); line-height: 1.1; margin: 0; letter-spacing: -.01em; }
+.lede { color: var(--muted); max-width: 72ch; margin: 0; }
+
+figure { margin: 0; display: grid; gap: 12px; min-width: 0; }
+.tag { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.tag b { color: var(--text); font-weight: 500; font-size: 14px; }
+figcaption { color: var(--muted); font-size: 14px; }
+
+/* tableau */
+.diff-head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; }
+h2 { font-family: var(--mono); font-weight: 500; font-size: 13px; letter-spacing: .14em; text-transform: uppercase; margin: 0; }
+.hint { color: var(--muted); font-size: 14px; margin: 0; }
+.table-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; }
+table { width: 100%; border-collapse: collapse; min-width: 640px; }
+th, td { text-align: left; padding: 14px 16px; vertical-align: top; border-bottom: 1px solid var(--line); }
+tr:last-child td { border-bottom: 0; }
+thead th { font-family: var(--mono); font-weight: 500; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); background: var(--panel); }
+td:first-child { font-family: var(--mono); color: var(--muted); width: 3.5em; font-variant-numeric: tabular-nums; }
+td:nth-child(2) { font-weight: 500; width: 15em; }
+tr.todo td:nth-child(3) { color: var(--muted); }
+code { font-family: var(--mono); font-size: 13px; color: var(--text); }
+
+/* réglages simulés */
+.settings { display: flex; flex-wrap: wrap; gap: 12px 28px; align-items: center; padding: 14px 16px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); }
+.settings label { display: inline-flex; align-items: center; gap: 10px; font-family: var(--mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); cursor: pointer; }
+.settings input[type=color] { width: 36px; height: 28px; padding: 0; border: 1px solid var(--line); border-radius: 6px; background: none; cursor: pointer; }
+.settings input[type=checkbox], .settings input[type=radio] { width: 18px; height: 18px; accent-color: var(--brand); cursor: pointer; }
+.settings select { font-family: var(--mono); font-size: 13px; color: var(--text); background: #141414; border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; }
+.settings .grp { display: inline-flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.settings .grp > span { font-family: var(--mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--text); }
+.settings input:focus-visible, .settings select:focus-visible, .preset:focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; }
+.preset { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; padding: 6px 10px; border-radius: 6px; border: 1px solid var(--line); background: transparent; color: var(--text); cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+.preset i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+.sizebar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; }
+.sizebar > span { font-family: var(--mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-right: 6px; }
+.sizebar .preset[aria-pressed="true"] { background: var(--text); color: #0a0a0a; border-color: var(--text); }
+
+/* cadre à l'échelle de l'XL */
+.frame { position: relative; max-width: 100%; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: #080808; }
+.frame.xl { width: 100%; aspect-ratio: 2536 / 696; }
+.frame.l { width: calc(1688 / 2536 * 100%); aspect-ratio: 1688 / 696; }
+.frame.m { width: calc(840 / 2536 * 100%); aspect-ratio: 840 / 696; }
+.frame.s { width: calc(840 / 2536 * 100%); aspect-ratio: 840 / 344; }
+@media (max-width: 700px) { .frame.l, .frame.m, .frame.s { width: 100%; } }
+
+/* ---------- le widget : scène en pixels réels de l'emplacement ---------- */
+.stage { position: absolute; left: 0; top: 0; transform-origin: 0 0; background: #080808; --accent: #10b981; --lit: #f2f0e9; --label: #b8b6b0; --unlit: #1c1c1c; --fs: 30px; --row: 104px; --btn: 64px; font-family: "Fira Code", Consolas, monospace; font-variant-ligatures: none; }
+.stage.xl { width: 2536px; height: 696px; }
+.stage.l { width: 1688px; height: 696px; --fs: 26px; }
+.stage.m { width: 840px; height: 696px; --fs: 26px; --row: 84px; }
+.stage.s { width: 840px; height: 344px; --fs: 22px; --row: 72px; --btn: 60px; }
+.stage > * { position: absolute; }
+.stage button { font-family: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.stage button:focus-visible, .stage input:focus-visible, .stage textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.w-lbl { margin: 0; white-space: nowrap; font-size: 18px; line-height: 24px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); }
+.w-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); }
+.w-count canvas, .w-bar { display: block; }
+
+/* onglets : une vue par liste, dans le même widget */
+.w-tabs { display: flex; gap: 10px; align-items: center; overflow: hidden; }
+.tab { flex: none; height: 60px; padding: 0 22px; border-radius: 999px; border: 2px solid #2a2a2a; background: transparent; color: var(--label); font-size: 18px; letter-spacing: .2em; text-transform: uppercase; white-space: nowrap; display: inline-flex; align-items: center; gap: 10px; }
+.tab b { font-weight: 400; color: var(--label); opacity: .6; letter-spacing: .05em; }
+.tab.on { border-color: var(--lit); color: var(--lit); }
+.tab.on b { color: var(--accent); opacity: 1; }
+.tab.plus { width: 60px; padding: 0; justify-content: center; }
+.tab.plus svg { width: 22px; height: 22px; }
+.tab input { width: 220px; height: 40px; padding: 0 8px; border: 0; background: transparent; color: var(--lit); font: inherit; font-size: 18px; letter-spacing: .2em; text-transform: uppercase; outline: none; }
+
+/* barre d'ajout */
+.w-add { display: flex; gap: 16px; align-items: center; }
+.w-add input { flex: 1; min-width: 0; height: var(--btn); padding: 0 22px; border-radius: 12px; border: 2px solid #2a2a2a; background: #101010; color: var(--lit); font: inherit; font-size: var(--fs); letter-spacing: .04em; text-transform: uppercase; }
+.w-add input::placeholder { color: var(--label); opacity: .5; }
+.w-add input:focus { border-color: var(--accent); outline: none; }
+.icon-btn { flex: none; width: var(--btn); height: var(--btn); display: grid; place-items: center; padding: 0; border-radius: 12px; border: 2px solid var(--accent); background: var(--accent); color: #080808; }
+.icon-btn svg { width: 44%; height: 44%; }
+.w-clear { height: var(--btn); padding: 0 26px; border-radius: 999px; border: 2px solid #2a2a2a; background: transparent; color: var(--label); font-size: 18px; letter-spacing: .2em; text-transform: uppercase; white-space: nowrap; }
+.w-clear.arming { border-color: var(--accent); color: var(--lit); }
+
+/* liste */
+.w-list { display: grid; grid-auto-flow: column; align-content: start; grid-auto-rows: var(--row); }
+.w-item { display: flex; align-items: center; gap: 6px; min-width: 0; border-radius: 12px; }
+.w-item.dragging { background: #141414; outline: 2px solid var(--accent); }
+.w-item .grip { flex: none; width: 44px; height: var(--row); display: grid; place-items: center; padding: 0; border: 0; background: transparent; touch-action: none; cursor: grab; }
+.w-item .check { flex: 1; min-width: 0; height: 100%; display: flex; align-items: center; gap: 20px; padding: 0 8px 0 0; border: 0; background: transparent; text-align: left; color: var(--lit); font-size: var(--fs); letter-spacing: .04em; text-transform: uppercase; }
+.w-item .check svg { flex: none; }
+.w-item .check span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.w-item.done .check span { color: var(--label); opacity: .55; }
+.w-item.done.strike .check span { text-decoration: line-through; text-decoration-thickness: 2px; }
+.w-item .row-btn { flex: none; width: 60px; height: 60px; display: grid; place-items: center; padding: 0; border: 0; border-radius: 12px; background: transparent; color: var(--label); opacity: .7; }
+.w-item .row-btn svg { width: 24px; height: 24px; }
+.w-item .row-btn:hover { opacity: 1; }
+.w-item input { flex: 1; min-width: 0; height: 60px; padding: 0 16px; border-radius: 10px; border: 2px solid var(--accent); background: #101010; color: var(--lit); font: inherit; font-size: var(--fs); text-transform: uppercase; letter-spacing: .04em; outline: none; }
+.w-more, .w-empty { margin: 0; align-self: center; padding-left: 52px; color: var(--label); font-size: 18px; letter-spacing: .2em; text-transform: uppercase; }
+.w-empty { line-height: 32px; padding-left: 8px; }
+
+/* note */
+.w-note { margin: 0; padding: 20px 24px; border: 2px solid transparent; border-radius: 14px; background: transparent; color: var(--lit); text-transform: uppercase; letter-spacing: .04em; white-space: pre-wrap; overflow: hidden; text-align: left; vertical-align: top; font-size: calc(var(--fs) * 1.3); line-height: 1.6; cursor: text; display: block; }
+.w-note.placeholder { color: var(--label); opacity: .6; }
+.w-note-edit { margin: 0; padding: 20px 24px; border: 2px solid var(--accent); border-radius: 14px; background: #101010; color: var(--lit); font: inherit; text-transform: uppercase; letter-spacing: .04em; resize: none; font-size: calc(var(--fs) * 1.3); line-height: 1.6; outline: none; }
+
+/* XL : compteur à gauche, onglets en haut, barre d'ajout et liste sur 2 colonnes à droite */
+.stage.xl .w-dot { left: 56px; top: 51px; }
+.stage.xl .w-name { left: 80px; top: 44px; }
+.stage.xl .w-tabs { left: 320px; right: 300px; top: 26px; }
+.stage.xl .w-state { right: 56px; top: 44px; }
+.stage.xl .w-sub { left: 56px; top: 176px; }
+.stage.xl .w-count { left: 56px; top: 220px; }
+.stage.xl .w-bar { left: 56px; top: 504px; }
+.stage.xl .w-clear { left: 56px; bottom: 44px; }
+.stage.xl .w-add { left: 760px; right: 56px; top: 112px; }
+.stage.xl .w-list { left: 760px; right: 56px; top: 200px; grid-template-rows: repeat(4, var(--row)); grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 40px; }
+.stage.xl .w-note, .stage.xl .w-note-edit { left: 56px; right: 56px; top: 112px; bottom: 44px; }
+
+/* L : même disposition, plus serrée */
+.stage.l .w-dot { left: 56px; top: 51px; }
+.stage.l .w-name { left: 80px; top: 44px; }
+.stage.l .w-tabs { left: 320px; right: 280px; top: 26px; }
+.stage.l .w-state { right: 56px; top: 44px; }
+.stage.l .w-sub { left: 56px; top: 176px; }
+.stage.l .w-count { left: 56px; top: 220px; }
+.stage.l .w-bar { left: 56px; top: 460px; }
+.stage.l .w-clear { left: 56px; bottom: 44px; }
+.stage.l .w-add { left: 560px; right: 56px; top: 112px; }
+.stage.l .w-list { left: 560px; right: 56px; top: 200px; grid-template-rows: repeat(4, var(--row)); grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 24px; }
+.stage.l .w-note, .stage.l .w-note-edit { left: 56px; right: 56px; top: 112px; bottom: 44px; }
+
+/* M : onglets en haut, barre de points, barre d'ajout, liste sur une colonne */
+.stage.m .w-dot, .stage.m .w-name, .stage.m .w-sub, .stage.m .w-count, .stage.m .w-clear { display: none; }
+.stage.m .w-tabs { left: 48px; right: 48px; top: 26px; }
+.stage.m .w-state { display: none; }
+.stage.m .w-bar { left: 56px; top: 108px; }
+.stage.m .w-add { left: 48px; right: 48px; top: 144px; }
+.stage.m .w-list { left: 48px; right: 48px; top: 226px; grid-auto-flow: row; grid-template-rows: repeat(5, var(--row)); }
+.stage.m .w-note, .stage.m .w-note-edit { left: 48px; right: 48px; top: 108px; bottom: 40px; }
+
+/* S : l'onglet actif seul (un toucher passe à la liste suivante), barre d'ajout et liste sur 2 colonnes */
+.stage.s .w-dot, .stage.s .w-name, .stage.s .w-sub, .stage.s .w-count, .stage.s .w-bar, .stage.s .w-clear, .stage.s .w-state { display: none; }
+.stage.s .w-tabs { right: 32px; top: 24px; }
+.stage.s .tab:not(.on) { display: none; }
+.stage.s .w-add { left: 32px; right: 300px; top: 24px; }
+.stage.s .w-list { left: 24px; right: 24px; top: 104px; grid-template-rows: repeat(3, var(--row)); grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 16px; }
+.stage.s .w-item .grip, .stage.s .w-item .row-btn { display: none; }
+.stage.s .w-item .check { gap: 14px; }
+.stage.s .w-note, .stage.s .w-note-edit { left: 32px; right: 32px; top: 100px; bottom: 24px; }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Widget iCUE · CORSAIR XENEON EDGE</div>
+    <h1>Dot Notes</h1>
+    <p class="lede">Proposition v0.2, à valider dans le tableau. La saisie se fait directement sur le widget, comme le Checklist de Corsair, et chaque liste a son onglet : on change de vue sans quitter le widget. La maquette marche avec ton clavier : ajoute un élément, coche, renomme avec le crayon, glisse les points de gauche pour réordonner, change d'onglet ou crée-en un avec +. Les listes de départ sont des exemples.</p>
+  </header>
+
+  <figure>
+    <div class="tag"><b>Maquette de référence</b><span id="sizeTag">Version 0.2 · taille réelle XL 2536 × 696 px</span></div>
+    <div class="sizebar" role="radiogroup" aria-label="Taille du widget">
+      <span>Widget size</span>
+      <button type="button" class="preset" data-size="s" aria-pressed="false">S · 840 × 344</button>
+      <button type="button" class="preset" data-size="m" aria-pressed="false">M · 840 × 696</button>
+      <button type="button" class="preset" data-size="l" aria-pressed="false">L · 1688 × 696</button>
+      <button type="button" class="preset" data-size="xl" aria-pressed="true">XL · 2536 × 696</button>
+    </div>
+    <div class="frame xl" id="frame">
+      <div class="stage xl" id="stage">
+        <span class="w-dot"></span>
+        <p class="w-lbl w-name">DOT NOTES</p>
+        <div class="w-tabs" id="tabs" role="tablist" aria-label="Lists"></div>
+        <p class="w-lbl w-state" id="state">3 / 8 DONE</p>
+        <p class="w-lbl w-sub" id="sub">DONE</p>
+        <div class="w-count" id="count"><canvas id="countCv"></canvas></div>
+        <canvas class="w-bar" id="bar"></canvas>
+        <button type="button" class="w-clear" id="clearBtn">Hold to clear done</button>
+        <form class="w-add" id="addForm" autocomplete="off">
+          <input type="text" id="addInput" maxlength="100" placeholder="Add item" aria-label="Add item">
+          <button type="submit" class="icon-btn" aria-label="Add"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
+        </form>
+        <div class="w-list" id="list" role="list"></div>
+        <div class="w-note" id="note" role="button" tabindex="0" hidden></div>
+        <textarea class="w-note-edit" id="noteEdit" hidden aria-label="Note"></textarea>
+      </div>
+    </div>
+    <div class="settings" aria-label="Réglages iCUE simulés">
+      <label>Done items <select id="doneStyle">
+        <option value="dim" selected>Dimmed</option>
+        <option value="strike">Dimmed + struck</option>
+        <option value="hide">Hidden</option>
+      </select></label>
+      <label><input type="checkbox" id="doneLast" checked> Move done to the end</label>
+      <label><input type="checkbox" id="showDelete" checked> Show delete buttons</label>
+      <label><input type="checkbox" id="showUnlit" checked> Show unlit dots</label>
+      <label>Accent color <input type="color" id="accentColor" value="#10b981"></label>
+      <label>Lit dot color <input type="color" id="litColor" value="#f2f0e9"></label>
+      <label>Unlit dot color <input type="color" id="unlitColor" value="#1c1c1c"></label>
+      <label>Label color <input type="color" id="labelColor" value="#b8b6b0"></label>
+      <button type="button" class="preset" data-accent="#10b981"><i style="background:#10b981"></i>Émeraude</button>
+      <button type="button" class="preset" data-accent="#ed403b"><i style="background:#ed403b"></i>Rouge A</button>
+      <button type="button" class="preset" id="sampleBtn">Remettre l'exemple</button>
+    </div>
+    <figcaption><span id="sizeNote">Compteur en points à gauche, onglets en haut, barre d'ajout et liste sur 2 colonnes à droite.</span> Touche l'onglet actif pour le renommer. L'onglet NOTES est une note libre : touche le texte pour l'écrire. Garde le doigt 1 seconde sur « Hold to clear done » pour supprimer les éléments faits.</figcaption>
+  </figure>
+
+  <section style="display:grid;gap:14px">
+    <div class="diff-head">
+      <h2>Choix de design</h2>
+      <p class="hint">Tout est à valider. Complété au fur et à mesure.</p>
+    </div>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>#</th><th>Élément</th><th>Proposition</th></tr></thead>
+        <tbody>
+          <tr class="todo"><td>1</td><td>Saisie du texte</td><td>Directement sur l'écran, comme le widget Checklist de Corsair : un champ « Add item » (Entrée ou bouton + pour ajouter), un crayon sur chaque ligne pour la renommer (Entrée enregistre, Échap annule, toucher ailleurs enregistre). Coller un texte avec plusieurs lignes, « ; » ou « | » crée plusieurs éléments. Les touches viennent du clavier de Windows (physique, tactile ou « Clavier virtuel » d'iCUE), à confirmer avec le test Dot Keytest.</td></tr>
+          <tr class="todo"><td>2</td><td>Onglets</td><td>Plusieurs vues dans le même widget, comme les piles de NOTE//EDGE : un onglet par liste (par exemple TODAY, WORK, HOME) avec le nombre d'éléments à faire, et + pour en créer un. Toucher un onglet change de vue sans quitter le widget, toucher l'onglet actif le renomme. En S, seul l'onglet actif est affiché et un toucher passe au suivant. Suppression d'un onglet : à définir.</td></tr>
+          <tr class="todo"><td>3</td><td>Deux types d'onglet</td><td>Liste à cocher, ou note libre (onglet NOTES dans l'exemple) : toucher le texte ouvre une zone de saisie sur toute la vue, le texte est enregistré en quittant la zone. Le type se choisit à la création de l'onglet : à définir.</td></tr>
+          <tr class="todo"><td>4</td><td>Stockage</td><td>Dans le stockage local du widget, sous l'identifiant qu'iCUE donne à chaque widget posé (<code>uniqueId</code>) : chaque widget a ses propres onglets, sur chaque page. Le widget marche seul, sans compagnon. Jusqu'à 60 éléments par liste, 100 caractères chacun.</td></tr>
+          <tr class="todo"><td>5</td><td>Lignes</td><td>De gauche à droite : poignée en points pour glisser et réordonner, case 5 × 5 points (contour en couleur des libellés quand c'est à faire, pleine en couleur d'accent avec une coche quand c'est fait), texte, crayon pour renommer, croix pour supprimer (masquable avec « Show delete buttons »). Toucher la case ou le texte coche la ligne.</td></tr>
+          <tr class="todo"><td>6</td><td>Éléments faits</td><td>Réglage « Done items » : grisés (par défaut), grisés et barrés, ou masqués. Réglage « Move done to the end » : les éléments faits passent en fin de liste (activé par défaut).</td></tr>
+          <tr class="todo"><td>7</td><td>Compteur</td><td>Nombre fait / total de la liste ouverte, en gros points avec la police dot grasse du Dot Clock, et une barre de points en dessous (24 points au plus). En M, la barre seule.</td></tr>
+          <tr class="todo"><td>8</td><td>Nettoyage</td><td>Bouton « Hold to clear done » : garder le doigt 1 seconde pour supprimer les éléments faits de la liste ouverte, pour éviter les erreurs. En XL et L seulement.</td></tr>
+          <tr class="todo"><td>9</td><td>Libellés</td><td>« DOT NOTES » en haut à gauche, puis les onglets, « 3 / 8 DONE » en haut à droite. Fira Code 18 px.</td></tr>
+          <tr class="todo"><td>10</td><td>Nombre d'éléments affichés</td><td>8 en XL et L (2 colonnes de 4), 5 en M, 6 en S (2 colonnes de 3). Au-delà, « +N MORE ». Lignes de 72 à 104 px de haut, boutons et onglets de 60 px, au-dessus du minimum tactile.</td></tr>
+          <tr class="todo"><td>11</td><td>Couleurs</td><td>Mêmes réglages que Dot Clock : « Accent color » (vert émeraude par défaut), « Lit dot color », « Unlit dot color », « Label color ». Fond <code>#080808</code>.</td></tr>
+          <tr class="todo"><td>12</td><td>Liste vide</td><td>« NOTHING TO DO » et « TAP ADD ITEM TO START », compteur à 0 / 0.</td></tr>
+          <tr class="todo"><td>13</td><td>Tailles</td><td><b>XL</b> : compteur en points à gauche, onglets en haut, barre d'ajout et liste sur 2 colonnes à droite.<br><b>L</b> : même disposition, plus serrée.<br><b>M</b> : onglets, barre de points, barre d'ajout, liste sur une colonne.<br><b>S</b> : onglet actif, barre d'ajout et liste sur 2 colonnes, sans poignée ni boutons sur les lignes (on coche seulement ; renommer et réordonner se font dans une taille plus grande).<br>Vertical : à concevoir.</td></tr>
+          <tr class="todo"><td>14</td><td>Compagnon (plus tard)</td><td>Quand le compagnon Rust tourne, le widget s'y synchronise : copie des notes dans un fichier sur le PC (<code>%APPDATA%\Xeneon\notes.json</code>), qui survit à la suppression du widget ou à une réinstallation d'iCUE, partage d'une liste entre plusieurs widgets, édition depuis le PC avec un vrai clavier. Accès limité à <code>127.0.0.1</code> et protégé par un jeton. Sans compagnon, rien ne change : le stockage local reste la référence.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  function v(id) { return document.getElementById(id); }
+  var SIZES = {
+    xl: { w: 2536, rows: 8, count: 1, check: 40, tag: "XL 2536 × 696 px", note: "Compteur en points à gauche, onglets en haut, barre d'ajout et liste sur 2 colonnes à droite." },
+    l: { w: 1688, rows: 8, count: 0.82, check: 36, tag: "L 1688 × 696 px", note: "Même disposition que XL, plus serrée." },
+    m: { w: 840, rows: 5, count: 0, check: 36, tag: "M 840 × 696 px", note: "Onglets en haut, barre de points, barre d'ajout, liste sur une colonne." },
+    s: { w: 840, rows: 6, count: 0, check: 30, tag: "S 840 × 344 px", note: "Onglet actif en haut à droite (un toucher passe au suivant), barre d'ajout et liste sur 2 colonnes." }
+  };
+  var size = "xl", frame = v("frame"), stage = v("stage");
+  function fit() { stage.style.transform = "scale(" + frame.clientWidth / SIZES[size].w + ")"; }
+  if (window.ResizeObserver) new ResizeObserver(fit).observe(frame); else window.addEventListener("resize", fit);
+
+  // ---------- données (en mémoire, et dans le stockage local de ce navigateur quand il est disponible)
+  var nextId = 1;
+  function items(list) { return list.map(function (s) { return { id: nextId++, text: s[0].toUpperCase(), done: s[1] }; }); }
+  function sample() {
+    return {
+      current: 0,
+      lists: [
+        { id: nextId++, name: "TODAY", type: "list", items: items([["Backup NAS", true], ["Order filament PLA", false], ["Reply to Julien", false], ["Update iCUE", true], ["Clean desk", true], ["Call the bank", false], ["Book dentist", false], ["Print bracket", false]]) },
+        { id: nextId++, name: "WORK", type: "list", items: items([["Review PR 42", false], ["Deploy staging", false], ["Weekly report", true]]) },
+        { id: nextId++, name: "HOME", type: "list", items: items([["Groceries", false], ["Water plants", true]]) },
+        { id: nextId++, name: "NOTES", type: "note", note: "WI-FI GUEST: LUMEN-5G\nPASSWORD ON THE FRIDGE\nPIZZA NIGHT FRIDAY" }
+      ]
+    };
+  }
+  var data = sample();
+  try {
+    var saved = JSON.parse(localStorage.getItem("dotnotes-v3") || "null");
+    if (saved && Array.isArray(saved.lists) && saved.lists.length) {
+      data = saved;
+      data.lists.forEach(function (l) {
+        if (l.id >= nextId) nextId = l.id + 1;
+        (l.items || []).forEach(function (it) { if (it.id >= nextId) nextId = it.id + 1; });
+      });
+    }
+  } catch (e) {}
+  function save() { try { localStorage.setItem("dotnotes-v3", JSON.stringify(data)); } catch (e) {} }
+  function cur() { return data.lists[Math.min(data.current, data.lists.length - 1)]; }
+
+  function addItems(text) {
+    var l = cur();
+    text.split(/[\n\r;|]+/).map(function (t) { return t.trim().toUpperCase().slice(0, 100); }).filter(Boolean).forEach(function (t) {
+      if (l.items.length < 60) l.items.push({ id: nextId++, text: t, done: false });
+    });
+    save(); render();
+  }
+
+  function settings() {
+    return {
+      doneStyle: v("doneStyle").value,
+      doneLast: v("doneLast").checked,
+      showDelete: v("showDelete").checked,
+      lit: v("litColor").value,
+      unlit: v("showUnlit").checked ? v("unlitColor").value : null,
+      accent: v("accentColor").value,
+      label: v("labelColor").value
+    };
+  }
+
+  // ---------- dessins en points
+  var FONT = {
+    "0": [".###.", "##.##", "##.##", "##.##", "##.##", "##.##", ".###."],
+    "1": [".##.", "###.", ".##.", ".##.", ".##.", ".##.", "####"],
+    "2": [".###.", "##.##", "...##", "..##.", ".##..", "##...", "#####"],
+    "3": [".###.", "##.##", "...##", "..##.", "...##", "##.##", ".###."],
+    "4": ["...##", "..###", ".####", "##.##", "#####", "...##", "...##"],
+    "5": ["#####", "##...", "####.", "...##", "...##", "##.##", ".###."],
+    "6": [".###.", "##...", "##...", "####.", "##.##", "##.##", ".###."],
+    "7": ["#####", "...##", "..##.", "..##.", ".##..", ".##..", ".##.."],
+    "8": [".###.", "##.##", "##.##", ".###.", "##.##", "##.##", ".###."],
+    "9": [".###.", "##.##", "##.##", ".####", "...##", "...##", ".###."],
+    "/": ["...##", "...##", "..##.", "..##.", ".##..", ".##..", "##..."]
+  };
+  var CHECK = [".....", "....#", "...#.", "#.#..", ".#..."];
+  function checkbox(isDone, px, s) {
+    var p = px / 5, r = p * 0.36, out = '<svg width="' + px + '" height="' + px + '" viewBox="0 0 ' + px + " " + px + '" aria-hidden="true">';
+    for (var y = 0; y < 5; y++) for (var x = 0; x < 5; x++) {
+      var edge = x === 0 || y === 0 || x === 4 || y === 4, fill;
+      if (isDone) fill = CHECK[y][x] === "#" ? "#080808" : s.accent;
+      else fill = edge ? s.label : (s.unlit || "transparent");
+      out += '<circle cx="' + (x + .5) * p + '" cy="' + (y + .5) * p + '" r="' + r + '" fill="' + fill + '"/>';
+    }
+    return out + "</svg>";
+  }
+  function grip(s) {
+    var out = '<svg width="20" height="32" viewBox="0 0 20 32" aria-hidden="true">';
+    for (var y = 0; y < 4; y++) for (var x = 0; x < 2; x++) out += '<circle cx="' + (5 + x * 10) + '" cy="' + (4 + y * 8) + '" r="2.6" fill="' + s.label + '"/>';
+    return out + "</svg>";
+  }
+  var PENCIL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M14 6l4 4"/></svg>';
+  var CROSS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+  var PLUS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>';
+
+  function drawCount(text, k, s) {
+    var cv = v("countCv"), P = 36.7 * k, R = 13.6 * k, gap = 22 * k, dpr = 2, w = 0;
+    for (var i = 0; i < text.length; i++) w += (FONT[text[i]][0].length - 1) * P + 2 * R + (i < text.length - 1 ? gap : 0);
+    var h = 6 * P + 2 * R;
+    cv.width = Math.ceil(w * dpr); cv.height = Math.ceil(h * dpr); cv.style.width = w + "px"; cv.style.height = h + "px";
+    var ctx = cv.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    var x = R;
+    for (var c = 0; c < text.length; c++) {
+      var g = FONT[text[c]], on = text[c] === "/" ? s.accent : s.lit;
+      for (var row = 0; row < 7; row++) for (var col = 0; col < g[row].length; col++) {
+        var lit = g[row][col] === "#";
+        if (!lit && !s.unlit) continue;
+        ctx.beginPath(); ctx.fillStyle = lit ? on : s.unlit;
+        ctx.arc(x + col * P, R + row * P, R, 0, Math.PI * 2); ctx.fill();
+      }
+      x += (g[0].length - 1) * P + 2 * R + gap;
+    }
+  }
+  function drawBar(total, nDone, s) {
+    var cv = v("bar"), dpr = 2, step = size === "m" ? 26 : 34, r = size === "m" ? 8 : 11, n = Math.min(total, 24);
+    var w = Math.max(1, n) * step, h = 2 * r + 2;
+    cv.width = w * dpr; cv.height = h * dpr; cv.style.width = w + "px"; cv.style.height = h + "px";
+    var ctx = cv.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    var lit = total ? Math.round(nDone / total * n) : 0;
+    for (var i = 0; i < n; i++) {
+      ctx.beginPath(); ctx.fillStyle = i < lit ? s.accent : (s.unlit || "#1c1c1c");
+      ctx.arc(i * step + r + 1, r + 1, r, 0, Math.PI * 2); ctx.fill();
+    }
+  }
+
+  // ---------- onglets
+  var renamingTab = false;
+  function renderTabs() {
+    var tabs = v("tabs");
+    tabs.innerHTML = "";
+    data.lists.forEach(function (l, i) {
+      var on = i === data.current;
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "tab" + (on ? " on" : "");
+      b.setAttribute("role", "tab");
+      b.setAttribute("aria-selected", on ? "true" : "false");
+      if (on && renamingTab) {
+        var input = document.createElement("input");
+        input.type = "text"; input.maxLength = 16; input.value = l.name; input.setAttribute("aria-label", "Rename list");
+        b.appendChild(input);
+        var done = false;
+        var finish = function (keep) {
+          if (done) return; done = true;
+          var t = input.value.trim().toUpperCase();
+          if (keep && t) l.name = t;
+          renamingTab = false; save(); render();
+        };
+        input.addEventListener("keydown", function (e) {
+          if (e.key === "Enter") { e.preventDefault(); finish(true); }
+          if (e.key === "Escape") { e.preventDefault(); finish(false); }
+        });
+        input.addEventListener("blur", function () { finish(true); });
+        tabs.appendChild(b);
+        setTimeout(function () { input.focus(); input.select(); }, 0);
+        return;
+      }
+      var open = l.type === "list" ? l.items.filter(function (x) { return !x.done; }).length : null;
+      b.innerHTML = "<span></span>" + (open !== null ? "<b>" + open + "</b>" : "");
+      b.querySelector("span").textContent = l.name;
+      b.addEventListener("click", function () {
+        if (size === "s" && on) { data.current = (i + 1) % data.lists.length; save(); render(); return; }
+        if (on) { renamingTab = true; render(); return; }
+        data.current = i; save(); render();
+      });
+      tabs.appendChild(b);
+    });
+    var plus = document.createElement("button");
+    plus.type = "button"; plus.className = "tab plus"; plus.setAttribute("aria-label", "New list");
+    plus.innerHTML = PLUS;
+    plus.addEventListener("click", function () {
+      data.lists.push({ id: nextId++, name: "LIST " + (data.lists.length + 1), type: "list", items: [] });
+      data.current = data.lists.length - 1; renamingTab = true; save(); render();
+    });
+    tabs.appendChild(plus);
+  }
+
+  // ---------- rendu
+  var editingId = null;
+  function render() {
+    var s = settings(), Z = SIZES[size], l = cur();
+    stage.className = "stage " + size;
+    stage.style.setProperty("--accent", s.accent);
+    stage.style.setProperty("--lit", s.lit);
+    stage.style.setProperty("--label", s.label);
+    renderTabs();
+
+    var isNote = l.type === "note";
+    ["list", "count", "bar", "sub", "clearBtn", "addForm"].forEach(function (id) { v(id).hidden = isNote; });
+    v("noteEdit").hidden = true;
+    v("note").hidden = !isNote;
+    if (isNote) {
+      v("note").textContent = l.note || "TAP TO WRITE A NOTE";
+      v("note").classList.toggle("placeholder", !l.note);
+      v("state").textContent = "NOTE";
+      return;
+    }
+
+    var total = l.items.length, nDone = l.items.filter(function (i) { return i.done; }).length;
+    v("state").textContent = nDone + " / " + total + " DONE";
+    v("sub").textContent = total && nDone === total ? "ALL DONE" : "DONE";
+    if (Z.count) drawCount(nDone + "/" + total, Z.count, s);
+    drawBar(total, nDone, s);
+
+    var list = l.items.slice();
+    if (s.doneLast) list.sort(function (a, b) { return (a.done ? 1 : 0) - (b.done ? 1 : 0); });
+    if (s.doneStyle === "hide") list = list.filter(function (i) { return !i.done; });
+
+    var box = v("list");
+    box.innerHTML = "";
+    if (!list.length) {
+      box.innerHTML = '<p class="w-empty">' + (total ? "All done" : "Nothing to do<br>Tap add item to start") + "</p>";
+      return;
+    }
+    var shown = list.length > Z.rows ? list.slice(0, Z.rows - 1) : list;
+    shown.forEach(function (it) {
+      var row = document.createElement("div");
+      row.className = "w-item" + (it.done ? " done" : "") + (s.doneStyle === "strike" ? " strike" : "");
+      row.setAttribute("role", "listitem");
+      row.dataset.id = it.id;
+      if (editingId === it.id) {
+        row.innerHTML = '<span class="grip" aria-hidden="true">' + grip(s) + "</span>";
+        var input = document.createElement("input");
+        input.type = "text"; input.maxLength = 100; input.value = it.text; input.setAttribute("aria-label", "Rename item");
+        row.appendChild(input);
+        var finished = false;
+        var finish = function (keep) {
+          if (finished) return; finished = true;
+          var t = input.value.trim().toUpperCase();
+          if (keep && t) it.text = t;
+          editingId = null; save(); render();
+        };
+        input.addEventListener("keydown", function (e) {
+          if (e.key === "Enter") { e.preventDefault(); finish(true); }
+          if (e.key === "Escape") { e.preventDefault(); finish(false); }
+        });
+        input.addEventListener("blur", function () { finish(true); });
+        box.appendChild(row);
+        setTimeout(function () { input.focus(); input.select(); }, 0);
+        return;
+      }
+      row.innerHTML =
+        '<button type="button" class="grip" aria-label="Drag to reorder">' + grip(s) + "</button>" +
+        '<button type="button" class="check" aria-pressed="' + it.done + '">' + checkbox(it.done, Z.check, s) + "<span></span></button>" +
+        '<button type="button" class="row-btn rename" aria-label="Rename">' + PENCIL + "</button>" +
+        (s.showDelete ? '<button type="button" class="row-btn del" aria-label="Delete">' + CROSS + "</button>" : "");
+      row.querySelector(".check span").textContent = it.text;
+      row.querySelector(".check").addEventListener("click", function () { it.done = !it.done; save(); render(); });
+      row.querySelector(".rename").addEventListener("click", function () { editingId = it.id; render(); });
+      if (s.showDelete) row.querySelector(".del").addEventListener("click", function () {
+        l.items = l.items.filter(function (x) { return x !== it; }); save(); render();
+      });
+      row.querySelector(".grip").addEventListener("pointerdown", function (e) { startDrag(e, it, row); });
+      box.appendChild(row);
+    });
+    if (list.length > shown.length) {
+      var m = document.createElement("p");
+      m.className = "w-more"; m.textContent = "+" + (list.length - shown.length) + " more";
+      box.appendChild(m);
+    }
+  }
+
+  // ---------- glisser pour réordonner (au toucher ou à la souris, sur la poignée)
+  function startDrag(e, item, row) {
+    e.preventDefault();
+    var handle = e.currentTarget, l = cur();
+    try { handle.setPointerCapture(e.pointerId); } catch (x) {}
+    row.classList.add("dragging");
+    function move(ev) {
+      var rows = Array.prototype.slice.call(v("list").querySelectorAll(".w-item"));
+      var target = null;
+      rows.forEach(function (r) {
+        var b = r.getBoundingClientRect();
+        if (ev.clientX >= b.left && ev.clientX <= b.right && ev.clientY >= b.top && ev.clientY <= b.bottom) target = r;
+      });
+      if (!target || target === row) return;
+      var other = l.items.filter(function (x) { return String(x.id) === target.dataset.id; })[0];
+      if (!other || (other.done !== item.done && settings().doneLast)) return;
+      var from = l.items.indexOf(item), to = l.items.indexOf(other);
+      l.items.splice(from, 1); l.items.splice(to, 0, item);
+      // on déplace la ligne dans la page sans tout redessiner, pour garder le doigt sur la poignée
+      var parent = row.parentNode;
+      if (rows.indexOf(target) > rows.indexOf(row)) parent.insertBefore(row, target.nextSibling); else parent.insertBefore(row, target);
+    }
+    function up() {
+      handle.removeEventListener("pointermove", move);
+      handle.removeEventListener("pointerup", up);
+      handle.removeEventListener("pointercancel", up);
+      save(); render();
+    }
+    handle.addEventListener("pointermove", move);
+    handle.addEventListener("pointerup", up);
+    handle.addEventListener("pointercancel", up);
+  }
+
+  // ---------- barre d'ajout
+  v("addForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var input = v("addInput");
+    if (input.value.trim()) addItems(input.value);
+    input.value = "";
+    input.focus();
+  });
+  v("addInput").addEventListener("paste", function (e) {
+    var t = (e.clipboardData || window.clipboardData).getData("text");
+    if (!t || !/[\n\r;|]/.test(t)) return;
+    e.preventDefault();
+    addItems(t);
+  });
+
+  // ---------- nettoyage par appui long
+  var holdTimer = null, clearBtn = v("clearBtn");
+  function startHold(e) {
+    e.preventDefault();
+    clearBtn.classList.add("arming"); clearBtn.textContent = "Keep holding…";
+    holdTimer = setTimeout(function () {
+      var l = cur(); l.items = l.items.filter(function (i) { return !i.done; });
+      save(); stopHold(); render();
+    }, 1000);
+  }
+  function stopHold() { clearTimeout(holdTimer); clearBtn.classList.remove("arming"); clearBtn.textContent = "Hold to clear done"; }
+  clearBtn.addEventListener("pointerdown", startHold);
+  ["pointerup", "pointerleave", "pointercancel"].forEach(function (ev) { clearBtn.addEventListener(ev, stopHold); });
+
+  // ---------- note
+  v("note").addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); v("note").click(); } });
+  v("note").addEventListener("click", function () {
+    var ed = v("noteEdit");
+    v("note").hidden = true; ed.hidden = false;
+    ed.value = cur().note || ""; ed.focus();
+  });
+  v("noteEdit").addEventListener("blur", function () {
+    cur().note = v("noteEdit").value.trim().toUpperCase(); save(); render();
+  });
+
+  // ---------- réglages
+  ["doneStyle", "doneLast", "showDelete", "showUnlit", "accentColor", "litColor", "unlitColor", "labelColor"].forEach(function (id) {
+    v(id).addEventListener("input", render);
+    v(id).addEventListener("change", render);
+  });
+  document.querySelectorAll(".preset[data-accent]").forEach(function (b) {
+    b.addEventListener("click", function () { v("accentColor").value = b.getAttribute("data-accent"); render(); });
+  });
+  v("sampleBtn").addEventListener("click", function () { data = sample(); save(); render(); });
+  document.querySelectorAll(".sizebar .preset").forEach(function (b) {
+    b.addEventListener("click", function () {
+      size = b.getAttribute("data-size");
+      document.querySelectorAll(".sizebar .preset").forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+      frame.className = "frame " + size;
+      v("sizeTag").textContent = "Version 0.2 · taille réelle " + SIZES[size].tag;
+      v("sizeNote").textContent = SIZES[size].note;
+      render(); fit();
+    });
+  });
+
+  render(); fit();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(render);
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Maquette de référence du Dot IA (artefact de revue de design). Ouvrir dans un navigateur. -->
+<style>body { margin: 0; }</style>
+</head>
+<body>
+<title>Dot IA</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap">
+<style>
+/* Layout : maquette de référence en taille réelle (choix S, M, L, XL) avec ses réglages, puis tableau des choix. Même univers que Dot Clock, un seul thème sombre. */
+:root {
+  --page: #111111;
+  --panel: #0a0a0a;
+  --line: #262626;
+  --text: #e6e6e6;
+  --muted: #8c8c8c;
+  --brand: #10b981;
+  --mono: "IBM Plex Mono", "Cascadia Mono", Consolas, monospace;
+  --sans: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { background: var(--page); color: var(--text); }
+body {
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.55;
+  padding-block: 40px 72px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 1480px; margin: 0 auto; display: grid; gap: 40px; }
+header { display: grid; gap: 10px; }
+.eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); display: flex; align-items: center; gap: 10px; }
+.eyebrow::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--brand); }
+h1 { font-family: var(--mono); font-weight: 500; font-size: clamp(28px, 4vw, 44px); line-height: 1.1; margin: 0; letter-spacing: -.01em; }
+.lede { color: var(--muted); max-width: 72ch; margin: 0; }
+
+figure { margin: 0; display: grid; gap: 12px; min-width: 0; }
+.tag { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.tag b { color: var(--text); font-weight: 500; font-size: 14px; }
+figcaption { color: var(--muted); font-size: 14px; }
+
+/* tableau */
+.diff-head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; }
+h2 { font-family: var(--mono); font-weight: 500; font-size: 13px; letter-spacing: .14em; text-transform: uppercase; margin: 0; }
+.hint { color: var(--muted); font-size: 14px; margin: 0; }
+.table-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; }
+table { width: 100%; border-collapse: collapse; min-width: 640px; }
+th, td { text-align: left; padding: 14px 16px; vertical-align: top; border-bottom: 1px solid var(--line); }
+tr:last-child td { border-bottom: 0; }
+thead th { font-family: var(--mono); font-weight: 500; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); background: var(--panel); }
+td:first-child { font-family: var(--mono); color: var(--muted); width: 3.5em; font-variant-numeric: tabular-nums; }
+td:nth-child(2) { font-weight: 500; width: 15em; }
+tr.todo td:nth-child(3) { color: var(--muted); }
+code { font-family: var(--mono); font-size: 13px; color: var(--text); }
+
+/* réglages simulés */
+.settings { display: flex; flex-wrap: wrap; gap: 12px 28px; align-items: center; padding: 14px 16px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); }
+.settings label { display: inline-flex; align-items: center; gap: 10px; font-family: var(--mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); cursor: pointer; }
+.settings input[type=color] { width: 36px; height: 28px; padding: 0; border: 1px solid var(--line); border-radius: 6px; background: none; cursor: pointer; }
+.settings input[type=checkbox], .settings input[type=radio] { width: 18px; height: 18px; accent-color: var(--brand); cursor: pointer; }
+.settings input[type=text] { font-family: var(--mono); font-size: 13px; letter-spacing: .04em; color: var(--text); background: #141414; border: 1px solid var(--line); border-radius: 6px; padding: 6px 10px; width: 9em; }
+.settings .grp { display: inline-flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.settings .grp > span { font-family: var(--mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--text); }
+.settings input:focus-visible, .preset:focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; }
+.preset { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; padding: 6px 10px; border-radius: 6px; border: 1px solid var(--line); background: transparent; color: var(--text); cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+.preset i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+.sizebar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; }
+.sizebar > span { font-family: var(--mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-right: 6px; }
+.sizebar .preset[aria-pressed="true"] { background: var(--text); color: #0a0a0a; border-color: var(--text); }
+
+/* cadre à l'échelle de l'XL */
+.frame { position: relative; max-width: 100%; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: #080808; }
+.frame.xl { width: 100%; aspect-ratio: 2536 / 696; }
+.frame.l { width: calc(1688 / 2536 * 100%); aspect-ratio: 1688 / 696; }
+.frame.m { width: calc(840 / 2536 * 100%); aspect-ratio: 840 / 696; }
+.frame.s { width: calc(840 / 2536 * 100%); aspect-ratio: 840 / 344; }
+@media (max-width: 700px) { .frame.l, .frame.m, .frame.s { width: 100%; } }
+
+/* ---------- le widget : scène en pixels réels de l'emplacement ---------- */
+.stage { position: absolute; left: 0; top: 0; transform-origin: 0 0; background: #080808; --accent: #10b981; --lit: #f2f0e9; --label: #b8b6b0; --unlit: #1c1c1c; --warn: #f59e0b; --crit: #ed403b; font-family: "Fira Code", Consolas, monospace; font-variant-ligatures: none; }
+.stage.xl { width: 2536px; height: 696px; }
+.stage.l { width: 1688px; height: 696px; }
+.stage.m { width: 840px; height: 696px; }
+.stage.s { width: 840px; height: 344px; }
+.stage button { font-family: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.stage button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.lbl { margin: 0; white-space: nowrap; font-size: 18px; line-height: 24px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); }
+.head { position: absolute; left: 56px; right: 56px; top: 40px; display: flex; align-items: center; gap: 14px; }
+.head .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); }
+.head .grow { flex: 1; }
+.back { height: 60px; padding: 0 24px; border-radius: 999px; border: 2px solid #2a2a2a; background: transparent; color: var(--lit); font-size: 18px; letter-spacing: .2em; text-transform: uppercase; }
+
+/* vue d'ensemble : un panneau par compte */
+.accounts { position: absolute; left: 40px; right: 40px; top: 100px; bottom: 40px; display: grid; gap: 32px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.acc { display: grid; grid-template-rows: auto 1fr; gap: 18px; padding: 28px 32px; border: 2px solid #1d1d1d; border-radius: 18px; background: transparent; text-align: left; color: var(--lit); min-width: 0; }
+.acc:active { background: #0f0f0f; }
+.acc-top { display: flex; align-items: center; gap: 14px; }
+.acc-name { font-size: 26px; letter-spacing: .14em; text-transform: uppercase; color: var(--lit); }
+.acc-plan { font-size: 18px; letter-spacing: .2em; color: var(--label); border: 2px solid #2a2a2a; border-radius: 999px; padding: 4px 14px; }
+.acc-top .grow { flex: 1; }
+.acc-body { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 20px 48px; align-content: center; }
+.hero { display: grid; gap: 12px; align-content: start; }
+.metrics { display: grid; gap: 22px; align-content: center; min-width: 0; }
+.metric { display: grid; gap: 10px; }
+.metric-top { display: flex; justify-content: space-between; gap: 16px; }
+.metric-top b { font-weight: 500; color: var(--lit); font-size: 22px; letter-spacing: .06em; }
+.metric canvas, .hero canvas { display: block; }
+.metric canvas { width: 100% !important; height: auto !important; max-width: 820px; }
+.metric-top { min-width: 0; }
+.metric-top b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.facts { display: flex; gap: 40px; }
+.facts div { display: grid; gap: 4px; }
+.facts b { font-weight: 500; color: var(--lit); font-size: 26px; letter-spacing: .04em; }
+
+/* tailles */
+.stage.l .acc { padding: 24px 26px; }
+.stage.l .acc-body { grid-template-columns: 1fr; gap: 20px; align-content: start; }
+.stage.l .facts { display: none; }
+.stage.m .accounts { grid-template-columns: 1fr; gap: 20px; top: 96px; }
+.stage.m .acc { padding: 18px 24px; gap: 10px; }
+.stage.m .acc-body { grid-template-columns: auto minmax(0, 1fr); gap: 0 28px; align-items: center; }
+.stage.m .facts { display: none; }
+.stage.m .metric:nth-child(n+3) { display: none; }
+.stage.s .head { display: none; }
+.stage.s .accounts { top: 24px; bottom: 24px; left: 24px; right: 24px; gap: 16px; }
+.stage.s .acc { padding: 16px 20px; gap: 10px; }
+.stage.s .acc-plan, .stage.s .facts, .stage.s .metric:nth-child(n+3) { display: none; }
+.stage.s .acc-body { grid-template-columns: 1fr; gap: 14px; }
+.stage.s .acc-name { font-size: 22px; }
+
+/* vue détail */
+.detail { position: absolute; left: 56px; right: 56px; top: 116px; bottom: 40px; display: grid; gap: 40px; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); }
+.detail section { display: grid; gap: 16px; align-content: start; min-width: 0; }
+.detail .rows { display: grid; gap: 0; }
+.detail .row { display: flex; justify-content: space-between; gap: 20px; padding: 16px 0; border-bottom: 2px solid #161616; font-size: 22px; color: var(--lit); letter-spacing: .04em; text-transform: uppercase; }
+.detail .row span:last-child { color: var(--label); white-space: nowrap; }
+.detail .row span:first-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.stage.m .detail, .stage.s .detail { grid-template-columns: 1fr; }
+.stage.m .detail section:last-child, .stage.s .detail section:last-child { display: none; }
+.stage.s .detail { top: 100px; left: 32px; right: 32px; bottom: 20px; }
+.stage.s .head { display: flex; left: 32px; right: 32px; top: 20px; }
+.stage.s .head.overview { display: none; }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Widget iCUE · CORSAIR XENEON EDGE</div>
+    <h1>Dot IA</h1>
+    <p class="lede">Proposition v0.1, à valider dans le tableau. Tes limites d'utilisation Claude sur deux comptes, côte à côte : session de 5 heures et limite hebdomadaire, avec l'heure de remise à zéro. Toucher un compte ouvre sa vue détail. Toutes les valeurs sont fictives.</p>
+  </header>
+
+  <figure>
+    <div class="tag"><b>Maquette de référence</b><span id="sizeTag">Version 0.1 · taille réelle XL 2536 × 696 px</span></div>
+    <div class="sizebar" role="radiogroup" aria-label="Taille du widget">
+      <span>Widget size</span>
+      <button type="button" class="preset" data-size="s" aria-pressed="false">S · 840 × 344</button>
+      <button type="button" class="preset" data-size="m" aria-pressed="false">M · 840 × 696</button>
+      <button type="button" class="preset" data-size="l" aria-pressed="false">L · 1688 × 696</button>
+      <button type="button" class="preset" data-size="xl" aria-pressed="true">XL · 2536 × 696</button>
+    </div>
+    <div class="frame xl" id="frame">
+      <div class="stage xl" id="stage"></div>
+    </div>
+    <div class="settings" aria-label="Réglages iCUE simulés">
+      <label>Account 1 label <input type="text" id="name1" value="PERSO" maxlength="12" spellcheck="false"></label>
+      <label>Account 2 label <input type="text" id="name2" value="EVINA" maxlength="12" spellcheck="false"></label>
+      <div class="grp" role="radiogroup" aria-label="Exemple">
+        <span>Exemple</span>
+        <label><input type="radio" name="sample" id="sCalm" value="calm" checked> Calme</label>
+        <label><input type="radio" name="sample" id="sBusy" value="busy"> Proche de la limite</label>
+        <label><input type="radio" name="sample" id="sOff" value="off"> Compte injoignable</label>
+      </div>
+      <label><input type="checkbox" id="showUnlit" checked> Show unlit dots</label>
+      <label>Accent color <input type="color" id="accentColor" value="#10b981"></label>
+      <label>Lit dot color <input type="color" id="litColor" value="#f2f0e9"></label>
+      <label>Unlit dot color <input type="color" id="unlitColor" value="#1c1c1c"></label>
+      <label>Label color <input type="color" id="labelColor" value="#b8b6b0"></label>
+      <button type="button" class="preset" data-accent="#10b981"><i style="background:#10b981"></i>Émeraude</button>
+      <button type="button" class="preset" data-accent="#ed403b"><i style="background:#ed403b"></i>Rouge A</button>
+    </div>
+    <figcaption><span id="sizeNote">Deux comptes côte à côte : session en gros points, limite hebdomadaire et activité du jour.</span> Touche un compte pour ouvrir sa vue détail, puis BACK pour revenir.</figcaption>
+  </figure>
+
+  <section style="display:grid;gap:14px">
+    <div class="diff-head">
+      <h2>Choix de design</h2>
+      <p class="hint">Tout est à valider. Complété au fur et à mesure.</p>
+    </div>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>#</th><th>Élément</th><th>Proposition</th></tr></thead>
+        <tbody>
+          <tr class="todo"><td>1</td><td>Ce qu'on suit</td><td>Pour chaque compte : la session en cours (fenêtre de 5 heures) et la limite hebdomadaire, en pourcentage utilisé avec l'heure de remise à zéro, comme dans Réglages › Usage de claude.ai. En plus, l'activité Claude Code du jour (tokens, sessions) quand elle est disponible.</td></tr>
+          <tr class="todo"><td>2</td><td>Source des données</td><td>À vérifier, c'est le point clé. claude.ai ne propose pas d'API publique documentée pour ces limites. Le widget communautaire « Claude Usage » passe par son compagnon, qui lit les identifiants de Claude Code sur le PC. Pour nous : un module « ia » du compagnon Rust, une connexion par compte, identifiants chiffrés (DPAPI), jamais dans les réglages iCUE.</td></tr>
+          <tr class="todo"><td>3</td><td>Deux comptes</td><td>Un panneau par compte, avec un nom réglable (« Account 1 label », « Account 2 label », par exemple PERSO et EVINA). Le type d'abonnement s'affiche à côté du nom s'il est connu.</td></tr>
+          <tr class="todo"><td>4</td><td>Chiffre principal</td><td>Le pourcentage de la session en gros points, avec la police dot grasse du Dot Clock, et une barre de 20 points en dessous. La limite hebdomadaire en barre plus fine, avec son pourcentage et sa remise à zéro.</td></tr>
+          <tr class="todo"><td>5</td><td>Alertes</td><td>Couleurs d'état distinctes de l'accent : orange à partir de 75 %, rouge à partir de 90 %, sur le chiffre et la barre. Le reste suit les couleurs habituelles.</td></tr>
+          <tr class="todo"><td>6</td><td>Vue détail</td><td>Toucher un compte ouvre sa page : courbe des 24 dernières heures en points, et la liste des limites et des sessions récentes. BACK pour revenir, retour automatique après 30 secondes sans toucher.</td></tr>
+          <tr class="todo"><td>7</td><td>Compte injoignable</td><td>« NO DATA » et la raison (« COMPANION NOT RUNNING », « SIGN-IN EXPIRED »), jamais de valeur inventée. L'heure de la dernière lecture reste affichée.</td></tr>
+          <tr class="todo"><td>8</td><td>Couleurs</td><td>Mêmes réglages que Dot Clock : « Accent color », « Lit dot color », « Unlit dot color », « Label color ». Fond <code>#080808</code>.</td></tr>
+          <tr class="todo"><td>9</td><td>Tailles</td><td><b>XL</b> : deux panneaux côte à côte, chiffre en gros points à gauche de chaque panneau, barres et activité à droite.<br><b>L</b> : deux panneaux, chiffre au-dessus des barres.<br><b>M</b> : deux bandeaux l'un sous l'autre.<br><b>S</b> : deux panneaux compacts, session et hebdo seulement.<br>Vertical : à concevoir.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  function v(id) { return document.getElementById(id); }
+  var SIZES = {
+    xl: { w: 2536, k: 0.9, bar: 20, tag: "XL 2536 × 696 px", note: "Deux comptes côte à côte : session en gros points, limite hebdomadaire et activité du jour." },
+    l: { w: 1688, k: 0.62, bar: 20, tag: "L 1688 × 696 px", note: "Deux panneaux, chiffre au-dessus des barres." },
+    m: { w: 840, k: 0.5, bar: 16, tag: "M 840 × 696 px", note: "Deux bandeaux l'un sous l'autre." },
+    s: { w: 840, k: 0.36, bar: 14, tag: "S 840 × 344 px", note: "Deux panneaux compacts, session et hebdo seulement." }
+  };
+  var size = "xl", view = null, frame = v("frame"), stage = v("stage"), backTimer = null;
+  function fit() { stage.style.transform = "scale(" + frame.clientWidth / SIZES[size].w + ")"; }
+  if (window.ResizeObserver) new ResizeObserver(fit).observe(frame); else window.addEventListener("resize", fit);
+
+  // ---------- données fictives
+  var SAMPLES = {
+    calm: [
+      { plan: "MAX", session: 23, sReset: "IN 3 H 12", weekly: 41, wReset: "THU 09:00", tokens: "1.8M", sessions: 4, trend: [2, 3, 5, 9, 12, 14, 16, 18, 20, 21, 23, 23] },
+      { plan: "TEAM", session: 8, sReset: "IN 4 H 40", weekly: 17, wReset: "MON 02:00", tokens: "420K", sessions: 2, trend: [0, 0, 1, 1, 2, 3, 4, 5, 6, 7, 8, 8] }
+    ],
+    busy: [
+      { plan: "MAX", session: 92, sReset: "IN 0 H 38", weekly: 78, wReset: "THU 09:00", tokens: "6.4M", sessions: 9, trend: [12, 20, 31, 40, 52, 61, 70, 77, 83, 88, 90, 92] },
+      { plan: "TEAM", session: 64, sReset: "IN 2 H 05", weekly: 49, wReset: "MON 02:00", tokens: "2.1M", sessions: 5, trend: [5, 9, 15, 22, 30, 37, 44, 50, 55, 59, 62, 64] }
+    ]
+  };
+
+  function settings() {
+    return {
+      names: [v("name1").value.trim().toUpperCase() || "ACCOUNT 1", v("name2").value.trim().toUpperCase() || "ACCOUNT 2"],
+      sample: document.querySelector("input[name=sample]:checked").value,
+      lit: v("litColor").value,
+      unlit: v("showUnlit").checked ? v("unlitColor").value : null,
+      accent: v("accentColor").value,
+      label: v("labelColor").value
+    };
+  }
+  function level(p, s) { return p >= 90 ? "#ed403b" : p >= 75 ? "#f59e0b" : s.accent; }
+
+  // ---------- dessins en points
+  var FONT = {
+    "0": [".###.", "##.##", "##.##", "##.##", "##.##", "##.##", ".###."],
+    "1": [".##.", "###.", ".##.", ".##.", ".##.", ".##.", "####"],
+    "2": [".###.", "##.##", "...##", "..##.", ".##..", "##...", "#####"],
+    "3": [".###.", "##.##", "...##", "..##.", "...##", "##.##", ".###."],
+    "4": ["...##", "..###", ".####", "##.##", "#####", "...##", "...##"],
+    "5": ["#####", "##...", "####.", "...##", "...##", "##.##", ".###."],
+    "6": [".###.", "##...", "##...", "####.", "##.##", "##.##", ".###."],
+    "7": ["#####", "...##", "..##.", "..##.", ".##..", ".##..", ".##.."],
+    "8": [".###.", "##.##", "##.##", ".###.", "##.##", "##.##", ".###."],
+    "9": [".###.", "##.##", "##.##", ".####", "...##", "...##", ".###."],
+    "%": ["##..#", "##.##", "...#.", "..#..", ".#...", "##.##", "#..##"],
+    "-": [".....", ".....", ".....", "#####", ".....", ".....", "....."]
+  };
+  function dotsText(text, k, on, accentLast, s) {
+    var cv = document.createElement("canvas"), P = 36.7 * k, R = 13.6 * k, gap = 22 * k, dpr = 2, w = 0;
+    for (var i = 0; i < text.length; i++) w += (FONT[text[i]][0].length - 1) * P + 2 * R + (i < text.length - 1 ? gap : 0);
+    var h = 6 * P + 2 * R;
+    cv.width = Math.ceil(w * dpr); cv.height = Math.ceil(h * dpr); cv.style.width = w + "px"; cv.style.height = h + "px";
+    var ctx = cv.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    var x = R;
+    for (var c = 0; c < text.length; c++) {
+      var g = FONT[text[c]], col = accentLast && c === text.length - 1 ? s.label : on;
+      for (var row = 0; row < 7; row++) for (var cc = 0; cc < g[row].length; cc++) {
+        var lit = g[row][cc] === "#";
+        if (!lit && !s.unlit) continue;
+        ctx.beginPath(); ctx.fillStyle = lit ? col : s.unlit;
+        ctx.arc(x + cc * P, R + row * P, R, 0, Math.PI * 2); ctx.fill();
+      }
+      x += (g[0].length - 1) * P + 2 * R + gap;
+    }
+    return cv;
+  }
+  function dotsBar(pct, n, step, r, color, s) {
+    var cv = document.createElement("canvas"), dpr = 2, w = n * step, h = 2 * r + 2;
+    cv.width = w * dpr; cv.height = h * dpr; cv.style.width = w + "px"; cv.style.height = h + "px";
+    var ctx = cv.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    var lit = pct === null ? 0 : Math.round(pct / 100 * n);
+    for (var i = 0; i < n; i++) {
+      ctx.beginPath(); ctx.fillStyle = i < lit ? color : (s.unlit || "#1c1c1c");
+      ctx.arc(i * step + r + 1, r + 1, r, 0, Math.PI * 2); ctx.fill();
+    }
+    return cv;
+  }
+  function dotsChart(values, cols, rows, pitch, s) {
+    var cv = document.createElement("canvas"), dpr = 2, w = cols * pitch, h = rows * pitch, r = pitch * 0.34;
+    cv.width = w * dpr; cv.height = h * dpr; cv.style.width = w + "px"; cv.style.height = h + "px";
+    var ctx = cv.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    for (var c = 0; c < cols; c++) {
+      var val = values[Math.floor(c / cols * values.length)], filled = Math.round(val / 100 * rows);
+      for (var rr = 0; rr < rows; rr++) {
+        var on = rows - rr <= filled;
+        if (!on && !s.unlit) continue;
+        ctx.beginPath(); ctx.fillStyle = on ? level(val, s) : s.unlit;
+        ctx.arc(c * pitch + pitch / 2, rr * pitch + pitch / 2, r, 0, Math.PI * 2); ctx.fill();
+      }
+    }
+    return cv;
+  }
+
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; }
+
+  // ---------- vue d'ensemble
+  function overview(s) {
+    var Z = SIZES[size];
+    var head = el("div", "head overview");
+    head.appendChild(el("span", "dot"));
+    head.appendChild(el("p", "lbl", "DOT IA · CLAUDE USAGE"));
+    head.appendChild(el("span", "grow"));
+    head.appendChild(el("p", "lbl", s.sample === "off" ? "LAST READ 14:02" : "UPDATED 1 MIN AGO"));
+    stage.appendChild(head);
+
+    var wrap = el("div", "accounts");
+    [0, 1].forEach(function (i) {
+      var off = s.sample === "off" && i === 1;
+      var a = (SAMPLES[s.sample === "busy" ? "busy" : "calm"])[i];
+      var b = el("button", "acc"); b.type = "button";
+      b.setAttribute("aria-label", "Open " + s.names[i] + " details");
+      var top = el("div", "acc-top");
+      top.appendChild(el("span", "acc-name", s.names[i]));
+      top.appendChild(el("span", "acc-plan", a.plan));
+      top.appendChild(el("span", "grow"));
+      if (off) top.appendChild(el("span", "lbl", "NO DATA"));
+      b.appendChild(top);
+
+      var body = el("div", "acc-body");
+      var hero = el("div", "hero");
+      var pct = off ? null : a.session;
+      hero.appendChild(dotsText(off ? "--%" : pct + "%", Z.k, off ? s.label : level(pct, s), true, s));
+      body.appendChild(hero);
+
+      var metrics = el("div", "metrics");
+      function metric(name, p, reset) {
+        var m = el("div", "metric");
+        var t = el("div", "metric-top");
+        t.appendChild(el("span", "lbl", name));
+        var compact = size === "m" || size === "s";
+        var right = el("b", "", p === null ? "--" : (compact ? p + "%" : p + "% · " + reset));
+        t.appendChild(right);
+        m.appendChild(t);
+        m.appendChild(dotsBar(p, Z.bar, size === "xl" ? 40 : size === "l" ? 34 : 30, size === "xl" ? 12 : 10, p === null ? s.label : level(p, s), s));
+        return m;
+      }
+      metrics.appendChild(metric("SESSION · 5 H", pct, off ? "" : a.sReset));
+      metrics.appendChild(metric("WEEKLY", off ? null : a.weekly, off ? "" : "RESETS " + a.wReset));
+      if (off && size !== "s") metrics.appendChild(el("p", "lbl", "COMPANION NOT RUNNING"));
+      body.appendChild(metrics);
+      b.appendChild(body);
+
+      if (!off && size === "xl") {
+        var facts = el("div", "facts");
+        [["TOKENS TODAY", a.tokens], ["SESSIONS", String(a.sessions)]].forEach(function (f) {
+          var d = el("div"); d.appendChild(el("span", "lbl", f[0])); d.appendChild(el("b", "", f[1])); facts.appendChild(d);
+        });
+        metrics.appendChild(facts);
+      }
+      b.addEventListener("click", function () { view = i; render(); });
+      wrap.appendChild(b);
+    });
+    stage.appendChild(wrap);
+  }
+
+  // ---------- vue détail d'un compte
+  function detail(s) {
+    var i = view, off = s.sample === "off" && i === 1;
+    var a = (SAMPLES[s.sample === "busy" ? "busy" : "calm"])[i];
+    var head = el("div", "head");
+    var back = el("button", "back", "‹ BACK"); back.type = "button";
+    back.addEventListener("click", function () { view = null; render(); });
+    head.appendChild(back);
+    head.appendChild(el("p", "lbl", s.names[i] + " · " + a.plan));
+    head.appendChild(el("span", "grow"));
+    head.appendChild(el("p", "lbl", off ? "NO DATA" : "SESSION " + a.session + "%"));
+    stage.appendChild(head);
+
+    var d = el("div", "detail");
+    var left = el("section");
+    left.appendChild(el("p", "lbl", "SESSION · LAST 24 H"));
+    var cols = size === "xl" ? 48 : size === "l" ? 30 : size === "m" ? 24 : 26;
+    var pitch = size === "xl" ? 26 : size === "l" ? 24 : size === "m" ? 30 : 26;
+    left.appendChild(off ? el("p", "lbl", "NO DATA · COMPANION NOT RUNNING") : dotsChart(a.trend, cols, size === "s" ? 7 : 12, pitch, s));
+    d.appendChild(left);
+
+    var right = el("section");
+    right.appendChild(el("p", "lbl", "LIMITS"));
+    var rows = el("div", "rows");
+    (off ? [["SESSION · 5 H", "--"], ["WEEKLY", "--"]] : [
+      ["SESSION · 5 H", a.session + "% · RESETS " + a.sReset],
+      ["WEEKLY", a.weekly + "% · RESETS " + a.wReset],
+      ["TOKENS TODAY", a.tokens],
+      ["SESSIONS TODAY", String(a.sessions)]
+    ]).forEach(function (r) {
+      var row = el("div", "row"); row.appendChild(el("span", "", r[0])); row.appendChild(el("span", "", r[1])); rows.appendChild(row);
+    });
+    right.appendChild(rows);
+    d.appendChild(right);
+    stage.appendChild(d);
+
+    // retour automatique à la vue d'ensemble après 30 s sans toucher
+    clearTimeout(backTimer);
+    backTimer = setTimeout(function () { view = null; render(); }, 30000);
+  }
+
+  function render() {
+    var s = settings();
+    stage.className = "stage " + size;
+    stage.style.setProperty("--accent", s.accent);
+    stage.style.setProperty("--lit", s.lit);
+    stage.style.setProperty("--label", s.label);
+    stage.innerHTML = "";
+    if (view === null) overview(s); else detail(s);
+  }
+
+  ["name1", "name2", "sCalm", "sBusy", "sOff", "showUnlit", "accentColor", "litColor", "unlitColor", "labelColor"].forEach(function (id) {
+    v(id).addEventListener("input", render);
+    v(id).addEventListener("change", render);
+  });
+  document.querySelectorAll(".preset[data-accent]").forEach(function (b) {
+    b.addEventListener("click", function () { v("accentColor").value = b.getAttribute("data-accent"); render(); });
+  });
+  document.querySelectorAll(".sizebar .preset").forEach(function (b) {
+    b.addEventListener("click", function () {
+      size = b.getAttribute("data-size");
+      document.querySelectorAll(".sizebar .preset").forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+      frame.className = "frame " + size;
+      v("sizeTag").textContent = "Version 0.1 · taille réelle " + SIZES[size].tag;
+      v("sizeNote").textContent = SIZES[size].note;
+      render(); fit();
+    });
+  });
+
+  render(); fit();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(render);
+})();
+</script>
+
+</body>
+</html>

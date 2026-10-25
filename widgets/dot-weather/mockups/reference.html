@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Maquette de référence du Dot Weather (artefact de revue de design). Ouvrir dans un navigateur. -->
+<style>body { margin: 0; }</style>
+</head>
+<body>
+<title>Dot Weather</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap">
+<style>
+/* Layout : maquette de référence en taille réelle (choix S, M, L, XL) avec ses réglages, puis tableau des choix. Même univers que Dot Clock, un seul thème sombre. */
+:root {
+  --page: #111111;
+  --panel: #0a0a0a;
+  --line: #262626;
+  --text: #e6e6e6;
+  --muted: #8c8c8c;
+  --brand: #10b981;
+  --mono: "IBM Plex Mono", "Cascadia Mono", Consolas, monospace;
+  --sans: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { background: var(--page); color: var(--text); }
+body {
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.55;
+  padding-block: 40px 72px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 1480px; margin: 0 auto; display: grid; gap: 40px; }
+header { display: grid; gap: 10px; }
+.eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); display: flex; align-items: center; gap: 10px; }
+.eyebrow::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--brand); }
+h1 { font-family: var(--mono); font-weight: 500; font-size: clamp(28px, 4vw, 44px); line-height: 1.1; margin: 0; letter-spacing: -.01em; }
+.lede { color: var(--muted); max-width: 72ch; margin: 0; }
+
+figure { margin: 0; display: grid; gap: 12px; min-width: 0; }
+.tag { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.tag b { color: var(--text); font-weight: 500; font-size: 14px; }
+figcaption { color: var(--muted); font-size: 14px; }
+
+/* tableau */
+.diff-head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; }
+h2 { font-family: var(--mono); font-weight: 500; font-size: 13px; letter-spacing: .14em; text-transform: uppercase; margin: 0; }
+.hint { color: var(--muted); font-size: 14px; margin: 0; }
+.table-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; }
+table { width: 100%; border-collapse: collapse; min-width: 640px; }
+th, td { text-align: left; padding: 14px 16px; vertical-align: top; border-bottom: 1px solid var(--line); }
+tr:last-child td { border-bottom: 0; }
+thead th { font-family: var(--mono); font-weight: 500; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); background: var(--panel); }
+td:first-child { font-family: var(--mono); color: var(--muted); width: 3.5em; font-variant-numeric: tabular-nums; }
+td:nth-child(2) { font-weight: 500; width: 15em; }
+tr.todo td:nth-child(3) { color: var(--muted); }
+code { font-family: var(--mono); font-size: 13px; color: var(--text); }
+
+/* réglages simulés */
+.settings { display: flex; flex-wrap: wrap; gap: 12px 28px; align-items: center; padding: 14px 16px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); }
+.settings label { display: inline-flex; align-items: center; gap: 10px; font-family: var(--mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); cursor: pointer; }
+.settings input[type=color] { width: 36px; height: 28px; padding: 0; border: 1px solid var(--line); border-radius: 6px; background: none; cursor: pointer; }
+.settings input[type=checkbox], .settings input[type=radio] { width: 18px; height: 18px; accent-color: var(--brand); cursor: pointer; }
+.settings input[type=text] { font-family: var(--mono); font-size: 13px; letter-spacing: .04em; color: var(--text); background: #141414; border: 1px solid var(--line); border-radius: 6px; padding: 6px 10px; width: 10em; }
+.settings .grp { display: inline-flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.settings .grp > span { font-family: var(--mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--text); }
+.settings input:focus-visible, .preset:focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; }
+.preset { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; padding: 6px 10px; border-radius: 6px; border: 1px solid var(--line); background: transparent; color: var(--text); cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+.preset i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+.sizebar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; }
+.sizebar > span { font-family: var(--mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-right: 6px; }
+.sizebar .preset[aria-pressed="true"] { background: var(--text); color: #0a0a0a; border-color: var(--text); }
+
+/* cadre à l'échelle de l'XL */
+.frame { position: relative; max-width: 100%; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: #080808; }
+.frame.xl { width: 100%; aspect-ratio: 2536 / 696; }
+.frame.l { width: calc(1688 / 2536 * 100%); aspect-ratio: 1688 / 696; }
+.frame.m { width: calc(840 / 2536 * 100%); aspect-ratio: 840 / 696; }
+.frame.s { width: calc(840 / 2536 * 100%); aspect-ratio: 840 / 344; }
+@media (max-width: 700px) { .frame.l, .frame.m, .frame.s { width: 100%; } }
+
+/* ---------- le widget : scène en pixels réels de l'emplacement ---------- */
+.stage { position: absolute; left: 0; top: 0; transform-origin: 0 0; background: #080808; --accent: #10b981; --lit: #f2f0e9; --label: #b8b6b0; --unlit: #1c1c1c; font-family: "Fira Code", Consolas, monospace; font-variant-ligatures: none; color: var(--lit); }
+.stage.xl { width: 2536px; height: 696px; }
+.stage.l { width: 1688px; height: 696px; }
+.stage.m { width: 840px; height: 696px; }
+.stage.s { width: 840px; height: 344px; }
+.stage > * { position: absolute; }
+.stage button { font-family: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.stage button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.lbl { margin: 0; white-space: nowrap; font-size: 18px; line-height: 24px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); }
+.val { margin: 0; white-space: nowrap; font-size: 26px; letter-spacing: .06em; color: var(--lit); text-transform: uppercase; }
+.head { left: 56px; right: 56px; top: 30px; height: 60px; display: flex; align-items: center; gap: 14px; }
+.head .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); }
+.head .grow { flex: 1; }
+.back { height: 60px; padding: 0 24px; border-radius: 999px; border: 2px solid #2a2a2a; background: transparent; color: var(--lit); font-size: 18px; letter-spacing: .2em; text-transform: uppercase; }
+canvas { display: block; }
+
+/* bloc principal : pictogramme, température, condition */
+.hero { display: grid; grid-template-columns: auto auto; gap: 18px 36px; align-items: center; justify-content: start; }
+.hero .cond { grid-column: 1 / -1; display: grid; gap: 8px; }
+.hero .cond .val { font-size: 32px; letter-spacing: .1em; }
+.details { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px 32px; }
+.details div { display: grid; gap: 4px; }
+
+/* prévisions par jour */
+.days { display: grid; gap: 8px; }
+.day { display: grid; grid-template-columns: 120px auto minmax(0, 1fr) auto; align-items: center; gap: 22px; padding: 10px 18px; min-height: 84px; border: 2px solid transparent; border-radius: 14px; background: transparent; color: var(--lit); text-align: left; }
+.day.on { border-color: #2f2f2f; background: #0d0d0d; }
+.day .rain { color: var(--label); font-size: 20px; letter-spacing: .08em; }
+.day .hl { font-size: 26px; letter-spacing: .06em; white-space: nowrap; }
+.day .hl span { color: var(--label); }
+
+/* courbe horaire */
+.chart { display: grid; gap: 14px; align-content: start; }
+.chart .top { display: flex; justify-content: space-between; }
+
+/* XL */
+.stage.xl .hero { left: 56px; top: 120px; }
+.stage.xl .details { left: 56px; top: 500px; width: 680px; }
+.stage.xl .chart { left: 840px; top: 120px; width: 900px; }
+.stage.xl .days { left: 1800px; right: 40px; top: 108px; }
+/* L */
+.stage.l .hero { left: 56px; top: 120px; }
+.stage.l .details { left: 56px; top: 500px; width: 660px; }
+.stage.l .days { left: 820px; right: 40px; top: 108px; }
+/* M */
+.stage.m .hero { left: 56px; top: 110px; }
+.stage.m .details { display: none; }
+.stage.m .days { left: 32px; right: 32px; bottom: 32px; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
+.stage.m .day { grid-template-columns: 1fr; justify-items: center; gap: 10px; padding: 14px 6px; text-align: center; }
+.stage.m .day .rain { display: none; }
+.stage.m .day .hl { font-size: 22px; }
+/* S */
+.stage.s .head { display: none; }
+.stage.s .hero { left: 40px; top: 36px; }
+.stage.s .meta-s { right: 40px; top: 40px; display: grid; gap: 14px; justify-items: end; }
+/* vue détail d'un jour */
+.stage .detail-chart { left: 56px; right: 56px; top: 120px; }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Widget iCUE · CORSAIR XENEON EDGE</div>
+    <h1>Dot Weather</h1>
+    <p class="lede">Proposition v0.1, à valider dans le tableau. Météo actuelle, courbe heure par heure et prévisions sur 5 jours, avec Open-Meteo, sans compte ni compagnon. Les pictogrammes et la température sont en points. Toutes les valeurs sont fictives.</p>
+  </header>
+
+  <figure>
+    <div class="tag"><b>Maquette de référence</b><span id="sizeTag">Version 0.1 · taille réelle XL 2536 × 696 px</span></div>
+    <div class="sizebar" role="radiogroup" aria-label="Taille du widget">
+      <span>Widget size</span>
+      <button type="button" class="preset" data-size="s" aria-pressed="false">S · 840 × 344</button>
+      <button type="button" class="preset" data-size="m" aria-pressed="false">M · 840 × 696</button>
+      <button type="button" class="preset" data-size="l" aria-pressed="false">L · 1688 × 696</button>
+      <button type="button" class="preset" data-size="xl" aria-pressed="true">XL · 2536 × 696</button>
+    </div>
+    <div class="frame xl" id="frame">
+      <div class="stage xl" id="stage"></div>
+    </div>
+    <div class="settings" aria-label="Réglages iCUE simulés">
+      <label>Location <input type="text" id="city" value="PARIS" maxlength="24" spellcheck="false"></label>
+      <div class="grp" role="radiogroup" aria-label="Exemple">
+        <span>Exemple</span>
+        <label><input type="radio" name="cond" value="partly" checked> Nuageux</label>
+        <label><input type="radio" name="cond" value="sun"> Soleil</label>
+        <label><input type="radio" name="cond" value="rain"> Pluie</label>
+        <label><input type="radio" name="cond" value="snow"> Neige</label>
+        <label><input type="radio" name="cond" value="storm"> Orage</label>
+      </div>
+      <div class="grp" role="radiogroup" aria-label="Units">
+        <span>Units</span>
+        <label><input type="radio" name="units" value="c" checked> °C · km/h</label>
+        <label><input type="radio" name="units" value="f"> °F · mph</label>
+      </div>
+      <div class="grp" role="radiogroup" aria-label="Icon colors">
+        <span>Icon colors</span>
+        <label><input type="radio" name="icons" value="mono" checked> Mono</label>
+        <label><input type="radio" name="icons" value="weather"> Weather</label>
+      </div>
+      <label><input type="checkbox" id="showUnlit" checked> Show unlit dots</label>
+      <label>Accent color <input type="color" id="accentColor" value="#10b981"></label>
+      <label>Lit dot color <input type="color" id="litColor" value="#f2f0e9"></label>
+      <label>Unlit dot color <input type="color" id="unlitColor" value="#1c1c1c"></label>
+      <label>Label color <input type="color" id="labelColor" value="#b8b6b0"></label>
+      <button type="button" class="preset" data-accent="#10b981"><i style="background:#10b981"></i>Émeraude</button>
+      <button type="button" class="preset" data-accent="#ed403b"><i style="background:#ed403b"></i>Rouge A</button>
+    </div>
+    <figcaption><span id="sizeNote">Météo actuelle à gauche, courbe heure par heure au centre, 5 jours à droite.</span> Touche un jour : en XL, la courbe passe à ce jour ; dans les autres tailles, une vue détail s'ouvre, avec BACK pour revenir.</figcaption>
+  </figure>
+
+  <section style="display:grid;gap:14px">
+    <div class="diff-head">
+      <h2>Choix de design</h2>
+      <p class="hint">Tout est à valider. Complété au fur et à mesure.</p>
+    </div>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>#</th><th>Élément</th><th>Proposition</th></tr></thead>
+        <tbody>
+          <tr class="todo"><td>1</td><td>Données</td><td>Open-Meteo, appelé directement par le widget : gratuit pour un usage non commercial, sans clé ni compte, donc sans compagnon. Météo actuelle, heure par heure et 5 jours. Mise à jour toutes les 15 minutes. Permission réseau à déclarer pour les domaines d'Open-Meteo.</td></tr>
+          <tr class="todo"><td>2</td><td>Lieu</td><td>Réglage iCUE « Location » (champ texte, par exemple PARIS), converti en coordonnées par le service de géocodage d'Open-Meteo. En option, latitude et longitude à la main pour un lieu précis.</td></tr>
+          <tr class="todo"><td>3</td><td>Bloc principal</td><td>Pictogramme 9 × 9 points de la condition, température en gros points avec la police dot grasse du Dot Clock (signe moins et degré compris), condition en toutes lettres, maximum et minimum du jour, ressenti.</td></tr>
+          <tr class="todo"><td>4</td><td>Détails</td><td>Vent (vitesse et direction), humidité, risque de pluie, indice UV, lever et coucher du soleil. En XL et L.</td></tr>
+          <tr class="todo"><td>5</td><td>Heure par heure</td><td>Les 12 prochaines heures en colonnes de points : hauteur selon la température, et une rangée de points en couleur d'accent pour le risque de pluie. En XL, au centre ; ailleurs, dans la vue détail d'un jour.</td></tr>
+          <tr class="todo"><td>6</td><td>5 jours</td><td>Une ligne par jour : jour, petit pictogramme, risque de pluie, maximum et minimum. Toucher un jour montre sa courbe heure par heure (dans le bloc central en XL, dans une vue détail ailleurs, retour automatique après 30 secondes).</td></tr>
+          <tr class="todo"><td>7</td><td>Pictogrammes</td><td>Soleil, nuageux, couvert, pluie, neige, orage, brouillard, et la lune la nuit. Réglage « Icon colors » : Mono (couleur des points allumés, par défaut) ou Weather (soleil jaune, pluie bleue…).</td></tr>
+          <tr class="todo"><td>8</td><td>Unités</td><td>Réglage « Units » : °C et km/h (par défaut) ou °F et mph. Les heures suivent le format 24 h, comme Dot Clock.</td></tr>
+          <tr class="todo"><td>9</td><td>Hors ligne</td><td>Dernière météo connue avec « UPDATED 2 H AGO » en couleur d'alerte, jamais de valeur inventée. Sans aucune donnée : « NO DATA · CHECK CONNECTION ».</td></tr>
+          <tr class="todo"><td>10</td><td>Couleurs</td><td>Mêmes réglages que Dot Clock : « Accent color », « Lit dot color », « Unlit dot color », « Label color ». Fond <code>#080808</code>.</td></tr>
+          <tr class="todo"><td>11</td><td>Tailles</td><td><b>XL</b> : météo actuelle et détails à gauche, courbe heure par heure au centre, 5 jours à droite.<br><b>L</b> : météo actuelle et détails à gauche, 5 jours à droite.<br><b>M</b> : météo actuelle en haut, 5 jours en colonnes en bas.<br><b>S</b> : pictogramme, température, condition et maximum / minimum.<br>Vertical : à concevoir.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  function v(id) { return document.getElementById(id); }
+  var SIZES = {
+    xl: { w: 2536, k: 0.8, pic: 26, tag: "XL 2536 × 696 px", note: "Météo actuelle à gauche, courbe heure par heure au centre, 5 jours à droite." },
+    l: { w: 1688, k: 0.8, pic: 26, tag: "L 1688 × 696 px", note: "Météo actuelle et détails à gauche, 5 jours à droite." },
+    m: { w: 840, k: 0.8, pic: 24, tag: "M 840 × 696 px", note: "Météo actuelle en haut, 5 jours en colonnes en bas." },
+    s: { w: 840, k: 0.62, pic: 20, tag: "S 840 × 344 px", note: "Pictogramme, température, condition et maximum / minimum." }
+  };
+  var size = "xl", frame = v("frame"), stage = v("stage"), dayIdx = 0, detailDay = null, backTimer = null;
+  function fit() { stage.style.transform = "scale(" + frame.clientWidth / SIZES[size].w + ")"; }
+  if (window.ResizeObserver) new ResizeObserver(fit).observe(frame); else window.addEventListener("resize", fit);
+
+  // ---------- pictogrammes 9 × 9 points
+  var PICS = {
+    sun: ["....#....", ".#.....#.", "...###...", "..#####..", "#.#####.#", "..#####..", "...###...", ".#.....#.", "....#...."],
+    partly: ["......#..", ".#..###..", "...#####.", "..###.##.", ".#######.", "#########", "#########", ".#######.", "........."],
+    cloud: [".........", ".........", "...###...", "..#####..", ".#######.", "#########", "#########", ".#######.", "........."],
+    rain: ["...###...", "..#####..", ".#######.", "#########", ".#######.", ".........", ".#..#..#.", "#..#..#..", "........."],
+    snow: ["...###...", "..#####..", ".#######.", "#########", ".#######.", ".........", ".#.#.#.#.", ".........", "#.#.#.#.#"],
+    storm: ["...###...", "..#####..", ".#######.", "#########", ".#######.", "....##...", "...##....", "....##...", "...#....."],
+    fog: [".........", "#######..", ".........", "..#######", ".........", "#######..", ".........", "..#######", "........."],
+    moon: ["...####..", "..##.....", ".##......", ".##......", ".##......", ".##......", "..##.....", "...####..", "........."]
+  };
+  var PIC_COLORS = { sun: "#f5b942", partly: "#f5b942", cloud: "#c9ccd1", rain: "#5aa9e6", snow: "#e8f1ff", storm: "#a78bfa", fog: "#9aa0a6", moon: "#e9e4c8" };
+  var NAMES = { sun: "Clear sky", partly: "Partly cloudy", cloud: "Overcast", rain: "Rain", snow: "Snow", storm: "Thunderstorm", fog: "Fog", moon: "Clear night" };
+
+  // ---------- police dot grasse du Dot Clock, plus le signe moins et le degré
+  var FONT = {
+    "0": [".###.", "##.##", "##.##", "##.##", "##.##", "##.##", ".###."],
+    "1": [".##.", "###.", ".##.", ".##.", ".##.", ".##.", "####"],
+    "2": [".###.", "##.##", "...##", "..##.", ".##..", "##...", "#####"],
+    "3": [".###.", "##.##", "...##", "..##.", "...##", "##.##", ".###."],
+    "4": ["...##", "..###", ".####", "##.##", "#####", "...##", "...##"],
+    "5": ["#####", "##...", "####.", "...##", "...##", "##.##", ".###."],
+    "6": [".###.", "##...", "##...", "####.", "##.##", "##.##", ".###."],
+    "7": ["#####", "...##", "..##.", "..##.", ".##..", ".##..", ".##.."],
+    "8": [".###.", "##.##", "##.##", ".###.", "##.##", "##.##", ".###."],
+    "9": [".###.", "##.##", "##.##", ".####", "...##", "...##", ".###."],
+    "-": ["....", "....", "....", "####", "....", "....", "...."],
+    "°": [".#.", "#.#", ".#.", "...", "...", "...", "..."]
+  };
+
+  // ---------- données fictives (°C, km/h)
+  var DAYS = ["SUN", "MON", "TUE", "WED", "THU"];
+  var SCEN = {
+    partly: { now: 12, feels: 10, cond: "partly", hi: 15, lo: 8, wind: 14, dir: "NW", hum: 72, rain: 20, uv: 3 },
+    sun: { now: 21, feels: 21, cond: "sun", hi: 24, lo: 13, wind: 8, dir: "E", hum: 45, rain: 0, uv: 6 },
+    rain: { now: 9, feels: 6, cond: "rain", hi: 11, lo: 7, wind: 26, dir: "SW", hum: 91, rain: 90, uv: 1 },
+    snow: { now: -3, feels: -8, cond: "snow", hi: -1, lo: -6, wind: 18, dir: "N", hum: 85, rain: 70, uv: 0 },
+    storm: { now: 24, feels: 26, cond: "storm", hi: 27, lo: 18, wind: 34, dir: "S", hum: 78, rain: 85, uv: 2 }
+  };
+  var FORECAST = {
+    partly: [["partly", 15, 8, 20], ["rain", 13, 7, 80], ["cloud", 11, 5, 40], ["sun", 10, 3, 0], ["storm", 14, 9, 70]],
+    sun: [["sun", 24, 13, 0], ["sun", 25, 14, 0], ["partly", 22, 13, 10], ["storm", 26, 17, 60], ["rain", 19, 12, 80]],
+    rain: [["rain", 11, 7, 90], ["rain", 10, 6, 80], ["cloud", 12, 6, 40], ["partly", 13, 5, 20], ["fog", 9, 4, 10]],
+    snow: [["snow", -1, -6, 70], ["cloud", 0, -5, 30], ["sun", 2, -7, 0], ["snow", -2, -8, 80], ["fog", 1, -4, 20]],
+    storm: [["storm", 27, 18, 85], ["partly", 26, 17, 20], ["sun", 28, 18, 0], ["storm", 25, 19, 70], ["rain", 22, 16, 60]]
+  };
+  function hourly(day, f) {
+    var hi = f[1], lo = f[2], out = [];
+    for (var h = 0; h < 12; h++) {
+      var hour = (day === 0 ? 14 : 8) + h;
+      var t = lo + (hi - lo) * Math.max(0, Math.sin((hour - 7) / 14 * Math.PI));
+      var p = Math.max(0, Math.min(100, f[3] + Math.round(Math.sin(h * 1.7 + day) * 25)));
+      out.push({ hour: hour % 24, t: Math.round(t), p: p });
+    }
+    return out;
+  }
+
+  function settings() {
+    return {
+      city: v("city").value.trim().toUpperCase() || "PARIS",
+      cond: document.querySelector("input[name=cond]:checked").value,
+      f: document.querySelector("input[name=units]:checked").value === "f",
+      weatherIcons: document.querySelector("input[name=icons]:checked").value === "weather",
+      lit: v("litColor").value,
+      unlit: v("showUnlit").checked ? v("unlitColor").value : null,
+      accent: v("accentColor").value,
+      label: v("labelColor").value
+    };
+  }
+  function T(c, s) { return s.f ? Math.round(c * 9 / 5 + 32) : c; }
+  function W(k, s) { return s.f ? Math.round(k / 1.609) + " MPH" : k + " KM/H"; }
+
+  // ---------- dessins
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; }
+  function canvasFor(w, h) {
+    var cv = document.createElement("canvas"), dpr = 2;
+    cv.width = Math.ceil(w * dpr); cv.height = Math.ceil(h * dpr); cv.style.width = w + "px"; cv.style.height = h + "px";
+    var ctx = cv.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { cv: cv, ctx: ctx };
+  }
+  function pic(key, pitch, s) {
+    var g = PICS[key], c = canvasFor(9 * pitch, 9 * pitch), r = pitch * 0.38;
+    var color = s.weatherIcons ? PIC_COLORS[key] : s.lit;
+    for (var y = 0; y < 9; y++) for (var x = 0; x < 9; x++) {
+      var lit = g[y][x] === "#";
+      if (!lit && !s.unlit) continue;
+      c.ctx.beginPath(); c.ctx.fillStyle = lit ? color : s.unlit;
+      c.ctx.arc(x * pitch + pitch / 2, y * pitch + pitch / 2, r, 0, Math.PI * 2); c.ctx.fill();
+    }
+    return c.cv;
+  }
+  function temp(n, k, s) {
+    var text = String(n) + "°", P = 36.7 * k, R = 13.6 * k, gap = 22 * k, w = 0;
+    for (var i = 0; i < text.length; i++) w += (FONT[text[i]][0].length - 1) * P + 2 * R + (i < text.length - 1 ? gap : 0);
+    var c = canvasFor(w, 6 * P + 2 * R), x = R;
+    for (var j = 0; j < text.length; j++) {
+      var g = FONT[text[j]], col = text[j] === "°" ? s.accent : s.lit;
+      for (var row = 0; row < 7; row++) for (var cc = 0; cc < g[row].length; cc++) {
+        var lit = g[row][cc] === "#";
+        if (!lit && !s.unlit) continue;
+        c.ctx.beginPath(); c.ctx.fillStyle = lit ? col : s.unlit;
+        c.ctx.arc(x + cc * P, R + row * P, R, 0, Math.PI * 2); c.ctx.fill();
+      }
+      x += (g[0].length - 1) * P + 2 * R + gap;
+    }
+    return c.cv;
+  }
+  function chart(hours, width, s) {
+    var cols = hours.length, colW = width / cols, pitch = 22, rows = 12, prow = 3, gapRows = 1;
+    var h = (rows + gapRows + prow) * pitch, c = canvasFor(width, h + 34), r = pitch * 0.34;
+    var ts = hours.map(function (x) { return x.t; }), lo = Math.min.apply(null, ts), hi = Math.max.apply(null, ts), span = Math.max(1, hi - lo);
+    var sub = Math.floor(colW / pitch);
+    c.ctx.font = "500 18px 'Fira Code', Consolas, monospace"; c.ctx.textAlign = "center";
+    hours.forEach(function (hr, i) {
+      var filled = 3 + Math.round((hr.t - lo) / span * (rows - 3));
+      var pf = Math.round(hr.p / 100 * prow);
+      for (var sx = 0; sx < sub - 1; sx++) {
+        var x = i * colW + sx * pitch + pitch / 2 + (colW - (sub - 1) * pitch) / 2;
+        for (var ry = 0; ry < rows; ry++) {
+          var on = rows - ry <= filled;
+          if (!on && !s.unlit) continue;
+          c.ctx.beginPath(); c.ctx.fillStyle = on ? s.lit : s.unlit;
+          c.ctx.arc(x, ry * pitch + pitch / 2, r, 0, Math.PI * 2); c.ctx.fill();
+        }
+        for (var py = 0; py < prow; py++) {
+          var pon = prow - py <= pf;
+          if (!pon && !s.unlit) continue;
+          c.ctx.beginPath(); c.ctx.fillStyle = pon ? s.accent : s.unlit;
+          c.ctx.arc(x, (rows + gapRows + py) * pitch + pitch / 2, r, 0, Math.PI * 2); c.ctx.fill();
+        }
+      }
+      if (i % 3 === 0) { c.ctx.fillStyle = s.label; c.ctx.fillText((hr.hour < 10 ? "0" : "") + hr.hour + ":00", i * colW + colW / 2, h + 28); }
+    });
+    return c.cv;
+  }
+
+  // ---------- vues
+  function head(s, right) {
+    var hd = el("div", "head");
+    hd.appendChild(el("span", "dot"));
+    hd.appendChild(el("p", "lbl", "DOT WEATHER · " + s.city));
+    hd.appendChild(el("span", "grow"));
+    hd.appendChild(el("p", "lbl", right));
+    return hd;
+  }
+  function chartBlock(day, width, s) {
+    var f = FORECAST[s.cond][day], hrs = hourly(day, f);
+    var box = el("div", "chart");
+    var top = el("div", "top");
+    top.appendChild(el("p", "lbl", (day === 0 ? "TODAY" : DAYS[day]) + " · NEXT 12 H"));
+    var ts = hrs.map(function (x) { return x.t; });
+    top.appendChild(el("p", "lbl", T(Math.min.apply(null, ts), s) + "° – " + T(Math.max.apply(null, ts), s) + "° · RAIN " + Math.max.apply(null, hrs.map(function (x) { return x.p; })) + "%"));
+    box.appendChild(top);
+    box.appendChild(chart(hrs.map(function (x) { return { hour: x.hour, t: T(x.t, s), p: x.p }; }), width, s));
+    return box;
+  }
+
+  function overview(s) {
+    var Z = SIZES[size], now = SCEN[s.cond], fc = FORECAST[s.cond];
+    if (size !== "s") stage.appendChild(head(s, "UPDATED 4 MIN AGO"));
+
+    var hero = el("div", "hero");
+    hero.appendChild(pic(now.cond, Z.pic, s));
+    hero.appendChild(temp(T(now.now, s), Z.k, s));
+    var cond = el("div", "cond");
+    cond.appendChild(el("p", "val", NAMES[now.cond]));
+    cond.appendChild(el("p", "lbl", "H " + T(now.hi, s) + "° · L " + T(now.lo, s) + "° · FEELS " + T(now.feels, s) + "°"));
+    hero.appendChild(cond);
+    stage.appendChild(hero);
+
+    if (size === "s") {
+      var meta = el("div", "meta-s");
+      meta.appendChild(el("p", "lbl", s.city));
+      meta.appendChild(el("p", "val", "RAIN " + now.rain + "%"));
+      meta.appendChild(el("p", "val", W(now.wind, s)));
+      stage.appendChild(meta);
+      return;
+    }
+
+    var det = el("div", "details");
+    [["WIND", W(now.wind, s) + " " + now.dir], ["HUMIDITY", now.hum + "%"], ["RAIN", now.rain + "%"], ["UV", String(now.uv)], ["SUNRISE", "07:24"], ["SUNSET", "17:33"]].forEach(function (d) {
+      var x = el("div"); x.appendChild(el("p", "lbl", d[0])); x.appendChild(el("p", "val", d[1])); det.appendChild(x);
+    });
+    stage.appendChild(det);
+
+    if (size === "xl") {
+      var cb = chartBlock(dayIdx, 900, s);
+      cb.className = "chart";
+      stage.appendChild(cb);
+    }
+
+    var days = el("div", "days");
+    fc.forEach(function (f, i) {
+      var b = el("button", "day" + (size === "xl" && i === dayIdx ? " on" : "")); b.type = "button";
+      b.setAttribute("aria-label", (i === 0 ? "Today" : DAYS[i]) + " details");
+      b.appendChild(el("span", "val", i === 0 ? "TODAY" : DAYS[i]));
+      b.appendChild(pic(f[0], size === "m" ? 7 : 8, s));
+      b.appendChild(el("span", "rain", "RAIN " + f[3] + "%"));
+      var hl = el("span", "hl"); hl.textContent = T(f[1], s) + "° ";
+      var lo = el("span"); lo.textContent = T(f[2], s) + "°"; hl.appendChild(lo);
+      b.appendChild(hl);
+      b.addEventListener("click", function () {
+        if (size === "xl") { dayIdx = i; render(); return; }
+        detailDay = i; render();
+      });
+      days.appendChild(b);
+    });
+    stage.appendChild(days);
+  }
+
+  function detail(s) {
+    var Z = SIZES[size], f = FORECAST[s.cond][detailDay];
+    var hd = head(s, "");
+    hd.innerHTML = "";
+    var back = el("button", "back", "‹ BACK"); back.type = "button";
+    back.addEventListener("click", function () { detailDay = null; render(); });
+    hd.appendChild(back);
+    hd.appendChild(el("p", "lbl", (detailDay === 0 ? "TODAY" : DAYS[detailDay]) + " · " + NAMES[f[0]].toUpperCase()));
+    hd.appendChild(el("span", "grow"));
+    hd.appendChild(el("p", "lbl", "H " + T(f[1], s) + "° · L " + T(f[2], s) + "°"));
+    stage.appendChild(hd);
+    var cb = chartBlock(detailDay, Z.w - 112, s);
+    cb.className = "chart detail-chart";
+    stage.appendChild(cb);
+    clearTimeout(backTimer);
+    backTimer = setTimeout(function () { detailDay = null; render(); }, 30000);
+  }
+
+  function render() {
+    var s = settings();
+    stage.className = "stage " + size;
+    stage.style.setProperty("--accent", s.accent);
+    stage.style.setProperty("--lit", s.lit);
+    stage.style.setProperty("--label", s.label);
+    stage.innerHTML = "";
+    if (detailDay !== null && size !== "xl" && size !== "s") detail(s); else overview(s);
+  }
+
+  document.querySelectorAll(".settings input").forEach(function (i) {
+    i.addEventListener("input", render);
+    i.addEventListener("change", render);
+  });
+  document.querySelectorAll(".preset[data-accent]").forEach(function (b) {
+    b.addEventListener("click", function () { v("accentColor").value = b.getAttribute("data-accent"); render(); });
+  });
+  document.querySelectorAll(".sizebar .preset").forEach(function (b) {
+    b.addEventListener("click", function () {
+      size = b.getAttribute("data-size"); detailDay = null;
+      document.querySelectorAll(".sizebar .preset").forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+      frame.className = "frame " + size;
+      v("sizeTag").textContent = "Version 0.1 · taille réelle " + SIZES[size].tag;
+      v("sizeNote").textContent = SIZES[size].note;
+      render(); fit();
+    });
+  });
+
+  render(); fit();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(render);
+})();
+</script>
+
+</body>
+</html>

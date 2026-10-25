@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Maquette de référence du Dot Home (artefact de revue de design). Ouvrir dans un navigateur. -->
+<style>body { margin: 0; }</style>
+</head>
+<body>
+<title>Dot Home</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap">
+<style>
+/* Layout : maquette de référence en taille réelle (choix S, M, L, XL) avec ses réglages, puis tableau des choix. Même univers que Dot Clock, un seul thème sombre. */
+:root {
+  --page: #111111;
+  --panel: #0a0a0a;
+  --line: #262626;
+  --text: #e6e6e6;
+  --muted: #8c8c8c;
+  --brand: #10b981;
+  --mono: "IBM Plex Mono", "Cascadia Mono", Consolas, monospace;
+  --sans: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { background: var(--page); color: var(--text); }
+body {
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.55;
+  padding-block: 40px 72px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 1480px; margin: 0 auto; display: grid; gap: 40px; }
+header { display: grid; gap: 10px; }
+.eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); display: flex; align-items: center; gap: 10px; }
+.eyebrow::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--brand); }
+h1 { font-family: var(--mono); font-weight: 500; font-size: clamp(28px, 4vw, 44px); line-height: 1.1; margin: 0; letter-spacing: -.01em; }
+.lede { color: var(--muted); max-width: 72ch; margin: 0; }
+
+figure { margin: 0; display: grid; gap: 12px; min-width: 0; }
+.tag { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.tag b { color: var(--text); font-weight: 500; font-size: 14px; }
+figcaption { color: var(--muted); font-size: 14px; }
+
+/* tableau */
+.diff-head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; }
+h2 { font-family: var(--mono); font-weight: 500; font-size: 13px; letter-spacing: .14em; text-transform: uppercase; margin: 0; }
+.hint { color: var(--muted); font-size: 14px; margin: 0; }
+.table-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; }
+table { width: 100%; border-collapse: collapse; min-width: 640px; }
+th, td { text-align: left; padding: 14px 16px; vertical-align: top; border-bottom: 1px solid var(--line); }
+tr:last-child td { border-bottom: 0; }
+thead th { font-family: var(--mono); font-weight: 500; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); background: var(--panel); }
+td:first-child { font-family: var(--mono); color: var(--muted); width: 3.5em; font-variant-numeric: tabular-nums; }
+td:nth-child(2) { font-weight: 500; width: 15em; }
+tr.todo td:nth-child(3) { color: var(--muted); }
+code { font-family: var(--mono); font-size: 13px; color: var(--text); }
+
+/* réglages simulés */
+.settings { display: flex; flex-wrap: wrap; gap: 12px 28px; align-items: center; padding: 14px 16px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); }
+.settings label { display: inline-flex; align-items: center; gap: 10px; font-family: var(--mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); cursor: pointer; }
+.settings input[type=color] { width: 36px; height: 28px; padding: 0; border: 1px solid var(--line); border-radius: 6px; background: none; cursor: pointer; }
+.settings input[type=checkbox], .settings input[type=radio] { width: 18px; height: 18px; accent-color: var(--brand); cursor: pointer; }
+.settings .grp { display: inline-flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.settings .grp > span { font-family: var(--mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--text); }
+.settings input:focus-visible, .preset:focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; }
+.preset { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; padding: 6px 10px; border-radius: 6px; border: 1px solid var(--line); background: transparent; color: var(--text); cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+.preset i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+.sizebar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; }
+.sizebar > span { font-family: var(--mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-right: 6px; }
+.sizebar .preset[aria-pressed="true"] { background: var(--text); color: #0a0a0a; border-color: var(--text); }
+
+/* cadre à l'échelle de l'XL */
+.frame { position: relative; max-width: 100%; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: #080808; }
+.frame.xl { width: 100%; aspect-ratio: 2536 / 696; }
+.frame.l { width: calc(1688 / 2536 * 100%); aspect-ratio: 1688 / 696; }
+.frame.m { width: calc(840 / 2536 * 100%); aspect-ratio: 840 / 696; }
+.frame.s { width: calc(840 / 2536 * 100%); aspect-ratio: 840 / 344; }
+@media (max-width: 700px) { .frame.l, .frame.m, .frame.s { width: 100%; } }
+
+/* ---------- le widget : scène en pixels réels de l'emplacement ---------- */
+.stage { position: absolute; left: 0; top: 0; transform-origin: 0 0; background: #080808; --accent: #10b981; --lit: #f2f0e9; --label: #b8b6b0; --unlit: #1c1c1c; font-family: "Fira Code", Consolas, monospace; font-variant-ligatures: none; }
+.stage.xl { width: 2536px; height: 696px; }
+.stage.l { width: 1688px; height: 696px; }
+.stage.m { width: 840px; height: 696px; }
+.stage.s { width: 840px; height: 344px; }
+.stage button { font-family: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.stage button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.lbl { margin: 0; white-space: nowrap; font-size: 18px; line-height: 24px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); }
+.head { position: absolute; left: 56px; right: 56px; top: 30px; height: 60px; display: flex; align-items: center; gap: 14px; }
+.head .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); }
+.head .grow { flex: 1; }
+.pill { height: 60px; padding: 0 24px; border-radius: 999px; border: 2px solid #2a2a2a; background: transparent; color: var(--label); font-size: 18px; letter-spacing: .2em; text-transform: uppercase; }
+.pill.on { border-color: var(--accent); color: var(--lit); }
+
+/* tuiles */
+.tiles { position: absolute; left: 40px; right: 40px; top: 112px; bottom: 40px; display: grid; gap: 20px; }
+.stage.xl .tiles { grid-template-columns: repeat(5, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(0, 1fr)); }
+.stage.l .tiles { grid-template-columns: repeat(4, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(0, 1fr)); }
+.stage.m .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: repeat(3, minmax(0, 1fr)); gap: 16px; top: 104px; }
+.stage.s .head { display: none; }
+.stage.s .tiles { top: 24px; bottom: 24px; left: 24px; right: 24px; gap: 14px; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-template-rows: 1fr; }
+.tile { position: relative; display: grid; grid-template-rows: 1fr auto; gap: 14px; padding: 22px 24px; min-width: 0; min-height: 0; border: 2px solid #1d1d1d; border-radius: 18px; background: transparent; text-align: left; color: var(--lit); }
+.tile:active, .tile.going { border-color: var(--accent); background: #0d0d0d; }
+.tile .pic { display: grid; place-items: center; min-height: 0; }
+.tile .pic canvas { display: block; }
+.tile .meta { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; min-width: 0; }
+.tile .name { font-size: 24px; letter-spacing: .12em; text-transform: uppercase; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tile .page { flex: none; font-size: 18px; letter-spacing: .14em; color: var(--label); }
+.tile .live { position: absolute; top: 18px; right: 22px; font-size: 18px; letter-spacing: .14em; color: var(--accent); }
+.stage.m .tile { grid-template-columns: auto minmax(0, 1fr); grid-template-rows: 1fr; align-items: center; gap: 18px; padding: 14px 20px; }
+.stage.m .tile .meta { flex-direction: column; gap: 4px; }
+.stage.m .tile .live { display: none; }
+.stage.s .tile { padding: 16px; gap: 10px; }
+.stage.s .tile .name { font-size: 20px; letter-spacing: .08em; }
+.stage.s .tile .page, .stage.s .tile .live { display: none; }
+.tile.add { place-items: center; grid-template-rows: 1fr; border-style: dashed; color: var(--label); font-size: 22px; letter-spacing: .2em; }
+
+/* mode édition */
+.edit-bar { position: absolute; left: 12px; right: 12px; bottom: 12px; display: flex; justify-content: space-between; align-items: center; gap: 6px; }
+.edit-bar button { width: 60px; height: 60px; display: grid; place-items: center; padding: 0; border-radius: 12px; border: 2px solid #2a2a2a; background: #0d0d0d; color: var(--lit); font-size: 26px; }
+.edit-bar span { font-size: 20px; letter-spacing: .1em; color: var(--lit); }
+.tile.editing { grid-template-rows: 1fr auto 60px; border-style: dashed; border-color: #2f2f2f; }
+.tile .del { position: absolute; top: 10px; right: 10px; width: 60px; height: 60px; display: grid; place-items: center; padding: 0; border: 0; background: transparent; color: var(--label); font-size: 28px; }
+
+/* transition vers une page */
+.going-layer { position: absolute; inset: 0; display: grid; place-items: center; align-content: center; gap: 28px; background: rgba(8, 8, 8, .92); }
+.going-layer .lbl { color: var(--lit); font-size: 22px; }
+.going-layer canvas { display: block; }
+.going-layer .err { color: #ed403b; }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Widget iCUE · CORSAIR XENEON EDGE</div>
+    <h1>Dot Home</h1>
+    <p class="lede">Proposition v0.1, à valider dans le tableau. Le widget d'accueil de la page 1 : une tuile par widget Dot, et un toucher emmène sur la bonne page iCUE. Le changement de page passe par le compagnon, qui simule les glissements sur l'Edge. Dans la maquette, il est seulement simulé.</p>
+  </header>
+
+  <figure>
+    <div class="tag"><b>Maquette de référence</b><span id="sizeTag">Version 0.1 · taille réelle XL 2536 × 696 px</span></div>
+    <div class="sizebar" role="radiogroup" aria-label="Taille du widget">
+      <span>Widget size</span>
+      <button type="button" class="preset" data-size="s" aria-pressed="false">S · 840 × 344</button>
+      <button type="button" class="preset" data-size="m" aria-pressed="false">M · 840 × 696</button>
+      <button type="button" class="preset" data-size="l" aria-pressed="false">L · 1688 × 696</button>
+      <button type="button" class="preset" data-size="xl" aria-pressed="true">XL · 2536 × 696</button>
+    </div>
+    <div class="frame xl" id="frame">
+      <div class="stage xl" id="stage"></div>
+    </div>
+    <div class="settings" aria-label="Réglages iCUE simulés">
+      <div class="grp" role="radiogroup" aria-label="Compagnon">
+        <span>Exemple</span>
+        <label><input type="radio" name="comp" id="cOn" value="on" checked> Compagnon lancé</label>
+        <label><input type="radio" name="comp" id="cOff" value="off"> Compagnon absent</label>
+      </div>
+      <label><input type="checkbox" id="showPages" checked> Show page numbers</label>
+      <label><input type="checkbox" id="showLive" checked> Show live info</label>
+      <label><input type="checkbox" id="showUnlit" checked> Show unlit dots</label>
+      <label>Accent color <input type="color" id="accentColor" value="#10b981"></label>
+      <label>Lit dot color <input type="color" id="litColor" value="#f2f0e9"></label>
+      <label>Unlit dot color <input type="color" id="unlitColor" value="#1c1c1c"></label>
+      <label>Label color <input type="color" id="labelColor" value="#b8b6b0"></label>
+      <button type="button" class="preset" data-accent="#10b981"><i style="background:#10b981"></i>Émeraude</button>
+      <button type="button" class="preset" data-accent="#ed403b"><i style="background:#ed403b"></i>Rouge A</button>
+      <button type="button" class="preset" id="sampleBtn">Remettre l'exemple</button>
+    </div>
+    <figcaption><span id="sizeNote">2 rangées de 5 tuiles.</span> Touche une tuile pour simuler le passage à sa page. Touche EDIT pour changer le numéro de page des tuiles, en ajouter ou en retirer.</figcaption>
+  </figure>
+
+  <section style="display:grid;gap:14px">
+    <div class="diff-head">
+      <h2>Choix de design</h2>
+      <p class="hint">Tout est à valider. Complété au fur et à mesure.</p>
+    </div>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>#</th><th>Élément</th><th>Proposition</th></tr></thead>
+        <tbody>
+          <tr class="todo"><td>1</td><td>Principe</td><td>Dot Home occupe la page 1. Toucher une tuile demande au compagnon d'aller à la page N ; le compagnon simule N − 1 glissements sur l'écran de l'Edge. Retour à l'accueil par le geste natif d'iCUE (glisser le long du bord). C'est le plan déjà noté dans <code>CLAUDE.md</code>.</td></tr>
+          <tr class="todo"><td>2</td><td>À valider avant tout</td><td>Qu'iCUE accepte un glissement simulé (tactile avec <code>InjectTouchInput</code>, ou à la souris). Sans ça, le changement de page est impossible et Dot Home ne sert que de sommaire. À tester en premier, avec un petit test comme Dot Keytest.</td></tr>
+          <tr class="todo"><td>3</td><td>Prérequis</td><td>Le compagnon Rust avec son module « pages ». Sans lui, un toucher affiche « COMPANION NOT RUNNING » et la page de destination, pour y aller à la main.</td></tr>
+          <tr class="todo"><td>4</td><td>Configuration</td><td>Directement sur le widget : bouton EDIT, puis pour chaque tuile − / + pour son numéro de page et × pour la retirer, et une tuile + pour en ajouter une. Gardé dans le stockage local du widget (<code>uniqueId</code>). iCUE ne dit pas quel widget est sur quelle page, donc les numéros se règlent à la main.</td></tr>
+          <tr class="todo"><td>5</td><td>Tuiles</td><td>Pictogramme 7 × 7 points propre à chaque widget, nom, numéro de page (« P3 »). Tuiles de 150 à 270 px de haut, bien au-dessus du minimum tactile.</td></tr>
+          <tr class="todo"><td>6</td><td>Infos en direct</td><td>En option (« Show live info ») : une info courte sur la tuile, comme l'heure pour Dot Clock. Les autres (éléments à faire de Dot Notes, pourcentage de Dot IA…) passeraient par le compagnon, car un widget ne peut pas lire les données d'un autre. À étudier.</td></tr>
+          <tr class="todo"><td>7</td><td>Pendant le changement</td><td>Calque « GOING TO PAGE 3 · DOT NOTES » avec une barre de points qui avance d'un point par page traversée.</td></tr>
+          <tr class="todo"><td>8</td><td>Nombre de tuiles</td><td>10 en XL (2 × 5), 8 en L (2 × 4), 6 en M (3 × 2), 4 en S. iCUE va jusqu'à 30 pages ; au-delà de la grille, une seconde vue dans le widget, à concevoir.</td></tr>
+          <tr class="todo"><td>9</td><td>Couleurs</td><td>Mêmes réglages que Dot Clock : « Accent color », « Lit dot color », « Unlit dot color », « Label color ». Fond <code>#080808</code>.</td></tr>
+          <tr class="todo"><td>10</td><td>Tailles</td><td><b>XL</b> : 2 rangées de 5 tuiles.<br><b>L</b> : 2 rangées de 4.<br><b>M</b> : 3 rangées de 2, pictogramme à gauche du nom.<br><b>S</b> : 4 tuiles sur une rangée, sans en-tête.<br>Vertical : à concevoir.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  function v(id) { return document.getElementById(id); }
+  var SIZES = {
+    xl: { w: 2536, max: 10, pic: 19, tag: "XL 2536 × 696 px", note: "2 rangées de 5 tuiles." },
+    l: { w: 1688, max: 8, pic: 13, tag: "L 1688 × 696 px", note: "2 rangées de 4 tuiles." },
+    m: { w: 840, max: 6, pic: 9, tag: "M 840 × 696 px", note: "3 rangées de 2 tuiles, pictogramme à gauche du nom." },
+    s: { w: 840, max: 4, pic: 12, tag: "S 840 × 344 px", note: "4 tuiles sur une rangée, sans en-tête." }
+  };
+  var size = "xl", frame = v("frame"), stage = v("stage"), editing = false, going = null;
+  function fit() { stage.style.transform = "scale(" + frame.clientWidth / SIZES[size].w + ")"; }
+  if (window.ResizeObserver) new ResizeObserver(fit).observe(frame); else window.addEventListener("resize", fit);
+
+  // pictogrammes 7 × 7 points
+  var PICS = {
+    clock: [".#####.", "#..#..#", "#..#..#", "#..###.", "#.....#", "#.....#", ".#####."],
+    notes: ["##.####", ".......", "##.####", ".......", "##.####", ".......", "##.###."],
+    ia: ["...#...", "...#...", "#..#..#", ".#####.", "#..#..#", "...#...", "...#..."],
+    monitor: ["......#", ".....##", "....###", "...####", "..#####", ".######", "#######"],
+    audio: ["...#...", "..##.#.", "####..#", "####..#", "####..#", "..##.#.", "...#..."],
+    calendar: ["#######", "#.....#", "#######", "#.#.#.#", "#######", "#.#.#.#", "#######"],
+    weather: ["#..#..#", ".#...#.", "..###..", "#.###.#", "..###..", ".#...#.", "#..#..#"],
+    fans: ["..###..", ".#.#.#.", "#..#..#", "#######", "#..#..#", ".#.#.#.", "..###.."],
+    music: ["..#####", "..#...#", "..#...#", "..#...#", "###..##", "###.###", "###.###"],
+    plex: [".##....", "..##...", "...##..", "....##.", "...##..", "..##...", ".##...."],
+    home: ["...#...", "..###..", ".#####.", "#######", ".#...#.", ".#.#.#.", ".#####."]
+  };
+  var CATALOG = [
+    { key: "clock", name: "Dot Clock" }, { key: "notes", name: "Dot Notes" }, { key: "ia", name: "Dot IA" },
+    { key: "monitor", name: "System Monitor" }, { key: "audio", name: "Dot Audio" }, { key: "calendar", name: "Dot Calendar" },
+    { key: "weather", name: "Dot Weather" }, { key: "fans", name: "Dot Fans" }, { key: "music", name: "Dot Spotify" }, { key: "plex", name: "Dot Plex" }
+  ];
+  function sample() {
+    return [
+      { key: "clock", name: "Dot Clock", page: 2 }, { key: "notes", name: "Dot Notes", page: 3 }, { key: "ia", name: "Dot IA", page: 4 },
+      { key: "monitor", name: "System Monitor", page: 5 }, { key: "audio", name: "Dot Audio", page: 6 }, { key: "calendar", name: "Dot Calendar", page: 7 }
+    ];
+  }
+  var tiles = sample();
+  try { var saved = JSON.parse(localStorage.getItem("dothome-v1") || "null"); if (Array.isArray(saved) && saved.length) tiles = saved; } catch (e) {}
+  function save() { try { localStorage.setItem("dothome-v1", JSON.stringify(tiles)); } catch (e) {} }
+
+  function settings() {
+    return {
+      comp: document.querySelector("input[name=comp]:checked").value === "on",
+      showPages: v("showPages").checked,
+      showLive: v("showLive").checked,
+      lit: v("litColor").value,
+      unlit: v("showUnlit").checked ? v("unlitColor").value : null,
+      accent: v("accentColor").value,
+      label: v("labelColor").value
+    };
+  }
+  function live(key) {
+    return { clock: "14:32", notes: "5 TO DO", ia: "23 %", monitor: "64 °C", audio: "72 %", calendar: "IN 18 MIN" }[key] || "";
+  }
+
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; }
+  function pic(key, pitch, color, s) {
+    var g = PICS[key] || PICS.home, cv = document.createElement("canvas"), dpr = 2, w = 7 * pitch, r = pitch * 0.38;
+    cv.width = w * dpr; cv.height = w * dpr; cv.style.width = w + "px"; cv.style.height = w + "px";
+    var ctx = cv.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    for (var y = 0; y < 7; y++) for (var x = 0; x < 7; x++) {
+      var lit = g[y][x] === "#";
+      if (!lit && !s.unlit) continue;
+      ctx.beginPath(); ctx.fillStyle = lit ? color : s.unlit;
+      ctx.arc(x * pitch + pitch / 2, y * pitch + pitch / 2, r, 0, Math.PI * 2); ctx.fill();
+    }
+    return cv;
+  }
+  function stepsBar(n, done, s) {
+    var cv = document.createElement("canvas"), dpr = 2, step = 34, r = 11, w = Math.max(1, n) * step, h = 2 * r + 2;
+    cv.width = w * dpr; cv.height = h * dpr; cv.style.width = w + "px"; cv.style.height = h + "px";
+    var ctx = cv.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    for (var i = 0; i < n; i++) { ctx.beginPath(); ctx.fillStyle = i < done ? s.accent : (s.unlit || "#1c1c1c"); ctx.arc(i * step + r + 1, r + 1, r, 0, Math.PI * 2); ctx.fill(); }
+    return cv;
+  }
+
+  function render() {
+    var s = settings(), Z = SIZES[size];
+    stage.className = "stage " + size;
+    stage.style.setProperty("--accent", s.accent);
+    stage.style.setProperty("--lit", s.lit);
+    stage.style.setProperty("--label", s.label);
+    stage.innerHTML = "";
+
+    var head = el("div", "head");
+    head.appendChild(el("span", "dot"));
+    head.appendChild(el("p", "lbl", "DOT HOME · PAGE 1"));
+    head.appendChild(el("span", "grow"));
+    if (!s.comp) head.appendChild(el("p", "lbl", "COMPANION NOT RUNNING"));
+    var editBtn = el("button", "pill" + (editing ? " on" : ""), editing ? "DONE" : "EDIT"); editBtn.type = "button";
+    editBtn.addEventListener("click", function () { editing = !editing; render(); });
+    head.appendChild(editBtn);
+    stage.appendChild(head);
+
+    var grid = el("div", "tiles");
+    var shown = tiles.slice(0, editing ? Z.max - 1 : Z.max);
+    shown.forEach(function (t, i) {
+      var b = el(editing ? "div" : "button", "tile" + (editing ? " editing" : "") + (going === t ? " going" : ""));
+      if (!editing) { b.type = "button"; b.setAttribute("aria-label", "Go to page " + t.page + ", " + t.name); }
+      var p = el("div", "pic"); p.appendChild(pic(t.key, Z.pic, s.lit, s)); b.appendChild(p);
+      var meta = el("div", "meta");
+      meta.appendChild(el("span", "name", t.name));
+      if (s.showPages || editing) meta.appendChild(el("span", "page", "P" + t.page));
+      b.appendChild(meta);
+      if (s.showLive && !editing && live(t.key)) b.appendChild(el("span", "live", live(t.key)));
+      if (editing) {
+        var bar = el("div", "edit-bar");
+        var minus = el("button", "", "−"); minus.type = "button"; minus.setAttribute("aria-label", "Page down");
+        var plus = el("button", "", "+"); plus.type = "button"; plus.setAttribute("aria-label", "Page up");
+        minus.addEventListener("click", function () { t.page = Math.max(2, t.page - 1); save(); render(); });
+        plus.addEventListener("click", function () { t.page = Math.min(30, t.page + 1); save(); render(); });
+        bar.appendChild(minus); bar.appendChild(el("span", "", "PAGE " + t.page)); bar.appendChild(plus);
+        b.appendChild(bar);
+        var del = el("button", "del", "×"); del.type = "button"; del.setAttribute("aria-label", "Remove tile");
+        del.addEventListener("click", function () { tiles.splice(i, 1); save(); render(); });
+        b.appendChild(del);
+      } else {
+        b.addEventListener("click", function () { goTo(t); });
+      }
+      grid.appendChild(b);
+    });
+    if (editing && tiles.length < Z.max) {
+      var add = el("button", "tile add", "+ ADD"); add.type = "button";
+      add.addEventListener("click", function () {
+        var used = tiles.map(function (t) { return t.key; });
+        var next = CATALOG.filter(function (c) { return used.indexOf(c.key) < 0; })[0] || CATALOG[0];
+        var page = tiles.reduce(function (m, t) { return Math.max(m, t.page); }, 1) + 1;
+        tiles.push({ key: next.key, name: next.name, page: Math.min(30, page) }); save(); render();
+      });
+      grid.appendChild(add);
+    }
+    stage.appendChild(grid);
+
+    if (going) {
+      var layer = el("div", "going-layer");
+      if (s.comp) {
+        layer.appendChild(el("p", "lbl", "GOING TO PAGE " + going.page + " · " + going.name.toUpperCase()));
+        layer.appendChild(stepsBar(going.page - 1, going.step, s));
+      } else {
+        layer.appendChild(el("p", "lbl err", "COMPANION NOT RUNNING"));
+        layer.appendChild(el("p", "lbl", going.name.toUpperCase() + " IS ON PAGE " + going.page + " · SWIPE " + (going.page - 1) + " TIMES"));
+      }
+      stage.appendChild(layer);
+    }
+  }
+
+  // simulation : un glissement toutes les 250 ms, puis retour à l'accueil de la maquette
+  var timer = null;
+  function goTo(t) {
+    clearInterval(timer);
+    going = { page: t.page, name: t.name, step: 0 };
+    var comp = settings().comp;
+    render();
+    timer = setInterval(function () {
+      going.step++;
+      if (!comp || going.step > going.page - 1 + 3) { clearInterval(timer); going = null; }
+      render();
+    }, comp ? 250 : 900);
+  }
+
+  ["cOn", "cOff", "showPages", "showLive", "showUnlit", "accentColor", "litColor", "unlitColor", "labelColor"].forEach(function (id) {
+    v(id).addEventListener("input", render);
+    v(id).addEventListener("change", render);
+  });
+  document.querySelectorAll(".preset[data-accent]").forEach(function (b) {
+    b.addEventListener("click", function () { v("accentColor").value = b.getAttribute("data-accent"); render(); });
+  });
+  v("sampleBtn").addEventListener("click", function () { tiles = sample(); save(); render(); });
+  document.querySelectorAll(".sizebar .preset").forEach(function (b) {
+    b.addEventListener("click", function () {
+      size = b.getAttribute("data-size");
+      document.querySelectorAll(".sizebar .preset").forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+      frame.className = "frame " + size;
+      v("sizeTag").textContent = "Version 0.1 · taille réelle " + SIZES[size].tag;
+      v("sizeNote").textContent = SIZES[size].note;
+      render(); fit();
+    });
+  });
+
+  render(); fit();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(render);
+})();
+</script>
+
+</body>
+</html>

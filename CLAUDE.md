@@ -13,6 +13,8 @@ La liste des widgets et leur description est dans `README.md`. Chaque widget a s
 - Ne pas poser de questions : avancer avec des choix raisonnables et les signaler en une ligne.
 - Réponses courtes. Quand il ajoute un widget : mettre à jour le tableau du `README.md` (colonnes Name, Description ; ne pas y répéter « style dot-matrix », déjà dit en tête, et garder les colonnes alignées) et créer `widgets/<slug>/` avec sa fiche et ses mocks.
 - Arborescence montrée en n’affichant que le premier niveau des widgets.
+- Git : commits directement sur `main`, en français. **Ne jamais pousser sans validation explicite de Mathod95** : commiter en local, montrer ce qui change, attendre son accord.
+- Pour concevoir un widget : un artefact « maquette de référence » (taille réelle S, M, L, XL, réglages simulés, tableau des choix de design), copié dans `widgets/<slug>/mockups/reference.html`. Le tableau README a une colonne Compagnon (Oui / Optionnel / Non) à tenir à jour.
 - Les mocks fournis peuvent ne pas être au style dot : ce sont des références de fonctionnalités, le style est toujours à refaire en dot-matrix.
 
 ## Organisation
@@ -71,7 +73,7 @@ Beaucoup de widgets ont besoin d’accès que iCUE ne donne pas. Ils passeront p
 | Module | Widgets | Rôle |
 |---|---|---|
 | audio | Dot Audio | volume, mixeur par app, mute de tous les micros, périphériques par défaut (API audio Windows) ; égaliseur via Equalizer APO |
-| pages | navigation entre pages | simuler des swipes sur l’Edge (voir plus bas) |
+| pages | Dot Home | simuler des swipes sur l’Edge pour changer de page (voir plus bas) |
 | apps | Dot Apps, Dot Launcher (repli) | lancer des programmes / `steam://` |
 | bambulab | Dot Bambu Lab | MQTT TLS en réseau local (IP + code d’accès) |
 | discord | Dot Discord | RPC local (accès réservé aux apps approuvées) ; repli : raccourcis clavier |
@@ -80,6 +82,7 @@ Beaucoup de widgets ont besoin d’accès que iCUE ne donne pas. Ils passeront p
 | mail | Dot Mail | IMAP |
 | homelab | Dot Homelab, Dot Plex | Radarr, Sonarr, Seerr, Plex… (un sous-module par application) |
 | ics | Dot Calendar (repli) | récupérer les ICS si le serveur bloque l’accès direct |
+| ia | Dot IA | limites d’utilisation Claude de plusieurs comptes (session 5 h, hebdo) ; source à vérifier (pas d’API publique documentée) |
 | notes | Dot Notes (optionnel) | sauvegarde et synchronisation des notes dans un fichier (`%APPDATA%\Xeneon\notes.json`), partage d’une liste entre widgets, édition depuis le PC ; le widget garde son stockage local et marche sans le compagnon |
 
 Sans compagnon : Dot System Monitor, Dot Fans (Sensors), Dot Clock, Dot Weather (Open-Meteo direct), Dot Home Assistant (WebSocket direct + jeton), Dot Notes (localStorage par `uniqueId` ; module notes du compagnon en option), Dot Spotify (plugin Media iCUE).
@@ -97,6 +100,7 @@ Compilation Windows : `cargo build --release` sous Windows, ou depuis Linux/WSL 
 
 - **Dot System Monitor** v1.1.0 : fonctionnel (FPS + 4 capteurs + historique, dot-matrix). Mise en page faite pour L/XL ; **S, M et vertical à refaire**. À migrer sur `sizes.js` du template.
 - **Dot Clock** v0.1.2 : codé (S, M, L, XL horizontal ; vertical provisoire). Référence : `widgets/dot-clock/mockups/reference.html`.
+- **Dot Notes, Dot Weather, Dot IA, Dot Home, Dot Spotify** : en conception, maquette de référence dans `widgets/<slug>/mockups/reference.html` (choix de design à valider ; Dot Spotify mis de côté).
 - **Dot Audio, Dot Calendar, Dot Launcher** : spécifiés avec mocks.
 - Autres : fiche seule (idée).
 - **Prochaine étape** : définir la charte graphique (`docs/DESIGN.md`) à partir du mock de charte fourni par Mathod95, puis en faire le template de base de tous les widgets.
