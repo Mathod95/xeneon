@@ -19,6 +19,7 @@ La liste des widgets et leur description est dans `README.md`. Chaque widget a s
 - Pour concevoir un widget : un artefact « maquette de référence » (taille réelle S, M, L, XL, réglages simulés, tableau des choix de design), copié dans `widgets/<slug>/mockups/reference.html`.
 - **Libellé « ● DOT XXXX » toujours au même endroit et à la même taille**, dans tous les widgets, modules et maquettes, actuels et futurs : point de 10 px en couleur d’accent à 56 px du bord gauche et 51 px du haut, texte Fira Code 18 px (interligne 24 px, capitales espacées .2em) à 80 px du bord gauche et 44 px du haut. Rien d’autre dans ce coin (pochette, image, compteur…). Repère : Dot Clock. **Pour l’instant appliqué en XL seulement** ; les autres tailles seront alignées plus tard.
 - **Le code doit toujours être iso aux maquettes de référence** (artefacts `widgets/<slug>/mockups/reference.html`) : mêmes tailles d’emplacement, mêmes positions, mêmes valeurs CSS. Reprendre leur CSS et leur logique de rendu plutôt que de réinventer une mise en page. Toute différence voulue est signalée.
+- **Pour l’instant, on ne travaille que le format XL** (maquettes, code, corrections). Les tailles S, M et L existantes restent telles quelles et seront reprises plus tard.
 - Les mocks fournis peuvent ne pas être au style dot : ce sont des références de fonctionnalités, le style est toujours à refaire en dot-matrix.
 
 ## Organisation
@@ -129,3 +130,7 @@ Compilation Windows : `cargo build --release` sous Windows, ou depuis Linux/WSL 
 - **Dot Calendar** : spécifié avec mocks.
 - Autres : fiche seule (idée).
 - **Prochaine étape** : définir la charte graphique (`docs/DESIGN.md`) à partir du mock de charte fourni par Mathod95, puis en faire le template de base de tous les widgets.
+
+## À traiter plus tard (rappels de Mathod95)
+
+- **Dot Home et Dot Hub en double** (noté le 26 octobre 2026) : l’écran d’accueil existe deux fois. La maquette `widgets/dot-home/mockups/reference.html` date de l’ancien plan (pages iCUE, « GOING TO PAGE N », glissements simulés, bouton EDIT), alors que l’accueil réel est `companion/web/home.html`, recopié dans la maquette Dot Hub. Proposition : Dot Home devient l’écran d’accueil de Dot Hub (fiche, ligne du README et carte de Dot Page retirées), rendu de l’accueil dans un fichier partagé (`home.js` + `home.css`) chargé par le compagnon et par la maquette Dot Hub, et reprise des bonnes idées de l’ancienne maquette (infos en direct sur les tuiles, pages au-delà de 10 modules, choix et ordre des tuiles dans les réglages du compagnon). En attente de la décision de Mathod95.
