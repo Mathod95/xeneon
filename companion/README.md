@@ -16,6 +16,7 @@ Programme Windows qui sert Dot Hub. Il écoute uniquement sur `127.0.0.1:47800`.
 | `GET /api/health`, `GET /api/modules`, `GET /api/instances` | état, modules, instances |
 | `GET` / `PUT` / `DELETE /api/instance/<uniqueId>` | lire, modifier (`module`, `name`, `settings`), oublier une instance |
 | `POST /api/instance/<uniqueId>/identify` | affiche le nom de l’instance sur l’Edge |
+| `GET` / `PUT /api/theme` | couleurs communes à tous les modules (`dotAccentColor`, `litDotColor`, `unlitDotColor`, `labelColor`) ; elles passent avant les réglages de chaque instance |
 
 Les requêtes dont l’en-tête `Host` n’est pas `127.0.0.1:47800` ou `localhost:47800` sont refusées.
 

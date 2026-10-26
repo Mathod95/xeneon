@@ -12,7 +12,7 @@
 	var uid = new URLSearchParams(location.search).get("uid") || "";
 	var moduleId = location.pathname.split("/")[2] || "";
 	var api = "/api/instance/" + encodeURIComponent(uid);
-	var version = -1, identifySeen = 0, first = true;
+	var version = "", identifySeen = 0, first = true;
 
 	function lit(v) { try { return Function("return (" + v + ")")(); } catch (e) { return v; } }
 
@@ -23,9 +23,11 @@
 		if (key) DEFAULTS[key] = lit(m.getAttribute("data-default") || "''");
 	});
 
-	function apply(settings) {
+	// couleurs communes (carte « Couleurs » des réglages) > réglages de l'instance > valeurs par défaut du module
+	function apply(settings, theme) {
 		Object.keys(DEFAULTS).forEach(function (k) {
-			window[k] = settings && Object.prototype.hasOwnProperty.call(settings, k) ? settings[k] : DEFAULTS[k];
+			if (theme && Object.prototype.hasOwnProperty.call(theme, k)) window[k] = theme[k];
+			else window[k] = settings && Object.prototype.hasOwnProperty.call(settings, k) ? settings[k] : DEFAULTS[k];
 		});
 		var ev = window.icueEvents;
 		if (ev) {
@@ -43,7 +45,8 @@
 				if (!inst) return;
 				if (inst.module && inst.module !== moduleId) { location.href = "/i/" + encodeURIComponent(uid); return; }
 				if (!inst.module) { location.href = "/home?uid=" + encodeURIComponent(uid); return; }
-				if (inst.version !== version) { version = inst.version; apply(inst.settings); }
+				var v = inst.version + "/" + inst.theme_version;
+				if (v !== version) { version = v; apply(inst.settings, inst.theme); }
 				if (inst.identify && inst.identify !== identifySeen) {
 					if (identifySeen) identify(inst.name);
 					identifySeen = inst.identify;
@@ -128,7 +131,7 @@
 		field.dispatchEvent(new Event("input", { bubbles: true }));
 	});
 
-	apply(null);
+	apply(null, null);
 	poll();
 	setInterval(poll, 2000);
 })();

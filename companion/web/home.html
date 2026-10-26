@@ -50,6 +50,7 @@ html, body { width: 100%; height: 100%; overflow: hidden; background: #080808; u
 	var stage = document.getElementById("stage");
 	var SLOTS = { s: [840, 344], m: [840, 696], l: [1688, 696], xl: [2536, 696] };
 	var PITCH = { xl: 19, l: 13, m: 9, s: 12 };
+	var LIT = "#f2f0e9", UNLIT = "#1c1c1c";
 	// même détection que widgets/dot-clock/scripts/sizes.js (rapport largeur / hauteur)
 	function classify(w, h) {
 		var r = w / h;
@@ -68,7 +69,7 @@ html, body { width: 100%; height: 100%; overflow: hidden; background: #080808; u
 		cv.width = w * dpr; cv.height = w * dpr; cv.style.width = w + "px"; cv.style.height = w + "px";
 		var ctx = cv.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 		for (var y = 0; y < 7; y++) for (var x = 0; x < 7; x++) {
-			ctx.beginPath(); ctx.fillStyle = g[y][x] === "#" ? "#f2f0e9" : "#1c1c1c";
+			ctx.beginPath(); ctx.fillStyle = g[y][x] === "#" ? LIT : UNLIT;
 			ctx.arc(x * pitch + pitch / 2, y * pitch + pitch / 2, r, 0, Math.PI * 2); ctx.fill();
 		}
 		return cv;
@@ -115,7 +116,15 @@ html, body { width: 100%; height: 100%; overflow: hidden; background: #080808; u
 	Promise.all([
 		fetch("/api/modules").then(function (r) { return r.json(); }),
 		fetch("/api/instance/" + encodeURIComponent(uid)).then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; })
-	]).then(function (res) { modules = res[0]; inst = res[1] || {}; render(); });
+	]).then(function (res) { modules = res[0]; inst = res[1] || {}; applyTheme(inst.theme); render(); });
+	// couleurs communes réglées dans la carte « Couleurs » de la page de réglages
+	function applyTheme(t) {
+		if (!t) return;
+		if (t.dotAccentColor) stage.style.setProperty("--accent", t.dotAccentColor);
+		if (t.litDotColor) stage.style.setProperty("--lit", t.litDotColor);
+		if (t.labelColor) stage.style.setProperty("--label", t.labelColor);
+		LIT = t.litDotColor || LIT; UNLIT = t.unlitDotColor || UNLIT;
+	}
 	window.addEventListener("resize", render);
 	setInterval(render, 30000);
 	if (document.fonts && document.fonts.ready) document.fonts.ready.then(render);

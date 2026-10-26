@@ -54,7 +54,8 @@ a { color: var(--accent); }
 <script>
 (function () {
 	"use strict";
-	var MODULES = [], SCHEMAS = {}, saveTimers = {};
+	var MODULES = [], SCHEMAS = {}, saveTimers = {}, THEME_KEYS = [];
+	var THEME_LABELS = { dotAccentColor: "Accent color", litDotColor: "Lit dot color", unlitDotColor: "Unlit dot color", labelColor: "Label color" };
 	function lit(v) { try { return Function("return (" + v + ")")(); } catch (e) { return v; } }
 	function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; }
 	function flash(t) { var s = document.getElementById("saved"); s.textContent = t; clearTimeout(flash.t); flash.t = setTimeout(function () { s.textContent = ""; }, 1500); }
@@ -142,9 +143,12 @@ a { color: var(--accent); }
 			if (!moduleId) { body.appendChild(el("p", "empty", "Cette instance affiche l'accueil Dot Home : choisis un module ci-dessus ou directement sur l'Edge.")); return; }
 			schema(moduleId).then(function (sc) {
 				sc.groups.forEach(function (g) {
+					// les couleurs communes sont réglées dans la carte « Couleurs », pas par instance
+					var keys = g.keys.filter(function (k) { return THEME_KEYS.indexOf(k) < 0; });
+					if (!keys.length) return;
 					var fs = el("fieldset"); fs.appendChild(el("legend", "lbl", g.title));
 					var grid = el("div", "grid");
-					g.keys.forEach(function (k) {
+					keys.forEach(function (k) {
 						var p = sc.props[k], v = Object.prototype.hasOwnProperty.call(settings, k) ? settings[k] : p.def;
 						var f = el("label", "field" + (p.type === "switch" || p.type === "color" ? " inline" : ""));
 						var w = input(p, v, function (nv) { settings[k] = nv; save(uid, { settings: settings }); });
@@ -164,12 +168,41 @@ a { color: var(--accent); }
 		return c;
 	}
 
+	// carte « Couleurs » : communes à tous les modules et à toutes les instances
+	function themeCard(t) {
+		var c = el("section", "card"), head = el("header");
+		head.appendChild(el("h2", "lbl", "Couleurs · tous les modules"));
+		c.appendChild(head);
+		var theme = Object.assign({}, t.theme), grid = el("div", "grid");
+		THEME_KEYS.forEach(function (k) {
+			var f = el("label", "field inline"), w = el("input"); w.type = "color"; w.value = String(theme[k]).slice(0, 7);
+			w.addEventListener("input", function () { theme[k] = w.value.toUpperCase(); saveTheme(theme); });
+			f.appendChild(w); f.appendChild(el("span", "", THEME_LABELS[k] || k)); grid.appendChild(f);
+		});
+		c.appendChild(grid);
+		var reset = el("button", "", "Valeurs par défaut");
+		reset.style.justifySelf = "start";
+		reset.addEventListener("click", function () { saveTheme(Object.assign({}, t.defaults), true); });
+		c.appendChild(reset);
+		return c;
+	}
+	var themeTimer = null;
+	function saveTheme(theme, reload) {
+		clearTimeout(themeTimer);
+		themeTimer = setTimeout(function () {
+			fetch("/api/theme", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(theme) })
+				.then(function (r) { flash(r.ok ? "Enregistré" : "Erreur"); if (reload) load(); });
+		}, 250);
+	}
+
 	function load() {
-		Promise.all([fetch("/api/modules").then(function (r) { return r.json(); }), fetch("/api/instances").then(function (r) { return r.json(); })])
+		Promise.all([fetch("/api/modules").then(function (r) { return r.json(); }), fetch("/api/instances").then(function (r) { return r.json(); }), fetch("/api/theme").then(function (r) { return r.json(); })])
 			.then(function (res) {
 				MODULES = res[0];
+				THEME_KEYS = ["dotAccentColor", "litDotColor", "unlitDotColor", "labelColor"].filter(function (k) { return k in res[2].defaults; });
 				var list = document.getElementById("list"), inst = res[1] || {}, keys = Object.keys(inst);
 				list.innerHTML = "";
+				list.appendChild(themeCard(res[2]));
 				if (!keys.length) {
 					list.appendChild(el("p", "empty", "Aucun Dot Hub pour l'instant. Pose le widget Dot Hub dans iCUE sur l'Edge : il apparaîtra ici."));
 					return;

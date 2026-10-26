@@ -37,6 +37,28 @@ fn modules() -> Vec<Module> {
 struct Config {
     #[serde(default)]
     instances: BTreeMap<String, Instance>,
+    /// couleurs communes à tous les modules (page de réglages, carte « Couleurs »)
+    #[serde(default)]
+    theme: Map<String, Value>,
+    #[serde(default)]
+    theme_version: u64,
+}
+
+/// Réglages de couleur communs : mêmes noms que les x-icue-property des modules.
+const THEME_DEFAULTS: [(&str, &str); 4] = [
+    ("dotAccentColor", "#10B981"),
+    ("litDotColor", "#F2F0E9"),
+    ("unlitDotColor", "#1C1C1C"),
+    ("labelColor", "#B8B6B0"),
+];
+
+fn theme_full(cfg: &Config) -> Map<String, Value> {
+    let mut t = Map::new();
+    for (k, d) in THEME_DEFAULTS {
+        let v = cfg.theme.get(k).and_then(Value::as_str).unwrap_or(d);
+        t.insert(k.to_string(), Value::String(v.to_string()));
+    }
+    t
 }
 
 #[derive(Serialize, Deserialize, Default, Clone)]
@@ -249,12 +271,35 @@ fn handle(mut req: Request, cfg: &mut Config) {
                 send_json(req, 200, &Value::Array(list))
             }
             "instances" => send_json(req, 200, &serde_json::to_value(&cfg.instances).unwrap_or(Value::Null)),
+            "theme" => send_json(req, 200, &json!({ "theme": theme_full(cfg), "version": cfg.theme_version, "defaults": THEME_DEFAULTS.iter().map(|(k, v)| (k.to_string(), Value::String(v.to_string()))).collect::<Map<String, Value>>() })),
             "instance" => match cfg.instances.get(seg(2)) {
-                Some(inst) => send_json(req, 200, &serde_json::to_value(inst).unwrap_or(Value::Null)),
+                Some(inst) => {
+                    let mut v = serde_json::to_value(inst).unwrap_or(Value::Null);
+                    v["theme"] = Value::Object(theme_full(cfg));
+                    v["theme_version"] = json!(cfg.theme_version);
+                    send_json(req, 200, &v)
+                }
                 None => send_json(req, 404, &json!({ "error": "unknown instance" })),
             },
             _ => not_found(req),
         },
+
+        (Method::Put, "api") if seg(1) == "theme" => {
+            let mut body = String::new();
+            let _ = req.as_reader().take(1 << 16).read_to_string(&mut body);
+            match serde_json::from_str::<Value>(&body) {
+                Ok(Value::Object(m)) => {
+                    cfg.theme = m
+                        .into_iter()
+                        .filter(|(k, v)| THEME_DEFAULTS.iter().any(|(d, _)| d == k) && v.is_string())
+                        .collect();
+                    cfg.theme_version += 1;
+                    save_config(cfg);
+                    send_json(req, 200, &json!({ "theme": theme_full(cfg), "version": cfg.theme_version }))
+                }
+                _ => send_json(req, 400, &json!({ "error": "invalid JSON" })),
+            }
+        }
 
         (Method::Put, "api") if seg(1) == "instance" => {
             let uid = seg(2).to_string();
