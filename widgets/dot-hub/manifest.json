@@ -3,7 +3,7 @@
   "id": "com.mathod95.dot-hub",
   "name": "Dot Hub",
   "description": "All Dot modules in one widget, served by Dot Companion on your PC.",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "preview_icon": "resources/icon.svg",
   "min_app_version": "5.47",
   "min_framework_version": "1.0.0",
