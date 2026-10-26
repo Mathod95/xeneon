@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Maquette de référence du Dot Plex (artefact de revue de design). Ouvrir dans un navigateur. -->
+<style>body { margin: 0; }</style>
+</head>
+<body>
+<title>Dot Plex</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap">
+<style>
+/* Layout : maquette de référence en taille réelle (choix S, M, L, XL) avec ses réglages, puis tableau des choix. Même univers que Dot Clock, un seul thème sombre. */
+:root {
+  --page: #111111;
+  --panel: #0a0a0a;
+  --line: #262626;
+  --text: #e6e6e6;
+  --muted: #8c8c8c;
+  --brand: #10b981;
+  --mono: "IBM Plex Mono", "Cascadia Mono", Consolas, monospace;
+  --sans: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { background: var(--page); color: var(--text); }
+body {
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.55;
+  padding-block: 40px 72px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 1480px; margin: 0 auto; display: grid; gap: 40px; }
+header { display: grid; gap: 10px; }
+.eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); display: flex; align-items: center; gap: 10px; }
+.eyebrow::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--brand); }
+h1 { font-family: var(--mono); font-weight: 500; font-size: clamp(28px, 4vw, 44px); line-height: 1.1; margin: 0; letter-spacing: -.01em; }
+.lede { color: var(--muted); max-width: 72ch; margin: 0; }
+
+figure { margin: 0; display: grid; gap: 12px; min-width: 0; }
+.tag { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.tag b { color: var(--text); font-weight: 500; font-size: 14px; }
+figcaption { color: var(--muted); font-size: 14px; }
+
+/* tableau */
+.diff-head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; }
+h2 { font-family: var(--mono); font-weight: 500; font-size: 13px; letter-spacing: .14em; text-transform: uppercase; margin: 0; }
+.hint { color: var(--muted); font-size: 14px; margin: 0; }
+.table-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; }
+table { width: 100%; border-collapse: collapse; min-width: 640px; }
+th, td { text-align: left; padding: 14px 16px; vertical-align: top; border-bottom: 1px solid var(--line); }
+tr:last-child td { border-bottom: 0; }
+thead th { font-family: var(--mono); font-weight: 500; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); background: var(--panel); }
+td:first-child { font-family: var(--mono); color: var(--muted); width: 3.5em; font-variant-numeric: tabular-nums; }
+td:nth-child(2) { font-weight: 500; width: 15em; }
+tr.todo td:nth-child(3) { color: var(--muted); }
+code { font-family: var(--mono); font-size: 13px; color: var(--text); }
+
+/* réglages simulés */
+.settings { display: flex; flex-wrap: wrap; gap: 12px 28px; align-items: center; padding: 14px 16px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); }
+.settings label { display: inline-flex; align-items: center; gap: 10px; font-family: var(--mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); cursor: pointer; }
+.settings input[type=color] { width: 36px; height: 28px; padding: 0; border: 1px solid var(--line); border-radius: 6px; background: none; cursor: pointer; }
+.settings input[type=checkbox], .settings input[type=radio] { width: 18px; height: 18px; accent-color: var(--brand); cursor: pointer; }
+.settings .grp { display: inline-flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.settings .grp > span { font-family: var(--mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--text); }
+.preset { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; padding: 6px 10px; border-radius: 6px; border: 1px solid var(--line); background: transparent; color: var(--text); cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+.preset i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+.preset:focus-visible, .tab:focus-visible, .ses:focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; }
+.sizebar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; }
+.sizebar > span { font-family: var(--mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-right: 6px; }
+.sizebar .preset[aria-pressed="true"] { background: var(--text); color: #0a0a0a; border-color: var(--text); }
+
+/* cadre à l'échelle de l'XL : la largeur suit la vraie largeur de l'emplacement */
+.frame { position: relative; max-width: 100%; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: #080808; }
+.frame.xl { width: 100%; aspect-ratio: 2536 / 696; }
+.frame.l { width: calc(1688 / 2536 * 100%); aspect-ratio: 1688 / 696; }
+.frame.m { width: calc(840 / 2536 * 100%); aspect-ratio: 840 / 696; }
+.frame.s { width: calc(840 / 2536 * 100%); aspect-ratio: 840 / 344; }
+@media (max-width: 700px) { .frame.l, .frame.m, .frame.s { width: 100%; } }
+
+/* ---------- le widget : scène en pixels réels de l'emplacement ---------- */
+.stage { position: absolute; left: 0; top: 0; transform-origin: 0 0; background: #080808; --accent: #10b981; --lit: #f2f0e9; --label: #b8b6b0; --unlit: #1c1c1c; font-family: "Fira Code", Consolas, monospace; font-variant-ligatures: none; }
+.stage.xl { width: 2536px; height: 696px; }
+.stage.l { width: 1688px; height: 696px; }
+.stage.m { width: 840px; height: 696px; }
+.stage.s { width: 840px; height: 344px; }
+.stage > * { position: absolute; }
+.stage p { margin: 0; }
+.w-lbl { white-space: nowrap; font-size: 18px; line-height: 24px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); }
+.w-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); }
+.stage.live .w-dot { animation: pulse 1.6s ease-in-out infinite; }
+@keyframes pulse { 50% { opacity: .3; } }
+@media (prefers-reduced-motion: reduce) { .stage.live .w-dot { animation: none; } }
+.stage canvas { display: block; }
+.ell { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-transform: uppercase; }
+
+/* libellé « ● DOT PLEX » : même place et même taille partout */
+.w-dot { left: 56px; top: 51px; }
+.w-name { left: 80px; top: 44px; }
+.w-state { right: 56px; top: 44px; }
+
+/* lectures en cours */
+.w-sess { display: flex; flex-direction: column; gap: 24px; }
+.ses { flex: 1 1 0; min-height: 0; display: flex; gap: 32px; padding: 0; border: 0; background: transparent; color: inherit; font: inherit; text-align: left; }
+.ses .tx { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; }
+.ses .t { font-weight: 500; color: var(--lit); letter-spacing: .02em; font-size: 44px; line-height: 54px; }
+.ses .st { color: var(--label); letter-spacing: .08em; font-size: 24px; line-height: 32px; margin-top: 6px; }
+.ses .who { color: var(--label); opacity: .65; letter-spacing: .08em; font-size: 20px; line-height: 26px; margin-top: 4px; }
+.ses .bar { margin-top: 22px; }
+.ses .ml { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 20px; margin-top: 12px; font-size: 20px; line-height: 26px; letter-spacing: .1em; text-transform: uppercase; white-space: nowrap; }
+.ses .q { color: var(--accent); overflow: hidden; text-overflow: ellipsis; }
+.ses .tm { color: var(--label); font-variant-numeric: tabular-nums; }
+.w-sess.one .ses .t { font-size: 64px; line-height: 80px; }
+.w-sess.one .ses .st { font-size: 28px; line-height: 36px; margin-top: 8px; }
+.w-sess.one .ses .who { font-size: 24px; line-height: 30px; margin-top: 6px; }
+.w-sess.one .ses .ml { font-size: 22px; line-height: 28px; }
+
+/* rien en lecture, serveur injoignable */
+.w-empty { display: flex; flex-direction: column; justify-content: center; gap: 14px; }
+.w-empty .big { font-weight: 500; color: var(--lit); font-size: 64px; line-height: 80px; letter-spacing: .02em; text-transform: uppercase; }
+.w-empty .sm { color: var(--label); font-size: 24px; line-height: 32px; letter-spacing: .08em; text-transform: uppercase; }
+
+/* bibliothèque : derniers ajouts, à suivre */
+.tabs { display: flex; gap: 40px; height: 24px; }
+.tab { margin: -18px 0; padding: 18px 0; border: 0; background: transparent; cursor: pointer; font: inherit; font-size: 18px; line-height: 24px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); opacity: .5; -webkit-tap-highlight-color: transparent; }
+.tab[aria-selected="true"] { color: var(--lit); opacity: 1; }
+.posters { display: flex; margin-top: 28px; }
+.pst { min-width: 0; display: flex; flex-direction: column; }
+.pst .pt { color: var(--lit); font-size: 22px; line-height: 28px; letter-spacing: .04em; margin-top: 14px; }
+.pst .ps { color: var(--label); font-size: 18px; line-height: 24px; letter-spacing: .08em; margin-top: 2px; }
+.pst .pb { margin-top: 10px; }
+
+/* XL : lectures à gauche, bibliothèque à droite */
+.stage.xl .w-sess, .stage.xl .w-empty { left: 56px; top: 100px; width: 1160px; height: 548px; }
+.stage.xl .w-lib { left: 1296px; top: 100px; width: 1184px; height: 548px; }
+.stage.xl .posters { gap: 24px; }
+
+/* L : même découpage, colonnes plus étroites */
+.stage.l .w-sess, .stage.l .w-empty { left: 56px; top: 100px; width: 760px; height: 548px; }
+.stage.l .w-lib { left: 880px; top: 100px; width: 752px; height: 548px; }
+.stage.l .posters { gap: 22px; }
+.stage.l .ses { gap: 28px; }
+.stage.l .ses .t { font-size: 36px; line-height: 46px; }
+.stage.l .ses .st { font-size: 22px; line-height: 30px; }
+.stage.l .w-sess.one .ses .t { font-size: 48px; line-height: 60px; }
+.stage.l .w-empty .big { font-size: 52px; line-height: 64px; }
+
+/* M : lectures seules ; la bibliothèque prend la place quand rien ne joue */
+.stage.m .w-sess, .stage.m .w-empty { left: 56px; top: 100px; width: 728px; height: 548px; }
+.stage.m .w-lib { left: 56px; top: 100px; width: 728px; height: 548px; }
+.stage.m .posters { gap: 20px; }
+.stage.m .ses { gap: 28px; }
+.stage.m .ses .t { font-size: 34px; line-height: 44px; }
+.stage.m .ses .st { font-size: 20px; line-height: 28px; }
+.stage.m .ses .who { font-size: 18px; line-height: 24px; }
+.stage.m .ses .ml { font-size: 18px; line-height: 24px; }
+.stage.m .w-sess.one .ses .t { font-size: 44px; line-height: 56px; }
+.stage.m .w-empty .big { font-size: 48px; line-height: 60px; }
+.stage.m .w-empty .sm { font-size: 20px; line-height: 28px; }
+
+/* S : une lecture à la fois, sans libellés */
+.stage.s .w-dot, .stage.s .w-name, .stage.s .w-state, .stage.s .tabs { display: none; }
+.stage.s .w-sess, .stage.s .w-empty { left: 48px; top: 48px; width: 744px; height: 248px; }
+.stage.s .w-lib { left: 48px; top: 40px; width: 744px; height: 264px; }
+.stage.s .posters { gap: 22px; margin-top: 0; }
+.stage.s .pst .pt { font-size: 18px; line-height: 24px; margin-top: 10px; }
+.stage.s .pst .ps, .stage.s .pst .pb { display: none; }
+.stage.s .ses { gap: 28px; }
+.stage.s .ses .t, .stage.s .w-sess.one .ses .t { font-size: 34px; line-height: 44px; }
+.stage.s .ses .st, .stage.s .w-sess.one .ses .st { font-size: 20px; line-height: 28px; margin-top: 4px; }
+.stage.s .ses .who { display: none; }
+.stage.s .ses .bar { margin-top: 18px; }
+.stage.s .ses .ml, .stage.s .w-sess.one .ses .ml { font-size: 18px; line-height: 24px; margin-top: 10px; }
+.stage.s .w-empty .big { font-size: 44px; line-height: 56px; }
+.stage.s .w-empty .sm { font-size: 20px; line-height: 28px; }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Module Dot Hub · CORSAIR XENEON EDGE</div>
+    <h1>Dot Plex</h1>
+    <p class="lede">Première proposition, à valider point par point dans le tableau. Lectures en cours sur le serveur Plex, derniers ajouts et « À suivre », dans la charte du Dot Clock : fond <code>#080808</code>, points blanc chaud, accent émeraude, libellés en Fira Code. Les titres, les affiches et les utilisateurs sont des exemples fictifs.</p>
+  </header>
+
+  <figure>
+    <div class="tag"><b>Maquette de référence</b><span id="sizeTag">Version 0.1 · taille réelle XL 2536 × 696 px</span></div>
+    <div class="sizebar" role="radiogroup" aria-label="Taille du widget">
+      <span>Widget size</span>
+      <button type="button" class="preset" data-size="s" aria-pressed="false">S · 840 × 344</button>
+      <button type="button" class="preset" data-size="m" aria-pressed="false">M · 840 × 696</button>
+      <button type="button" class="preset" data-size="l" aria-pressed="false">L · 1688 × 696</button>
+      <button type="button" class="preset" data-size="xl" aria-pressed="true">XL · 2536 × 696</button>
+    </div>
+    <div class="frame xl" id="frame">
+      <div class="stage xl live" id="stage">
+        <span class="w-dot"></span>
+        <p class="w-lbl w-name" data-hub-home>DOT PLEX</p>
+        <p class="w-lbl w-state" id="state">HOME-SERVER · 2 STREAMS</p>
+        <div class="w-sess" id="sess"></div>
+        <div class="w-empty" id="empty" hidden><p class="big" id="emptyBig">Nothing playing</p><p class="sm" id="emptySm"></p></div>
+        <div class="w-lib" id="lib">
+          <div class="tabs" role="tablist" aria-label="Bibliothèque">
+            <button type="button" class="tab" role="tab" data-tab="recent" aria-selected="true">Recently added</button>
+            <button type="button" class="tab" role="tab" data-tab="deck" aria-selected="false">On deck</button>
+          </div>
+          <div class="posters" id="posters"></div>
+        </div>
+      </div>
+    </div>
+    <div class="settings" aria-label="Réglages simulés">
+      <div class="grp" role="radiogroup" aria-label="Exemple">
+        <span>Exemple</span>
+        <label><input type="radio" name="sample" value="two" checked> 2 streams</label>
+        <label><input type="radio" name="sample" value="one"> 1 stream</label>
+        <label><input type="radio" name="sample" value="idle"> Nothing playing</label>
+        <label><input type="radio" name="sample" value="offline"> Server offline</label>
+      </div>
+      <div class="grp" role="radiogroup" aria-label="Library row">
+        <span>Library row</span>
+        <label><input type="radio" name="libRow" value="recent" checked> Recently added</label>
+        <label><input type="radio" name="libRow" value="deck"> On deck</label>
+      </div>
+      <div class="grp" role="radiogroup" aria-label="Poster style">
+        <span>Poster style</span>
+        <label><input type="radio" name="posterStyle" value="mono" checked> Mono</label>
+        <label><input type="radio" name="posterStyle" value="color"> Color</label>
+      </div>
+      <div class="grp" role="radiogroup" aria-label="Poster dot size">
+        <span>Poster dot size</span>
+        <label><input type="radio" name="dotSize" value="0.75"> Fine</label>
+        <label><input type="radio" name="dotSize" value="1" checked> Medium</label>
+        <label><input type="radio" name="dotSize" value="1.4"> Coarse</label>
+      </div>
+      <label><input type="checkbox" id="showUnlit" checked> Show unlit dots</label>
+      <label><input type="checkbox" id="hideUsers"> Hide user names</label>
+      <label>Accent color <input type="color" id="accentColor" value="#10b981"></label>
+      <label>Lit dot color <input type="color" id="litColor" value="#f2f0e9"></label>
+      <label>Unlit dot color <input type="color" id="unlitColor" value="#1c1c1c"></label>
+      <label>Label color <input type="color" id="labelColor" value="#b8b6b0"></label>
+      <button type="button" class="preset" data-accent="#10b981"><i style="background:#10b981"></i>Émeraude</button>
+      <button type="button" class="preset" data-accent="#e5a00d"><i style="background:#e5a00d"></i>Orange Plex</button>
+      <button type="button" class="preset" data-accent="#ed403b"><i style="background:#ed403b"></i>Rouge A</button>
+    </div>
+    <figcaption><span id="sizeNote">Lectures en cours à gauche, derniers ajouts ou « À suivre » à droite.</span> La maquette marche : les onglets changent la rangée d'affiches, la progression avance pendant la lecture, et en S un toucher sur la lecture passe à la suivante.</figcaption>
+  </figure>
+
+  <section style="display:grid;gap:14px">
+    <div class="diff-head">
+      <h2>Choix de design</h2>
+      <p class="hint">Tout est à valider. Complété au fur et à mesure.</p>
+    </div>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>#</th><th>Élément</th><th>Proposition</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>Module</td><td>Module de Dot Hub servi par Dot Companion (<code>/m/plex/</code>), comme Dot Clock. Pas de widget iCUE autonome.</td></tr>
+          <tr class="todo"><td>2</td><td>Données</td><td>Le compagnon interroge le serveur Plex (adresse locale, par exemple <code>http://192.168.1.10:32400</code>) avec le jeton <code>X-Plex-Token</code>, gardé sur le PC dans <code>%APPDATA%\Xeneon\config.json</code>. Routes : <code>/status/sessions</code>, <code>/library/recentlyAdded</code>, <code>/library/onDeck</code>, affiches réduites par <code>/photo/:/transcode</code>. Le module ne voit jamais le jeton. Adresse et jeton se règlent dans la page de réglages du compagnon.</td></tr>
+          <tr class="todo"><td>3</td><td>Lectures en cours</td><td>Affiche en trame de points, titre (série avec saison et épisode), utilisateur et appareil, progression en barre de points, état lecture ou pause, qualité (résolution source, puis Direct Play, Direct Stream ou Transcode) et temps écoulé sur durée. Deux lectures au plus en XL, L et M ; une seule en S, un toucher passe à la suivante. Voir toutes les lectures demande le jeton du compte propriétaire du serveur.</td></tr>
+          <tr class="todo"><td>4</td><td>Derniers ajouts et « À suivre »</td><td>Deux onglets tactiles au-dessus d'une rangée d'affiches : 4 en XL, 3 en L et M, 5 en S. « À suivre » montre la progression sous l'affiche. Réglage « Library row » pour l'onglet affiché par défaut.</td></tr>
+          <tr class="todo"><td>5</td><td>Affiches</td><td>Trame de points comme Dot Spotify : « Poster style » Mono (taille du point selon la luminosité, couleur des points allumés) ou Color (couleurs de l'affiche), « Poster dot size » Fine, Medium (par défaut) ou Coarse.</td></tr>
+          <tr class="todo"><td>6</td><td>Confidentialité</td><td>« Hide user names » remplace les noms par USER 1, USER 2… pour l'écran visible en stream ou en vidéo.</td></tr>
+          <tr class="todo"><td>7</td><td>Libellés</td><td>« DOT PLEX » en haut à gauche, à la même place et à la même taille que dans tous les modules (point à 56 / 51 px, texte à 80 / 44 px, Fira Code 18 px). Le point pulse tant qu'une lecture est en cours. Un toucher sur le libellé ramène à Dot Home. À droite : nom du serveur et nombre de lectures (IDLE, OFFLINE).</td></tr>
+          <tr class="todo"><td>8</td><td>Couleurs</td><td>Couleurs communes de la carte « Couleurs » de Dot Companion (accent, points allumés, points éteints, libellés). Orange Plex <code>#E5A00D</code> proposé comme accent.</td></tr>
+          <tr class="todo"><td>9</td><td>Rien en lecture</td><td>« NOTHING PLAYING » et la taille de la bibliothèque à la place des lectures. En M et S, la place va aux affiches de la bibliothèque.</td></tr>
+          <tr class="todo"><td>10</td><td>Serveur injoignable</td><td>« SERVER OFFLINE » et « CHECK PLEX URL IN DOT COMPANION », état OFFLINE en haut à droite. Jamais de contenu inventé.</td></tr>
+          <tr class="todo"><td>11</td><td>Rafraîchissement</td><td>Lectures toutes les 5 s, bibliothèque toutes les 5 min ; la progression avance chaque seconde entre deux lectures du serveur.</td></tr>
+          <tr class="todo"><td>12</td><td>Tailles</td><td><b>XL</b> : lectures à gauche (1160 px), onglets et 4 affiches à droite.<br><b>L</b> : même découpage, 3 affiches.<br><b>M</b> : lectures seules, affiches quand rien ne joue.<br><b>S</b> : une lecture, sans libellés ; 5 affiches quand rien ne joue.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  function v(id) { return document.getElementById(id); }
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; }
+  function val(name) { return document.querySelector("input[name=" + name + "]:checked").value; }
+  var SIZES = {
+    xl: { w: 2536, h: 696, posters: 4, pitch: 10, tag: "XL 2536 × 696 px", note: "Lectures en cours à gauche, derniers ajouts ou « À suivre » à droite." },
+    l: { w: 1688, h: 696, posters: 3, pitch: 9, tag: "L 1688 × 696 px", note: "Même découpage que l'XL, 3 affiches." },
+    m: { w: 840, h: 696, posters: 3, pitch: 9, tag: "M 840 × 696 px", note: "Lectures seules ; les affiches prennent la place quand rien ne joue." },
+    s: { w: 840, h: 344, posters: 5, pitch: 7, tag: "S 840 × 344 px", note: "Une lecture à la fois, sans libellés ; 5 affiches quand rien ne joue." }
+  };
+  var size = "xl", tab = "recent", sesIndex = 0;
+  var frame = v("frame"), stage = v("stage");
+
+  function fit() { stage.style.transform = "scale(" + frame.clientWidth / SIZES[size].w + ")"; }
+  if (window.ResizeObserver) new ResizeObserver(fit).observe(frame); else window.addEventListener("resize", fit);
+
+  // ---------- affiches d'exemple, dessinées à la main (aucune vraie affiche)
+  function art(paint) { var c = document.createElement("canvas"); c.width = 200; c.height = 300; paint(c.getContext("2d")); return c; }
+  function lin(g, y0, y1, a, b) { var gr = g.createLinearGradient(0, y0, 0, y1); gr.addColorStop(0, a); gr.addColorStop(1, b); return gr; }
+  function disc(g, x, y, r, col) { g.fillStyle = col; g.beginPath(); g.arc(x, y, r, 0, Math.PI * 2); g.fill(); }
+  function glow(g, x, y, r, a, b) { var gr = g.createRadialGradient(x, y, 2, x, y, r); gr.addColorStop(0, a); gr.addColorStop(1, b); g.fillStyle = gr; g.beginPath(); g.arc(x, y, r, 0, Math.PI * 2); g.fill(); }
+  var ART = {
+    harbor: art(function (g) {
+      g.fillStyle = lin(g, 0, 300, "#0b1d33", "#16496b"); g.fillRect(0, 0, 200, 300);
+      glow(g, 60, 90, 34, "#ffe7a3", "rgba(255,180,60,0)"); glow(g, 140, 120, 26, "#ffd27a", "rgba(255,160,60,0)"); glow(g, 100, 60, 18, "#fff0c4", "rgba(255,200,90,0)");
+      for (var k = 0; k < 5; k++) { g.strokeStyle = "rgba(170,225,255," + (0.8 - k * 0.14) + ")"; g.lineWidth = 9 - k; g.beginPath();
+        for (var x = 0; x <= 200; x += 4) { var y = 190 + k * 22 + Math.sin(x / 20 + k) * 8; if (x === 0) g.moveTo(x, y); else g.lineTo(x, y); } g.stroke(); }
+    }),
+    orbit: art(function (g) {
+      g.fillStyle = "#05060c"; g.fillRect(0, 0, 200, 300);
+      for (var i = 0; i < 40; i++) disc(g, (i * 73) % 200, (i * 131) % 300, 1.6, "#cfd8ff");
+      glow(g, 100, 150, 70, "#9fc6ff", "#1a2a6a"); disc(g, 100, 150, 56, "rgba(160,200,255,.9)");
+      g.strokeStyle = "#ffffff"; g.lineWidth = 6; g.beginPath(); g.ellipse(100, 150, 96, 22, -0.35, 0, Math.PI * 2); g.stroke();
+    }),
+    lantern: art(function (g) {
+      g.fillStyle = lin(g, 0, 300, "#3a0d12", "#8a2a18"); g.fillRect(0, 0, 200, 300);
+      [[50, 70, 22], [130, 50, 28], [95, 140, 32], [40, 210, 20], [150, 200, 24]].forEach(function (p) { glow(g, p[0], p[1], p[2] * 1.8, "rgba(255,190,90,.9)", "rgba(255,120,40,0)"); disc(g, p[0], p[1], p[2], "#ffb35c"); });
+    }),
+    ridge: art(function (g) {
+      g.fillStyle = lin(g, 0, 300, "#f6d7a7", "#7aa6c9"); g.fillRect(0, 0, 200, 300);
+      disc(g, 140, 80, 26, "#fff6dc");
+      g.fillStyle = "#4b5d7a"; g.beginPath(); g.moveTo(0, 210); g.lineTo(60, 130); g.lineTo(110, 190); g.lineTo(160, 120); g.lineTo(200, 170); g.lineTo(200, 300); g.lineTo(0, 300); g.fill();
+      g.fillStyle = "#1e2638"; g.beginPath(); g.moveTo(0, 260); g.lineTo(70, 200); g.lineTo(130, 250); g.lineTo(200, 215); g.lineTo(200, 300); g.lineTo(0, 300); g.fill();
+    }),
+    north: art(function (g) {
+      g.fillStyle = lin(g, 0, 300, "#dfe9f2", "#8fb3cf"); g.fillRect(0, 0, 200, 300);
+      g.fillStyle = "#2b3440"; g.beginPath(); g.moveTo(90, 150); g.lineTo(110, 150); g.lineTo(200, 300); g.lineTo(0, 300); g.fill();
+      g.fillStyle = "#f4f4f4"; for (var i = 0; i < 6; i++) g.fillRect(98, 165 + i * 22, 4 + i, 10 + i * 2);
+    }),
+    copper: art(function (g) {
+      g.fillStyle = lin(g, 0, 300, "#5a2410", "#c96b2c"); g.fillRect(0, 0, 200, 300);
+      glow(g, 100, 120, 60, "#ffd9a0", "rgba(255,140,60,0)");
+      g.fillStyle = "#3a1508"; g.beginPath(); g.moveTo(0, 220); g.quadraticCurveTo(70, 170, 120, 210); g.quadraticCurveTo(170, 240, 200, 200); g.lineTo(200, 300); g.lineTo(0, 300); g.fill();
+    }),
+    field: art(function (g) {
+      g.fillStyle = lin(g, 0, 180, "#bfe3f0", "#f2f0d0"); g.fillRect(0, 0, 200, 180);
+      g.fillStyle = lin(g, 180, 300, "#6f9a3a", "#2f4a18"); g.fillRect(0, 180, 200, 120);
+      g.fillStyle = "#25301a"; g.fillRect(132, 120, 8, 64); disc(g, 136, 112, 30, "#2f4a22");
+    })
+  };
+
+  var SESSIONS = [
+    { art: "harbor", title: "Harbor Nights", sub: "S02 · E05 · Lanterns", user: "Alex", device: "Living room TV", q: "4K HDR · Direct Play", t: 2292, d: 3160, playing: true },
+    { art: "orbit", title: "The Quiet Orbit", sub: "Film · 2025", user: "Sam", device: "iPhone", q: "1080p → 720p · Transcode", t: 3725, d: 7890, playing: false }
+  ];
+  var LIB = {
+    recent: [
+      { art: "orbit", title: "The Quiet Orbit", sub: "Film · 2h ago" },
+      { art: "ridge", title: "Ridge Line", sub: "Season 1 · 1d ago" },
+      { art: "lantern", title: "Paper Lanterns", sub: "Film · 2d ago" },
+      { art: "north", title: "Northbound", sub: "Film · 3d ago" },
+      { art: "copper", title: "Copper Valley", sub: "S03 · E01 · 4d ago" }
+    ],
+    deck: [
+      { art: "harbor", title: "Harbor Nights", sub: "S02 · E06", p: 0 },
+      { art: "ridge", title: "Ridge Line", sub: "S01 · E04", p: 0.18 },
+      { art: "field", title: "The Long Field", sub: "Film · 54 min left", p: 0.54 },
+      { art: "copper", title: "Copper Valley", sub: "S03 · E01", p: 0 },
+      { art: "north", title: "Northbound", sub: "Film", p: 0.08 }
+    ]
+  };
+
+  function colors() {
+    return { lit: v("litColor").value, unlit: v("showUnlit").checked ? v("unlitColor").value : null, accent: v("accentColor").value, label: v("labelColor").value };
+  }
+
+  // ---------- trame de points
+  function poster(key, w, h, c) {
+    var cv = document.createElement("canvas"), dpr = 2;
+    cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); cv.style.width = w + "px"; cv.style.height = h + "px";
+    var ctx = cv.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    var pitch = SIZES[size].pitch * parseFloat(val("dotSize"));
+    var nx = Math.floor(w / pitch), ny = Math.floor(h / pitch), ox = (w - nx * pitch) / 2 + pitch / 2, oy = (h - ny * pitch) / 2 + pitch / 2, maxR = pitch * 0.46;
+    var data = null;
+    if (key) {
+      var sm = document.createElement("canvas"); sm.width = nx; sm.height = ny;
+      var sg = sm.getContext("2d"); sg.imageSmoothingQuality = "high"; sg.drawImage(ART[key], 0, 0, nx, ny);
+      data = sg.getImageData(0, 0, nx, ny).data;
+    }
+    var color = val("posterStyle") === "color", lo = 1, hi = 0;
+    if (data) for (var q = 0; q < data.length; q += 4) { var lq = (0.2126 * data[q] + 0.7152 * data[q + 1] + 0.0722 * data[q + 2]) / 255; if (lq < lo) lo = lq; if (lq > hi) hi = lq; }
+    var span = Math.max(hi - lo, 0.2);
+    for (var y = 0; y < ny; y++) for (var x = 0; x < nx; x++) {
+      var cx = ox + x * pitch, cy = oy + y * pitch;
+      if (c.unlit) { ctx.fillStyle = c.unlit; ctx.beginPath(); ctx.arc(cx, cy, maxR, 0, Math.PI * 2); ctx.fill(); }
+      if (!data) continue;
+      var i = (y * nx + x) * 4, r = data[i], g = data[i + 1], b = data[i + 2];
+      var lum = Math.min(1, Math.max(0, ((0.2126 * r + 0.7152 * g + 0.0722 * b) / 255 - lo) / span));
+      var rad = color ? maxR * (0.35 + 0.65 * Math.pow(lum, 0.7)) : maxR * Math.pow(lum, 0.9);
+      if (rad < 0.6) continue;
+      ctx.fillStyle = color ? "rgb(" + r + "," + g + "," + b + ")" : c.lit;
+      ctx.beginPath(); ctx.arc(cx, cy, rad, 0, Math.PI * 2); ctx.fill();
+    }
+    return cv;
+  }
+
+  // barre de progression en points : allumés en accent jusqu'à la position
+  function bar(w, frac, pitch, c) {
+    var cv = document.createElement("canvas"), dpr = 2, n = Math.floor(w / pitch), h = pitch;
+    cv.width = w * dpr; cv.height = h * dpr; cv.style.width = w + "px"; cv.style.height = h + "px";
+    var ctx = cv.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    var on = Math.round(n * frac);
+    for (var i = 0; i < n; i++) {
+      ctx.fillStyle = i < on ? c.accent : (c.unlit || "#1c1c1c");
+      ctx.beginPath(); ctx.arc(i * pitch + pitch / 2, h / 2, pitch * 0.36, 0, Math.PI * 2); ctx.fill();
+    }
+    return cv;
+  }
+
+  function hms(s) {
+    s = Math.floor(s); var h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60), x = s % 60;
+    return (h ? h + ":" + (m < 10 ? "0" : "") : "") + m + ":" + (x < 10 ? "0" : "") + x;
+  }
+
+  var sesNodes = [];
+  function renderSessions(list, c) {
+    var box = v("sess"), Z = SIZES[size];
+    box.innerHTML = ""; sesNodes = [];
+    box.className = "w-sess" + (list.length === 1 ? " one" : "");
+    var boxH = size === "s" ? 248 : 548, gap = 24;
+    var rowH = (boxH - gap * (list.length - 1)) / list.length;
+    var pw = Math.round(rowH * 2 / 3);
+    var textW = (size === "xl" ? 1160 : size === "l" ? 760 : size === "m" ? 728 : 744) - pw - (size === "xl" ? 32 : 28);
+    var hide = v("hideUsers").checked;
+    list.forEach(function (s, idx) {
+      var b = el("button", "ses"); b.type = "button";
+      b.appendChild(poster(s.art, pw, rowH, c));
+      var tx = el("div", "tx");
+      tx.appendChild(el("p", "t ell", s.title));
+      tx.appendChild(el("p", "st ell", s.sub));
+      var who = hide ? "User " + (SESSIONS.indexOf(s) + 1) : s.user;
+      tx.appendChild(el("p", "who ell", who + " · " + s.device));
+      var bw = el("div", "bar"); tx.appendChild(bw);
+      var ml = el("div", "ml");
+      ml.appendChild(el("span", "q", (s.playing ? "▶ " : "❚❚ ") + s.q));
+      var tm = el("span", "tm"); ml.appendChild(tm); tx.appendChild(ml);
+      b.appendChild(tx);
+      b.setAttribute("aria-label", s.title + ", " + who);
+      b.addEventListener("click", function () { if (size === "s" && SESSIONS.length > 1 && val("sample") === "two") { sesIndex = (sesIndex + 1) % SESSIONS.length; render(); } });
+      box.appendChild(b);
+      sesNodes.push({ s: s, bw: bw, tm: tm, w: textW });
+    });
+    tickSessions(c);
+  }
+  function tickSessions(c) {
+    var pitch = size === "xl" ? 14 : size === "s" ? 10 : 12;
+    sesNodes.forEach(function (n) {
+      n.bw.innerHTML = ""; n.bw.appendChild(bar(n.w, n.s.t / n.s.d, pitch, c));
+      n.tm.textContent = hms(n.s.t) + " / " + hms(n.s.d);
+    });
+  }
+
+  function renderLib(c) {
+    var box = v("posters"), Z = SIZES[size];
+    box.innerHTML = "";
+    var W = size === "xl" ? 1184 : size === "l" ? 752 : size === "s" ? 744 : 728;
+    var H = size === "s" ? 264 : 548 - 24 - 28;
+    var gap = size === "xl" ? 24 : size === "l" ? 22 : size === "m" ? 20 : 22;
+    var cap = size === "s" ? 34 : tab === "deck" ? 96 : 68;
+    var n = Z.posters, pw = Math.floor(Math.min((W - gap * (n - 1)) / n, (H - cap) * 2 / 3)), ph = Math.round(pw * 1.5);
+    document.querySelectorAll(".tab").forEach(function (t) { t.setAttribute("aria-selected", t.getAttribute("data-tab") === tab ? "true" : "false"); });
+    LIB[tab].slice(0, n).forEach(function (it) {
+      var p = el("div", "pst"); p.style.width = pw + "px";
+      p.appendChild(poster(it.art, pw, ph, c));
+      p.appendChild(el("p", "pt ell", it.title));
+      p.appendChild(el("p", "ps ell", it.sub));
+      if (tab === "deck") { var pb = el("div", "pb"); pb.appendChild(bar(pw, it.p, 10, c)); p.appendChild(pb); }
+      box.appendChild(p);
+    });
+  }
+
+  function render() {
+    var sample = val("sample"), c = colors();
+    stage.style.setProperty("--accent", c.accent);
+    stage.style.setProperty("--lit", c.lit);
+    stage.style.setProperty("--label", c.label);
+    stage.style.setProperty("--unlit", c.unlit || "#1c1c1c");
+    var list = sample === "two" ? SESSIONS.slice() : sample === "one" ? [SESSIONS[0]] : [];
+    if (size === "s" && list.length > 1) list = [list[sesIndex % list.length]];
+    var live = list.length > 0;
+    stage.className = "stage " + size + (live && list.some(function (s) { return s.playing; }) ? " live" : "");
+    v("state").textContent = "HOME-SERVER · " + (sample === "offline" ? "OFFLINE" : sample === "idle" ? "IDLE" : (sample === "two" ? 2 : 1) + (sample === "two" ? " STREAMS" : " STREAM"));
+    var narrow = size === "m" || size === "s";
+    v("sess").hidden = !live;
+    v("empty").hidden = live || (narrow && sample !== "offline");
+    if (sample === "offline") {
+      v("emptyBig").textContent = "Server offline";
+      v("emptySm").textContent = "Check Plex URL in Dot Companion";
+    } else {
+      v("emptyBig").textContent = "Nothing playing";
+      v("emptySm").textContent = "1 284 movies · 86 shows";
+    }
+    v("lib").hidden = sample === "offline" || (narrow && live);
+    if (live) renderSessions(list, c);
+    if (!v("lib").hidden) renderLib(c);
+  }
+
+  // la progression avance pendant la lecture
+  setInterval(function () {
+    var any = false;
+    SESSIONS.forEach(function (s) { if (s.playing) { s.t = (s.t + 1) % s.d; any = true; } });
+    if (any && sesNodes.length) tickSessions(colors());
+  }, 1000);
+
+  // ---------- interactions de la maquette
+  document.querySelectorAll(".tab").forEach(function (t) {
+    t.addEventListener("click", function () { tab = t.getAttribute("data-tab"); render(); });
+  });
+  document.querySelectorAll(".settings input").forEach(function (i) {
+    i.addEventListener("input", function () { if (i.name === "libRow") tab = i.value; render(); });
+    i.addEventListener("change", function () { if (i.name === "libRow") tab = i.value; render(); });
+  });
+  document.querySelectorAll(".preset[data-accent]").forEach(function (b) {
+    b.addEventListener("click", function () { v("accentColor").value = b.getAttribute("data-accent"); render(); });
+  });
+  document.querySelectorAll(".sizebar .preset").forEach(function (b) {
+    b.addEventListener("click", function () {
+      size = b.getAttribute("data-size");
+      document.querySelectorAll(".sizebar .preset").forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+      frame.className = "frame " + size;
+      v("sizeTag").textContent = "Version 0.1 · taille réelle " + SIZES[size].tag;
+      v("sizeNote").textContent = SIZES[size].note;
+      render(); fit();
+    });
+  });
+
+  render(); fit();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(render);
+})();
+</script>
+</body>
+</html>
