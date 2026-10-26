@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Maquette de référence du Dot Slack (artefact de revue de design). Ouvrir dans un navigateur. -->
+<style>body { margin: 0; }</style>
+</head>
+<body>
+<title>Dot Slack</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap">
+<style>
+/* Layout : maquette de référence en taille réelle (choix S, M, L, XL) avec ses réglages, puis tableau des choix. Même univers que Dot Clock, un seul thème sombre. */
+:root {
+  --page: #111111;
+  --panel: #0a0a0a;
+  --line: #262626;
+  --text: #e6e6e6;
+  --muted: #8c8c8c;
+  --brand: #10b981;
+  --mono: "IBM Plex Mono", "Cascadia Mono", Consolas, monospace;
+  --sans: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { background: var(--page); color: var(--text); }
+body {
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.55;
+  padding-block: 40px 72px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 1480px; margin: 0 auto; display: grid; gap: 40px; }
+header { display: grid; gap: 10px; }
+.eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); display: flex; align-items: center; gap: 10px; }
+.eyebrow::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--brand); }
+h1 { font-family: var(--mono); font-weight: 500; font-size: clamp(28px, 4vw, 44px); line-height: 1.1; margin: 0; letter-spacing: -.01em; }
+.lede { color: var(--muted); max-width: 72ch; margin: 0; }
+
+figure { margin: 0; display: grid; gap: 12px; min-width: 0; }
+.tag { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.tag b { color: var(--text); font-weight: 500; font-size: 14px; }
+figcaption { color: var(--muted); font-size: 14px; }
+
+/* tableau */
+.diff-head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; }
+h2 { font-family: var(--mono); font-weight: 500; font-size: 13px; letter-spacing: .14em; text-transform: uppercase; margin: 0; }
+.hint { color: var(--muted); font-size: 14px; margin: 0; }
+.table-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; }
+table { width: 100%; border-collapse: collapse; min-width: 640px; }
+th, td { text-align: left; padding: 14px 16px; vertical-align: top; border-bottom: 1px solid var(--line); }
+tr:last-child td { border-bottom: 0; }
+thead th { font-family: var(--mono); font-weight: 500; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); background: var(--panel); }
+td:first-child { font-family: var(--mono); color: var(--muted); width: 3.5em; font-variant-numeric: tabular-nums; }
+td:nth-child(2) { font-weight: 500; width: 15em; }
+tr.todo td:nth-child(3) { color: var(--muted); }
+code { font-family: var(--mono); font-size: 13px; color: var(--text); }
+
+/* réglages simulés */
+.settings { display: flex; flex-wrap: wrap; gap: 12px 28px; align-items: center; padding: 14px 16px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); }
+.settings label { display: inline-flex; align-items: center; gap: 10px; font-family: var(--mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); cursor: pointer; }
+.settings input[type=color] { width: 36px; height: 28px; padding: 0; border: 1px solid var(--line); border-radius: 6px; background: none; cursor: pointer; }
+.settings input[type=checkbox], .settings input[type=radio] { width: 18px; height: 18px; accent-color: var(--brand); cursor: pointer; }
+.settings .grp { display: inline-flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.settings .grp > span { font-family: var(--mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--text); }
+.preset { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; padding: 6px 10px; border-radius: 6px; border: 1px solid var(--line); background: transparent; color: var(--text); cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+.preset i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+.preset:focus-visible, .tab:focus-visible, .ses:focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; }
+.sizebar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; }
+.sizebar > span { font-family: var(--mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-right: 6px; }
+.sizebar .preset[aria-pressed="true"] { background: var(--text); color: #0a0a0a; border-color: var(--text); }
+
+/* cadre à l'échelle de l'XL : la largeur suit la vraie largeur de l'emplacement */
+.frame { position: relative; max-width: 100%; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: #080808; }
+.frame.xl { width: 100%; aspect-ratio: 2536 / 696; }
+.frame.l { width: calc(1688 / 2536 * 100%); aspect-ratio: 1688 / 696; }
+.frame.m { width: calc(840 / 2536 * 100%); aspect-ratio: 840 / 696; }
+.frame.s { width: calc(840 / 2536 * 100%); aspect-ratio: 840 / 344; }
+@media (max-width: 700px) { .frame.l, .frame.m, .frame.s { width: 100%; } }
+
+/* ---------- le widget : scène en pixels réels de l'emplacement XL ---------- */
+.frame.xl { width: 100%; aspect-ratio: 2536 / 696; }
+.stage { position: absolute; left: 0; top: 0; width: 2536px; height: 696px; transform-origin: 0 0; background: #080808; --accent: #10b981; --lit: #f2f0e9; --label: #b8b6b0; --unlit: #1c1c1c; font-family: "Fira Code", Consolas, monospace; font-variant-ligatures: none; }
+.stage > * { position: absolute; }
+.stage p { margin: 0; }
+.stage canvas { display: block; }
+.stage button { font-family: inherit; -webkit-tap-highlight-color: transparent; }
+.w-lbl { white-space: nowrap; font-size: 18px; line-height: 24px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); }
+.w-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); }
+.stage.fresh .w-dot { animation: pulse 1s ease-in-out 4; }
+.stage.off .w-dot { background: #ed403b; }
+.stage.paused .w-dot { background: var(--label); opacity: .5; }
+@keyframes pulse { 50% { opacity: .2; } }
+@media (prefers-reduced-motion: reduce) { .stage.fresh .w-dot { animation: none; } }
+.ell { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.chip:focus-visible, .ch:focus-visible, .msg:focus-visible, .dnd:focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; }
+
+/* libellé « ● DOT SLACK » : même place et même taille partout */
+.w-dot { left: 56px; top: 51px; }
+.w-name { left: 80px; top: 44px; }
+.w-state { right: 56px; top: 44px; }
+
+/* colonne A : mentions et messages directs, statut, pause des notifications */
+.w-me { left: 56px; top: 112px; width: 560px; height: 536px; display: flex; flex-direction: column; }
+.w-me .k { font-size: 18px; line-height: 24px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); }
+.w-me .digits { margin-top: 22px; }
+.w-me .sub { margin-top: 16px; font-size: 22px; line-height: 30px; letter-spacing: .14em; text-transform: uppercase; color: var(--label); }
+.status { margin-top: auto; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.chip { height: 64px; padding: 0 8px; border: 2px solid #1d1d1d; border-radius: 14px; background: transparent; cursor: pointer; font-size: 17px; letter-spacing: .1em; text-transform: uppercase; color: var(--label); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.chip[aria-pressed="true"] { border-color: var(--accent); color: var(--lit); }
+.dnd { margin-top: 14px; display: flex; align-items: center; justify-content: space-between; height: 72px; padding: 0 24px; border: 2px solid #1d1d1d; border-radius: 14px; background: transparent; cursor: pointer; font-size: 20px; letter-spacing: .14em; text-transform: uppercase; color: var(--label); }
+.dnd b { font-weight: 400; color: var(--lit); }
+.dnd.on { border-color: var(--accent); }
+.dnd.on b { color: var(--accent); }
+
+/* colonne B : canaux non lus */
+.w-chs { left: 696px; top: 112px; width: 520px; height: 536px; display: flex; flex-direction: column; }
+.w-chs .k { font-size: 18px; line-height: 24px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); margin-bottom: 12px; }
+.ch { display: flex; align-items: center; justify-content: space-between; gap: 16px; height: 62px; padding: 0 4px; border: 0; border-bottom: 2px solid #161616; background: transparent; cursor: pointer; text-align: left; font-size: 24px; letter-spacing: .04em; color: var(--label); }
+.ch:last-child { border-bottom: 0; }
+.ch.unread .n { color: var(--lit); font-weight: 500; }
+.ch .c { min-width: 44px; height: 34px; padding: 0 10px; border-radius: 17px; display: grid; place-items: center; font-size: 18px; color: var(--label); font-variant-numeric: tabular-nums; }
+.ch.unread .c { background: #1d1d1d; color: var(--lit); }
+.ch.mention .c { background: var(--accent); color: #080808; font-weight: 500; }
+
+/* colonne C : dernières mentions et messages directs */
+.w-msgs { left: 1296px; top: 112px; width: 1184px; height: 536px; display: flex; flex-direction: column; }
+.w-msgs .k { font-size: 18px; line-height: 24px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); margin-bottom: 8px; }
+.msg { display: grid; grid-template-columns: 72px minmax(0, 1fr) auto; align-items: center; gap: 0 24px; height: 124px; padding: 0; border: 0; border-bottom: 2px solid #161616; background: transparent; cursor: pointer; text-align: left; color: var(--label); }
+.msg:last-child { border-bottom: 0; }
+.msg.new { animation: arrive .6s ease-out; }
+@keyframes arrive { from { opacity: 0; transform: translateY(-20px); } }
+.msg .who { font-size: 22px; line-height: 30px; letter-spacing: .04em; color: var(--lit); font-weight: 500; }
+.msg .who span { font-weight: 400; color: var(--label); }
+.msg .tx { margin-top: 4px; font-size: 22px; line-height: 30px; color: var(--label); }
+.msg .tx b { font-weight: 400; color: var(--accent); }
+.msg .tm { font-size: 20px; letter-spacing: .1em; color: var(--label); font-variant-numeric: tabular-nums; }
+.msg .go { font-size: 18px; letter-spacing: .14em; color: var(--accent); }
+
+.w-empty { left: 56px; top: 112px; width: 2424px; height: 536px; display: flex; flex-direction: column; justify-content: center; gap: 14px; }
+.w-empty .big { font-weight: 500; color: var(--lit); font-size: 64px; line-height: 80px; letter-spacing: .02em; text-transform: uppercase; }
+.w-empty .sm { color: var(--label); font-size: 24px; line-height: 32px; letter-spacing: .08em; text-transform: uppercase; }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Module Dot Hub · CORSAIR XENEON EDGE</div>
+    <h1>Dot Slack</h1>
+    <p class="lede">Première proposition, à valider point par point dans le tableau. Slack sur l'Edge : mentions et messages directs en gros points, canaux non lus, derniers messages qui te concernent, statut et pause des notifications en un toucher, dans la charte du Dot Clock. Format XL seulement pour l'instant. L'espace de travail, les canaux et les messages sont des exemples fictifs.</p>
+  </header>
+
+  <figure>
+    <div class="tag"><b>Maquette de référence</b><span>Version 0.1 · taille réelle XL 2536 × 696 px</span></div>
+    <div class="frame xl" id="frame">
+      <div class="stage" id="stage">
+        <span class="w-dot"></span>
+        <p class="w-lbl w-name" data-hub-home>DOT SLACK</p>
+        <p class="w-lbl w-state" id="state"></p>
+        <div class="w-me" id="me">
+          <p class="k" id="ws"></p>
+          <div class="digits" id="digits"></div>
+          <p class="sub" id="countK"></p>
+          <div class="status" id="status"></div>
+          <button type="button" class="dnd" id="dndBtn"></button>
+        </div>
+        <div class="w-chs" id="chs"></div>
+        <div class="w-msgs" id="msgs"></div>
+        <div class="w-empty" id="empty" hidden><p class="big">Slack not connected</p><p class="sm">Add your Slack token in Dot Companion</p></div>
+      </div>
+    </div>
+    <div class="settings" aria-label="Réglages simulés">
+      <div class="grp" role="radiogroup" aria-label="Exemple">
+        <span>Exemple</span>
+        <label><input type="radio" name="sample" value="normal" checked> Unread</label>
+        <label><input type="radio" name="sample" value="zero"> All caught up</label>
+        <label><input type="radio" name="sample" value="off"> Not connected</label>
+      </div>
+      <div class="grp" role="radiogroup" aria-label="Count">
+        <span>Count</span>
+        <label><input type="radio" name="countMode" value="me" checked> Mentions &amp; DMs</label>
+        <label><input type="radio" name="countMode" value="all"> All unread</label>
+      </div>
+      <label><input type="checkbox" id="privacy"> Privacy mode</label>
+      <label><input type="checkbox" id="showUnlit" checked> Show unlit dots</label>
+      <button type="button" class="preset" id="newMsg">Simulate new mention</button>
+      <label>Accent color <input type="color" id="accentColor" value="#10b981"></label>
+      <label>Lit dot color <input type="color" id="litColor" value="#f2f0e9"></label>
+      <label>Unlit dot color <input type="color" id="unlitColor" value="#1c1c1c"></label>
+      <label>Label color <input type="color" id="labelColor" value="#b8b6b0"></label>
+      <button type="button" class="preset" data-accent="#10b981"><i style="background:#10b981"></i>Émeraude</button>
+      <button type="button" class="preset" data-accent="#36c5f0"><i style="background:#36c5f0"></i>Bleu Slack</button>
+      <button type="button" class="preset" data-accent="#ecb22e"><i style="background:#ecb22e"></i>Jaune Slack</button>
+    </div>
+    <figcaption>Mentions, statut et pause à gauche, canaux au centre, messages à droite. La maquette marche : un statut se choisit d'un toucher, le bouton du bas met les notifications en pause (un toucher change la durée, un appui long reprend), toucher un canal ou un message l'ouvrirait dans Slack sur le PC.</figcaption>
+  </figure>
+
+  <section style="display:grid;gap:14px">
+    <div class="diff-head">
+      <h2>Choix de design</h2>
+      <p class="hint">Tout est à valider. Complété au fur et à mesure.</p>
+    </div>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>#</th><th>Élément</th><th>Proposition</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>Module</td><td>Module de Dot Hub servi par Dot Companion (<code>/m/slack/</code>). Pas de widget iCUE autonome.</td></tr>
+          <tr class="todo"><td>2</td><td>Données</td><td>L'API Web de Slack, appelée par le compagnon avec un jeton d'utilisateur (<code>xoxp-…</code>) d'une petite application Slack que l'on crée soi-même dans son espace de travail (selon l'espace, l'accord d'un administrateur peut être demandé). Les messages en direct arrivent par le Socket Mode (jeton d'application <code>xapp-…</code>), sans serveur public. Jetons chiffrés sur le PC, jamais dans iCUE.</td></tr>
+          <tr class="todo"><td>3</td><td>Non lus</td><td>Slack ne donne pas de compteur public de non lus : le compagnon le calcule pour chaque conversation à partir du dernier message lu (<code>last_read</code> de <code>conversations.info</code>) et de l'historique, puis le tient à jour avec les messages reçus en direct. À vérifier sur un vrai espace de travail.</td></tr>
+          <tr class="todo"><td>4</td><td>Mentions et DM</td><td>En gros points : mentions de toi (et de tes groupes) plus messages directs non lus, ou tous les non lus selon « Count ». À droite, les 4 derniers messages qui te concernent : expéditeur, canal, texte, heure.</td></tr>
+          <tr class="todo"><td>5</td><td>Canaux</td><td>Les 7 conversations avec des non lus, mentions d'abord : nom, nombre (pastille en accent s'il y a une mention).</td></tr>
+          <tr class="todo"><td>6</td><td>Ouvrir dans Slack</td><td>Un toucher sur un canal ou un message : le compagnon ouvre l'application Slack du PC sur la bonne conversation (lien <code>slack://channel?team=…&amp;id=…</code>).</td></tr>
+          <tr class="todo"><td>7</td><td>Statut</td><td>Quatre statuts en un toucher : Available (efface le statut), Meeting, Lunch, Focus, avec une durée par défaut réglée dans le compagnon (<code>users.profile.set</code>).</td></tr>
+          <tr class="todo"><td>8</td><td>Pause des notifications</td><td>Un toucher met en pause (<code>dnd.setSnooze</code>) et change la durée (30 min, 1 h, 2 h) ; un appui long reprend. Pendant la pause : point du libellé éteint, « PAUSED UNTIL … » à droite.</td></tr>
+          <tr class="todo"><td>9</td><td>Confidentialité</td><td>« Privacy mode » : textes des messages masqués, seuls les noms de canaux et les nombres restent, pour le stream.</td></tr>
+          <tr class="todo"><td>10</td><td>Libellés</td><td>« DOT SLACK » en haut à gauche, à la même place et à la même taille que dans tous les modules (point à 56 / 51 px, texte à 80 / 44 px, Fira Code 18 px), toucher qui ramène à Dot Hub. À droite : espace de travail et présence, ou la fin de la pause.</td></tr>
+          <tr class="todo"><td>11</td><td>Couleurs</td><td>Couleurs communes de la carte « Couleurs » de Dot Companion. Bleu <code>#36C5F0</code> et jaune <code>#ECB22E</code> de Slack proposés comme accents.</td></tr>
+          <tr class="todo"><td>12</td><td>Tailles</td><td><b>XL</b> : mentions, statut et pause à gauche, canaux au centre, messages à droite. S, M et L plus tard.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  function v(id) { return document.getElementById(id); }
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; }
+  function val(name) { return document.querySelector("input[name=" + name + "]:checked").value; }
+  var frame = v("frame"), stage = v("stage");
+  function fit() { stage.style.transform = "scale(" + frame.clientWidth / 2536 + ")"; }
+  if (window.ResizeObserver) new ResizeObserver(fit).observe(frame); else window.addEventListener("resize", fit);
+
+  var FONT = {
+    "0": ["01110", "10001", "10011", "10101", "11001", "10001", "01110"], "1": ["00100", "01100", "00100", "00100", "00100", "00100", "01110"],
+    "2": ["01110", "10001", "00001", "00010", "00100", "01000", "11111"], "3": ["11111", "00010", "00100", "00010", "00001", "10001", "01110"],
+    "4": ["00010", "00110", "01010", "10010", "11111", "00010", "00010"], "5": ["11111", "10000", "11110", "00001", "00001", "10001", "01110"],
+    "6": ["00110", "01000", "10000", "11110", "10001", "10001", "01110"], "7": ["11111", "00001", "00010", "00100", "01000", "01000", "01000"],
+    "8": ["01110", "10001", "10001", "01110", "10001", "10001", "01110"], "9": ["01110", "10001", "10001", "01111", "00001", "00010", "01100"],
+    "+": ["00000", "00100", "00100", "11111", "00100", "00100", "00000"], " ": ["00000", "00000", "00000", "00000", "00000", "00000", "00000"]
+  };
+  function dotText(str, pitch, c) {
+    str = ("   " + str).slice(-3);
+    var cv = document.createElement("canvas"), dpr = 2, w = 17 * pitch, h = 7 * pitch;
+    cv.width = w * dpr; cv.height = h * dpr; cv.style.width = w + "px"; cv.style.height = h + "px";
+    var ctx = cv.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    for (var k = 0; k < 3; k++) {
+      var g = FONT[str[k]] || FONT[" "];
+      for (var y = 0; y < 7; y++) for (var x = 0; x < 6; x++) {
+        if (k === 2 && x === 5) continue;
+        var on = x < 5 && g[y][x] === "1", col = on ? (str[k] === "+" ? c.accent : c.lit) : c.unlit;
+        if (!col) continue;
+        ctx.fillStyle = col; ctx.beginPath(); ctx.arc((k * 6 + x) * pitch + pitch / 2, y * pitch + pitch / 2, pitch * .4, 0, 7); ctx.fill();
+      }
+    }
+    return cv;
+  }
+  // avatar : initiale en police 5 × 7 points dans un rond de points (pas de vraie photo)
+  var LETTERS = {
+    A: "01110100011000111111100011000110001", B: "11110100011000111110100011000111110", C: "01110100011000010000100001000101110",
+    D: "11110100011000110001100011000111110", E: "11111100001000011110100001000011111", F: "11111100001000011110100001000010000",
+    G: "01110100011000010111100011000101111", H: "10001100011000111111100011000110001", I: "01110001000010000100001000010001110",
+    J: "00111000100001000010000101001001100", K: "10001100101010011000101001001010001", L: "10000100001000010000100001000011111",
+    M: "10001110111010110101100011000110001", N: "10001100011100110101100111000110001", O: "01110100011000110001100011000101110",
+    P: "11110100011000111110100001000010000", Q: "01110100011000110001101011001001101", R: "11110100011000111110101001001010001",
+    S: "01111100001000001110000010000111110", T: "11111001000010000100001000010000100", U: "10001100011000110001100011000101110",
+    V: "10001100011000110001100010101000100", W: "10001100011000110101101011010101010", X: "10001100010101000100010101000110001",
+    Y: "10001100010101000100001000010000100", Z: "11111000010001000100010001000011111"
+  };
+  function avatar(name, c) {
+    var px = 72, cv = document.createElement("canvas"), dpr = 2; cv.width = cv.height = px * dpr; cv.style.width = cv.style.height = px + "px";
+    var ctx = cv.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    var g = LETTERS[name[0].toUpperCase()] || LETTERS.O, p = px / 9;
+    for (var y = 0; y < 9; y++) for (var x = 0; x < 9; x++) {
+      var cx = x * p + p / 2, cy = y * p + p / 2; if (Math.hypot(cx - px / 2, cy - px / 2) > px / 2) continue;
+      var lx = x - 2, ly = y - 1, on = lx >= 0 && lx < 5 && ly >= 0 && ly < 7 && g[ly * 5 + lx] === "1";
+      ctx.fillStyle = on ? c.lit : (c.unlit || "#1c1c1c"); ctx.beginPath(); ctx.arc(cx, cy, p * .38, 0, 7); ctx.fill();
+    }
+    return cv;
+  }
+  function colors() { return { lit: v("litColor").value, unlit: v("showUnlit").checked ? v("unlitColor").value : null, accent: v("accentColor").value, label: v("labelColor").value }; }
+
+  var CHANNELS = [
+    { n: "@ Nova", c: 2, m: true, dm: true }, { n: "# design-review", c: 4, m: true }, { n: "@ Kiro, Lune", c: 1, m: true, dm: true },
+    { n: "# general", c: 12 }, { n: "# xeneon-widgets", c: 6 }, { n: "# random", c: 23 }, { n: "# releases", c: 1 }
+  ];
+  var MSGS = [
+    { who: "Nova", ch: "direct message", tx: "Can you send me the XL export before the call?", tm: "14:12" },
+    { who: "Kiro", ch: "#design-review", tx: "<b>@you</b> the new tiles look great, one question about spacing", tm: "13:57" },
+    { who: "Lune", ch: "group message", tx: "Pizza or ramen tonight?", tm: "13:20" },
+    { who: "Atlas", ch: "#design-review", tx: "<b>@you</b> merged, thanks! Release notes are up", tm: "12:44" }
+  ];
+  var NEWM = { who: "Mika", ch: "#xeneon-widgets", tx: "<b>@you</b> the Edge build is green, want to try it?", tm: "14:15", isNew: true };
+  var STATUS = [["available", "Available"], ["meeting", "Meeting"], ["lunch", "Lunch"], ["focus", "Focus"]], status = "available";
+  var DUR = [30, 60, 120], dndIdx = -1, fresh = 0;
+
+  function untilText() { var d = new Date(Date.now() + DUR[dndIdx] * 60000); return (d.getHours() < 10 ? "0" : "") + d.getHours() + ":" + (d.getMinutes() < 10 ? "0" : "") + d.getMinutes(); }
+
+  function render() {
+    var c = colors(), sample = val("sample"), off = sample === "off", zero = sample === "zero", priv = v("privacy").checked;
+    stage.style.setProperty("--accent", c.accent); stage.style.setProperty("--lit", c.lit); stage.style.setProperty("--label", c.label);
+    stage.className = "stage" + (off ? " off" : "") + (fresh ? " fresh" : "") + (dndIdx >= 0 && !off ? " paused" : "");
+    var st = STATUS.filter(function (s) { return s[0] === status; })[0][1];
+    v("state").textContent = off ? "NOT CONNECTED" : dndIdx >= 0 ? "NOTIFICATIONS PAUSED UNTIL " + untilText() : "PIXEL CREW · " + (status === "available" ? "ACTIVE" : st.toUpperCase());
+    ["me", "chs", "msgs"].forEach(function (id) { v(id).hidden = off; });
+    v("empty").hidden = !off;
+    if (off) return;
+    // compteur
+    var me = 0, all = 0;
+    CHANNELS.forEach(function (ch) { all += ch.c; if (ch.dm) me += ch.c; else if (ch.m) me += 1; });
+    if (zero) { me = 0; all = 0; }
+    var n = val("countMode") === "me" ? me : all;
+    v("ws").textContent = "Workspace · Pixel Crew";
+    var dg = v("digits"); dg.innerHTML = ""; dg.appendChild(dotText(n > 99 ? "99+" : String(n), 26, c));
+    v("countK").textContent = zero ? "All caught up" : val("countMode") === "me" ? "Mentions & direct messages" : "Unread messages";
+    // statut
+    var sb = v("status"); sb.innerHTML = "";
+    STATUS.forEach(function (s) {
+      var b = el("button", "chip", s[1]); b.type = "button"; b.setAttribute("aria-pressed", s[0] === status ? "true" : "false");
+      b.addEventListener("click", function () { status = s[0]; render(); }); sb.appendChild(b);
+    });
+    var dnd = v("dndBtn"); dnd.className = "dnd" + (dndIdx >= 0 ? " on" : "");
+    dnd.innerHTML = dndIdx >= 0 ? "<span>Paused</span><b>" + (DUR[dndIdx] < 60 ? DUR[dndIdx] + " min" : DUR[dndIdx] / 60 + " h") + " · until " + untilText() + "</b>" : "<span>Notifications</span><b>Pause</b>";
+    // canaux
+    var chs = v("chs"); chs.innerHTML = ""; chs.appendChild(el("p", "k", zero ? "Channels · all read" : "Unread channels"));
+    CHANNELS.slice().sort(function (a, b) { return (b.m ? 1 : 0) - (a.m ? 1 : 0); }).slice(0, 7).forEach(function (ch) {
+      var b = el("button", "ch" + (zero ? "" : " unread") + (ch.m && !zero ? " mention" : "")); b.type = "button";
+      b.appendChild(el("span", "n ell", ch.n)); b.appendChild(el("span", "c", zero ? "" : String(ch.c)));
+      b.setAttribute("aria-label", "Open " + ch.n + " in Slack");
+      chs.appendChild(b);
+    });
+    // messages
+    var ms = v("msgs"); ms.innerHTML = ""; ms.appendChild(el("p", "k", "Mentions & direct messages"));
+    MSGS.slice(0, 4).forEach(function (m) {
+      var b = el("button", "msg" + (m.isNew ? " new" : "")); b.type = "button";
+      b.appendChild(avatar(m.who, c));
+      var t = el("div", "txt");
+      var w = el("p", "who ell"); w.textContent = m.who + " "; w.appendChild(el("span", "", "· " + m.ch)); t.appendChild(w);
+      var x = el("p", "tx ell"); if (priv) x.textContent = "New message"; else x.innerHTML = m.tx; t.appendChild(x);
+      b.appendChild(t);
+      b.appendChild(el("p", "tm", m.tm));
+      b.setAttribute("aria-label", "Open message from " + m.who + " in Slack");
+      ms.appendChild(b);
+      m.isNew = false;
+    });
+  }
+
+  // pause : un toucher change la durée, un appui long reprend
+  (function () {
+    var b = v("dndBtn"), t = null, long = false;
+    b.addEventListener("pointerdown", function () { long = false; t = setTimeout(function () { long = true; dndIdx = -1; render(); }, 700); });
+    ["pointerup", "pointerleave", "pointercancel"].forEach(function (n) { b.addEventListener(n, function () { clearTimeout(t); }); });
+    b.addEventListener("click", function () { if (long) return; dndIdx = (dndIdx + 1) % DUR.length; render(); });
+  })();
+  v("newMsg").addEventListener("click", function () {
+    MSGS.unshift(Object.assign({}, NEWM)); CHANNELS.filter(function (c) { return c.n === "# xeneon-widgets"; })[0].m = true;
+    fresh = 1; document.querySelector("input[name=sample][value=normal]").checked = true; render();
+    setTimeout(function () { fresh = 0; render(); }, 4200);
+  });
+  document.querySelectorAll(".settings input").forEach(function (i) { i.addEventListener("input", render); i.addEventListener("change", render); });
+  document.querySelectorAll(".preset[data-accent]").forEach(function (b) { b.addEventListener("click", function () { v("accentColor").value = b.getAttribute("data-accent"); render(); }); });
+  render(); fit();
+  setInterval(render, 60000);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(render);
+})();
+</script>
+</body>
+</html>
