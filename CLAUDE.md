@@ -91,7 +91,7 @@ Le compagnon sert l’interface et la configuration de Dot Hub (voir « Architec
 | discord | Dot Discord | RPC local (accès réservé aux apps approuvées) ; repli : raccourcis clavier |
 | battery | Dot Battery | casque Logitech via HID++ (sans G HUB), Bluetooth via Windows |
 | network | Dot Network | ping ICMP, débit, speedtest |
-| mail | Dot Mail | IMAP |
+| gmail | Dot Gmail | IMAP Gmail (mot de passe d’application) : non lus par catégorie, derniers messages, lu / archiver |
 | homelab | Dot Homelab, Dot Plex | Radarr, Sonarr, Seerr, Plex… (un sous-module par application) |
 | ics | Dot Calendar (repli) | récupérer les ICS si le serveur bloque l’accès direct |
 | ia | Dot IA | limites d’utilisation Claude de plusieurs comptes (session 5 h, hebdo) ; source à vérifier (pas d’API publique documentée) |
@@ -126,7 +126,7 @@ Compilation Windows : `cargo build --release` sous Windows, ou depuis Linux/WSL 
 - **Dot System Monitor** v1.1.0 : fonctionnel (FPS + 4 capteurs + historique, dot-matrix). Mise en page faite pour L/XL ; **S et M à refaire**. À migrer sur `sizes.js` du template.
 - **Dot Clock** v0.1.2 : codé (S, M, L, XL). Référence : `widgets/dot-clock/mockups/reference.html`.
 - **Dot Hub** + **Dot Companion** : v0.1, première version de bout en bout avec le module Clock (coquille, accueil, réglages sur le PC, pont clavier). L’exe Windows est compilé par GitHub Actions.
-- **Dot Notes, Dot Weather, Dot IA, Dot Home, Dot GitHub, Dot Calculator, Dot Spotify, Dot Plex, Dot Bambu Lab, Dot Home Assistant, Dot Discord, Dot Steam, Dot Audio, Dot Apps** : en conception, maquette de référence dans `widgets/<slug>/mockups/reference.html` (choix de design à valider ; Dot Spotify mis de côté).
+- **Dot Notes, Dot Weather, Dot IA, Dot Home, Dot GitHub, Dot Calculator, Dot Spotify, Dot Plex, Dot Bambu Lab, Dot Home Assistant, Dot Discord, Dot Steam, Dot Audio, Dot Apps, Dot Gmail** : en conception, maquette de référence dans `widgets/<slug>/mockups/reference.html` (choix de design à valider ; Dot Spotify mis de côté).
 - **Dot Calendar** : spécifié avec mocks.
 - Autres : fiche seule (idée).
 - **Prochaine étape** : définir la charte graphique (`docs/DESIGN.md`) à partir du mock de charte fourni par Mathod95, puis en faire le template de base de tous les widgets.

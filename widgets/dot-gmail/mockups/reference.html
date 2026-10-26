@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Maquette de référence du Dot Gmail (artefact de revue de design). Ouvrir dans un navigateur. -->
+<style>body { margin: 0; }</style>
+</head>
+<body>
+<title>Dot Gmail</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap">
+<style>
+/* Layout : maquette de référence en taille réelle (choix S, M, L, XL) avec ses réglages, puis tableau des choix. Même univers que Dot Clock, un seul thème sombre. */
+:root {
+  --page: #111111;
+  --panel: #0a0a0a;
+  --line: #262626;
+  --text: #e6e6e6;
+  --muted: #8c8c8c;
+  --brand: #10b981;
+  --mono: "IBM Plex Mono", "Cascadia Mono", Consolas, monospace;
+  --sans: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { background: var(--page); color: var(--text); }
+body {
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.55;
+  padding-block: 40px 72px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 1480px; margin: 0 auto; display: grid; gap: 40px; }
+header { display: grid; gap: 10px; }
+.eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); display: flex; align-items: center; gap: 10px; }
+.eyebrow::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--brand); }
+h1 { font-family: var(--mono); font-weight: 500; font-size: clamp(28px, 4vw, 44px); line-height: 1.1; margin: 0; letter-spacing: -.01em; }
+.lede { color: var(--muted); max-width: 72ch; margin: 0; }
+
+figure { margin: 0; display: grid; gap: 12px; min-width: 0; }
+.tag { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.tag b { color: var(--text); font-weight: 500; font-size: 14px; }
+figcaption { color: var(--muted); font-size: 14px; }
+
+/* tableau */
+.diff-head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; }
+h2 { font-family: var(--mono); font-weight: 500; font-size: 13px; letter-spacing: .14em; text-transform: uppercase; margin: 0; }
+.hint { color: var(--muted); font-size: 14px; margin: 0; }
+.table-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; }
+table { width: 100%; border-collapse: collapse; min-width: 640px; }
+th, td { text-align: left; padding: 14px 16px; vertical-align: top; border-bottom: 1px solid var(--line); }
+tr:last-child td { border-bottom: 0; }
+thead th { font-family: var(--mono); font-weight: 500; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); background: var(--panel); }
+td:first-child { font-family: var(--mono); color: var(--muted); width: 3.5em; font-variant-numeric: tabular-nums; }
+td:nth-child(2) { font-weight: 500; width: 15em; }
+tr.todo td:nth-child(3) { color: var(--muted); }
+code { font-family: var(--mono); font-size: 13px; color: var(--text); }
+
+/* réglages simulés */
+.settings { display: flex; flex-wrap: wrap; gap: 12px 28px; align-items: center; padding: 14px 16px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); }
+.settings label { display: inline-flex; align-items: center; gap: 10px; font-family: var(--mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); cursor: pointer; }
+.settings input[type=color] { width: 36px; height: 28px; padding: 0; border: 1px solid var(--line); border-radius: 6px; background: none; cursor: pointer; }
+.settings input[type=checkbox], .settings input[type=radio] { width: 18px; height: 18px; accent-color: var(--brand); cursor: pointer; }
+.settings .grp { display: inline-flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.settings .grp > span { font-family: var(--mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--text); }
+.preset { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; padding: 6px 10px; border-radius: 6px; border: 1px solid var(--line); background: transparent; color: var(--text); cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+.preset i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+.preset:focus-visible, .tab:focus-visible, .ses:focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; }
+.sizebar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; }
+.sizebar > span { font-family: var(--mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-right: 6px; }
+.sizebar .preset[aria-pressed="true"] { background: var(--text); color: #0a0a0a; border-color: var(--text); }
+
+/* cadre à l'échelle de l'XL : la largeur suit la vraie largeur de l'emplacement */
+.frame { position: relative; max-width: 100%; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: #080808; }
+.frame.xl { width: 100%; aspect-ratio: 2536 / 696; }
+.frame.l { width: calc(1688 / 2536 * 100%); aspect-ratio: 1688 / 696; }
+.frame.m { width: calc(840 / 2536 * 100%); aspect-ratio: 840 / 696; }
+.frame.s { width: calc(840 / 2536 * 100%); aspect-ratio: 840 / 344; }
+@media (max-width: 700px) { .frame.l, .frame.m, .frame.s { width: 100%; } }
+
+/* ---------- le widget : scène en pixels réels de l'emplacement XL ---------- */
+.frame.xl { width: 100%; aspect-ratio: 2536 / 696; }
+.stage { position: absolute; left: 0; top: 0; width: 2536px; height: 696px; transform-origin: 0 0; background: #080808; --accent: #10b981; --lit: #f2f0e9; --label: #b8b6b0; --unlit: #1c1c1c; font-family: "Fira Code", Consolas, monospace; font-variant-ligatures: none; }
+.stage > * { position: absolute; }
+.stage p { margin: 0; }
+.stage canvas { display: block; }
+.stage button { font-family: inherit; -webkit-tap-highlight-color: transparent; }
+.w-lbl { white-space: nowrap; font-size: 18px; line-height: 24px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); }
+.w-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); }
+.stage.fresh .w-dot { animation: pulse 1s ease-in-out 4; }
+.stage.off .w-dot { background: #ed403b; }
+@keyframes pulse { 50% { opacity: .2; } }
+@media (prefers-reduced-motion: reduce) { .stage.fresh .w-dot { animation: none; } }
+.ell { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.btn:focus-visible, .cat:focus-visible, .msg:focus-visible, .acc:focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; }
+
+/* libellé « ● DOT GMAIL » : même place et même taille partout */
+.w-dot { left: 56px; top: 51px; }
+.w-name { left: 80px; top: 44px; }
+.w-state { right: 56px; top: 44px; }
+
+/* compteur : non lus en gros points, compte, catégories */
+.w-count { left: 56px; top: 112px; width: 640px; height: 536px; display: flex; flex-direction: column; }
+.acc { align-self: flex-start; padding: 14px 0; margin: -14px 0; border: 0; background: transparent; cursor: pointer; font-size: 18px; line-height: 24px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); }
+.acc b { font-weight: 400; color: var(--lit); text-transform: none; letter-spacing: .08em; }
+.w-count .digits { margin-top: 26px; }
+.w-count .unread { margin-top: 18px; font-size: 22px; line-height: 30px; letter-spacing: .16em; text-transform: uppercase; color: var(--label); }
+.cats { margin-top: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.cat { display: flex; justify-content: space-between; align-items: baseline; padding: 16px 20px; border: 2px solid #1d1d1d; border-radius: 14px; background: transparent; cursor: pointer; font-size: 20px; line-height: 26px; letter-spacing: .12em; text-transform: uppercase; color: var(--label); }
+.cat b { font-weight: 500; font-size: 26px; color: var(--lit); font-variant-numeric: tabular-nums; }
+.cat.zero b { color: var(--label); opacity: .5; }
+.cat[aria-pressed="true"] { border-color: var(--accent); color: var(--lit); }
+
+/* messages */
+.w-list { left: 776px; top: 112px; width: 1704px; height: 536px; display: flex; flex-direction: column; }
+.msg { position: relative; display: grid; grid-template-columns: 22px 360px minmax(0, 1fr) auto; align-items: center; gap: 0 24px; height: 107px; padding: 0 0 0 4px; border: 0; border-bottom: 2px solid #161616; background: transparent; cursor: pointer; text-align: left; color: var(--label); }
+.msg:last-child { border-bottom: 0; }
+.msg i { width: 12px; height: 12px; border-radius: 50%; background: transparent; }
+.msg.unread i { background: var(--accent); }
+.msg .from { font-size: 24px; line-height: 32px; letter-spacing: .04em; color: var(--label); }
+.msg.unread .from { color: var(--lit); font-weight: 500; }
+.msg .txt { min-width: 0; }
+.msg .sub { font-size: 24px; line-height: 32px; letter-spacing: .02em; color: var(--label); }
+.msg.unread .sub { color: var(--lit); }
+.msg .snip { margin-top: 4px; font-size: 18px; line-height: 24px; letter-spacing: .04em; color: var(--label); opacity: .6; }
+.msg .tm { font-size: 20px; line-height: 26px; letter-spacing: .1em; color: var(--label); font-variant-numeric: tabular-nums; }
+.msg.unread .tm { color: var(--accent); }
+.msg.new { animation: arrive .6s ease-out; }
+@keyframes arrive { from { opacity: 0; transform: translateY(-20px); } }
+.msg.sel { background: #0d0d0d; box-shadow: inset 4px 0 0 var(--accent); }
+.acts { display: flex; gap: 14px; }
+.btn { display: grid; place-items: center; width: 72px; height: 72px; padding: 0; border-radius: 50%; border: 2px solid #2a2a2a; background: transparent; color: var(--lit); cursor: pointer; }
+.btn svg { width: 40%; height: 40%; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.btn:active { border-color: var(--accent); }
+
+/* boîte vide, non connecté */
+.w-empty { left: 776px; top: 112px; width: 1704px; height: 536px; display: flex; flex-direction: column; justify-content: center; gap: 14px; }
+.w-empty .big { font-weight: 500; color: var(--lit); font-size: 64px; line-height: 80px; letter-spacing: .02em; text-transform: uppercase; }
+.w-empty .sm { color: var(--label); font-size: 24px; line-height: 32px; letter-spacing: .08em; text-transform: uppercase; }
+.stage.off .w-empty { left: 56px; width: 2424px; }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Module Dot Hub · CORSAIR XENEON EDGE</div>
+    <h1>Dot Gmail</h1>
+    <p class="lede">Première proposition, à valider point par point dans le tableau. Anciennement Dot Mail : non lus en gros points, par catégorie Gmail, et les derniers messages avec lu, archiver et ouvrir dans Gmail, dans la charte du Dot Clock. Format XL seulement pour l'instant. Les adresses, expéditeurs et messages sont des exemples fictifs.</p>
+  </header>
+
+  <figure>
+    <div class="tag"><b>Maquette de référence</b><span>Version 0.1 · taille réelle XL 2536 × 696 px</span></div>
+    <div class="frame xl" id="frame">
+      <div class="stage" id="stage">
+        <span class="w-dot"></span>
+        <p class="w-lbl w-name" data-hub-home>DOT GMAIL</p>
+        <p class="w-lbl w-state" id="state"></p>
+        <div class="w-count" id="count">
+          <button type="button" class="acc" id="accBtn"></button>
+          <div class="digits" id="digits"></div>
+          <p class="unread" id="unreadK"></p>
+          <div class="cats" id="cats"></div>
+        </div>
+        <div class="w-list" id="list"></div>
+        <div class="w-empty" id="empty" hidden><p class="big" id="emptyBig"></p><p class="sm" id="emptySm"></p></div>
+      </div>
+    </div>
+    <div class="settings" aria-label="Réglages simulés">
+      <div class="grp" role="radiogroup" aria-label="Exemple">
+        <span>Exemple</span>
+        <label><input type="radio" name="sample" value="normal" checked> Unread mail</label>
+        <label><input type="radio" name="sample" value="zero"> Inbox zero</label>
+        <label><input type="radio" name="sample" value="off"> Not connected</label>
+      </div>
+      <div class="grp" role="radiogroup" aria-label="Count">
+        <span>Count</span>
+        <label><input type="radio" name="countMode" value="all" checked> All inbox</label>
+        <label><input type="radio" name="countMode" value="primary"> Primary only</label>
+      </div>
+      <label><input type="checkbox" id="showSnip" checked> Show snippets</label>
+      <label><input type="checkbox" id="privacy"> Privacy mode</label>
+      <label><input type="checkbox" id="showUnlit" checked> Show unlit dots</label>
+      <button type="button" class="preset" id="newMail">Simulate new mail</button>
+      <label>Accent color <input type="color" id="accentColor" value="#10b981"></label>
+      <label>Lit dot color <input type="color" id="litColor" value="#f2f0e9"></label>
+      <label>Unlit dot color <input type="color" id="unlitColor" value="#1c1c1c"></label>
+      <label>Label color <input type="color" id="labelColor" value="#b8b6b0"></label>
+      <button type="button" class="preset" data-accent="#10b981"><i style="background:#10b981"></i>Émeraude</button>
+      <button type="button" class="preset" data-accent="#ea4335"><i style="background:#ea4335"></i>Rouge Gmail</button>
+      <button type="button" class="preset" data-accent="#3d8bff"><i style="background:#3d8bff"></i>Bleu</button>
+    </div>
+    <figcaption>Non lus à gauche, derniers messages à droite. La maquette marche : toucher une catégorie filtre la liste, toucher un message affiche ses actions (ouvrir dans Gmail sur le PC, marquer comme lu, archiver), toucher l'adresse change de compte.</figcaption>
+  </figure>
+
+  <section style="display:grid;gap:14px">
+    <div class="diff-head">
+      <h2>Choix de design</h2>
+      <p class="hint">Tout est à valider. Complété au fur et à mesure.</p>
+    </div>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>#</th><th>Élément</th><th>Proposition</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>Nom et module</td><td>Dot Mail devient Dot Gmail. Module de Dot Hub servi par Dot Companion (<code>/m/gmail/</code>). Pas de widget iCUE autonome.</td></tr>
+          <tr class="todo"><td>2</td><td>Données</td><td>Le compagnon se connecte en IMAP à <code>imap.gmail.com:993</code> avec un mot de passe d'application Google (validation en deux étapes requise), gardé chiffré sur le PC. Les extensions IMAP de Gmail donnent les catégories (<code>X-GM-RAW "category:primary is:unread"</code>), les libellés et l'identifiant de conversation. Écoute des nouveaux messages avec <code>IDLE</code>. L'API Gmail (OAuth) est possible, mais une application Google en mode test reçoit des jetons qui expirent au bout de 7 jours : l'IMAP est plus simple.</td></tr>
+          <tr class="todo"><td>3</td><td>Non lus</td><td>Nombre en gros points (99+ au-delà), « UNREAD IN INBOX » ou « UNREAD IN PRIMARY » selon le réglage « Count ». En dessous, quatre catégories Gmail (Primary, Social, Promotions, Updates) avec leur nombre ; un toucher filtre la liste.</td></tr>
+          <tr class="todo"><td>4</td><td>Messages</td><td>Les 5 derniers de la boîte de réception : point en accent si non lu, expéditeur, objet, début du message (« Show snippets »), heure. Un toucher affiche trois actions : ouvrir la conversation dans Gmail sur le PC, marquer comme lu, archiver.</td></tr>
+          <tr class="todo"><td>5</td><td>Nouveau message</td><td>Il arrive en haut de la liste avec une courte animation, le point du libellé clignote quelques fois.</td></tr>
+          <tr class="todo"><td>6</td><td>Confidentialité</td><td>« Privacy mode » : expéditeurs et objets masqués (« NEW MESSAGE »), seuls les nombres restent, pour un écran visible en stream ou en vidéo.</td></tr>
+          <tr class="todo"><td>7</td><td>Comptes</td><td>Plusieurs comptes Gmail : un toucher sur l'adresse passe au suivant ; à droite du libellé, le nombre de comptes et l'heure de la dernière synchronisation. Ou une instance du module par compte.</td></tr>
+          <tr class="todo"><td>8</td><td>Libellés</td><td>« DOT GMAIL » en haut à gauche, à la même place et à la même taille que dans tous les modules (point à 56 / 51 px, texte à 80 / 44 px, Fira Code 18 px), toucher qui ramène à Dot Home.</td></tr>
+          <tr class="todo"><td>9</td><td>Couleurs</td><td>Couleurs communes de la carte « Couleurs » de Dot Companion. Rouge Gmail <code>#EA4335</code> proposé comme accent.</td></tr>
+          <tr class="todo"><td>10</td><td>Boîte vide, non connecté</td><td>« INBOX ZERO » quand rien n'est non lu (les derniers messages lus restent visibles). Sans mot de passe d'application : « GMAIL NOT CONNECTED » et « ADD AN APP PASSWORD IN DOT COMPANION », point du libellé en rouge.</td></tr>
+          <tr class="todo"><td>11</td><td>Tailles</td><td><b>XL</b> : non lus et catégories à gauche, 5 messages à droite. S, M et L plus tard.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  function v(id) { return document.getElementById(id); }
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; }
+  function val(name) { return document.querySelector("input[name=" + name + "]:checked").value; }
+  var frame = v("frame"), stage = v("stage");
+  function fit() { stage.style.transform = "scale(" + frame.clientWidth / 2536 + ")"; }
+  if (window.ResizeObserver) new ResizeObserver(fit).observe(frame); else window.addEventListener("resize", fit);
+
+  var FONT = {
+    "0": ["01110", "10001", "10011", "10101", "11001", "10001", "01110"], "1": ["00100", "01100", "00100", "00100", "00100", "00100", "01110"],
+    "2": ["01110", "10001", "00001", "00010", "00100", "01000", "11111"], "3": ["11111", "00010", "00100", "00010", "00001", "10001", "01110"],
+    "4": ["00010", "00110", "01010", "10010", "11111", "00010", "00010"], "5": ["11111", "10000", "11110", "00001", "00001", "10001", "01110"],
+    "6": ["00110", "01000", "10000", "11110", "10001", "10001", "01110"], "7": ["11111", "00001", "00010", "00100", "01000", "01000", "01000"],
+    "8": ["01110", "10001", "10001", "01110", "10001", "10001", "01110"], "9": ["01110", "10001", "10001", "01111", "00001", "00010", "01100"],
+    "+": ["00000", "00100", "00100", "11111", "00100", "00100", "00000"], " ": ["00000", "00000", "00000", "00000", "00000", "00000", "00000"]
+  };
+  function dotText(str, pitch, c) {
+    str = ("   " + str).slice(-3);
+    var cols = 3 * 6 - 1, cv = document.createElement("canvas"), dpr = 2, w = cols * pitch, h = 7 * pitch;
+    cv.width = w * dpr; cv.height = h * dpr; cv.style.width = w + "px"; cv.style.height = h + "px";
+    var ctx = cv.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    for (var k = 0; k < 3; k++) {
+      var g = FONT[str[k]] || FONT[" "];
+      for (var y = 0; y < 7; y++) for (var x = 0; x < 6; x++) {
+        if (k === 2 && x === 5) continue;
+        var on = x < 5 && g[y][x] === "1", col = on ? (str[k] === "+" ? c.accent : c.lit) : c.unlit;
+        if (!col) continue;
+        ctx.fillStyle = col; ctx.beginPath(); ctx.arc((k * 6 + x) * pitch + pitch / 2, y * pitch + pitch / 2, pitch * .4, 0, 7); ctx.fill();
+      }
+    }
+    return cv;
+  }
+  function colors() { return { lit: v("litColor").value, unlit: v("showUnlit").checked ? v("unlitColor").value : null, accent: v("accentColor").value, label: v("labelColor").value }; }
+
+  var ACCOUNTS = ["you@gmail.com", "you.work@gmail.com"], acc = 0, cat = null, sel = -1, fresh = 0;
+  var MSGS = [
+    { from: "Nova Studio", sub: "Your render is ready", snip: "The final export of Neon Grid finished in 12 minutes. Download link inside.", tm: "14:02", cat: "primary", unread: true },
+    { from: "GitHub", sub: "[xeneon] Run succeeded: docs", snip: "All jobs have passed. View the workflow run for details.", tm: "13:48", cat: "updates", unread: true },
+    { from: "Kiro", sub: "Saturday ride?", snip: "Thinking about the lake loop if the weather holds, you in?", tm: "12:31", cat: "primary", unread: true },
+    { from: "Pixel Market", sub: "48 hours only: keyboards -30%", snip: "Our biggest sale of the season starts now on all mechanical boards.", tm: "11:05", cat: "promotions", unread: true },
+    { from: "Lune", sub: "Photos from Sunday", snip: "I uploaded the album, there are a few good ones of the sunset.", tm: "09:40", cat: "primary", unread: false },
+    { from: "Atlas Bank", sub: "Your monthly statement", snip: "Your statement for October is available in your online space.", tm: "Yesterday", cat: "updates", unread: false },
+    { from: "Social Hub", sub: "3 people liked your post", snip: "Mika, Nova and one other reacted to your photo.", tm: "Yesterday", cat: "social", unread: true }
+  ];
+  var EXTRA = { primary: 1, social: 2, promotions: 4, updates: 0 };
+  var NEW = [
+    { from: "Mika", sub: "Tonight still on?", snip: "Booked a table for 8, tell me if that works.", tm: "14:06", cat: "primary", unread: true },
+    { from: "Steam", sub: "An item on your wishlist is on sale", snip: "Glass Atlas is now 40% off until Monday.", tm: "14:07", cat: "promotions", unread: true }
+  ], newIdx = 0;
+  var ICON = {
+    open: '<path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>',
+    read: '<path d="M4 12l5 5L20 6"/>',
+    archive: '<path d="M4 5h16v4H4zM5 9v10h14V9M10 13h4"/>'
+  };
+  function counts() {
+    var r = { primary: EXTRA.primary, social: EXTRA.social, promotions: EXTRA.promotions, updates: EXTRA.updates };
+    MSGS.forEach(function (m) { if (m.unread) r[m.cat]++; });
+    return r;
+  }
+
+  function render() {
+    var c = colors(), sample = val("sample"), privacy = v("privacy").checked;
+    stage.style.setProperty("--accent", c.accent); stage.style.setProperty("--lit", c.lit); stage.style.setProperty("--label", c.label);
+    var off = sample === "off", zero = sample === "zero";
+    stage.className = "stage" + (off ? " off" : "") + (fresh ? " fresh" : "");
+    var d = new Date();
+    v("state").textContent = off ? "NOT CONNECTED" : ACCOUNTS.length + " ACCOUNTS · SYNCED " + (d.getHours() < 10 ? "0" : "") + d.getHours() + ":" + (d.getMinutes() < 10 ? "0" : "") + d.getMinutes();
+    v("count").hidden = off;
+    var n = counts(); if (zero) n = { primary: 0, social: 0, promotions: 0, updates: 0 };
+    var total = val("countMode") === "primary" ? n.primary : n.primary + n.social + n.promotions + n.updates;
+    v("accBtn").innerHTML = "Account · <b>" + ACCOUNTS[acc] + "</b> ▾";
+    var dg = v("digits"); dg.innerHTML = ""; dg.appendChild(dotText(total > 99 ? "99+" : String(total), 26, c));
+    v("unreadK").textContent = val("countMode") === "primary" ? "Unread in Primary" : "Unread in inbox";
+    var cats = v("cats"); cats.innerHTML = "";
+    [["primary", "Primary"], ["social", "Social"], ["promotions", "Promotions"], ["updates", "Updates"]].forEach(function (k) {
+      var b = el("button", "cat" + (n[k[0]] ? "" : " zero")); b.type = "button"; b.setAttribute("aria-pressed", cat === k[0] ? "true" : "false");
+      b.appendChild(el("span", "", k[1])); b.appendChild(el("b", "", String(n[k[0]])));
+      b.addEventListener("click", function () { cat = cat === k[0] ? null : k[0]; sel = -1; render(); });
+      cats.appendChild(b);
+    });
+    // liste
+    var list = v("list"); list.innerHTML = "";
+    var shown = MSGS.filter(function (m) { return !cat || m.cat === cat; }).map(function (m) { return zero ? Object.assign({}, m, { unread: false }) : m; }).slice(0, 5);
+    var empty = off || (zero && false);
+    list.hidden = off;
+    v("empty").hidden = !off && !(zero && !shown.length);
+    v("emptyBig").textContent = off ? "Gmail not connected" : "Inbox zero";
+    v("emptySm").textContent = off ? "Add an app password in Dot Companion" : "Nothing unread";
+    if (off) return;
+    shown.forEach(function (m, i) {
+      var b = el("div", "msg" + (m.unread ? " unread" : "") + (sel === i ? " sel" : "") + (m.isNew ? " new" : ""));
+      b.setAttribute("role", "button"); b.tabIndex = 0;
+      b.appendChild(el("i"));
+      b.appendChild(el("p", "from ell", privacy ? "•••" : m.from));
+      var tx = el("div", "txt");
+      tx.appendChild(el("p", "sub ell", privacy ? (m.unread ? "New message" : "Message") : m.sub));
+      if (v("showSnip").checked && !privacy) tx.appendChild(el("p", "snip ell", m.snip));
+      b.appendChild(tx);
+      if (sel === i) {
+        var acts = el("div", "acts");
+        [["open", "Open in Gmail"], ["read", "Mark as read"], ["archive", "Archive"]].forEach(function (a) {
+          var bt = el("button", "btn"); bt.type = "button"; bt.setAttribute("aria-label", a[1]); bt.innerHTML = '<svg viewBox="0 0 24 24">' + ICON[a[0]] + "</svg>";
+          bt.addEventListener("click", function (e) {
+            e.stopPropagation();
+            if (a[0] === "read") m.unread = false;
+            if (a[0] === "archive") MSGS.splice(MSGS.indexOf(m), 1);
+            sel = -1; render();
+          });
+          acts.appendChild(bt);
+        });
+        b.appendChild(acts);
+      } else b.appendChild(el("p", "tm", m.tm));
+      b.addEventListener("click", function () { sel = sel === i ? -1 : i; render(); });
+      list.appendChild(b);
+      m.isNew = false;
+    });
+    if (zero) { v("unreadK").textContent = "Inbox zero · nothing unread"; }
+  }
+
+  v("accBtn").addEventListener("click", function () { acc = (acc + 1) % ACCOUNTS.length; render(); });
+  v("newMail").addEventListener("click", function () {
+    var m = Object.assign({}, NEW[newIdx % NEW.length]); m.isNew = true; newIdx++;
+    MSGS.unshift(m); sel = -1; fresh = 1; document.querySelector("input[name=sample][value=normal]").checked = true; render();
+    setTimeout(function () { fresh = 0; render(); }, 4200);
+  });
+  document.querySelectorAll(".settings input").forEach(function (i) { i.addEventListener("input", render); i.addEventListener("change", render); });
+  document.querySelectorAll(".preset[data-accent]").forEach(function (b) { b.addEventListener("click", function () { v("accentColor").value = b.getAttribute("data-accent"); render(); }); });
+  render(); fit();
+  setInterval(render, 60000);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(render);
+})();
+</script>
+</body>
+</html>
