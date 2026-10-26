@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<!-- Maquette de référence du Dot Clock (artefact de revue de design). Ouvrir dans un navigateur. -->
+<!-- Maquette de référence du Dot Clock. Elle charge les fichiers du widget (styles/, scripts/, resources/) : la base pointe sur le dossier du widget. -->
+<base href="../">
 <style>body { margin: 0; }</style>
 </head>
 <body>
@@ -13,6 +14,10 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&family=IBM+Plex+Sans:wght@400;500;600&family=Open+Sans:wght@400;700&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap">
+<!-- Le widget lui-même : mêmes fichiers que sur l'Edge (widgets/dot-clock/styles et scripts) -->
+<link rel="stylesheet" href="styles/clock.css">
+<script src="scripts/font.js"></script>
+<script src="scripts/clock.js"></script>
 <style>
 /* Layout : maquette de référence en taille réelle XL avec ses réglages, puis tableau des choix. Univers sombre de la charte, un seul thème. */
 :root {
@@ -142,47 +147,22 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
     </div>
     <div class="view view-xl" data-view="xl">
       <div class="frame frame-xl" id="frameXL">
-        <div class="stage stage-xl" id="stageXL">
-          <span class="x-cdot"></span>
-          <p class="x-lbl x-name">DOT CLOCK</p>
-          <p class="x-lbl x-tz tzl">PARIS</p>
-          <p class="x-lbl x-date datel">MON, SEPTEMBER 21, 2026</p>
-          <p class="x-lbl x-motto motto">TIME, SIMPLY.</p>
-          <canvas class="s-canvas" id="dotsXL" width="2536" height="696"></canvas>
-        </div>
+        <div id="stageXL"></div>
       </div>
     </div>
     <div class="view view-s" data-view="s" hidden>
       <div class="frame frame-s" id="frameS">
-        <div class="stage stage-s" id="stageS">
-          <p class="x-lbl x-date datel">MON, SEPTEMBER 21, 2026</p>
-          <p class="x-lbl x-tz x-br tzl">PARIS</p>
-          <canvas class="s-canvas" id="dotsS" width="840" height="344"></canvas>
-        </div>
+        <div id="stageS"></div>
       </div>
     </div>
     <div class="view view-m" data-view="m" hidden>
       <div class="frame frame-m" id="frameM">
-        <div class="stage stage-m" id="stageM">
-          <span class="x-cdot"></span>
-          <p class="x-lbl x-name">DOT CLOCK</p>
-          <p class="x-lbl x-tz tzl">PARIS</p>
-          <p class="x-lbl x-date datel">MON, SEPTEMBER 21, 2026</p>
-          <p class="x-lbl x-motto motto">TIME, SIMPLY.</p>
-          <canvas class="s-canvas" id="dotsM" width="840" height="696"></canvas>
-        </div>
+        <div id="stageM"></div>
       </div>
     </div>
     <div class="view view-l" data-view="l" hidden>
       <div class="frame frame-l" id="frameL">
-        <div class="stage stage-l" id="stageL">
-          <span class="x-cdot"></span>
-          <p class="x-lbl x-name">DOT CLOCK</p>
-          <p class="x-lbl x-tz tzl">PARIS</p>
-          <p class="x-lbl x-date datel">MON, SEPTEMBER 21, 2026</p>
-          <p class="x-lbl x-motto motto">TIME, SIMPLY.</p>
-          <canvas class="s-canvas" id="dotsL" width="1688" height="696"></canvas>
-        </div>
+        <div id="stageL"></div>
       </div>
     </div>
     <div class="settings" aria-label="Réglages iCUE simulés">
@@ -202,7 +182,7 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
         <option value="none">Hidden</option>
       </select></label>
       <label id="tzCustomWrap" hidden>Custom label <input type="text" id="tzCustom" value="HOME" maxlength="20" spellcheck="false"></label>
-      <label>Footer text <input type="text" id="footerText" value="TIME, SIMPLY." maxlength="30" spellcheck="false"></label>
+      <label>Footer text <input type="text" id="footerText" value="MADE BY MATHOD &amp; CLAUDE" maxlength="30" spellcheck="false"></label>
       <button type="button" class="preset" data-accent="#10b981"><i style="background:#10b981"></i>Émeraude</button>
       <button type="button" class="preset" data-accent="#ed403b"><i style="background:#ed403b"></i>Rouge A</button>
       <div class="grp" role="radiogroup" aria-label="Clock format">
@@ -266,7 +246,7 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
           <tr><td>13</td><td>Fuseau horaire</td><td>Heure locale du PC par défaut. Réglage iCUE « Time zone » pour choisir un autre fuseau.<br>Réglage iCUE « Time zone label » pour le libellé en haut à droite : ville (PARIS, par défaut), abréviation (CEST), décalage (UTC+2), ville + décalage (PARIS UTC+2), texte libre (champ « Custom time zone label », par exemple HOME ou BUREAU), ou masqué. L'abréviation et le décalage suivent l'heure d'été automatiquement (CEST / CET, UTC+2 / UTC+1).</td></tr>
           <tr><td>14</td><td>Format de l'heure</td><td>Réglage iCUE « Clock format » : 24 h par défaut, ou 12 h.<br>En 12 h, AM ou PM en petits points dans la couleur des points allumés, au-dessus ou en dessous des secondes selon le réglage iCUE « AM/PM position » (Top par défaut).</td></tr>
           <tr><td>15</td><td>Format de la date</td><td>Réglage iCUE « Date format » (liste), « WWW, MMMM DD, YYYY » par défaut : WWW, MMMM DD, YYYY · WWWW DD MMMM YYYY · WWW DD MMM YYYY · MM/DD/YYYY · DD/MM/YYYY · YYYY-MM-DD · DD.MM.YY · MM.DD.YY · Custom format.<br>Avec « Custom format », le champ « Custom date format » prend un format libre. Repères : YYYY, YY, MMMM, MMM, MM, M, DD, D, WWWW, WWW, en majuscules ou minuscules.</td></tr>
-          <tr><td>16</td><td>Devise</td><td>Réglage iCUE « Footer text » (champ texte), « TIME, SIMPLY. » par défaut. Masquée si le champ est vide.</td></tr>
+          <tr><td>16</td><td>Devise</td><td>Réglage iCUE « Footer text » (champ texte), « MADE BY MATHOD &amp; CLAUDE » par défaut. Masquée si le champ est vide.</td></tr>
           <tr><td>17</td><td>Taille des textes</td><td>Dans le widget réel, libellés à 18 px minimum (date à 22 px), voir la maquette XL. MATHOD, le titre et le sous-titre ne servent qu'à la maquette et au branding.</td></tr>
           <tr><td>18</td><td>Police dot</td><td>Deux polices en grille 5 × 7, au choix par un réglage iCUE « Dot font » : grasse (traits de 2 points, par défaut) ou fine (traits de 1 point). Chiffres 0 à 9 et lettres A, P, M dans les deux. Le « 1 » gras fait 4 colonnes, centré dans une case de 5.</td></tr>
           <tr><td>19</td><td>Tailles S, M et L</td><td>Validé, une mise en page par taille (choix « Widget size » dans la maquette de référence) :<br><b>XL</b> : la maquette de référence.<br><b>S</b> : l'heure seule en grand, date et fuseau en bas, sans « DOT CLOCK » ni devise.<br><b>M</b> : HH:MM sur toute la largeur, secondes et AM/PM centrées en dessous, libellés dans les angles.<br><b>L</b> : même disposition que XL.</td></tr>
@@ -281,201 +261,52 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
   "use strict";
   function v(id) { return document.getElementById(id); }
 
-  // mise à l'échelle des scènes
-  function scaler(frameId, stageId, w) {
-    var frame = v(frameId), stage = v(stageId);
-    function fit() { stage.style.transform = "scale(" + frame.clientWidth / w + ")"; }
+  // réglages simulés → mêmes noms que les propriétés iCUE du widget
+  function prop(name, def) {
+    switch (name) {
+      case "clockFormat": return v("fmt12h").checked ? "12" : "24";
+      case "ampmPosition": return v("ampmBottom").checked ? "bottom" : "top";
+      case "showSeconds": return v("showSeconds").checked;
+      case "dotFont": return v("fontThin").checked ? "thin" : "bold";
+      case "showUnlitDots": return v("showUnlit").checked;
+      case "showUnlitSecondsDots": return v("showUnlitSec").checked;
+      case "timeZone": return "Europe/Paris";
+      case "timeZoneLabel": return v("tzLabel").value;
+      case "customTimeZoneLabel": return v("tzCustom").value;
+      case "dateFormat": return v("dateFormat").value;
+      case "customDateFormat": return v("dateCustom").value;
+      case "footerText": return v("footerText").value;
+      case "dotAccentColor": return v("accentColor").value;
+      case "litDotColor": return v("litColor").value;
+      case "unlitDotColor": return v("unlitColor").value;
+      case "labelColor": return v("labelColor").value;
+    }
+    return def;
+  }
+  function settings() { return DotClock.fromProperties(prop); }
+  // heure d'exemple fixe : lundi 21 septembre 2026, 10:08:36 ou 22:08:36 à Paris (UTC+2)
+  function now() { return new Date(Date.UTC(2026, 8, 21, (v("samplePm").checked ? 22 : 10) - 2, 8, 36)); }
+
+  // une scène par taille, chacune dessinée par le rendu du widget
+  var clocks = [];
+  [["xl", "frameXL", "stageXL"], ["l", "frameL", "stageL"], ["m", "frameM", "stageM"], ["s", "frameS", "stageS"]].forEach(function (d) {
+    var frame = v(d[1]), stage = v(d[2]), scale = 1;
+    var clock = DotClock.mount(stage, { size: d[0], settings: settings, now: now, pixelRatio: function () { return Math.max(1, scale * (window.devicePixelRatio || 1)); } });
+    function fit() {
+      if (!frame.clientWidth) return;
+      scale = frame.clientWidth / clock.slot()[0];
+      stage.style.transform = "scale(" + scale + ")";
+      clock.render();
+    }
     if (window.ResizeObserver) new ResizeObserver(fit).observe(frame); else window.addEventListener("resize", fit);
-    fit();
-  }
-  scaler("frameXL", "stageXL", 2536);
-  scaler("frameL", "stageL", 1688);
-  scaler("frameS", "stageS", 840);
-  scaler("frameM", "stageM", 840);
-
-  // cale le titre et le sous-titre sur les largeurs de la version A (442 px et 544 px)
-  function matchAll() {
-    document.querySelectorAll(".fit-title, .fit-sub").forEach(function (el) {
-      var width = el.classList.contains("fit-title") ? 442 : 544;
-      el.style.fontSize = "";
-      var fs = parseFloat(getComputedStyle(el).fontSize);
-      el.style.fontSize = (fs * width / el.offsetWidth) + "px";
-    });
-  }
-  matchAll();
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(matchAll);
-
-  // police dot-matrix grasse 5 × 7 (0, 1, 3, 6, 8 relevés sur les mocks ; le reste dessiné dans le même style)
-  var FONT = {
-    "0": [".###.", "##.##", "##.##", "##.##", "##.##", "##.##", ".###."],
-    "1": [".##.", "###.", ".##.", ".##.", ".##.", ".##.", "####"],
-    "2": [".###.", "##.##", "...##", "..##.", ".##..", "##...", "#####"],
-    "3": [".###.", "##.##", "...##", "..##.", "...##", "##.##", ".###."],
-    "4": ["...##", "..###", ".####", "##.##", "#####", "...##", "...##"],
-    "5": ["#####", "##...", "####.", "...##", "...##", "##.##", ".###."],
-    "6": [".###.", "##...", "##...", "####.", "##.##", "##.##", ".###."],
-    "7": ["#####", "...##", "..##.", "..##.", ".##..", ".##..", ".##.."],
-    "8": [".###.", "##.##", "##.##", ".###.", "##.##", "##.##", ".###."],
-    "9": [".###.", "##.##", "##.##", ".####", "...##", "...##", ".###."],
-    "A": [".###.", "##.##", "##.##", "#####", "##.##", "##.##", "##.##"],
-    "P": ["####.", "##.##", "##.##", "####.", "##...", "##...", "##..."],
-    "M": ["#...#", "##.##", "#####", "#.#.#", "#...#", "#...#", "#...#"],
-    " ": [".....", ".....", ".....", ".....", ".....", ".....", "....."]
-  };
-  // police fine : traits de 1 point
-  var THIN = {
-    "0": [".###.", "#...#", "#...#", "#...#", "#...#", "#...#", ".###."],
-    "1": ["..#..", ".##..", "..#..", "..#..", "..#..", "..#..", ".###."],
-    "2": [".###.", "#...#", "....#", "...#.", "..#..", ".#...", "#####"],
-    "3": [".###.", "#...#", "....#", "..##.", "....#", "#...#", ".###."],
-    "4": ["...#.", "..##.", ".#.#.", "#..#.", "#####", "...#.", "...#."],
-    "5": ["#####", "#....", "####.", "....#", "....#", "#...#", ".###."],
-    "6": ["..##.", ".#...", "#....", "####.", "#...#", "#...#", ".###."],
-    "7": ["#####", "....#", "...#.", "..#..", ".#...", ".#...", ".#..."],
-    "8": [".###.", "#...#", "#...#", ".###.", "#...#", "#...#", ".###."],
-    "9": [".###.", "#...#", "#...#", ".####", "....#", "...#.", ".##.."],
-    "A": [".###.", "#...#", "#...#", "#####", "#...#", "#...#", "#...#"],
-    "P": ["####.", "#...#", "#...#", "####.", "#....", "#....", "#...."],
-    "M": ["#...#", "##.##", "#.#.#", "#.#.#", "#...#", "#...#", "#...#"],
-    " ": [".....", ".....", ".....", ".....", ".....", ".....", "....."]
-  };
-
-  // dessine un glyphe centré dans une case de 5 colonnes ; les colonnes vides de la case restent éteintes
-  function cell(ctx, ch, x, y, p, r, on, off, font) {
-    var g = (font || FONT)[ch] || FONT[" "], w = g[0].length, dx = (5 - w) / 2;
-    // glyphe plus étroit centré sur la grille : on le complète à 5 colonnes pour que ses points éteints remplissent la case
-    if (dx === Math.floor(dx) && dx > 0) {
-      var padS = new Array(dx + 1).join(".");
-      g = g.map(function (row) { return padS + row + padS; }); w = 5; dx = 0;
-    }
-    for (var row = 0; row < 7; row++) {
-      for (var col = 0; col < w; col++) {
-        var lit = g[row][col] === "#";
-        if (!lit && !off) continue;
-        ctx.beginPath(); ctx.fillStyle = lit ? on : off;
-        ctx.arc(x + (col + dx) * p, y + row * p, r, 0, Math.PI * 2); ctx.fill();
-      }
-    }
-  }
-
-  // géométrie relevée sur le mock à l'échelle 1 (case 1 à x0, première ligne à y0)
-  function drawTime(ctx, o) {
-    var k = o.k, P = 36.7 * k, R = 13.6 * k, x0 = o.x0, y0 = o.y0;
-    var xs = [0, 191.8, 448.8, 640.8];
-    var chars = o.hh + o.mm;
-    var F = o.font || FONT;
-    for (var i = 0; i < 4; i++) cell(ctx, chars[i], x0 + xs[i] * k, y0, P, R, o.on, o.off, F);
-    ctx.fillStyle = o.acc;
-    [60, 161].forEach(function (dy) { ctx.beginPath(); ctx.arc(x0 + 388.8 * k, y0 + dy * k, 14 * k, 0, Math.PI * 2); ctx.fill(); });
-    var sx = x0 + 837.3 * k, p = 10.35 * k, r = 3.6 * k;
-    if (o.showSec) {
-      cell(ctx, o.ss[0], sx, y0 + 79.5 * k, p, r, o.acc, o.offSec, F);
-      cell(ctx, o.ss[1], sx + 6 * p, y0 + 79.5 * k, p, r, o.acc, o.offSec, F);
-    }
-    if (o.ampm) {
-      // en haut : aligné sur le haut des chiffres ; en bas : aligné sur leur bas
-      var ay = y0 + (o.ampmPos === "bottom" ? 168.1 : -10) * k;
-      cell(ctx, o.ampm[0], sx, ay, p, r, o.on, o.offSec, F);
-      cell(ctx, o.ampm[1], sx + 6 * p, ay, p, r, o.on, o.offSec, F);
-    }
-  }
-
-  function settings() {
-    var showSec = v("showSeconds").checked;
-    return {
-      on: v("litColor").value,
-      off: v("showUnlit").checked ? v("unlitColor").value : null,
-      acc: v("accentColor").value,
-      label: v("labelColor").value,
-      showSec: showSec,
-      offSec: v("showUnlitSec").checked ? v("unlitColor").value : null
-    };
-  }
-
-  // format de date à repères
-  var MONTHS = ["JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE", "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"];
-  var DAYS = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"];
-  function pad(n) { return (n < 10 ? "0" : "") + n; }
-  function formatDate(d, fmt) {
-    return fmt.replace(/YYYY|YY|MMMM|MMM|MM|M|DD|D|WWWW|WWW/gi, function (t) {
-      switch (t.toUpperCase()) {
-        case "YYYY": return String(d.getFullYear());
-        case "YY": return String(d.getFullYear()).slice(-2);
-        case "MMMM": return MONTHS[d.getMonth()];
-        case "MMM": return MONTHS[d.getMonth()].slice(0, 3);
-        case "MM": return pad(d.getMonth() + 1);
-        case "M": return String(d.getMonth() + 1);
-        case "DD": return pad(d.getDate());
-        case "D": return String(d.getDate());
-        case "WWWW": return DAYS[d.getDay()];
-        case "WWW": return DAYS[d.getDay()].slice(0, 3);
-      }
-      return t;
-    }).toUpperCase();
-  }
-  var SAMPLE_DATE = new Date(2026, 8, 21);
+    clocks.push({ fit: fit, clock: clock });
+  });
 
   function render() {
-    var s = settings();
-    v("showUnlitSec").disabled = !s.showSec;
-    ["stageXL", "stageL", "stageS", "stageM"].forEach(function (id) {
-      v(id).style.setProperty("--c-accent", s.acc);
-      v(id).style.setProperty("--c-label", s.label);
-    });
-    var footer = v("footerText").value.trim().toUpperCase();
-    var tzMode = v("tzLabel").value, tzText = {
-      city: "PARIS", abbr: "CEST", offset: "UTC+2", cityOffset: "PARIS UTC+2",
-      custom: v("tzCustom").value.trim().toUpperCase(), none: ""
-    }[tzMode];
-    v("tzCustomWrap").hidden = tzMode !== "custom";
-    document.querySelectorAll(".tzl").forEach(function (el) { el.textContent = tzText; el.hidden = !tzText; });
-    document.querySelectorAll(".motto").forEach(function (el) { el.textContent = footer; el.hidden = !footer; });
-
-    var base = { on: s.on, off: s.off, acc: s.acc, showSec: s.showSec, offSec: s.offSec, hh: "10", mm: "08", ss: "36", ampm: null };
-
-    var h24 = parseInt(document.querySelector("input[name=sample12]:checked").value, 10);
-    var is12 = document.querySelector("input[name=fmt12]:checked").value === "12";
-    var hh = is12 ? ((h24 % 12) || 12) : h24;
-    var o = Object.assign({}, base, {
-      hh: is12 ? (hh < 10 ? " " + hh : String(hh)) : pad(hh),
-      ampm: is12 ? (h24 < 12 ? "AM" : "PM") : null,
-      ampmPos: document.querySelector("input[name=ampmPos]:checked").value,
-      font: document.querySelector("input[name=dotFont]:checked").value === "thin" ? THIN : FONT
-    });
-    function canvas(id, w, h) { var c = v(id).getContext("2d"); c.clearRect(0, 0, w, h); return c; }
-
-    // XL et L : bloc horaire à 1,14 × la taille du mock, centré
-    var k = 1.14;
-    drawTime(canvas("dotsXL", 2536, 696), Object.assign({}, o, { k: k, x0: 1268 - 465.4 * k, y0: 348 - 110 * k }));
-    drawTime(canvas("dotsL", 1688, 696), Object.assign({}, o, { k: k, x0: 844 - 465.4 * k, y0: 348 - 110 * k }));
-
-    // S : bloc horaire à 0,72, au-dessus de la ligne date / fuseau
-    k = 0.72;
-    drawTime(canvas("dotsS", 840, 344), Object.assign({}, o, { k: k, x0: 420 - 465.4 * k, y0: 138 - 110 * k }));
-
-    // M : HH:MM sur toute la largeur, secondes et AM/PM centrées en dessous
-    k = 0.93;
-    var cm = canvas("dotsM", 840, 696), P = 36.7 * k, R = 13.6 * k, p = 12.5, r = 4.4;
-    var row = [];
-    if (o.showSec) row.push({ t: o.ss, c: o.acc });
-    if (o.ampm) row.push({ t: o.ampm, c: o.on });
-    var digitsH = 6 * P + 2 * R, rowH = 6 * p + 2 * r, gap = 40;
-    var top = (696 - (digitsH + (row.length ? gap + rowH : 0))) / 2;
-    drawTime(cm, Object.assign({}, o, { k: k, x0: 420 - 393.8 * k, y0: top + R, showSec: false, ampm: null }));
-    var rowW = row.length * 10 * p + (row.length - 1) * 4 * p, rx = 420 - rowW / 2, ry = top + digitsH + gap + r;
-    row.forEach(function (it, i) {
-      var x = rx + i * 14 * p;
-      cell(cm, it.t[0], x, ry, p, r, it.c, o.offSec, o.font);
-      cell(cm, it.t[1], x + 6 * p, ry, p, r, it.c, o.offSec, o.font);
-    });
-
-    var fmt = v("dateFormat").value;
-    v("dateCustomWrap").hidden = fmt !== "custom";
-    if (fmt === "custom") fmt = v("dateCustom").value.trim() || "WWW, MMMM DD, YYYY";
-    var dateText = formatDate(SAMPLE_DATE, fmt);
-    document.querySelectorAll(".datel").forEach(function (el) { el.textContent = dateText; });
+    v("tzCustomWrap").hidden = v("tzLabel").value !== "custom";
+    v("dateCustomWrap").hidden = v("dateFormat").value !== "custom";
+    clocks.forEach(function (c) { c.fit(); });
   }
-
 
   ["showUnlit", "unlitColor", "litColor", "accentColor", "labelColor", "showSeconds", "showUnlitSec", "tzLabel", "tzCustom", "footerText", "dateFormat", "dateCustom", "fmt12h", "fmt24h", "sampleAm", "samplePm", "ampmTop", "ampmBottom", "fontBold", "fontThin"].forEach(function (id) {
     v(id).addEventListener("input", render);
@@ -500,6 +331,7 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
       document.querySelectorAll(".view").forEach(function (el) { el.hidden = el.getAttribute("data-view") !== size; });
       v("sizeTag").textContent = "Version 1.0 · taille réelle " + SIZES[size].tag;
       v("sizeNote").textContent = SIZES[size].note;
+      render();
     });
   });
 

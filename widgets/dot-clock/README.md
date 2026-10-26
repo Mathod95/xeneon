@@ -4,6 +4,8 @@
 
 Grande horloge dot-matrix : heures et minutes en gros points, deux-points et secondes en couleur d’accent, date et fuseau horaire.
 
+Le rendu est dans `scripts/clock.js` et `styles/clock.css`, partagés par le widget iCUE (`scripts/widget.js`), le module Dot Hub et la maquette de référence : la maquette montre exactement le widget.
+
 La référence visuelle est [`mockups/reference.html`](mockups/reference.html) (à ouvrir dans un navigateur) : maquette en taille réelle, réglages simulés et tableau des choix de design.
 
 ## Contenu et interactions

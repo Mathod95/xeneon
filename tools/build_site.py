@@ -127,7 +127,15 @@ def main():
     for ref in sorted(ROOT.glob("widgets/*/mockups/reference.html")):
         slug = ref.parent.parent.name
         (SITE / slug).mkdir()
-        shutil.copyfile(ref, SITE / slug / "index.html")
+        html = ref.read_text(encoding="utf-8")
+        if '<base href="../">' in html:
+            # la maquette charge le vrai widget : on publie ses fichiers à côté, sans la base
+            for sub in ("styles", "scripts", "resources"):
+                src = ref.parent.parent / sub
+                if src.is_dir():
+                    shutil.copytree(src, SITE / slug / sub)
+            html = html.replace('<base href="../">\n', "").replace('<base href="../">', "")
+        (SITE / slug / "index.html").write_text(html, encoding="utf-8")
         if slug in shots:
             (SITE / slug / "preview.jpg").write_bytes(shots[slug])
         count += 1
