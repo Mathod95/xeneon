@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Maquette de référence du Dot Home Assistant (artefact de revue de design). Ouvrir dans un navigateur. -->
+<style>body { margin: 0; }</style>
+</head>
+<body>
+<title>Dot Home Assistant</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap">
+<style>
+/* Layout : maquette de référence en taille réelle (choix S, M, L, XL) avec ses réglages, puis tableau des choix. Même univers que Dot Clock, un seul thème sombre. */
+:root {
+  --page: #111111;
+  --panel: #0a0a0a;
+  --line: #262626;
+  --text: #e6e6e6;
+  --muted: #8c8c8c;
+  --brand: #10b981;
+  --mono: "IBM Plex Mono", "Cascadia Mono", Consolas, monospace;
+  --sans: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { background: var(--page); color: var(--text); }
+body {
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.55;
+  padding-block: 40px 72px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 1480px; margin: 0 auto; display: grid; gap: 40px; }
+header { display: grid; gap: 10px; }
+.eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); display: flex; align-items: center; gap: 10px; }
+.eyebrow::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--brand); }
+h1 { font-family: var(--mono); font-weight: 500; font-size: clamp(28px, 4vw, 44px); line-height: 1.1; margin: 0; letter-spacing: -.01em; }
+.lede { color: var(--muted); max-width: 72ch; margin: 0; }
+
+figure { margin: 0; display: grid; gap: 12px; min-width: 0; }
+.tag { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.tag b { color: var(--text); font-weight: 500; font-size: 14px; }
+figcaption { color: var(--muted); font-size: 14px; }
+
+/* tableau */
+.diff-head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; }
+h2 { font-family: var(--mono); font-weight: 500; font-size: 13px; letter-spacing: .14em; text-transform: uppercase; margin: 0; }
+.hint { color: var(--muted); font-size: 14px; margin: 0; }
+.table-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; }
+table { width: 100%; border-collapse: collapse; min-width: 640px; }
+th, td { text-align: left; padding: 14px 16px; vertical-align: top; border-bottom: 1px solid var(--line); }
+tr:last-child td { border-bottom: 0; }
+thead th { font-family: var(--mono); font-weight: 500; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); background: var(--panel); }
+td:first-child { font-family: var(--mono); color: var(--muted); width: 3.5em; font-variant-numeric: tabular-nums; }
+td:nth-child(2) { font-weight: 500; width: 15em; }
+tr.todo td:nth-child(3) { color: var(--muted); }
+code { font-family: var(--mono); font-size: 13px; color: var(--text); }
+
+/* réglages simulés */
+.settings { display: flex; flex-wrap: wrap; gap: 12px 28px; align-items: center; padding: 14px 16px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); }
+.settings label { display: inline-flex; align-items: center; gap: 10px; font-family: var(--mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); cursor: pointer; }
+.settings input[type=color] { width: 36px; height: 28px; padding: 0; border: 1px solid var(--line); border-radius: 6px; background: none; cursor: pointer; }
+.settings input[type=checkbox], .settings input[type=radio] { width: 18px; height: 18px; accent-color: var(--brand); cursor: pointer; }
+.settings .grp { display: inline-flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.settings .grp > span { font-family: var(--mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--text); }
+.preset { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; padding: 6px 10px; border-radius: 6px; border: 1px solid var(--line); background: transparent; color: var(--text); cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+.preset i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+.preset:focus-visible, .tab:focus-visible, .ses:focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; }
+.sizebar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; }
+.sizebar > span { font-family: var(--mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-right: 6px; }
+.sizebar .preset[aria-pressed="true"] { background: var(--text); color: #0a0a0a; border-color: var(--text); }
+
+/* cadre à l'échelle de l'XL : la largeur suit la vraie largeur de l'emplacement */
+.frame { position: relative; max-width: 100%; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: #080808; }
+.frame.xl { width: 100%; aspect-ratio: 2536 / 696; }
+.frame.l { width: calc(1688 / 2536 * 100%); aspect-ratio: 1688 / 696; }
+.frame.m { width: calc(840 / 2536 * 100%); aspect-ratio: 840 / 696; }
+.frame.s { width: calc(840 / 2536 * 100%); aspect-ratio: 840 / 344; }
+@media (max-width: 700px) { .frame.l, .frame.m, .frame.s { width: 100%; } }
+
+/* ---------- le widget : scène en pixels réels de l'emplacement ---------- */
+.stage { position: absolute; left: 0; top: 0; transform-origin: 0 0; background: #080808; --accent: #10b981; --lit: #f2f0e9; --label: #b8b6b0; --unlit: #1c1c1c; font-family: "Fira Code", Consolas, monospace; font-variant-ligatures: none; }
+.stage.xl { width: 2536px; height: 696px; }
+.stage.l { width: 1688px; height: 696px; }
+.stage.m { width: 840px; height: 696px; }
+.stage.s { width: 840px; height: 344px; }
+.stage > * { position: absolute; }
+.stage p { margin: 0; }
+.stage canvas { display: block; }
+.stage button { font-family: inherit; -webkit-tap-highlight-color: transparent; }
+.w-lbl { white-space: nowrap; font-size: 18px; line-height: 24px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); }
+.w-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); }
+.ell { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-transform: uppercase; }
+
+/* libellé « ● DOT HOME ASSISTANT » : même place et même taille partout */
+.w-dot { left: 56px; top: 51px; }
+.w-name { left: 80px; top: 44px; }
+.w-state { right: 56px; top: 44px; }
+.stage.offline .w-dot { background: #ed403b; }
+
+/* pièces */
+.tabs { display: flex; gap: 40px; height: 24px; overflow: hidden; }
+.tab { margin: -18px 0; padding: 18px 0; border: 0; background: transparent; cursor: pointer; font-size: 18px; line-height: 24px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); opacity: .5; white-space: nowrap; }
+.tab[aria-selected="true"] { color: var(--lit); opacity: 1; }
+.tab:focus-visible, .tile:focus-visible, .pm button:focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; }
+
+/* tuiles */
+.grid { display: grid; gap: 20px; }
+.tile { position: relative; display: flex; flex-direction: column; justify-content: space-between; min-width: 0; min-height: 0; padding: 22px 24px; border: 2px solid #1d1d1d; border-radius: 18px; background: transparent; color: var(--lit); text-align: left; cursor: pointer; user-select: none; touch-action: none; }
+.tile.ro { cursor: default; }
+.tile:active:not(.ro), .tile.flash { border-color: var(--accent); background: #0d0d0d; }
+.tile .tx { min-width: 0; }
+.tile .nm { font-size: 22px; line-height: 28px; letter-spacing: .06em; color: var(--lit); }
+.tile .stt { margin-top: 2px; font-size: 20px; line-height: 26px; letter-spacing: .1em; text-transform: uppercase; color: var(--label); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tile.on .stt { color: var(--accent); }
+.tile .val { font-size: 48px; line-height: 56px; color: var(--lit); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.tile .val small { font-size: 22px; color: var(--label); margin-left: 6px; letter-spacing: .06em; }
+.tile .lvl { margin-top: 12px; height: 12px; }
+.pm { position: absolute; top: 18px; right: 18px; display: flex; gap: 12px; }
+.pm button { width: 64px; height: 64px; border-radius: 50%; border: 2px solid #2a2a2a; background: transparent; color: var(--lit); font-size: 30px; line-height: 1; cursor: pointer; padding: 0; }
+.pm button:active { border-color: var(--accent); }
+.w-empty { display: flex; flex-direction: column; justify-content: center; gap: 14px; }
+.w-empty .big { font-weight: 500; color: var(--lit); font-size: 64px; line-height: 80px; letter-spacing: .02em; text-transform: uppercase; }
+.w-empty .sm { color: var(--label); font-size: 24px; line-height: 32px; letter-spacing: .08em; text-transform: uppercase; }
+
+/* XL : 6 × 2 tuiles */
+.stage.xl .tabs { left: 56px; top: 100px; width: 2424px; }
+.stage.xl .grid { left: 56px; top: 148px; width: 2424px; height: 500px; grid-template-columns: repeat(6, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(0, 1fr)); }
+.stage.xl .w-empty { left: 56px; top: 100px; width: 2424px; height: 548px; }
+
+/* L : 4 × 2 tuiles */
+.stage.l .tabs { left: 56px; top: 100px; width: 1576px; }
+.stage.l .grid { left: 56px; top: 148px; width: 1576px; height: 500px; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(0, 1fr)); }
+.stage.l .w-empty { left: 56px; top: 100px; width: 1576px; height: 548px; }
+
+/* M : 2 × 3 tuiles en ligne (pictogramme à gauche) */
+.stage.m .tabs { left: 56px; top: 100px; width: 728px; gap: 32px; }
+.stage.m .grid { left: 56px; top: 148px; width: 728px; height: 500px; gap: 16px; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: repeat(3, minmax(0, 1fr)); }
+.stage.m .tile { flex-direction: row; align-items: center; justify-content: flex-start; gap: 18px; padding: 14px 18px; }
+.stage.m .tile .tx { flex: 1; }
+.stage.m .tile .nm { font-size: 20px; line-height: 26px; }
+.stage.m .tile .stt { font-size: 18px; line-height: 24px; }
+.stage.m .tile .val { font-size: 30px; line-height: 36px; }
+.stage.m .tile .val small { font-size: 16px; }
+.stage.m .tile .lvl { margin-top: 8px; height: 10px; }
+.stage.m .pm { position: static; flex-direction: column-reverse; gap: 8px; }
+.stage.m .pm button { width: 50px; height: 50px; font-size: 24px; }
+.stage.m .w-empty { left: 56px; top: 100px; width: 728px; height: 548px; }
+
+/* S : 4 tuiles favorites, sans libellés ni pièces */
+.stage.s .w-dot, .stage.s .w-name, .stage.s .w-state, .stage.s .tabs { display: none; }
+.stage.s .grid { left: 24px; top: 24px; width: 792px; height: 296px; gap: 14px; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-template-rows: 1fr; }
+.stage.s .tile { padding: 18px; }
+.stage.s .tile .nm { font-size: 18px; line-height: 24px; letter-spacing: .04em; }
+.stage.s .tile .stt { font-size: 16px; line-height: 22px; }
+.stage.s .tile .val { font-size: 34px; line-height: 42px; }
+.stage.s .tile .val small { font-size: 16px; }
+.stage.s .pm { top: 14px; right: 14px; gap: 8px; }
+.stage.s .pm button { width: 48px; height: 48px; font-size: 22px; }
+.stage.s .w-empty { left: 48px; top: 48px; width: 744px; height: 248px; }
+.stage.s .w-empty .big { font-size: 44px; line-height: 56px; }
+.stage.s .w-empty .sm { font-size: 20px; line-height: 28px; }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Module Dot Hub · CORSAIR XENEON EDGE</div>
+    <h1>Dot Home Assistant</h1>
+    <p class="lede">Première proposition, à valider point par point dans le tableau. Pilotage de la maison depuis l'Edge : une tuile par entité Home Assistant, rangées par pièce, dans la charte du Dot Clock. Les pièces, les appareils et les valeurs sont des exemples fictifs.</p>
+  </header>
+
+  <figure>
+    <div class="tag"><b>Maquette de référence</b><span id="sizeTag">Version 0.1 · taille réelle XL 2536 × 696 px</span></div>
+    <div class="sizebar" role="radiogroup" aria-label="Taille du widget">
+      <span>Widget size</span>
+      <button type="button" class="preset" data-size="s" aria-pressed="false">S · 840 × 344</button>
+      <button type="button" class="preset" data-size="m" aria-pressed="false">M · 840 × 696</button>
+      <button type="button" class="preset" data-size="l" aria-pressed="false">L · 1688 × 696</button>
+      <button type="button" class="preset" data-size="xl" aria-pressed="true">XL · 2536 × 696</button>
+    </div>
+    <div class="frame xl" id="frame">
+      <div class="stage xl" id="stage">
+        <span class="w-dot"></span>
+        <p class="w-lbl w-name" data-hub-home>DOT HOME ASSISTANT</p>
+        <p class="w-lbl w-state" id="state">HOME · 6 ON</p>
+        <div class="tabs" role="tablist" aria-label="Pièces" id="tabs"></div>
+        <div class="grid" id="grid"></div>
+        <div class="w-empty" id="empty" hidden><p class="big">Home Assistant offline</p><p class="sm">Check URL and token in Dot Companion</p></div>
+      </div>
+    </div>
+    <div class="settings" aria-label="Réglages simulés">
+      <div class="grp" role="radiogroup" aria-label="Exemple">
+        <span>Exemple</span>
+        <label><input type="radio" name="sample" value="online" checked> Online</label>
+        <label><input type="radio" name="sample" value="offline"> Offline</label>
+      </div>
+      <label><input type="checkbox" id="showTabs" checked> Show rooms</label>
+      <label><input type="checkbox" id="showUnlit" checked> Show unlit dots</label>
+      <label>Accent color <input type="color" id="accentColor" value="#10b981"></label>
+      <label>Lit dot color <input type="color" id="litColor" value="#f2f0e9"></label>
+      <label>Unlit dot color <input type="color" id="unlitColor" value="#1c1c1c"></label>
+      <label>Label color <input type="color" id="labelColor" value="#b8b6b0"></label>
+      <button type="button" class="preset" data-accent="#10b981"><i style="background:#10b981"></i>Émeraude</button>
+      <button type="button" class="preset" data-accent="#18bcf2"><i style="background:#18bcf2"></i>Bleu Home Assistant</button>
+      <button type="button" class="preset" data-accent="#ed403b"><i style="background:#ed403b"></i>Rouge A</button>
+    </div>
+    <figcaption><span id="sizeNote">Pièces en onglets, 12 tuiles.</span> La maquette marche : un toucher allume ou éteint, glisser sur la barre d'une lumière règle l'intensité, − et + changent la consigne du thermostat, la serrure demande de garder le doigt 1 s.</figcaption>
+  </figure>
+
+  <section style="display:grid;gap:14px">
+    <div class="diff-head">
+      <h2>Choix de design</h2>
+      <p class="hint">Tout est à valider. Complété au fur et à mesure.</p>
+    </div>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>#</th><th>Élément</th><th>Proposition</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>Module</td><td>Module de Dot Hub servi par Dot Companion (<code>/m/homeassistant/</code>). Pas de widget iCUE autonome.</td></tr>
+          <tr class="todo"><td>2</td><td>Données</td><td>Le compagnon ouvre l'API WebSocket de Home Assistant (<code>ws://&lt;adresse&gt;:8123/api/websocket</code>) avec un jeton d'accès longue durée, s'abonne aux changements d'état et appelle les services (<code>light.turn_on</code>, <code>climate.set_temperature</code>…). Adresse et jeton se règlent dans la page de réglages du compagnon et restent sur le PC ; le module ne voit jamais le jeton.</td></tr>
+          <tr class="todo"><td>3</td><td>Choix des tuiles</td><td>Dans les réglages du compagnon : les entités à afficher, dans l'ordre voulu. Les pièces viennent des zones de Home Assistant. L'onglet « Favorites » montre une sélection, c'est aussi la seule vue en S.</td></tr>
+          <tr class="todo"><td>4</td><td>Tuiles</td><td>Pictogramme 7 × 7 points (allumé en accent quand l'appareil marche), nom, état. Lumière : un toucher allume ou éteint, la barre de points règle l'intensité en glissant. Prise : marche / arrêt. Volet : ouvrir / fermer, position en %. Thermostat : température actuelle en grand, consigne avec − et + (consigne seule en S, faute de place). Capteur : valeur seule, sans action. Scène : un toucher la lance.</td></tr>
+          <tr class="todo"><td>5</td><td>Sécurité</td><td>Serrure : garder le doigt 1 s pour verrouiller ou déverrouiller, la barre se remplit pendant l'appui. Même règle à prévoir pour les alarmes et les portes de garage.</td></tr>
+          <tr class="todo"><td>6</td><td>Libellés</td><td>« DOT HOME ASSISTANT » en haut à gauche, à la même place et à la même taille que dans tous les modules (point à 56 / 51 px, texte à 80 / 44 px, Fira Code 18 px), toucher qui ramène à Dot Home. À droite : nombre d'appareils allumés (ou OFFLINE).</td></tr>
+          <tr class="todo"><td>7</td><td>Couleurs</td><td>Couleurs communes de la carte « Couleurs » de Dot Companion. Bleu Home Assistant <code>#18BCF2</code> proposé comme accent.</td></tr>
+          <tr class="todo"><td>8</td><td>Hors ligne</td><td>« HOME ASSISTANT OFFLINE » et « CHECK URL AND TOKEN IN DOT COMPANION », point du libellé en rouge. Jamais d'état inventé.</td></tr>
+          <tr class="todo"><td>9</td><td>Plus de tuiles que de places</td><td>Les premières de la pièce s'affichent ; à étudier : pages avec des points de page en bas à droite.</td></tr>
+          <tr class="todo"><td>10</td><td>Tailles</td><td><b>XL</b> : pièces en onglets, 6 × 2 tuiles.<br><b>L</b> : pièces en onglets, 4 × 2 tuiles.<br><b>M</b> : pièces en onglets, 2 × 3 tuiles en ligne (pictogramme à gauche).<br><b>S</b> : 4 tuiles favorites, sans libellés ni onglets.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  function v(id) { return document.getElementById(id); }
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; }
+  function val(name) { return document.querySelector("input[name=" + name + "]:checked").value; }
+  var SIZES = {
+    xl: { w: 2536, h: 696, slots: 12, pitch: 12, bar: 12, tag: "XL 2536 × 696 px", note: "Pièces en onglets, 12 tuiles." },
+    l: { w: 1688, h: 696, slots: 8, pitch: 11, bar: 12, tag: "L 1688 × 696 px", note: "Pièces en onglets, 8 tuiles." },
+    m: { w: 840, h: 696, slots: 6, pitch: 8, bar: 10, tag: "M 840 × 696 px", note: "Pièces en onglets, 6 tuiles en ligne." },
+    s: { w: 840, h: 344, slots: 4, pitch: 8, bar: 10, tag: "S 840 × 344 px", note: "4 tuiles favorites, sans libellés ni onglets." }
+  };
+  var size = "xl", room = "fav";
+  var frame = v("frame"), stage = v("stage");
+
+  function fit() { stage.style.transform = "scale(" + frame.clientWidth / SIZES[size].w + ")"; }
+  if (window.ResizeObserver) new ResizeObserver(fit).observe(frame); else window.addEventListener("resize", fit);
+
+  // pictogrammes 7 × 7 points
+  var PICS = {
+    light: ["..###..", ".#...#.", "#.....#", "#.....#", ".#...#.", "..###..", "..###.."],
+    plug: [".#...#.", ".#...#.", "#######", "#.....#", "#.....#", ".#####.", "...#..."],
+    climate: ["...#...", "..#.#..", "..#.#..", "..###..", ".#####.", ".#####.", "..###.."],
+    cover: ["#######", ".......", "#######", ".......", "#######", ".......", "#######"],
+    lock: ["..###..", ".#...#.", ".#...#.", "#######", "###.###", "###.###", "#######"],
+    sensor: [".......", "#......", "##...#.", "#.#.#.#", "#..#...", "#......", "#######"],
+    power: ["....##.", "...##..", "..##...", ".#####.", "...##..", "..##...", ".##...."],
+    scene: ["...#...", "...#...", "#######", ".#####.", "..###..", ".##.##.", "#.....#"]
+  };
+  var ROOMS = [
+    { id: "fav", name: "Favorites" }, { id: "living", name: "Living room" }, { id: "kitchen", name: "Kitchen" },
+    { id: "bedroom", name: "Bedroom" }, { id: "office", name: "Office" }, { id: "entrance", name: "Entrance" }
+  ];
+  var E = [
+    { id: 1, room: "living", fav: 1, type: "light", name: "Ceiling", on: true, lvl: 0.8 },
+    { id: 2, room: "living", fav: 1, type: "climate", name: "Thermostat", cur: 21.4, target: 22, mode: "Heat" },
+    { id: 3, room: "office", fav: 1, type: "light", name: "Desk light", on: true, lvl: 0.65 },
+    { id: 4, room: "entrance", fav: 1, type: "lock", name: "Front door", on: true },
+    { id: 5, room: "living", fav: 1, type: "cover", name: "Blinds", lvl: 0.6 },
+    { id: 6, room: "living", fav: 1, type: "scene", name: "Movie night" },
+    { id: 7, room: "kitchen", fav: 1, type: "power", name: "Power", value: 412, unit: "W" },
+    { id: 8, room: "kitchen", fav: 1, type: "plug", name: "Coffee machine", on: false },
+    { id: 9, room: "office", fav: 1, type: "sensor", name: "CO₂", value: 640, unit: "ppm" },
+    { id: 10, room: "bedroom", fav: 1, type: "light", name: "Bed lamp", on: false, lvl: 0.3 },
+    { id: 11, room: "living", fav: 1, type: "plug", name: "TV", on: true },
+    { id: 12, room: "bedroom", fav: 1, type: "sensor", name: "Temperature", value: 19.8, unit: "°" },
+    { id: 13, room: "living", type: "light", name: "Floor lamp", on: false, lvl: 0.5 },
+    { id: 14, room: "kitchen", type: "light", name: "Spots", on: true, lvl: 1 },
+    { id: 15, room: "bedroom", type: "cover", name: "Blinds", lvl: 0 },
+    { id: 16, room: "office", type: "plug", name: "Monitor", on: true },
+    { id: 17, room: "entrance", type: "light", name: "Porch", on: false, lvl: 1 }
+  ];
+
+  function colors() {
+    return { lit: v("litColor").value, unlit: v("showUnlit").checked ? v("unlitColor").value : null, accent: v("accentColor").value, label: v("labelColor").value };
+  }
+  function pic(key, on, pitch, c) {
+    var g = PICS[key], cv = document.createElement("canvas"), dpr = 2, w = 7 * pitch;
+    cv.width = w * dpr; cv.height = w * dpr; cv.style.width = w + "px"; cv.style.height = w + "px";
+    var ctx = cv.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    for (var y = 0; y < 7; y++) for (var x = 0; x < 7; x++) {
+      var col = g[y][x] === "#" ? (on ? c.accent : c.lit) : c.unlit;
+      if (!col) continue;
+      ctx.globalAlpha = g[y][x] === "#" && !on ? 0.55 : 1;
+      ctx.fillStyle = col; ctx.beginPath(); ctx.arc(x * pitch + pitch / 2, y * pitch + pitch / 2, pitch * 0.38, 0, Math.PI * 2); ctx.fill();
+    }
+    return cv;
+  }
+  function bar(w, frac, pitch, c, on) {
+    var cv = document.createElement("canvas"), dpr = 2, n = Math.max(1, Math.floor(w / pitch)), h = pitch;
+    cv.width = w * dpr; cv.height = h * dpr; cv.style.width = w + "px"; cv.style.height = h + "px";
+    var ctx = cv.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    var k = Math.round(n * frac);
+    for (var i = 0; i < n; i++) {
+      ctx.fillStyle = i < k ? (on ? c.accent : c.label) : (c.unlit || "#1c1c1c");
+      ctx.beginPath(); ctx.arc(i * pitch + pitch / 2, h / 2, pitch * 0.36, 0, Math.PI * 2); ctx.fill();
+    }
+    return cv;
+  }
+  function isOn(e) { return e.type === "light" || e.type === "plug" ? e.on : e.type === "cover" ? e.lvl > 0 : e.type === "climate" ? e.cur < e.target : e.type === "lock" ? e.on : false; }
+  function stateText(e) {
+    switch (e.type) {
+      case "light": return e.on ? "On · " + Math.round(e.lvl * 100) + "%" : "Off";
+      case "plug": return e.on ? "On" : "Off";
+      case "cover": return e.lvl === 0 ? "Closed" : e.lvl === 1 ? "Open" : "Open · " + Math.round(e.lvl * 100) + "%";
+      case "lock": return e.holding ? "Hold…" : e.on ? "Locked" : "Unlocked";
+      case "climate": return size === "m" || size === "s" ? "→ " + e.target.toFixed(1) + "°" : "Target " + e.target.toFixed(1) + "° · " + (e.cur < e.target ? "Heating" : "Idle");
+      case "scene": return "Tap to run";
+      default: return "";
+    }
+  }
+
+  function tileWidth(tile) { return tile.querySelector(".tx").clientWidth; }
+
+  function build(e, c, Z) {
+    var t = el("button", "tile" + (isOn(e) ? " on" : "") + (e.type === "sensor" || e.type === "power" ? " ro" : "")); t.type = "button";
+    t.setAttribute("aria-label", e.name);
+    t.appendChild(pic(e.type, isOn(e), Z.pitch, c));
+    var tx = el("div", "tx");
+    if (e.type === "climate") { var cv = el("p", "val", e.cur.toFixed(1) + "°"); tx.appendChild(cv); }
+    if (e.type === "sensor" || e.type === "power") { var sv = el("p", "val", String(e.value)); sv.appendChild(el("small", "", e.unit === "°" ? "°C" : e.unit)); tx.appendChild(sv); }
+    tx.appendChild(el("p", "nm ell", e.name));
+    var st = stateText(e); if (st) tx.appendChild(el("p", "stt", st));
+    var needsBar = e.type === "light" || e.type === "cover" || e.type === "lock";
+    if (needsBar) { var lv = el("div", "lvl"); tx.appendChild(lv); }
+    t.appendChild(tx);
+    if (e.type === "climate") {
+      var pm = el("div", "pm"), minus = el("button", "", "−"), plus = el("button", "", "+");
+      minus.type = plus.type = "button"; minus.setAttribute("aria-label", "Lower target"); plus.setAttribute("aria-label", "Raise target");
+      minus.addEventListener("click", function (ev) { ev.stopPropagation(); e.target = Math.max(7, e.target - 0.5); render(); });
+      plus.addEventListener("click", function (ev) { ev.stopPropagation(); e.target = Math.min(30, e.target + 0.5); render(); });
+      pm.appendChild(minus); pm.appendChild(plus);
+      if (size !== "s") t.appendChild(pm);
+    }
+    wire(t, e);
+    return t;
+  }
+  function drawBars(t, e, c, Z) {
+    var lv = t.querySelector(".lvl"); if (!lv) return;
+    lv.innerHTML = "";
+    var w = lv.clientWidth || tileWidth(t);
+    var frac = e.type === "lock" ? (e.hold || 0) : e.lvl;
+    lv.appendChild(bar(w, frac, Z.bar, c, e.type === "lock" ? true : e.type === "cover" ? true : e.on));
+    // serrure : la barre n'apparaît que pendant l'appui
+    if (e.type === "lock") lv.style.visibility = e.hold ? "visible" : "hidden";
+  }
+
+  function wire(t, e) {
+    if (e.type === "light") {
+      var lvEl = function () { return t.querySelector(".lvl"); };
+      var dragging = false, moved = false;
+      t.addEventListener("pointerdown", function (ev) {
+        var r = lvEl().getBoundingClientRect();
+        if (ev.clientY >= r.top - 20 && ev.clientY <= r.bottom + 20) { dragging = true; moved = false; t.setPointerCapture(ev.pointerId); setLvl(ev); }
+      });
+      t.addEventListener("pointermove", function (ev) { if (dragging) { moved = true; setLvl(ev); } });
+      t.addEventListener("pointerup", function () { if (dragging) { dragging = false; render(); } });
+      t.addEventListener("click", function () { if (moved) { moved = false; return; } if (!dragging) { e.on = !e.on; render(); } });
+      var setLvl = function (ev) {
+        var r = lvEl().getBoundingClientRect();
+        e.lvl = Math.max(0.05, Math.min(1, (ev.clientX - r.left) / r.width)); e.on = true; moved = true; render();
+      };
+    } else if (e.type === "plug") {
+      t.addEventListener("click", function () { e.on = !e.on; render(); });
+    } else if (e.type === "cover") {
+      t.addEventListener("click", function () { e.lvl = e.lvl > 0 ? 0 : 1; render(); });
+    } else if (e.type === "scene") {
+      t.addEventListener("click", function () { t.classList.add("flash"); setTimeout(function () { t.classList.remove("flash"); }, 600); });
+    } else if (e.type === "lock") {
+      var raf = null, t0 = 0;
+      var stop = function () { if (raf) cancelAnimationFrame(raf); raf = null; if (e.holding) { e.holding = false; e.hold = 0; render(); } };
+      t.addEventListener("pointerdown", function (ev) {
+        ev.preventDefault(); t0 = performance.now(); e.holding = true;
+        (function step(now) {
+          e.hold = Math.min(1, (now - t0) / 1000);
+          var bt = document.querySelector('.tile[data-id="' + e.id + '"]');
+          if (bt) { var s = bt.querySelector(".stt"); if (s) s.textContent = "Hold…"; drawBars(bt, e, colors(), SIZES[size]); }
+          if (e.hold >= 1) { raf = null; e.holding = false; e.hold = 0; e.on = !e.on; render(); return; }
+          raf = requestAnimationFrame(step);
+        })(t0);
+      });
+      ["pointerup", "pointerleave", "pointercancel"].forEach(function (n) { t.addEventListener(n, stop); });
+    }
+  }
+
+  function render() {
+    var c = colors(), Z = SIZES[size], offline = val("sample") === "offline";
+    stage.style.setProperty("--accent", c.accent);
+    stage.style.setProperty("--lit", c.lit);
+    stage.style.setProperty("--label", c.label);
+    stage.className = "stage " + size + (offline ? " offline" : "");
+    var onCount = E.filter(function (e) { return (e.type === "light" || e.type === "plug") && e.on; }).length;
+    v("state").textContent = offline ? "HOME · OFFLINE" : "HOME · " + onCount + " ON";
+    var showTabs = v("showTabs").checked && size !== "s";
+    if (!showTabs) room = "fav";
+    var tabs = v("tabs"); tabs.innerHTML = ""; tabs.hidden = offline || !showTabs;
+    ROOMS.forEach(function (r) {
+      var b = el("button", "tab", r.name); b.type = "button"; b.setAttribute("role", "tab");
+      b.setAttribute("aria-selected", r.id === room ? "true" : "false");
+      b.addEventListener("click", function () { room = r.id; render(); });
+      tabs.appendChild(b);
+    });
+    var grid = v("grid"); grid.innerHTML = ""; grid.hidden = offline;
+    v("empty").hidden = !offline;
+    if (offline) return;
+    grid.style.top = showTabs ? "" : (size === "s" ? "24px" : "100px");
+    grid.style.height = showTabs ? "" : (size === "s" ? "296px" : "548px");
+    var list = E.filter(function (e) { return room === "fav" ? e.fav : e.room === room; }).slice(0, Z.slots);
+    list.forEach(function (e) { var t = build(e, c, Z); t.setAttribute("data-id", e.id); grid.appendChild(t); });
+    // les barres ont besoin de la largeur réelle des tuiles
+    Array.prototype.forEach.call(grid.children, function (t, i) { drawBars(t, list[i], c, Z); });
+  }
+
+  document.querySelectorAll(".settings input").forEach(function (i) { i.addEventListener("input", render); i.addEventListener("change", render); });
+  document.querySelectorAll(".preset[data-accent]").forEach(function (b) {
+    b.addEventListener("click", function () { v("accentColor").value = b.getAttribute("data-accent"); render(); });
+  });
+  document.querySelectorAll(".sizebar .preset").forEach(function (b) {
+    b.addEventListener("click", function () {
+      size = b.getAttribute("data-size");
+      document.querySelectorAll(".sizebar .preset").forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+      frame.className = "frame " + size;
+      v("sizeTag").textContent = "Version 0.1 · taille réelle " + SIZES[size].tag;
+      v("sizeNote").textContent = SIZES[size].note;
+      render(); fit();
+    });
+  });
+
+  render(); fit();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(render);
+})();
+</script>
+</body>
+</html>
