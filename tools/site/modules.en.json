@@ -23,5 +23,11 @@
   "dot-ia": "Claude usage limits of two accounts side by side: 5-hour session and weekly limit, with reset time.",
   "dot-home": "Page 1 home: one tile per Dot widget, a tap takes you to the right iCUE page.",
   "dot-github": "Contribution graph in dots, current streak, pull requests, notifications and GitHub Actions runs.",
-  "dot-calculator": "Calculator and converter: units, currencies, bases and time zones, result in large dots."
+  "dot-calculator": "Calculator and converter: units, currencies, bases and time zones, result in large dots.",
+  "dot-argocd": "Argo CD applications: health and sync state of each app, drift flagged, sync started with a tap.",
+  "dot-seerr": "Seerr movie and TV requests: pending, approved and available, with approve or decline in one tap.",
+  "dot-proxmox": "Proxmox VE nodes and guests: CPU, memory and storage, VMs and containers running or stopped, start and stop with a tap.",
+  "dot-kubernetes": "Kubernetes cluster: ready nodes, pods by phase, restarts and incomplete deployments, per namespace.",
+  "dot-qbittorrent": "qBittorrent downloads: live upload and download speed, active torrents with progress, pause, resume and alternative speed limit.",
+  "dot-portainer": "Docker containers through Portainer: state, CPU and memory, stacks, start, stop and restart with a tap."
 }

@@ -93,7 +93,8 @@ Le compagnon sert l’interface et la configuration de Dot Hub (voir « Architec
 | network | Dot Network | ping ICMP, débit, speedtest |
 | slack | Dot Slack | API Web de Slack (jeton d’utilisateur `xoxp-…`) et Socket Mode (`xapp-…`) : non lus, mentions, statut, pause des notifications |
 | gmail | Dot Gmail | IMAP Gmail (mot de passe d’application) : non lus par catégorie, derniers messages, lu / archiver |
-| homelab | Dot Homelab, Dot Plex | Radarr, Sonarr, Seerr, Plex… (un sous-module par application) |
+| homelab | Dot Homelab, Dot Plex, Dot Seerr, Dot qBittorrent, Dot Proxmox, Dot Portainer, Dot ArgoCD | Radarr, Sonarr, Seerr, Plex, qBittorrent, Proxmox VE, Portainer, Argo CD… (un sous-module par application, jetons et clés d’API chiffrés sur le PC) |
+| kubernetes | Dot Kubernetes | kubeconfig du PC, API du cluster (nœuds, pods, déploiements) |
 | ics | Dot Calendar (repli) | récupérer les ICS si le serveur bloque l’accès direct |
 | ia | Dot IA | limites d’utilisation Claude de plusieurs comptes (session 5 h, hebdo) ; source à vérifier (pas d’API publique documentée) |
 | github | Dot GitHub | contributions (GraphQL), pull requests, notifications et runs Actions (REST) ; token classique chiffré ; ouvre les pages GitHub dans le navigateur du PC |
