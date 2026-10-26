@@ -8,7 +8,9 @@
 //!   compte connecté : `config/loginusers.vdf` ;
 //! - jaquettes : cache de Steam (`appcache/librarycache`), sinon les images publiques du magasin,
 //!   téléchargées une fois avec `curl` et gardées dans `%APPDATA%\Xeneon\cache\steam` ;
-//! - amis : API Web Steam (clé d'API de l'instance), en arrière-plan, toutes les 60 s au plus.
+//! - amis : API Web Steam (clé d'API de l'instance), en arrière-plan, toutes les 60 s au plus ;
+//! - profil : pseudo (`loginusers.vdf`), avatar (`config/avatarcache`), statut (API, sinon `localconfig.vdf`) ;
+//!   changer de statut et ouvrir une page de Steam : `steam://friends/status/<statut>`, `steam://open/<page>`.
 //!
 //! Pour les essais hors Windows : `DOT_STEAM_PATH` (dossier de Steam) et `DOT_STEAM_REGISTRY`
 //! (fichier `registry.vdf`, comme celui de Steam sous Linux).
@@ -215,7 +217,18 @@ struct App {
     flags: u64,
     to_download: u64,
     downloaded: u64,
+    to_stage: u64,
+    staged: u64,
+    lib: PathBuf,
 }
+
+// StateFlags (EAppState) de Steam
+const UPDATE_REQUIRED: u64 = 2;
+const UPDATE_RUNNING: u64 = 256;
+const UPDATE_PAUSED: u64 = 512;
+const UPDATE_STARTED: u64 = 1024;
+const DOWNLOADING: u64 = 1_048_576;
+const STAGING: u64 = 2_097_152;
 
 /// Outils et composants que Steam installe comme des « jeux » : jamais montrés.
 fn is_tool(name: &str, appid: u64) -> bool {
@@ -273,23 +286,70 @@ fn installed(root: &Path) -> Vec<App> {
                 flags: n(a, "StateFlags"),
                 to_download: n(a, "BytesToDownload"),
                 downloaded: n(a, "BytesDownloaded"),
+                to_stage: n(a, "BytesToStage"),
+                staged: n(a, "BytesStaged"),
+                lib: lib.clone(),
             });
         }
     }
     apps
 }
 
-/// Compte connecté : SteamID64 et dossier `userdata`.
-fn user(root: &Path) -> Option<(u64, PathBuf)> {
+/// Compte connecté : SteamID64, dossier `userdata` et pseudo.
+fn user(root: &Path) -> Option<(u64, PathBuf, String)> {
     let v = read_vdf(&root.join("config/loginusers.vdf"))?;
     let users = get(&v, "users")?.as_object()?;
-    let pick = users
-        .iter()
-        .max_by_key(|(_, u)| (s(u, "MostRecent") == "1", n(u, "Timestamp")))
-        .map(|(id, _)| id.clone())?;
+    let (pick, u) = users.iter().max_by_key(|(_, u)| (s(u, "MostRecent") == "1", n(u, "Timestamp")))?;
     let id64: u64 = pick.parse().ok()?;
     let account = id64.checked_sub(76_561_197_960_265_728)?;
-    Some((id64, root.join("userdata").join(account.to_string())))
+    Some((id64, root.join("userdata").join(account.to_string()), s(u, "PersonaName").to_string()))
+}
+
+/// Taille des fichiers d'un dossier (téléchargement en cours : `steamapps/downloading/<id>`).
+fn dir_size(p: &Path, depth: u32) -> u64 {
+    let Ok(rd) = fs::read_dir(p) else { return 0 };
+    rd.flatten()
+        .map(|e| match e.metadata() {
+            Ok(m) if m.is_dir() && depth < 12 => dir_size(&e.path(), depth + 1),
+            Ok(m) => m.len(),
+            _ => 0,
+        })
+        .sum()
+}
+
+/// Statut voulu au dernier changement fait depuis Dot Steam, et quand.
+static WANTED: Mutex<Option<(String, u64)>> = Mutex::new(None);
+
+/// Change le statut Steam (`steam://friends/status/<statut>`) ; renvoie l'adresse à ouvrir.
+pub fn status_url(status: &str) -> Option<String> {
+    if !["online", "away", "invisible", "offline"].contains(&status) {
+        return None;
+    }
+    *WANTED.lock().unwrap_or_else(|e| e.into_inner()) = Some((status.to_string(), now_ms()));
+    Some(format!("steam://friends/status/{status}"))
+}
+
+/// Pages de Steam que Dot Steam peut ouvrir (`steam://open/<page>`).
+pub fn open_url(page: &str) -> Option<String> {
+    ["downloads", "library", "friends"].contains(&page).then(|| format!("steam://open/{page}"))
+}
+
+/// Avatar du compte connecté (cache de Steam : `config/avatarcache/<SteamID64>.png`).
+pub fn avatar() -> Option<(PathBuf, &'static str)> {
+    let root = steam_root(&registry())?;
+    let (id64, _, _) = user(&root)?;
+    let p = root.join("config/avatarcache").join(format!("{id64}.png"));
+    p.is_file().then_some((p, "image/png"))
+}
+
+fn persona(code: u64) -> &'static str {
+    match code {
+        0 => "offline",
+        1 | 2 | 5 | 6 => "online",
+        3 | 4 => "away",
+        7 => "invisible",
+        _ => "online",
+    }
 }
 
 /// Dernier lancement et temps de jeu (minutes) de chaque jeu.
@@ -349,7 +409,7 @@ pub fn state(settings: &Map<String, Value>, api_key: Option<String>) -> Value {
     };
     let apps = installed(&root);
     let usr = user(&root);
-    let times = usr.as_ref().map(|(_, d)| played(d)).unwrap_or_default();
+    let times = usr.as_ref().map(|(_, d, _)| played(d)).unwrap_or_default();
     let running = reg.pid != 0;
     let now = now_ms();
 
@@ -398,41 +458,91 @@ pub fn state(settings: &Map<String, Value>, api_key: Option<String>) -> Value {
         .and_then(|g| g["appid"].as_u64())
         .unwrap_or(0);
 
-    // téléchargements : mises à jour et installations en cours ou en attente
-    let mut downs: Vec<(bool, Value)> = Vec::new();
-    for a in apps.iter().filter(|a| a.to_download > 0 && a.downloaded < a.to_download && !is_tool(&a.name, a.appid)) {
-        let active = a.flags & 1024 != 0; // UpdateRunning
+    // téléchargements : mises à jour et installations en cours, en pause ou en attente.
+    // Steam n'écrit BytesDownloaded dans le manifeste que de temps en temps : pendant un téléchargement,
+    // la taille de steamapps/downloading/<id> donne une progression et un débit à jour.
+    let mut downs: Vec<(u8, Value)> = Vec::new();
+    for a in apps.iter().filter(|a| !is_tool(&a.name, a.appid)) {
+        let busy = a.flags & (UPDATE_RUNNING | DOWNLOADING | STAGING) != 0;
+        let paused = a.flags & UPDATE_PAUSED != 0;
+        let pending = a.to_download > 0 && a.downloaded < a.to_download;
+        if !(busy || paused || pending || (a.flags & UPDATE_STARTED != 0 && a.flags & UPDATE_REQUIRED != 0)) {
+            continue;
+        }
+        let status = if paused { "paused" } else if busy { "downloading" } else { "queued" };
+        let mut disk = if busy { dir_size(&a.lib.join("steamapps/downloading").join(a.appid.to_string()), 0) } else { 0 };
+        let mut progress: f64 = 0.0;
+        if a.to_download > 0 {
+            progress = progress.max(a.downloaded as f64 / a.to_download as f64);
+        }
+        // fichiers préalloués par Steam (dossier déjà plein alors que le manifeste dit moins de 90 %) : ignorés
+        if a.to_stage > 0 && disk as f64 >= a.to_stage as f64 * 0.98 && progress < 0.9 {
+            disk = 0;
+        }
+        if a.to_stage > 0 {
+            progress = progress.max(a.staged as f64 / a.to_stage as f64).max(disk as f64 / a.to_stage as f64);
+        }
+        let progress = progress.min(1.0);
+        let total = a.to_download.max(a.to_stage);
+        // débit : octets reçus depuis la mesure précédente (manifeste ou dossier, le plus à jour)
+        let bytes = a.downloaded.max(disk);
         let (mut speed, mut eta) = (Value::Null, Value::Null);
-        if let Some((b0, t0, sp0)) = track.bytes.get(&a.appid).copied() {
-            let dt = (now.saturating_sub(t0)) as f64 / 1000.0;
-            if dt >= 1.0 && a.downloaded >= b0 {
-                let inst = (a.downloaded - b0) as f64 / dt;
-                let sp = if sp0 > 0.0 { sp0 * 0.6 + inst * 0.4 } else { inst };
-                track.bytes.insert(a.appid, (a.downloaded, now, sp));
+        if status == "downloading" {
+            if let Some((b0, t0, sp0)) = track.bytes.get(&a.appid).copied() {
+                let dt = (now.saturating_sub(t0)) as f64 / 1000.0;
+                let mut sp = sp0;
+                if dt >= 1.0 && bytes >= b0 {
+                    let inst = (bytes - b0) as f64 / dt;
+                    sp = if sp0 > 0.0 { sp0 * 0.6 + inst * 0.4 } else { inst };
+                    track.bytes.insert(a.appid, (bytes, now, sp));
+                }
                 if sp > 0.0 {
                     speed = json!(sp.round() as u64);
-                    eta = json!((((a.to_download - a.downloaded) as f64) / sp).round() as u64);
+                    if total > 0 {
+                        eta = json!(((total as f64 * (1.0 - progress)) / sp).round() as u64);
+                    }
                 }
-            } else if sp0 > 0.0 {
-                speed = json!(sp0.round() as u64);
-                eta = json!((((a.to_download - a.downloaded) as f64) / sp0).round() as u64);
+            } else {
+                track.bytes.insert(a.appid, (bytes, now, 0.0));
             }
         } else {
-            track.bytes.insert(a.appid, (a.downloaded, now, 0.0));
+            track.bytes.remove(&a.appid);
         }
-        let progress = a.downloaded as f64 / a.to_download as f64;
-        downs.push((active, json!({ "appid": a.appid, "name": a.name, "progress": progress, "total": a.to_download, "speed": speed, "eta": eta, "active": active })));
+        let rank = match status { "downloading" => 0, "paused" => 1, _ => 2 };
+        downs.push((rank, json!({ "appid": a.appid, "name": a.name, "progress": progress, "total": total, "speed": speed, "eta": eta, "status": status })));
     }
-    downs.sort_by_key(|(active, _)| !*active);
+    downs.sort_by_key(|(r, _)| *r);
     let downloads: Vec<Value> = downs.into_iter().map(|(_, v)| v).collect();
     drop(guard);
 
     // amis
     let show = settings.get("showFriends").map(|v| !matches!(v, Value::Bool(false)) && v.as_str() != Some("false")).unwrap_or(true);
-    let friends = match (api_key, &usr) {
-        (Some(k), Some((id64, _))) if show && !k.is_empty() => friends(&k, *id64),
+    let key = api_key.filter(|k| !k.is_empty());
+    let mut friends = match (&key, &usr) {
+        (Some(k), Some((id64, _, _))) => friends(k, *id64),
         _ => json!({ "enabled": false, "list": [] }),
     };
+    // profil : pseudo et avatar locaux ; statut = dernier changement fait ici, sinon l'API, sinon localconfig
+    let profile = usr.as_ref().map(|(id64, dir, name)| {
+        let api = friends.get("me").and_then(|m| m["status"].as_u64());
+        let local = read_vdf(&dir.join("config/localconfig.vdf"))
+            .and_then(|v| path(&v, &["UserLocalConfigStore", "friends"]).map(|f| n(f, "PersonaStateDesired")))
+            .filter(|c| *c > 0);
+        let wanted = WANTED.lock().unwrap_or_else(|e| e.into_inner()).clone();
+        let status = match (wanted, api) {
+            (Some((w, t)), a) if now.saturating_sub(t) < 120_000 || (w == "invisible" && a == Some(0)) => Some(w),
+            (_, Some(a)) => Some(persona(a).to_string()),
+            _ => local.map(|c| persona(c).to_string()),
+        };
+        let avatar = steam_root(&reg).map(|r| r.join("config/avatarcache").join(format!("{id64}.png")).is_file()).unwrap_or(false);
+        json!({ "name": name, "avatar": avatar, "status": if running { status } else { Some("offline".to_string()) } })
+    });
+    if let Some(m) = friends.as_object_mut() {
+        m.remove("me");
+    }
+    if !show {
+        friends = json!({ "enabled": false, "hidden": true, "list": [] });
+    }
 
     json!({
         "steam": { "found": true, "running": running },
@@ -441,6 +551,7 @@ pub fn state(settings: &Map<String, Value>, api_key: Option<String>) -> Value {
         "games": games,
         "downloads": downloads,
         "friends": friends,
+        "profile": profile,
     })
 }
 
@@ -496,6 +607,9 @@ fn fetch_friends(key: &str, id64: u64) -> Value {
         .map(|a| a.iter().filter_map(|f| f["steamid"].as_str().map(str::to_string)).collect())
         .unwrap_or_default();
     let mut people = Vec::new();
+    let mut me = Value::Null;
+    let mut ids = ids;
+    ids.insert(0, id64.to_string());
     for chunk in ids.chunks(100) {
         if let Some(v) = curl(&format!("{base}/ISteamUser/GetPlayerSummaries/v2/?key={key}&steamids={}", chunk.join(",")), None)
             .and_then(|b| serde_json::from_slice::<Value>(&b).ok())
@@ -503,6 +617,10 @@ fn fetch_friends(key: &str, id64: u64) -> Value {
             if let Some(ps) = v["response"]["players"].as_array() {
                 for p in ps {
                     let state = p["personastate"].as_u64().unwrap_or(0);
+                    if p["steamid"].as_str() == Some(&id64.to_string()) {
+                        me = json!({ "status": state });
+                        continue;
+                    }
                     people.push(json!({
                         "name": p["personaname"].as_str().unwrap_or(""),
                         "game": p["gameextrainfo"].as_str(),
@@ -518,7 +636,7 @@ fn fetch_friends(key: &str, id64: u64) -> Value {
         let kb = (b["game"].is_null(), !b["online"].as_bool().unwrap_or(false), b["name"].as_str().unwrap_or("").to_lowercase());
         ka.cmp(&kb)
     });
-    json!({ "enabled": true, "error": null, "list": people })
+    json!({ "enabled": true, "error": null, "list": people, "me": me })
 }
 
 fn friends(key: &str, id64: u64) -> Value {
@@ -587,10 +705,14 @@ pub fn art(appid: u64, kind: &str, cache_dir: &Path) -> Option<(PathBuf, &'stati
         }
         g.push(tag.clone());
     }
-    let url = format!("https://shared.cloudflare.steamstatic.com/store_item_assets/steam/apps/{appid}/{}", names[0]);
+    let urls = [
+        format!("https://shared.cloudflare.steamstatic.com/store_item_assets/steam/apps/{appid}/{}", names[0]),
+        format!("https://cdn.akamai.steamstatic.com/steam/apps/{appid}/{}", names[1]),
+    ];
     let tmp = cache_dir.join(format!("{tag}.part"));
     std::thread::spawn(move || {
-        if curl(&url, Some(&tmp)).is_some() && fs::metadata(&tmp).map(|m| m.len() > 0).unwrap_or(false) {
+        let ok = urls.iter().any(|u| curl(u, Some(&tmp)).is_some() && fs::metadata(&tmp).map(|m| m.len() > 0).unwrap_or(false));
+        if ok {
             let _ = fs::rename(&tmp, &file);
         } else {
             let _ = fs::remove_file(&tmp);
@@ -613,6 +735,15 @@ mod tests {
         assert_eq!(s(get(&v, "appstate").unwrap(), "APPID"), "620");
         assert_eq!(s(get(&v, "AppState").unwrap(), "name"), "Portal \"2\"");
         assert_eq!(s(path(&v, &["AppState", "UserConfig"]).unwrap(), "language"), "french");
+    }
+
+    #[test]
+    fn statuts() {
+        assert_eq!(status_url("invisible").as_deref(), Some("steam://friends/status/invisible"));
+        assert_eq!(status_url("x\"; calc"), None);
+        assert_eq!(open_url("downloads").as_deref(), Some("steam://open/downloads"));
+        assert_eq!(open_url("../x"), None);
+        assert_eq!(persona(3), "away");
     }
 
     #[test]

@@ -40,7 +40,14 @@
 .dot-steam .game .art { position: relative; border-radius: 6px; outline: 3px solid transparent; outline-offset: 6px; }
 .dot-steam .game.go .art, .dot-steam .game.now .art { outline-color: var(--accent); }
 .dot-steam .w-hero .go-k.now::before { content: "● "; }
-.dot-steam .game .t { margin-top: 12px; font-size: 20px; line-height: 26px; letter-spacing: .04em; color: var(--lit); }
+.dot-steam .game .t { margin-top: 12px; font-size: 20px; line-height: 26px; letter-spacing: .04em; color: var(--lit); width: 100%; overflow: hidden; white-space: nowrap; text-transform: uppercase; }
+.dot-steam .game .t span { display: inline-block; }
+.dot-steam .game .t.off { display: none; }
+/* nom trop long : coupé (« Truncate », défile au survol ou à l'appui) ou qui défile en continu (« Scroll ») */
+.dot-steam .game .t.long:not(.auto) span { max-width: 100%; overflow: hidden; text-overflow: ellipsis; vertical-align: top; }
+.dot-steam .game:hover .t.long span, .dot-steam .game.press .t.long span, .dot-steam .game .t.auto span { max-width: none; overflow: visible; animation: dot-steam-marquee var(--dur, 6s) ease-in-out infinite alternate; }
+@keyframes dot-steam-marquee { 0%, 15% { transform: translateX(0); } 85%, 100% { transform: translateX(var(--shift, 0)); } }
+@media (prefers-reduced-motion: reduce) { .dot-steam .game .t span { animation: none !important; } }
 .dot-steam .game .hb { margin-top: 8px; height: 10px; }
 .dot-steam .game:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 
@@ -60,6 +67,17 @@
 .dot-steam .dl.q { margin-top: 18px; }
 .dot-steam .dl.q .n { color: var(--label); }
 .dot-steam .panel .bar { margin-top: 12px; }
+/* panneau « Downloads » : un toucher ouvre la page des téléchargements de Steam */
+.dot-steam .w-dl.downloads { cursor: pointer; }
+.dot-steam .w-dl.downloads:active .w-lbl { color: var(--accent); }
+/* panneau « Profile » : avatar, pseudo, statut */
+.dot-steam .me { display: flex; align-items: center; gap: 24px; }
+.dot-steam .me canvas { flex: none; }
+.dot-steam .who { flex: 1; min-width: 0; }
+.dot-steam .pn { font-weight: 500; font-size: 30px; line-height: 38px; letter-spacing: .02em; color: var(--lit); }
+.dot-steam .sts { display: flex; gap: 10px; margin-top: 12px; }
+.dot-steam .st { flex: 1; height: 44px; padding: 0 12px; border: 2px solid var(--unlit); border-radius: 24px; background: transparent; color: var(--label); font-size: 18px; letter-spacing: .14em; text-transform: uppercase; cursor: pointer; }
+.dot-steam .st[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); }
 .dot-steam .fr { display: flex; align-items: center; gap: 14px; font-size: 22px; line-height: 34px; letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; }
 .dot-steam .fr i { width: 10px; height: 10px; border-radius: 50%; background: var(--label); opacity: .5; flex: none; }
 .dot-steam .fr.in i { background: var(--accent); opacity: 1; }

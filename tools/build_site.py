@@ -136,6 +136,11 @@ def main():
                 src = ref.parent.parent / sub
                 if src.is_dir():
                     shutil.copytree(src, SITE / slug / sub)
+            # images du dossier mockups citées par la maquette (ex. capture réelle)
+            for img in sorted(set(re.findall(r'(?:href|src)="mockups/([\w.-]+)"', html))):
+                if (ref.parent / img).is_file():
+                    (SITE / slug / "mockups").mkdir(exist_ok=True)
+                    shutil.copy(ref.parent / img, SITE / slug / "mockups" / img)
             html = html.replace('<base href="../">\n', "").replace('<base href="../">', "")
         # la maquette charge les fichiers d'un autre widget (ex. Dot Hub affiche le vrai Dot Clock)
         for dep in sorted(set(re.findall(r'(?:href|src)="\.\./\.\./(dot-[\w-]+)/', html))):

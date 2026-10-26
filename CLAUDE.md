@@ -100,7 +100,7 @@ Le compagnon sert l’interface et la configuration de Dot Hub (voir « Architec
 | ia | Dot IA | limites d’utilisation Claude de plusieurs comptes (session 5 h, hebdo) ; source à vérifier (pas d’API publique documentée) |
 | github | Dot GitHub | contributions (GraphQL), pull requests, notifications et runs Actions (REST) ; token classique chiffré ; ouvre les pages GitHub dans le navigateur du PC |
 | notes | Dot Notes | notes et listes enregistrées dans un fichier (`%APPDATA%\Xeneon\notes.json`), partagées entre instances, modifiables depuis le PC |
-| steam | Dot Steam | fichiers locaux de Steam (bibliothèques, `appmanifest`, `localconfig.vdf`, jaquettes en cache) ; lancement `steam://rungameid/<id>` ; amis via l’API Web Steam (clé + SteamID64) |
+| steam | Dot Steam | fichiers locaux de Steam (bibliothèques, `appmanifest`, `localconfig.vdf`, jaquettes en cache) ; lancement `steam://rungameid/<id>`, pages `steam://open/<page>`, statut `steam://friends/status/<statut>` ; amis et statut via l’API Web Steam (clé + SteamID64) ; avatar `config/avatarcache` |
 | homeassistant | Dot Home Assistant | API WebSocket de Home Assistant (jeton longue durée) : états et appels de services |
 
 Sans compagnon : rien. Tous les modules de Dot Hub passent par le compagnon, même ceux qui n’ont besoin d’aucun accès Windows (Weather, Calculator, Notes…), puisqu’il sert leur interface. Les données iCUE (capteurs, FPS, Media) sont relayées par la coquille de Dot Hub.
@@ -131,7 +131,7 @@ Compilation Windows : `cargo build --release` sous Windows, ou depuis Linux/WSL 
 - **Dot System Monitor** v1.1.0 : fonctionnel (FPS + 4 capteurs + historique, dot-matrix). Mise en page faite pour L/XL ; **S et M à refaire**. À migrer sur `sizes.js` du template.
 - **Dot Clock** v0.1.2 : codé (S, M, L, XL). Référence : `widgets/dot-clock/mockups/reference.html`.
 - **Dot Hub** + **Dot Companion** : v0.4 : coquille, accueil, réglages sur le PC (bouton SETTINGS), pont clavier, modules Clock et Steam. Secrets des modules chiffrés avec DPAPI (`SECRET_KEYS` dans `main.rs`), jamais renvoyés en clair. L’exe Windows est compilé par GitHub Actions.
-- **Dot Steam** v0.1.0 : codé en XL (`companion/src/steam.rs` + `widgets/dot-steam`). Essais hors Windows : `DOT_STEAM_PATH` et `DOT_STEAM_REGISTRY` (faux dossier Steam).
+- **Dot Steam** v0.2.0 (à essayer sur le PC) : codé en XL ; v0.2 = noms longs, 4 rendus de jaquettes, téléchargements corrigés (`StateFlags`, dossier `downloading`), panneau Profile (`companion/src/steam.rs` + `widgets/dot-steam`). Essais hors Windows : `DOT_STEAM_PATH` et `DOT_STEAM_REGISTRY` (faux dossier Steam).
 - **Dot Notes, Dot Weather, Dot IA, Dot Home, Dot GitHub, Dot Calculator, Dot Spotify, Dot Plex, Dot Bambu Lab, Dot Home Assistant, Dot Discord, Dot Audio, Dot Apps, Dot Gmail, Dot Slack** : en conception, maquette de référence dans `widgets/<slug>/mockups/reference.html` (choix de design à valider ; Dot Spotify mis de côté).
 - **Dot Calendar** : spécifié avec mocks.
 - Autres : fiche seule (idée).

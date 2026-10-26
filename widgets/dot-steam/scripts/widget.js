@@ -2,7 +2,8 @@
  * Dot Steam : page du module, servie par le compagnon dans Dot Hub.
  * Lit les réglages (variables globales posées par hub/module.js), demande l'état de Steam au compagnon
  * (GET /api/steam/state) toutes les 3 s et confie le dessin à DotSteam (steam.js), le même rendu que la
- * maquette de référence. Lancer un jeu : POST /api/steam/launch/<appid>.
+ * maquette de référence. Lancer un jeu : POST /api/steam/launch/<appid> ; ouvrir une page de Steam :
+ * POST /api/steam/open/<page> ; changer son statut : POST /api/steam/status/<statut>.
  */
 (function () {
 	"use strict";
@@ -12,11 +13,15 @@
 		try { var v = window[name]; return v === undefined || v === null ? def : v; } catch (e) { return def; }
 	}
 
+	function post(url) { fetch(url, { method: "POST" }).catch(function () {}); }
+
 	var stage = document.getElementById("stage"), scale = 1, state = null;
 	var steam = DotSteam.mount(stage, {
 		size: document.documentElement.getAttribute("data-size") || "xl",
-		art: function (appid, kind) { return "/api/steam/art/" + appid + "/" + kind; },
-		onLaunch: function (appid) { fetch("/api/steam/launch/" + appid, { method: "POST" }).catch(function () {}); },
+		art: function (appid, kind) { return kind === "avatar" ? "/api/steam/avatar" : "/api/steam/art/" + appid + "/" + kind; },
+		onLaunch: function (appid) { post("/api/steam/launch/" + appid); },
+		onOpen: function (page) { post("/api/steam/open/" + page); },
+		onStatus: function (status) { post("/api/steam/status/" + status); setTimeout(poll, 1500); },
 		pixelRatio: function () { return scale * (window.devicePixelRatio || 1); }
 	});
 

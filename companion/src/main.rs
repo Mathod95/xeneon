@@ -291,6 +291,13 @@ fn handle(mut req: Request, cfg: &mut Config) {
                 let key = settings.get("steamApiKey").and_then(Value::as_str).and_then(unseal);
                 send_json(req, 200, &steam::state(&settings, key))
             }
+            // Dot Steam : avatar du compte connecté (cache de Steam)
+            "steam" if seg(2) == "avatar" => match steam::avatar().and_then(|(p, ctype)| fs::read(p).ok().map(|b| (b, ctype))) {
+                Some((b, ctype)) => {
+                    let _ = req.respond(Response::from_data(b).with_header(header("Content-Type", ctype)).with_header(header("Cache-Control", "max-age=300")));
+                }
+                None => not_found(req),
+            },
             "steam" if seg(2) == "art" => {
                 let id: u64 = seg(3).parse().unwrap_or(0);
                 match (id > 0).then(|| steam::art(id, seg(4), &cache_dir())).flatten() {
@@ -391,6 +398,13 @@ fn handle(mut req: Request, cfg: &mut Config) {
         (Method::Post, "api") if seg(1) == "steam" && seg(2) == "launch" => {
             let id: u64 = seg(3).parse().unwrap_or(0);
             let ok = id > 0 && open_url(&format!("steam://rungameid/{id}"));
+            send_json(req, if ok { 200 } else { 400 }, &json!({ "ok": ok }))
+        }
+
+        // Dot Steam : ouvrir une page de Steam (téléchargements…) et changer son statut ; listes fermées
+        (Method::Post, "api") if seg(1) == "steam" && (seg(2) == "open" || seg(2) == "status") => {
+            let url = if seg(2) == "open" { steam::open_url(seg(3)) } else { steam::status_url(seg(3)) };
+            let ok = url.map(|u| open_url(&u)).unwrap_or(false);
             send_json(req, if ok { 200 } else { 400 }, &json!({ "ok": ok }))
         }
 

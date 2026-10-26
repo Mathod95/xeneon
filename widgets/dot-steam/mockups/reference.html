@@ -89,6 +89,20 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
 .frame.s { width: calc(840 / 2536 * 100%); aspect-ratio: 840 / 344; }
 @media (max-width: 700px) { .frame.l, .frame.m, .frame.s { width: 100%; } }
 
+.settings select { font-family: var(--mono); font-size: 12px; background: #161616; color: var(--text); border: 1px solid var(--line); border-radius: 6px; padding: 4px 8px; }
+.action { font-family: var(--mono); font-size: 12px; letter-spacing: .08em; color: var(--brand); min-height: 1.4em; margin: 0; }
+
+/* comparaison des rendus de jaquettes, en taille réelle XL */
+.renders { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 18px 16px; padding: 20px; border: 1px solid var(--line); border-radius: 10px; background: #080808; overflow-x: auto; }
+.renders .col { display: grid; gap: 10px; justify-items: start; min-width: 0; }
+.renders .col > b { font-family: var(--mono); font-weight: 500; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--text); }
+.renders .col > span { font-size: 13px; color: var(--muted); line-height: 1.4; }
+.renders canvas, .renders img { width: 100%; max-width: 182px; height: auto; border-radius: 6px; display: block; }
+@media (max-width: 900px) { .renders { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+
+/* capture réelle */
+.shot { border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: #080808; }
+.shot img { display: block; width: 100%; height: auto; }
 </style>
 
 <div class="wrap">
@@ -99,7 +113,7 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
   </header>
 
   <figure>
-    <div class="tag"><b>Maquette de référence</b><span id="sizeTag">Version 0.3 · taille réelle XL 2536 × 696 px</span></div>
+    <div class="tag"><b>Maquette de référence</b><span id="sizeTag">Version 0.4 · taille réelle XL 2536 × 696 px</span></div>
     <div class="sizebar" role="radiogroup" aria-label="Taille du widget">
       <span>Widget size</span>
       <button type="button" class="preset" data-size="s" aria-pressed="false">S · 840 × 344</button>
@@ -129,6 +143,25 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
         <label><input type="radio" name="coverStyle" value="mono"> Mono</label>
         <label><input type="radio" name="coverStyle" value="color" checked> Color</label>
       </div>
+      <div class="grp" role="radiogroup" aria-label="Cover render">
+        <span>Cover render</span>
+        <label><input type="radio" name="coverRender" value="dots" checked> Dots</label>
+        <label><input type="radio" name="coverRender" value="solid"> Solid dots</label>
+        <label><input type="radio" name="coverRender" value="fine"> Fine dots</label>
+        <label><input type="radio" name="coverRender" value="grid"> Image behind a dot grid</label>
+        <label>Grid opacity <select id="gridOpacity"><option value="40">40 %</option><option value="55">55 %</option><option value="70" selected>70 %</option><option value="85">85 %</option></select></label>
+      </div>
+      <label><input type="checkbox" id="showNames" checked> Show game names</label>
+      <div class="grp" role="radiogroup" aria-label="Long names">
+        <span>Long names</span>
+        <label><input type="radio" name="longNames" value="truncate" checked> Cut, scroll on hover</label>
+        <label><input type="radio" name="longNames" value="scroll"> Always scroll</label>
+      </div>
+      <div class="grp" role="radiogroup" aria-label="Bottom panel">
+        <span>Bottom panel</span>
+        <label><input type="radio" name="panel" value="downloads" checked> Downloads</label>
+        <label><input type="radio" name="panel" value="profile"> My profile and status</label>
+      </div>
       <label><input type="checkbox" id="showFriends" checked> Show friends</label>
       <label><input type="checkbox" id="showUnlit" checked> Show unlit dots</label>
       <label>Accent color <input type="color" id="accentColor" value="#10b981"></label>
@@ -139,7 +172,8 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
       <button type="button" class="preset" data-accent="#66c0f4"><i style="background:#66c0f4"></i>Bleu</button>
       <button type="button" class="preset" data-accent="#ed403b"><i style="background:#ed403b"></i>Rouge A</button>
     </div>
-    <figcaption><span id="sizeNote">Dernier jeu joué à gauche, 8 jeux, téléchargements et amis à droite.</span> La maquette marche : garder le doigt sur un jeu (ou toucher, ou double toucher, selon « Launch with ») le lance.</figcaption>
+    <p class="action" id="action" aria-live="polite"></p>
+    <figcaption><span id="sizeNote">Dernier jeu joué à gauche, 8 jeux, téléchargements et amis à droite.</span> La maquette marche : garder le doigt sur un jeu (ou toucher, ou double toucher, selon « Launch with ») le lance. Toucher « Downloads » ouvre la page des téléchargements de Steam ; en mode Profile, les boutons changent ton statut.</figcaption>
   </figure>
 
   <section style="display:grid;gap:14px">
@@ -156,7 +190,7 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
           <tr><td>3</td><td>Jeux</td><td>Par défaut, les 8 derniers jeux joués (dernier lancement de chaque jeu). Réglage « Games » pour choisir soi-même les jeux à afficher (lien Steam ou app ID), dans l'ordre voulu. Jaquettes 600 × 900 en trame de points : cache local de Steam (<code>appcache/librarycache</code>), sinon les images publiques du magasin Steam.</td></tr>
           <tr><td>4</td><td>Lancement</td><td>Les trois modes, au choix dans le réglage « Launch with » : garder le doigt (par défaut, une barre de points se remplit sous la jaquette), toucher, double toucher. Pendant le lancement : cadre en accent autour de la jaquette, état LAUNCHING en haut à droite.</td></tr>
           <tr><td>5</td><td>Dernier jeu joué</td><td>En grand à gauche en XL et L : jaquette large (capsule 460 × 215) en points, titre, dernier lancement et temps de jeu total.</td></tr>
-          <tr><td>6</td><td>Téléchargements</td><td>Jeu en cours de téléchargement ou de mise à jour : nom, pourcentage, débit, temps restant, barre de points ; jeux en attente en dessous. Le pourcentage vient des fichiers de Steam ; le débit et le temps restant sont estimés par le compagnon. Pendant une partie, Steam met les téléchargements en pause par défaut : « PAUSED WHILE PLAYING ». « No downloads » quand rien ne télécharge.</td></tr>
+          <tr class="todo"><td>6</td><td>Téléchargements</td><td>Jeu en cours de téléchargement ou de mise à jour : nom, pourcentage, débit, temps restant, barre de points ; jeux en pause ou en attente en dessous. <b>v0.2 :</b> états lus correctement dans les fichiers de Steam (en cours, en pause, en attente) ; pendant un téléchargement, la progression et le débit suivent la taille de <code>steamapps/downloading/&lt;id&gt;</code>, car Steam n'écrit le manifeste que de temps en temps. « PAUSED WHILE PLAYING » seulement si Steam l'a vraiment mis en pause. Toucher le panneau ouvre la page des téléchargements de Steam (<code>steam://open/downloads</code>), d'où le « › » après DOWNLOADS.</td></tr>
           <tr><td>7</td><td>Amis</td><td>Dès la première version. Amis en jeu d'abord (point en accent et nom du jeu), puis en ligne. API Web Steam avec une clé d'API (réglage du compagnon, gardée chiffrée) ; ton identifiant Steam est lu dans les fichiers de Steam (compte connecté). Masquable (« Show friends »).</td></tr>
           <tr><td>8</td><td>Libellés</td><td>« DOT STEAM » en haut à gauche, à la même place et à la même taille que dans tous les modules (point à 56 / 51 px, texte à 80 / 44 px, Fira Code 18 px), toucher qui ramène à Dot Home. Le titre personnalisable du Dot Launcher disparaît, pour garder le libellé identique partout. À droite : état Steam et nombre d'amis en jeu.</td></tr>
           <tr><td>9</td><td>Couleurs</td><td>Une seule couleur d'accent pour tout Dot Hub, pour l'instant : couleurs communes de la carte « Couleurs » de Dot Companion. Les thèmes du Dot Launcher (Cyberpunk, Cozy…) disparaissent.</td></tr>
@@ -164,9 +198,28 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
           <tr><td>11</td><td>Tailles</td><td><b>XL</b> d'abord : dernier jeu à gauche, 8 jeux en ligne, téléchargements et amis en dessous. L, M et S gardées telles quelles, reprises plus tard.</td></tr>
           <tr><td>12</td><td>En jeu</td><td>Le compagnon sait quel jeu tourne (registre de Steam, <code>RunningAppID</code>). Vue « Playing » : « PLAYING · NOM » à droite du libellé, le jeu en cours en grand à gauche avec un cadre en accent, durée de la partie et temps total, sa jaquette encadrée dans la rangée, téléchargements « PAUSED WHILE PLAYING ».</td></tr>
           <tr><td>13</td><td>Style des jaquettes</td><td>Color par défaut (points aux couleurs de la jaquette) ; Mono au choix (points de la couleur des points allumés), réglage « Cover style ».</td></tr>
+          <tr class="todo"><td>14</td><td>Noms des jeux</td><td>Un nom trop long ne déborde plus sur les jaquettes voisines : coupé avec « … » et qui défile au survol ou à l'appui (par défaut), ou qui défile en continu (« Long names »). « Show game names » les masque : les jaquettes prennent la place libérée. Le jeu mis en avant garde toujours son nom.</td></tr>
+          <tr class="todo"><td>15</td><td>Rendu des jaquettes</td><td>Quatre rendus à comparer (tableau « Rendus des jaquettes » plus bas, et réglage « Cover render » dans la maquette) : <b>Dots</b> (v0.1, taille des points selon la lumière : le plus « dot », le moins lisible), <b>Solid dots</b> (points pleins à la couleur de l'image), <b>Fine dots</b> (points pleins deux fois plus serrés : le plus lisible en restant en points), <b>Image behind a dot grid</b> (l'image vue à travers une grille, opacité de la grille réglable). Une jaquette verticale absente est remplacée par la large, recadrée (la case vide de la v0.1).</td></tr>
+          <tr class="todo"><td>16</td><td>Panneau du bas</td><td>Réglage « Bottom panel » : <b>Downloads</b> (par défaut) ou <b>My profile and status</b> : avatar en points (cache de Steam), pseudo, statut, et quatre boutons Online, Away, Invisible, Offline (<code>steam://friends/status/&lt;statut&gt;</code>). Le statut affiché vient de l'API Web Steam si une clé est donnée (Invisible y apparaît comme Offline : le compagnon retient celui choisi ici), sinon des fichiers de Steam.</td></tr>
         </tbody>
       </table>
     </div>
+  </section>
+
+  <section style="display:grid;gap:14px">
+    <div class="diff-head">
+      <h2>Rendus des jaquettes</h2>
+      <p class="hint">Réglage « Cover render ». Taille réelle XL (182 × 273 px), mêmes jaquettes d'exemple que la maquette.</p>
+    </div>
+    <div class="renders" id="renders"></div>
+  </section>
+
+  <section style="display:grid;gap:14px">
+    <div class="diff-head">
+      <h2>Capture réelle · v0.1.0</h2>
+      <p class="hint">Sur l'Edge, PC de Mathias, 26 octobre 2026 : noms qui se chevauchent, jaquette vide, téléchargement à 0 %, jaquettes peu reconnaissables. Gardée comme référence de ce qui a été corrigé.</p>
+    </div>
+    <div class="shot"><img src="mockups/real-pc-v0.1.0.png" alt="Dot Steam v0.1.0 sur l'Edge : Shop Titans en cours, rangée de jaquettes en points dont les noms longs se chevauchent, téléchargement Deep Rock Galactic à 0 % en pause, amis sans clé d'API." loading="lazy" width="2560" height="720"></div>
   </section>
 </div>
 
@@ -185,7 +238,7 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
 
   // jaquettes d'exemple, générées (aucune vraie jaquette), en images comme celles servies par le compagnon
   function rng(seed) { return function () { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; }; }
-  function cover(seed, a, b, w, h, kind) {
+  function cover(seed, a, b, w, h, kind, title) {
     var c = document.createElement("canvas"); c.width = w; c.height = h; var g = c.getContext("2d"), r = rng(seed);
     var gr = g.createLinearGradient(0, 0, w * 0.3, h); gr.addColorStop(0, a); gr.addColorStop(1, b); g.fillStyle = gr; g.fillRect(0, 0, w, h);
     if (kind === "sun") { var sn = g.createRadialGradient(w * .5, h * .38, 4, w * .5, h * .38, w * .42); sn.addColorStop(0, "#fff3c4"); sn.addColorStop(.5, "#ff8a4c"); sn.addColorStop(1, "rgba(255,90,60,0)"); g.fillStyle = sn; g.fillRect(0, 0, w, h); }
@@ -194,38 +247,50 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
     for (var x = 0; x <= w; x += w / 8) g.lineTo(x, h * (0.62 + r() * 0.18));
     g.lineTo(w, h); g.fill();
     if (kind === "figure") { g.fillStyle = "#0a0a0a"; g.beginPath(); g.arc(w * .5, h * .5, w * .1, 0, Math.PI * 2); g.fill(); g.fillRect(w * .4, h * .56, w * .2, h * .3); }
+    // titre en gros, comme sur une vraie jaquette : c'est lui qui fait reconnaître le jeu
+    if (title) {
+      var words = title.toUpperCase().split(" ").slice(0, 2), fs = Math.round((h > w ? w * 0.2 : h * 0.24));
+      g.font = "800 " + fs + "px 'IBM Plex Sans', Arial, sans-serif"; g.textAlign = h > w ? "center" : "left"; g.textBaseline = "top";
+      g.lineWidth = Math.max(2, fs / 7); g.strokeStyle = "rgba(0,0,0,.7)"; g.fillStyle = "#fff6e0";
+      words.forEach(function (wd, k) { var x = h > w ? w / 2 : w * 0.07, y = (h > w ? h * 0.08 : h * 0.16) + k * fs * 1.02; g.strokeText(wd, x, y); g.fillText(wd, x, y); });
+    }
     return c.toDataURL("image/png");
   }
   var now = Date.now() / 1000;
   var GAMES = [
-    { appid: 1, name: "Neon Courier", seed: 11, a: "#2a0f5c", b: "#e0377a", kind: "figure", lastPlayed: now - 7200, playtime: 8520 },
+    { appid: 1, name: "Neon Courier", long: "Neon Courier: Midnight Deliveries", seed: 11, a: "#2a0f5c", b: "#e0377a", kind: "figure", lastPlayed: now - 7200, playtime: 8520 },
     { appid: 2, name: "Starfall Drift", seed: 23, a: "#071a3a", b: "#3b8fd4", kind: "sun", lastPlayed: now - 86400, playtime: 3100 },
     { appid: 3, name: "Hollow Pines", seed: 37, a: "#0d2a1a", b: "#7fb069", kind: "figure", lastPlayed: now - 2 * 86400, playtime: 1500 },
     { appid: 4, name: "Ironveil", seed: 41, a: "#2b2b2b", b: "#b8b8b8", kind: "figure", lastPlayed: now - 3 * 86400, playtime: 920 },
     { appid: 5, name: "Tidebound", seed: 53, a: "#04263a", b: "#29a3b8", kind: "sun", lastPlayed: now - 5 * 86400, playtime: 4400 },
-    { appid: 6, name: "Ember Rally", seed: 67, a: "#3a0a04", b: "#ff7a1a", kind: "sun", lastPlayed: now - 8 * 86400, playtime: 600 },
+    { appid: 6, name: "Ember Rally", long: "Ember Rally Simulator 2027 – Gold Edition", noPortrait: true, seed: 67, a: "#3a0a04", b: "#ff7a1a", kind: "sun", lastPlayed: now - 8 * 86400, playtime: 600 },
     { appid: 7, name: "Glass Atlas", seed: 79, a: "#1b1b3a", b: "#c7c2ff", kind: "figure", lastPlayed: now - 12 * 86400, playtime: 2100 },
-    { appid: 8, name: "Rook & Rust", seed: 97, a: "#3a2410", b: "#d9a066", kind: "figure", lastPlayed: now - 20 * 86400, playtime: 300 }
+    { appid: 8, name: "Rook & Rust", long: "Rook & Rust: The Definitive Director's Cut", seed: 97, a: "#3a2410", b: "#d9a066", kind: "figure", lastPlayed: now - 20 * 86400, playtime: 300 }
   ];
   var ART = {};
-  GAMES.forEach(function (g) { ART[g.appid] = { portrait: cover(g.seed, g.a, g.b, 120, 180, g.kind), wide: cover(g.seed + 1, g.a, g.b, 230, 108, g.kind) }; });
+  // jaquettes à la taille de celles de Steam (600 × 900 et 460 × 215) ; Ember Rally n'a pas de jaquette verticale (image cassée), comme un vrai jeu sans capsule
+  GAMES.forEach(function (g) { ART[g.appid] = { portrait: g.noPortrait ? "data:image/png;base64,AAAA" : cover(g.seed, g.a, g.b, 300, 450, g.kind, g.name), wide: cover(g.seed + 1, g.a, g.b, 460, 215, g.kind, g.name) }; });
+  // avatar d'exemple
+  ART.avatar = (function () { var c = document.createElement("canvas"); c.width = c.height = 184; var g = c.getContext("2d"); g.fillStyle = "#1d3b57"; g.fillRect(0, 0, 184, 184); g.fillStyle = "#e9b44c"; g.beginPath(); g.arc(92, 74, 38, 0, Math.PI * 2); g.fill(); g.beginPath(); g.arc(92, 190, 70, 0, Math.PI * 2); g.fill(); return c.toDataURL("image/png"); })();
+  var profileStatus = "online";
   var FRIENDS = [{ name: "Nova", game: "Starfall Drift", online: true }, { name: "Kiro", game: "Ember Rally", online: true }, { name: "Lune", game: "Hollow Pines", online: true }, { name: "Atlas", game: null, online: true }];
   var playingId = 1, started = Date.now() - 72 * 60000;
 
   // état d'exemple, au même format que GET /api/steam/state
   function sampleState() {
     var sample = val("sample");
-    var games = GAMES.map(function (g) { return { appid: g.appid, name: g.name, lastPlayed: g.lastPlayed, playtime: g.playtime }; });
+    var games = GAMES.map(function (g) { return { appid: g.appid, name: g.long || g.name, lastPlayed: g.lastPlayed, playtime: g.playtime }; });
     var downloads = sample === "idle" ? [] : [
-      { appid: 5, name: "Tidebound · update", progress: 0.62, total: 6.2e9, speed: 38e6, eta: 240, active: true },
-      { appid: 7, name: "Glass Atlas", progress: 0, total: 41e9, speed: null, eta: null, active: false }
+      { appid: 5, name: "Tidebound", progress: 0.62, total: 6.2e9, speed: 38e6, eta: 240, status: sample === "playing" ? "paused" : "downloading" },
+      { appid: 7, name: "Glass Atlas", progress: 0, total: 41e9, speed: null, eta: null, status: "queued" }
     ];
     var p = sample === "playing" ? GAMES.filter(function (g) { return g.appid === playingId; })[0] : null;
     return {
       steam: { found: true, running: sample !== "offline" },
       playing: p ? { appid: p.appid, name: p.name, since: started } : null,
       hero: 1, games: games, downloads: downloads,
-      friends: { enabled: true, error: null, list: FRIENDS }
+      friends: { enabled: true, error: null, list: FRIENDS },
+      profile: { name: "Mathod", avatar: true, status: sample === "offline" ? "offline" : profileStatus }
     };
   }
   // réglages simulés → mêmes noms que les propriétés du module
@@ -233,6 +298,11 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
     switch (name) {
       case "launchWith": return val("trigger");
       case "coverStyle": return val("coverStyle");
+      case "coverRender": return val("coverRender");
+      case "gridOpacity": return v("gridOpacity").value;
+      case "showNames": return v("showNames").checked;
+      case "longNames": return val("longNames");
+      case "panel": return val("panel");
       case "showFriends": return v("showFriends").checked;
       case "showUnlitDots": return v("showUnlit").checked;
       case "dotAccentColor": return v("accentColor").value;
@@ -245,14 +315,49 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
 
   var steam = DotSteam.mount(stage, {
     size: "xl",
-    art: function (appid, kind) { return (ART[appid] || {})[kind] || ""; },
+    art: function (appid, kind) { return kind === "avatar" ? ART.avatar : (ART[appid] || {})[kind] || ""; },
+    onOpen: function (page) { say("Le compagnon ouvrirait steam://open/" + page); },
+    onStatus: function (st) { profileStatus = st; say("Le compagnon passerait le statut à " + st + " (steam://friends/status/" + st + ")"); setTimeout(render, 0); },
     // dans la maquette, le jeu « démarre » 2,5 s après le lancement
     onLaunch: function (appid) {
       setTimeout(function () { playingId = appid; started = Date.now(); document.querySelector("input[name=sample][value=playing]").checked = true; render(); }, 2500);
     },
     pixelRatio: function () { return Math.max(1, scale * (window.devicePixelRatio || 1)); }
   });
-  function render() { steam.render(sampleState(), DotSteam.fromProperties(prop)); }
+  var sayTimer = null;
+  function say(t) { v("action").textContent = t; clearTimeout(sayTimer); sayTimer = setTimeout(function () { v("action").textContent = ""; }, 4000); }
+  function render() { steam.render(sampleState(), DotSteam.fromProperties(prop)); renders(); }
+
+  // comparaison des rendus : mêmes jaquettes, chaque rendu, en taille réelle XL
+  var RENDERS = [
+    ["original", null, "Original", "L'image servie par le compagnon."],
+    ["dots", 70, "Dots", "v0.1 : taille des points selon la lumière."],
+    ["solid", 70, "Solid dots", "Points pleins, couleur de l'image."],
+    ["fine", 70, "Fine dots", "Points pleins deux fois plus serrés."],
+    ["grid", 40, "Grid · 40 %", "Image derrière une grille légère."],
+    ["grid", 70, "Grid · 70 %", "Image derrière une grille marquée."]
+  ];
+  var rendersKey = "";
+  function renders() {
+    var box = v("renders"), base = DotSteam.fromProperties(prop), key = [base.coverStyle, base.lit, base.unlit, base.showUnlitDots, window.devicePixelRatio].join("|");
+    if (key === rendersKey) return;
+    var picks = [GAMES[0], GAMES[1], GAMES[6]], imgs = [], ready = 0;
+    picks.forEach(function (g, k) { var im = new Image(); im.onload = function () { if (++ready === picks.length) draw(); }; im.src = ART[g.appid].portrait; imgs[k] = im; });
+    function draw() {
+      rendersKey = key; box.innerHTML = "";
+      RENDERS.forEach(function (r) {
+        var col = document.createElement("div"); col.className = "col";
+        var b = document.createElement("b"); b.textContent = r[2]; col.appendChild(b);
+        imgs.forEach(function (im) {
+          if (!r[1]) { var o = new Image(); o.src = im.src; o.alt = ""; col.appendChild(o); return; }
+          var s = {}; for (var x in base) s[x] = base[x]; s.coverRender = r[0]; s.gridOpacity = r[1];
+          col.appendChild(DotSteam.cover(im, 182, 273, s, 8, window.devicePixelRatio || 1));
+        });
+        var sp = document.createElement("span"); sp.textContent = r[3]; col.appendChild(sp);
+        box.appendChild(col);
+      });
+    }
+  }
   function fit() {
     if (!frame.clientWidth) return;
     scale = frame.clientWidth / steam.slot()[0];
@@ -261,7 +366,7 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
   }
   if (window.ResizeObserver) new ResizeObserver(fit).observe(frame); else window.addEventListener("resize", fit);
 
-  document.querySelectorAll(".settings input").forEach(function (i) { i.addEventListener("input", render); i.addEventListener("change", render); });
+  document.querySelectorAll(".settings input, .settings select").forEach(function (i) { i.addEventListener("input", render); i.addEventListener("change", render); });
   document.querySelectorAll(".preset[data-accent]").forEach(function (b) {
     b.addEventListener("click", function () { v("accentColor").value = b.getAttribute("data-accent"); render(); });
   });
@@ -270,7 +375,7 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
       var size = b.getAttribute("data-size");
       document.querySelectorAll(".sizebar .preset").forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
       frame.className = "frame " + size;
-      v("sizeTag").textContent = "Version 0.3 · taille réelle " + NOTES[size][0];
+      v("sizeTag").textContent = "Version 0.4 · taille réelle " + NOTES[size][0];
       v("sizeNote").textContent = NOTES[size][1];
       steam.setSize(size); fit();
     });
