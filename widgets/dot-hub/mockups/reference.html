@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Maquette de référence de Dot Hub. Le module affiché est le vrai Dot Clock (widgets/dot-clock). Ouvrir dans un navigateur. -->
+<style>body { margin: 0; }</style>
+</head>
+<body>
+<title>Dot Hub</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap">
+<!-- Le module affiché est le vrai Dot Clock : mêmes fichiers que sur l'Edge -->
+<link rel="stylesheet" href="../../dot-clock/styles/clock.css">
+<script src="../../dot-clock/scripts/font.js"></script>
+<script src="../../dot-clock/scripts/clock.js"></script>
+<style>
+/* Layout : maquette de référence en taille réelle (choix S, M, L, XL) avec ses réglages, puis tableau des choix. Même univers que Dot Clock, un seul thème sombre. */
+:root {
+  --page: #111111;
+  --panel: #0a0a0a;
+  --line: #262626;
+  --text: #e6e6e6;
+  --muted: #8c8c8c;
+  --brand: #10b981;
+  --mono: "IBM Plex Mono", "Cascadia Mono", Consolas, monospace;
+  --sans: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { background: var(--page); color: var(--text); }
+body {
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.55;
+  padding-block: 40px 72px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 1480px; margin: 0 auto; display: grid; gap: 40px; }
+header { display: grid; gap: 10px; }
+.eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); display: flex; align-items: center; gap: 10px; }
+.eyebrow::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--brand); }
+h1 { font-family: var(--mono); font-weight: 500; font-size: clamp(28px, 4vw, 44px); line-height: 1.1; margin: 0; letter-spacing: -.01em; }
+.lede { color: var(--muted); max-width: 72ch; margin: 0; }
+
+figure { margin: 0; display: grid; gap: 12px; min-width: 0; }
+.tag { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.tag b { color: var(--text); font-weight: 500; font-size: 14px; }
+figcaption { color: var(--muted); font-size: 14px; }
+
+/* tableau */
+.diff-head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; }
+h2 { font-family: var(--mono); font-weight: 500; font-size: 13px; letter-spacing: .14em; text-transform: uppercase; margin: 0; }
+.hint { color: var(--muted); font-size: 14px; margin: 0; }
+.table-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; }
+table { width: 100%; border-collapse: collapse; min-width: 640px; }
+th, td { text-align: left; padding: 14px 16px; vertical-align: top; border-bottom: 1px solid var(--line); }
+tr:last-child td { border-bottom: 0; }
+thead th { font-family: var(--mono); font-weight: 500; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); background: var(--panel); }
+td:first-child { font-family: var(--mono); color: var(--muted); width: 3.5em; font-variant-numeric: tabular-nums; }
+td:nth-child(2) { font-weight: 500; width: 15em; }
+tr.todo td:nth-child(3) { color: var(--muted); }
+code { font-family: var(--mono); font-size: 13px; color: var(--text); }
+
+/* réglages simulés */
+.settings { display: flex; flex-wrap: wrap; gap: 12px 28px; align-items: center; padding: 14px 16px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); }
+.settings label { display: inline-flex; align-items: center; gap: 10px; font-family: var(--mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); cursor: pointer; }
+.settings input[type=color] { width: 36px; height: 28px; padding: 0; border: 1px solid var(--line); border-radius: 6px; background: none; cursor: pointer; }
+.settings input[type=checkbox], .settings input[type=radio] { width: 18px; height: 18px; accent-color: var(--brand); cursor: pointer; }
+.settings .grp { display: inline-flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.settings .grp > span { font-family: var(--mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--text); }
+.preset { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; padding: 6px 10px; border-radius: 6px; border: 1px solid var(--line); background: transparent; color: var(--text); cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+.preset i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+.preset:focus-visible, .tab:focus-visible, .ses:focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; }
+.sizebar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; }
+.sizebar > span { font-family: var(--mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-right: 6px; }
+.sizebar .preset[aria-pressed="true"] { background: var(--text); color: #0a0a0a; border-color: var(--text); }
+
+/* cadre à l'échelle de l'XL : la largeur suit la vraie largeur de l'emplacement */
+.frame { position: relative; max-width: 100%; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: #080808; }
+.frame.xl { width: 100%; aspect-ratio: 2536 / 696; }
+.frame.l { width: calc(1688 / 2536 * 100%); aspect-ratio: 1688 / 696; }
+.frame.m { width: calc(840 / 2536 * 100%); aspect-ratio: 840 / 696; }
+.frame.s { width: calc(840 / 2536 * 100%); aspect-ratio: 840 / 344; }
+@media (max-width: 700px) { .frame.l, .frame.m, .frame.s { width: 100%; } }
+
+/* ---------- Dot Hub : scène en pixels réels de l'emplacement ---------- */
+.hub { position: absolute; left: 0; top: 0; transform-origin: 0 0; background: #080808; overflow: hidden; user-select: none; }
+.hub > * { position: absolute; left: 0; top: 0; }
+
+/* Dot Home : copie des styles de companion/web/home.html (mêmes valeurs) */
+.stage { position: absolute; left: 0; top: 0; transform-origin: 0 0; background: #080808; --accent: #10b981; --lit: #f2f0e9; --label: #b8b6b0; --unlit: #1c1c1c; font-family: "Fira Code", Consolas, monospace; font-variant-ligatures: none; }
+.stage button { font-family: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.stage button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.lbl { margin: 0; white-space: nowrap; font-size: 18px; line-height: 24px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); }
+.head { position: absolute; left: 56px; right: 56px; top: 30px; height: 60px; display: flex; align-items: center; gap: 14px; }
+.stage.xl .head { top: 26px; }
+.head .dot { flex: none; width: 10px; height: 10px; border-radius: 50%; background: var(--accent); }
+.head .grow { flex: 1; }
+.tiles { position: absolute; left: 40px; right: 40px; top: 112px; bottom: 40px; display: grid; gap: 20px; }
+.stage.xl .tiles { grid-template-columns: repeat(5, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(0, 1fr)); }
+.stage.l .tiles { grid-template-columns: repeat(4, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(0, 1fr)); }
+.stage.m .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: repeat(3, minmax(0, 1fr)); gap: 16px; top: 104px; }
+.stage.s .head { display: none; }
+.stage.s .tiles { top: 24px; bottom: 24px; left: 24px; right: 24px; gap: 14px; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-template-rows: 1fr; }
+.tile { position: relative; display: grid; grid-template-rows: 1fr auto; gap: 14px; padding: 22px 24px; min-width: 0; min-height: 0; border: 2px solid #1d1d1d; border-radius: 18px; background: transparent; text-align: left; color: var(--lit); }
+.tile:active, .tile.going { border-color: var(--accent); background: #0d0d0d; }
+.tile .pic { display: grid; place-items: center; min-height: 0; }
+.tile .pic canvas { display: block; }
+.tile .meta { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; min-width: 0; }
+.tile .name { font-size: 24px; letter-spacing: .12em; text-transform: uppercase; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tile .live { position: absolute; top: 18px; right: 22px; font-size: 18px; letter-spacing: .14em; color: var(--accent); }
+.stage.m .tile { grid-template-columns: auto minmax(0, 1fr); grid-template-rows: 1fr; align-items: center; gap: 18px; padding: 14px 20px; }
+.stage.m .tile .meta { flex-direction: column; gap: 4px; }
+.stage.m .tile .live { display: none; }
+.stage.s .tile { padding: 16px; gap: 10px; }
+.stage.s .tile .name { font-size: 20px; letter-spacing: .08em; }
+.stage.s .tile .live { display: none; }
+
+/* écran d'attente et d'erreur : copie de widgets/dot-hub/styles/main.css, --u calculé pour l'emplacement */
+.down { width: 100%; height: 100%; display: grid; align-content: center; justify-items: center; gap: calc(var(--u) * 1.6); text-align: center; padding: 24px; font-family: "Fira Code", Consolas, monospace; font-variant-ligatures: none; }
+.down p { margin: 0; }
+.down .brand { display: flex; align-items: center; gap: 12px; font-size: max(14px, calc(var(--u) * 1.2)); letter-spacing: .22em; color: #b8b6b0; }
+.down .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--hub-accent, #10b981); }
+.down .msg { font-size: max(20px, calc(var(--u) * 3)); font-weight: 500; letter-spacing: .14em; color: #f2f0e9; }
+.down .msg.warn { color: #ed403b; }
+.down .sub { font-size: max(14px, calc(var(--u) * 1.2)); letter-spacing: .16em; color: #b8b6b0; }
+
+/* « Identifier » : copie du calque de companion/web/hub/module.js */
+.ident { width: 100%; height: 100%; display: grid; place-items: center; background: rgba(8, 8, 8, .88); color: #10b981; font-family: "Fira Code", Consolas, monospace; font-weight: 500; letter-spacing: .2em; }
+
+/* appui long : repère de la maquette (pas dans le module) */
+.press { width: 100%; height: 100%; pointer-events: none; display: grid; place-items: end center; padding-bottom: 28px; }
+.press span { font-family: "Fira Code", Consolas, monospace; font-size: 18px; letter-spacing: .2em; color: #10b981; background: rgba(8, 8, 8, .9); padding: 8px 14px; border-radius: 6px; }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Widget iCUE · CORSAIR XENEON EDGE</div>
+    <h1>Dot Hub</h1>
+    <p class="lede">Le seul widget iCUE : une coquille qui affiche l'interface servie par Dot Companion sur le PC. Cette maquette montre ce que voit l'Edge, écran par écran, avec les styles du code : l'accueil Dot Home (<code>companion/web/home.html</code>), un module (Dot Clock, dessiné par son vrai rendu <code>clock.js</code>), le calque « Identifier » et les écrans d'attente et d'erreur de la coquille (<code>widgets/dot-hub</code>).</p>
+  </header>
+
+  <figure>
+    <div class="tag"><b>Maquette de référence</b><span id="sizeTag">Version 0.2 · taille réelle XL 2536 × 696 px</span></div>
+    <div class="sizebar" role="radiogroup" aria-label="Taille du widget">
+      <span>Widget size</span>
+      <button type="button" class="preset" data-size="s" aria-pressed="false">S · 840 × 344</button>
+      <button type="button" class="preset" data-size="m" aria-pressed="false">M · 840 × 696</button>
+      <button type="button" class="preset" data-size="l" aria-pressed="false">L · 1688 × 696</button>
+      <button type="button" class="preset" data-size="xl" aria-pressed="true">XL · 2536 × 696</button>
+    </div>
+    <div class="frame xl" id="frame">
+      <div class="hub" id="hub">
+        <div class="stage xl" id="home"></div>
+        <div id="clock" hidden></div>
+        <div class="down" id="down" hidden><p class="brand"><span class="dot"></span>DOT HUB</p><p class="msg" id="msg"></p><p class="sub" id="sub"></p></div>
+        <div class="ident" id="ident" hidden></div>
+        <div class="press" id="press" hidden><span>HOLD 1 S · DOT HOME</span></div>
+      </div>
+    </div>
+    <div class="settings" aria-label="Réglages simulés">
+      <div class="grp" role="radiogroup" aria-label="Screen">
+        <span>Screen</span>
+        <label><input type="radio" name="screen" value="home" checked> Dot Home</label>
+        <label><input type="radio" name="screen" value="module"> Module · Clock</label>
+        <label><input type="radio" name="screen" value="identify"> Identify</label>
+        <label><input type="radio" name="screen" value="connecting"> Connecting</label>
+        <label><input type="radio" name="screen" value="down"> Companion not running</label>
+      </div>
+      <div class="grp" role="radiogroup" aria-label="Modules">
+        <span>Modules</span>
+        <label><input type="radio" name="mods" value="now"> Available now</label>
+        <label><input type="radio" name="mods" value="planned" checked> Planned</label>
+      </div>
+      <label>Instance name <input type="text" id="instName" value="Edge left" style="width:9em;font:inherit;background:transparent;color:var(--text);border:1px solid var(--line);border-radius:6px;padding:4px 8px"></label>
+      <label>Accent color <input type="color" id="accentColor" value="#10b981"></label>
+      <label>Lit dot color <input type="color" id="litColor" value="#f2f0e9"></label>
+      <label>Unlit dot color <input type="color" id="unlitColor" value="#1c1c1c"></label>
+      <label>Label color <input type="color" id="labelColor" value="#b8b6b0"></label>
+    </div>
+    <figcaption><span id="sizeNote">Le parcours sur l'Edge.</span> La maquette marche comme l'Edge : toucher la tuile Clock ouvre le module, toucher « ● DOT CLOCK » ou garder le doigt 1 s sur le module ramène à Dot Home. Les couleurs sont celles de la carte « Couleurs » de la page de réglages du compagnon.</figcaption>
+  </figure>
+
+  <section style="display:grid;gap:14px">
+    <div class="diff-head">
+      <h2>Fonctionnement et choix</h2>
+      <p class="hint">Ce qui est codé (v0.2) et ce qui reste à décider.</p>
+    </div>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>#</th><th>Élément</th><th>État</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>Coquille</td><td>Le seul widget iCUE (<code>dot-hub.icuewidget</code>). Il vérifie toutes les 4 s que Dot Companion répond sur <code>127.0.0.1:47800</code>, puis affiche son interface dans une iframe plein cadre (<code>/i/&lt;uniqueId&gt;</code>). Codé.</td></tr>
+          <tr><td>2</td><td>Instances</td><td>Chaque Dot Hub posé dans iCUE est une instance, reconnue par son <code>uniqueId</code>. Le compagnon retient son nom, son module et ses réglages. Codé.</td></tr>
+          <tr><td>3</td><td>Dot Home</td><td>Accueil quand aucun module n'est choisi : « DOT HOME » et le nom de l'instance, adresse des réglages à droite, une tuile par module (pictogramme 7 × 7 points, nom, heure en direct pour Clock). 10 tuiles en XL, 8 en L, 6 en M, 4 en S. Codé.</td></tr>
+          <tr class="todo"><td>4</td><td>Plus de modules que de cases</td><td>Avec tous les modules prévus (21), la grille déborde : pages à prévoir (points de page, glisser). À décider.</td></tr>
+          <tr><td>5</td><td>Retour à Dot Home</td><td>Toucher le libellé « ● DOT … » d'un module (zone tactile d'au moins 60 px) ou garder le doigt 1 s n'importe où sur le module. Codé.</td></tr>
+          <tr><td>6</td><td>Réglages sur le PC</td><td><code>http://127.0.0.1:47800/settings</code> : carte « Couleurs » pour tous les modules, puis une carte par instance (nom, module, réglages du module, « Identifier », supprimer). Changements appliqués en 2 s sur l'Edge. Codé.</td></tr>
+          <tr class="todo"><td>7</td><td>Identifier</td><td>Le bouton « Identifier » de la page de réglages affiche le nom de l'instance en grand pendant 3 s sur l'Edge concerné. Codé, mais la couleur est fixe (<code>#10B981</code>) : à faire suivre la couleur d'accent commune.</td></tr>
+          <tr><td>8</td><td>Compagnon arrêté</td><td>« CONNECTING… » au démarrage, puis « COMPANION NOT RUNNING » en rouge et « START DOT COMPANION ON THIS PC · RETRYING » après deux échecs. Le module revient seul quand le compagnon répond. Codé.</td></tr>
+          <tr><td>9</td><td>Clavier</td><td>iCUE ne fait pas entrer le clavier dans une iframe : la coquille garde le focus dans un champ invisible et renvoie le texte au champ du module (pont clavier). Codé.</td></tr>
+          <tr><td>10</td><td>Couleurs</td><td>Réglage iCUE « Accent color » pour l'écran d'erreur de la coquille ; tout le reste prend les couleurs communes du compagnon. Codé.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  function v(id) { return document.getElementById(id); }
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; }
+  function val(name) { return document.querySelector("input[name=" + name + "]:checked").value; }
+  var SLOTS = { s: [840, 344], m: [840, 696], l: [1688, 696], xl: [2536, 696] };
+  var NOTES = {
+    xl: "XL 2536 × 696 px", l: "L 1688 × 696 px", m: "M 840 × 696 px", s: "S 840 × 344 px"
+  };
+  var size = "xl", scale = 1;
+  var frame = v("frame"), hub = v("hub");
+
+  // ---------- Dot Home : même rendu que companion/web/home.html
+  var PITCH = { xl: 19, l: 13, m: 9, s: 12 };
+  var PICS = {
+    clock: [".#####.", "#..#..#", "#..#..#", "#..###.", "#.....#", "#.....#", ".#####."],
+    home: ["...#...", "..###..", ".#####.", "#######", ".#...#.", ".#.#.#.", ".#####."],
+    weather: ["#..#..#", ".#...#.", "..###..", "#.###.#", "..###..", ".#...#.", "#..#..#"],
+    calendar: ["#######", "#.....#", "#######", "#.#.#.#", "#######", "#.#.#.#", "#######"],
+    audio: ["...#...", "..##.#.", "####..#", "####..#", "####..#", "..##.#.", "...#..."],
+    spotify: ["..#####", "..#...#", "..#...#", "..#...#", "###..##", "###.###", "###.###"],
+    steam: ["###.###", "###.###", "###.###", ".......", "###.###", "###.###", "###.###"],
+    discord: [".#####.", "#.....#", "#.#.#.#", "#.....#", ".#####.", "..#....", ".#....."],
+    plex: [".##....", "..##...", "...##..", "....##.", "...##..", "..##...", ".##...."],
+    homeassistant: ["...#...", "..#.#..", ".#...#.", "#..#..#", ".#.#.#.", ".#...#.", ".#####."],
+    bambulab: ["#######", "#.....#", "#.###.#", "#..#..#", "#.....#", "#.###.#", "#######"],
+    sysmon: ["......#", ".....##", "....###", "...####", "..#####", ".######", "#######"],
+    notes: ["##.####", ".......", "##.####", ".......", "##.####", ".......", "##.###."],
+    github: ["#...#..", "#...#..", "#..#...", "#.#....", "##.....", "#......", "#......"],
+    ia: ["...#...", "...#...", "#..#..#", ".#####.", "#..#..#", "...#...", "...#..."],
+    calculator: [".#...#.", "###.###", ".#.....", ".......", "#.#.###", ".#.....", "#.#.###"]
+  };
+  var MODULES = {
+    now: [{ id: "clock", name: "Clock" }],
+    planned: [
+      { id: "clock", name: "Clock" }, { id: "weather", name: "Weather" }, { id: "calendar", name: "Calendar" }, { id: "audio", name: "Audio" },
+      { id: "spotify", name: "Spotify" }, { id: "steam", name: "Steam" }, { id: "discord", name: "Discord" }, { id: "plex", name: "Plex" },
+      { id: "homeassistant", name: "Home Assistant" }, { id: "bambulab", name: "Bambu Lab" }, { id: "sysmon", name: "System Monitor" },
+      { id: "notes", name: "Notes" }, { id: "github", name: "GitHub" }, { id: "ia", name: "IA" }, { id: "calculator", name: "Calculator" }
+    ]
+  };
+  var CAP = { xl: 10, l: 8, m: 6, s: 4 };
+  function theme() { return { accent: v("accentColor").value, lit: v("litColor").value, unlit: v("unlitColor").value, label: v("labelColor").value }; }
+  function pic(key, pitch, t) {
+    var g = PICS[key] || PICS.home, cv = document.createElement("canvas"), dpr = 2 * Math.max(1, scale * 2), w = 7 * pitch, r = pitch * 0.38;
+    cv.width = w * dpr; cv.height = w * dpr; cv.style.width = w + "px"; cv.style.height = w + "px";
+    var ctx = cv.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    for (var y = 0; y < 7; y++) for (var x = 0; x < 7; x++) {
+      ctx.beginPath(); ctx.fillStyle = g[y][x] === "#" ? t.lit : t.unlit;
+      ctx.arc(x * pitch + pitch / 2, y * pitch + pitch / 2, r, 0, Math.PI * 2); ctx.fill();
+    }
+    return cv;
+  }
+  function live(id) {
+    if (id === "clock") { var d = new Date(); return (d.getHours() < 10 ? "0" : "") + d.getHours() + ":" + (d.getMinutes() < 10 ? "0" : "") + d.getMinutes(); }
+    return "";
+  }
+  function renderHome() {
+    var stage = v("home"), dims = SLOTS[size], t = theme(), name = v("instName").value.trim();
+    stage.className = "stage " + size;
+    stage.style.width = dims[0] + "px"; stage.style.height = dims[1] + "px";
+    stage.style.setProperty("--accent", t.accent); stage.style.setProperty("--lit", t.lit); stage.style.setProperty("--label", t.label);
+    stage.innerHTML = "";
+    var head = el("div", "head");
+    head.appendChild(el("span", "dot"));
+    head.appendChild(el("p", "lbl", "DOT HOME" + (name ? " · " + name : "")));
+    head.appendChild(el("span", "grow"));
+    // en M, la place manque : l'adresse seule
+    head.appendChild(el("p", "lbl", (size === "m" ? "" : "SETTINGS · ") + "127.0.0.1:47800/SETTINGS"));
+    stage.appendChild(head);
+    var grid = el("div", "tiles");
+    MODULES[val("mods")].slice(0, CAP[size]).forEach(function (m) {
+      var b = el("button", "tile"); b.type = "button";
+      b.setAttribute("aria-label", "Open " + m.name);
+      var p = el("div", "pic"); p.appendChild(pic(m.id, PITCH[size], t)); b.appendChild(p);
+      var meta = el("div", "meta"); meta.appendChild(el("span", "name", m.name)); b.appendChild(meta);
+      var lv = live(m.id); if (lv) b.appendChild(el("span", "live", lv));
+      b.addEventListener("click", function () {
+        b.classList.add("going");
+        setTimeout(function () { b.classList.remove("going"); if (m.id === "clock") setScreen("module"); }, 250);
+      });
+      grid.appendChild(b);
+    });
+    stage.appendChild(grid);
+  }
+
+  // ---------- module : le vrai rendu de Dot Clock, avec les couleurs communes
+  var clock = DotClock.mount(v("clock"), {
+    size: size,
+    settings: function () {
+      var t = theme();
+      return DotClock.fromProperties(function (n, d) {
+        return { dotAccentColor: t.accent, litDotColor: t.lit, unlitDotColor: t.unlit, labelColor: t.label, footerText: "MADE BY MATHOD & CLAUDE" }[n] || d;
+      });
+    },
+    pixelRatio: function () { return Math.max(1, scale * (window.devicePixelRatio || 1)); }
+  });
+  // toucher le libellé ou garder le doigt 1 s : retour à Dot Home (comme module.js)
+  (function () {
+    var c = v("clock"), timer = null, x0 = 0, y0 = 0;
+    function cancel() { clearTimeout(timer); timer = null; v("press").hidden = true; }
+    c.addEventListener("pointerdown", function (e) {
+      if (e.target.hasAttribute("data-hub-home")) return;
+      x0 = e.clientX; y0 = e.clientY; cancel(); v("press").hidden = false;
+      timer = setTimeout(function () { cancel(); setScreen("home"); }, 1000);
+    });
+    c.addEventListener("pointermove", function (e) { if (Math.abs(e.clientX - x0) + Math.abs(e.clientY - y0) > 24) cancel(); });
+    ["pointerup", "pointercancel", "pointerleave"].forEach(function (n) { c.addEventListener(n, cancel); });
+    c.addEventListener("click", function (e) { if (e.target.hasAttribute("data-hub-home")) setScreen("home"); });
+  })();
+
+  function setScreen(s) { document.querySelector("input[name=screen][value=" + s + "]").checked = true; render(); }
+
+  function render() {
+    var dims = SLOTS[size], screen = val("screen"), t = theme();
+    hub.style.width = dims[0] + "px"; hub.style.height = dims[1] + "px";
+    hub.style.transform = "scale(" + scale + ")";
+    hub.style.setProperty("--hub-accent", t.accent);
+    v("home").hidden = screen !== "home";
+    v("clock").hidden = !(screen === "module" || screen === "identify");
+    v("down").hidden = !(screen === "connecting" || screen === "down");
+    v("ident").hidden = screen !== "identify";
+    if (screen === "home") renderHome();
+    if (!v("clock").hidden) { clock.setSize(size); }
+    // écran de la coquille : --u = min(1vw, 2.6vh) de l'emplacement
+    var u = Math.min(dims[0] / 100, dims[1] * 0.026);
+    v("down").style.setProperty("--u", u + "px");
+    var dn = screen === "down";
+    v("msg").textContent = dn ? "COMPANION NOT RUNNING" : "CONNECTING…"; v("msg").className = "msg" + (dn ? " warn" : "");
+    v("sub").textContent = dn ? "START DOT COMPANION ON THIS PC · RETRYING" : "WAITING FOR DOT COMPANION ON THIS PC";
+    // calque « Identifier » : 6vmin de l'emplacement
+    var name = v("instName").value.trim();
+    v("ident").textContent = "● " + (name || "DOT HUB").toUpperCase();
+    v("ident").style.fontSize = Math.min(dims[0], dims[1]) * 0.06 + "px";
+  }
+  function fit() { scale = frame.clientWidth / SLOTS[size][0]; render(); }
+  if (window.ResizeObserver) new ResizeObserver(fit).observe(frame); else window.addEventListener("resize", fit);
+
+  document.querySelectorAll(".settings input").forEach(function (i) { i.addEventListener("input", render); i.addEventListener("change", render); });
+  document.querySelectorAll(".sizebar .preset").forEach(function (b) {
+    b.addEventListener("click", function () {
+      size = b.getAttribute("data-size");
+      document.querySelectorAll(".sizebar .preset").forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+      frame.className = "frame " + size;
+      v("sizeTag").textContent = "Version 0.2 · taille réelle " + NOTES[size];
+      fit();
+    });
+  });
+  setInterval(function () { if (!v("clock").hidden) clock.render(); }, 1000);
+  setInterval(function () { if (val("screen") === "home") renderHome(); }, 30000);
+  fit();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+})();
+</script>
+</body>
+</html>

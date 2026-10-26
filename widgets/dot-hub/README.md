@@ -20,3 +20,7 @@ Le widget unique qui regroupe les modules Dot. C’est une coquille iCUE : l’i
 ## Tailles
 
 Toutes : l’iframe prend tout l’emplacement, chaque module gère ses tailles.
+
+## Maquette
+
+- [`mockups/reference.html`](mockups/reference.html) : ce que voit l’Edge, écran par écran (Dot Home, un module, Identifier, attente et compagnon arrêté), avec les styles du code. Le module affiché est le vrai Dot Clock (`widgets/dot-clock/scripts/clock.js`).

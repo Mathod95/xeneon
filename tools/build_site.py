@@ -62,7 +62,7 @@ def widgets():
 SHOT_JS = """
 async () => {
   const frame = document.getElementById('frame') || document.getElementById('frameXL');
-  const stage = document.getElementById('stage') || document.getElementById('stageXL');
+  const stage = document.getElementById('stage') || document.getElementById('stageXL') || document.getElementById('hub');
   if (!frame || !stage) return false;
   document.querySelectorAll('.wrap').forEach(w => { w.style.maxWidth = 'none'; });
   frame.style.maxWidth = 'none';
@@ -92,7 +92,7 @@ def previews(slugs):
             page.wait_for_timeout(300)
             if not page.evaluate(SHOT_JS):
                 continue
-            stage = page.locator("#stage, #stageXL").first
+            stage = page.locator("#stage, #stageXL, #hub").first
             out[slug] = stage.screenshot(type="jpeg", quality=88)
         browser.close()
     return out
@@ -134,6 +134,13 @@ def main():
                 if src.is_dir():
                     shutil.copytree(src, SITE / slug / sub)
             html = html.replace('<base href="../">\n', "").replace('<base href="../">', "")
+        # la maquette charge les fichiers d'un autre widget (ex. Dot Hub affiche le vrai Dot Clock)
+        for dep in sorted(set(re.findall(r'(?:href|src)="\.\./\.\./(dot-[\w-]+)/', html))):
+            for sub in ("styles", "scripts", "resources"):
+                src = ROOT / "widgets" / dep / sub
+                if src.is_dir():
+                    shutil.copytree(src, SITE / slug / dep / sub, dirs_exist_ok=True)
+            html = html.replace('"../../' + dep + "/", '"' + dep + "/")
         (SITE / slug / "index.html").write_text(html, encoding="utf-8")
         if slug in shots:
             (SITE / slug / "preview.jpg").write_bytes(shots[slug])
