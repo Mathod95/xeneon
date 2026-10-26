@@ -58,6 +58,15 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outlin
 .steps li { counter-increment: st; display: grid; grid-template-columns: auto 1fr; gap: 14px; align-items: start; padding: 16px 18px; border: 1px solid var(--line); border-radius: 14px; color: var(--label); font-size: 15px; }
 .steps li::before { content: counter(st); display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: var(--accent); color: var(--bg); font-family: var(--mono); font-weight: 500; font-size: 14px; }
 .steps b { color: var(--lit); font-weight: 600; }
+.hub-k { margin: 0; font-family: var(--mono); font-size: 12px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); }
+.parts { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr)); gap: 12px; }
+.part { display: grid; gap: 10px; align-content: start; padding: 20px 22px; border: 1px solid var(--line); border-radius: 14px; background: var(--bg); }
+.part .ph2 { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.part h3 { margin: 0; font-size: 18px; font-weight: 700; }
+.part .tag2 { font-family: var(--mono); font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--accent); }
+.part p { margin: 0; color: var(--label); font-size: 15px; }
+.daily { margin: 0; color: var(--label); font-size: 15px; }
+.daily b { color: var(--lit); font-weight: 600; }
 .hub-links { font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; flex-wrap: wrap; }
 
 /* titre */
@@ -163,6 +172,13 @@ footer a { color: var(--label); text-decoration: none; }
       <span class="status" id="hubStatus"></span>
     </div>
     <p class="hub-lead" data-i18n="hubLead"></p>
+    <p class="hub-k" data-i18n="howK"></p>
+    <div class="parts">
+      <div class="part"><div class="ph2"><h3 data-i18n="p1t"></h3><span class="tag2" data-i18n="p1k"></span></div><p data-i18n="p1"></p></div>
+      <div class="part"><div class="ph2"><h3 data-i18n="p2t"></h3><span class="tag2" data-i18n="p2k"></span></div><p data-i18n="p2"></p></div>
+    </div>
+    <p class="daily" data-i18n-html="daily"></p>
+    <p class="hub-k" data-i18n="installK"></p>
     <ol class="steps">
       <li><span data-i18n-html="step1"></span></li>
       <li><span data-i18n-html="step2"></span></li>
@@ -227,7 +243,14 @@ footer a { color: var(--label); text-decoration: none; }
   var STR = {
     fr: {
       tagline: "Widget iCUE pour le CORSAIR XENEON EDGE<i>●</i>2560 × 720, tactile, Dot style.",
-      hubLead: "Dot Hub transforme la XENEON EDGE en tableau de bord tactile au style dot-matrix. Horloge, météo, musique, Discord, Steam, maison connectée… chaque module est dessiné en points, dans le même style, et se change d'un toucher. Un seul widget à poser dans iCUE : Dot Companion, un petit programme sur le PC, fait tourner les modules, les relie à Windows et à tes services, et se règle depuis ton navigateur.",
+      hubLead: "Dot Hub transforme la CORSAIR XENEON EDGE en tableau de bord tactile, entièrement dessiné en points. Horloge, météo, musique, Discord, Steam, maison connectée, imprimante 3D… chaque fonction est un module, et tous partagent le même style dot-matrix et les mêmes couleurs.",
+      howK: "Comment ça marche",
+      p1t: "Le widget Dot Hub", p1k: "Plugin iCUE",
+      p1: "Le seul widget à installer dans iCUE. Posé sur l'Edge, il affiche l'accueil, puis le module que tu choisis, et réagit au toucher. Tu peux en poser plusieurs, sur une ou plusieurs pages : chacun garde son propre module.",
+      p2t: "Dot Companion", p2k: "Programme Windows",
+      p2: "Un petit programme qui tourne en arrière-plan sur le PC. C'est lui qui fait tourner les modules et leur donne ce qu'un widget iCUE ne peut pas faire seul : régler le son de Windows, lancer des jeux et des applications, parler à Discord, Steam, Plex ou Home Assistant, garder tes comptes et tes mots de passe à l'abri sur le PC. Sans lui, Dot Hub n'affiche rien.",
+      daily: "<b>Au quotidien</b> : sur l'Edge, un toucher sur une tuile ouvre un module, un toucher sur « ● DOT … » revient à l'accueil. Sur le PC, ⚙ SETTINGS ouvre la page de réglages dans ton navigateur : le module de chaque widget, les couleurs communes à tous les modules, tes comptes et les options.",
+      installK: "Installer",
       step1: "<b>Lance Dot Companion</b> sur le PC.",
       step2: "<b>Ajoute Dot Hub</b> sur l'Edge dans iCUE.",
       step3: "<b>Choisis un module</b> d'un toucher, règle-le depuis ⚙ SETTINGS.",
@@ -241,7 +264,14 @@ footer a { color: var(--label); text-decoration: none; }
     },
     en: {
       tagline: "iCUE widget for the CORSAIR XENEON EDGE<i>●</i>2560 × 720, touch, Dot style.",
-      hubLead: "Dot Hub turns the XENEON EDGE into a touch dashboard in dot-matrix style. Clock, weather, music, Discord, Steam, smart home… every module is drawn in dots, in one consistent style, and switches with a tap. Just one widget to place in iCUE: Dot Companion, a small app on your PC, runs the modules, connects them to Windows and your services, and is set up from your browser.",
+      hubLead: "Dot Hub turns the CORSAIR XENEON EDGE into a touch dashboard drawn entirely in dots. Clock, weather, music, Discord, Steam, smart home, 3D printer… every feature is a module, and they all share the same dot-matrix style and the same colors.",
+      howK: "How it works",
+      p1t: "The Dot Hub widget", p1k: "iCUE plugin",
+      p1: "The only widget to install in iCUE. Placed on the Edge, it shows the home screen, then the module you pick, and responds to touch. You can place several, on one or more pages: each one keeps its own module.",
+      p2t: "Dot Companion", p2k: "Windows app",
+      p2: "A small app running in the background on your PC. It runs the modules and gives them what an iCUE widget cannot do on its own: control the Windows sound, launch games and apps, talk to Discord, Steam, Plex or Home Assistant, keep your accounts and passwords safe on the PC. Without it, Dot Hub shows nothing.",
+      daily: "<b>Day to day</b>: on the Edge, tap a tile to open a module, tap « ● DOT … » to go back home. On the PC, ⚙ SETTINGS opens the settings page in your browser: the module of each widget, colors shared by all modules, your accounts and options.",
+      installK: "Install",
       step1: "<b>Run Dot Companion</b> on your PC.",
       step2: "<b>Add Dot Hub</b> to your Edge in iCUE.",
       step3: "<b>Pick a module</b> with a tap, set it up from ⚙ SETTINGS.",
