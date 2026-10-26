@@ -95,6 +95,7 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
 .stage button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 .lbl { margin: 0; white-space: nowrap; font-size: 18px; line-height: 24px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); }
 .head { position: absolute; left: 56px; right: 56px; top: 30px; height: 60px; display: flex; align-items: center; gap: 14px; }
+.stage.xl .head { top: 26px; }  /* libellé « ● DOT … » à 56 / 51 et 80 / 44, comme Dot Clock */
 .head .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); }
 .head .grow { flex: 1; }
 .pill { height: 60px; padding: 0 24px; border-radius: 999px; border: 2px solid #2a2a2a; background: transparent; color: var(--label); font-size: 18px; letter-spacing: .2em; text-transform: uppercase; }

@@ -98,6 +98,7 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
 .lbl { margin: 0; white-space: nowrap; font-size: 18px; line-height: 24px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); }
 .val { margin: 0; white-space: nowrap; font-size: 26px; letter-spacing: .06em; color: var(--lit); text-transform: uppercase; }
 .head { left: 56px; right: 56px; top: 30px; height: 60px; display: flex; align-items: center; gap: 14px; }
+.stage.xl .head { top: 26px; }  /* libellé « ● DOT … » à 56 / 51 et 80 / 44, comme Dot Clock */
 .head .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); }
 .head .grow { flex: 1; }
 .back { height: 60px; padding: 0 24px; border-radius: 999px; border: 2px solid #2a2a2a; background: transparent; color: var(--lit); font-size: 18px; letter-spacing: .2em; text-transform: uppercase; }
@@ -496,6 +497,3 @@ canvas { display: block; }
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(render);
 })();
 </script>
-
-</body>
-</html>

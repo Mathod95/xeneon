@@ -401,8 +401,9 @@ canvas { display: block; flex: none; }
       t.appendChild(btn("tab" + (mode === d[0] ? " on" : ""), d[1], function () { mode = d[0]; picker = null; render(); }));
     });
     hd.appendChild(t);
-    var m = size === "s" ? 20 : size === "m" ? 24 : 40;
-    put(hd, m, size === "s" ? 8 : 20, Z.w - 2 * m, 60);
+    // XL : libellé « ● DOT … » à la place commune (point à 56 / 51, texte à 80 / 44), comme Dot Clock
+    var m = size === "xl" ? 56 : size === "s" ? 20 : size === "m" ? 24 : 40;
+    put(hd, m, size === "xl" ? 26 : size === "s" ? 8 : 20, Z.w - 2 * m, 60);
   }
 
   // ---------- clavier générique : defs = [{k, label, cls, r, c, rs, off}]

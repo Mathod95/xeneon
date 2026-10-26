@@ -111,11 +111,11 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
 .ctl:active { transform: scale(.96); }
 .stage.idle .ctl { opacity: .3; pointer-events: none; }
 
-/* XL : pochette à gauche, texte au centre, commandes à droite */
-.stage.xl .w-cover { left: 48px; top: 48px; width: 600px; height: 600px; }
-.stage.xl .w-dot { left: 704px; top: 59px; }
-.stage.xl .w-name { left: 728px; top: 52px; }
-.stage.xl .w-state { right: 56px; top: 52px; }
+/* XL : pochette à gauche sous le libellé, texte au centre, commandes à droite */
+.stage.xl .w-cover { left: 56px; top: 100px; width: 548px; height: 548px; }
+.stage.xl .w-dot { left: 56px; top: 51px; }
+.stage.xl .w-name { left: 80px; top: 44px; }
+.stage.xl .w-state { right: 56px; top: 44px; }
 .stage.xl .w-meta { left: 704px; top: 262px; width: 1180px; }
 .stage.xl .w-title { font-size: 64px; line-height: 80px; }
 .stage.xl .w-artist { font-size: 28px; line-height: 36px; }
@@ -242,10 +242,10 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
           <tr class="todo"><td>4</td><td>Pochette</td><td>Rendue en trame de points, comme le veut la charte. Réglage « Cover style » : Mono (points de la couleur « Lit dot color », taille selon la luminosité) ou Color (points aux couleurs de la pochette). Réglage « Cover dot size » : Fine, Medium (par défaut), Coarse.</td></tr>
           <tr class="todo"><td>5</td><td>Titre, artiste, album</td><td>Fira Code en capitales : titre en Medium dans la couleur des points allumés, artiste et album dans la couleur des libellés. Une ligne avec « … » quand c'est trop long (jusqu'à 3 lignes en M). Album masquable (« Show album »). Défilement des titres longs à étudier.</td></tr>
           <tr class="todo"><td>6</td><td>Commandes</td><td>Trois boutons ronds : précédent, lecture / pause (plein, plus grand), suivant. Zones tactiles de 80 à 168 px selon la taille, au-dessus du minimum de 60 px. Le widget devient interactif (<code>interactive: true</code>).</td></tr>
-          <tr class="todo"><td>7</td><td>Libellés</td><td>« DOT SPOTIFY » en haut à gauche avec un point en couleur d'accent qui pulse pendant la lecture, état en haut à droite (PLAYING, PAUSED, IDLE). Fira Code 18 px, comme Dot Clock.</td></tr>
+          <tr class="todo"><td>7</td><td>Libellés</td><td>« DOT SPOTIFY » en haut à gauche, à la même place que dans tous les widgets (point à 56 / 51 px, texte à 80 / 44 px), avec un point en couleur d'accent qui pulse pendant la lecture, état en haut à droite (PLAYING, PAUSED, IDLE). Fira Code 18 px, comme Dot Clock.</td></tr>
           <tr class="todo"><td>8</td><td>Couleurs</td><td>Mêmes réglages que Dot Clock : « Accent color » (vert émeraude par défaut, vert Spotify <code>#1DB954</code> et rouge A proposés), « Lit dot color », « Unlit dot color », « Label color ». Fond <code>#080808</code>.</td></tr>
           <tr class="todo"><td>9</td><td>Rien en lecture</td><td>« NOTHING PLAYING » à la place du titre, « START PLAYBACK ON YOUR PC » en dessous, pochette réduite à la grille éteinte, état IDLE, commandes grisées. Jamais de morceau inventé dans iCUE.</td></tr>
-          <tr class="todo"><td>10</td><td>Tailles</td><td><b>XL</b> : pochette 600 px à gauche, texte au centre, commandes à droite.<br><b>L</b> : pochette à gauche, texte puis commandes en dessous.<br><b>M</b> : pochette 320 px et texte côte à côte, commandes centrées en bas.<br><b>S</b> : pochette 248 px, titre, artiste et commandes, sans libellés.</td></tr>
+          <tr class="todo"><td>10</td><td>Tailles</td><td><b>XL</b> : pochette 548 px à gauche, sous « DOT SPOTIFY », texte au centre, commandes à droite.<br><b>L</b> : pochette à gauche, texte puis commandes en dessous.<br><b>M</b> : pochette 320 px et texte côte à côte, commandes centrées en bas.<br><b>S</b> : pochette 248 px, titre, artiste et commandes, sans libellés.</td></tr>
         </tbody>
       </table>
     </div>
@@ -257,7 +257,7 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
   "use strict";
   function v(id) { return document.getElementById(id); }
   var SIZES = {
-    xl: { w: 2536, h: 696, cover: 600, tag: "XL 2536 × 696 px", note: "Pochette à gauche, titre au centre, commandes à droite." },
+    xl: { w: 2536, h: 696, cover: 548, tag: "XL 2536 × 696 px", note: "Pochette à gauche, titre au centre, commandes à droite." },
     l: { w: 1688, h: 696, cover: 600, tag: "L 1688 × 696 px", note: "Pochette à gauche, texte puis commandes en dessous." },
     m: { w: 840, h: 696, cover: 320, tag: "M 840 × 696 px", note: "Pochette et texte côte à côte, commandes centrées en bas." },
     s: { w: 840, h: 344, cover: 248, tag: "S 840 × 344 px", note: "Pochette, titre, artiste et commandes, sans libellés." }
@@ -390,6 +390,3 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(render);
 })();
 </script>
-
-</body>
-</html>
