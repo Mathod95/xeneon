@@ -1,7 +1,8 @@
 /*
- * Dot Clock : point d'entrée du widget iCUE.
- * Lit les réglages iCUE, détecte la taille d'emplacement (sizes.js) et confie le dessin à DotClock (clock.js),
- * le même rendu que la maquette de référence.
+ * Dot Clock : page du module, servie par le compagnon dans Dot Hub.
+ * Lit les réglages (variables globales posées par hub/module.js, mêmes noms que les x-icue-property),
+ * détecte la taille d'emplacement (sizes.js) et confie le dessin à DotClock (clock.js), le même rendu
+ * que la maquette de référence.
  */
 (function () {
 	"use strict";

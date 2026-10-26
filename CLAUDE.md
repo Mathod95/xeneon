@@ -24,10 +24,11 @@ La liste des widgets et leur description est dans `README.md`. Chaque widget a s
 ## Organisation
 
 ```
-widgets/<slug>/          un widget iCUE (index.html, manifest.json, resources/, scripts/, styles/)
+widgets/dot-hub/         le seul widget iCUE : la coquille de Dot Hub (manifest.json)
+widgets/<slug>/          un module de Dot Hub (index.html servi par le compagnon, scripts/, styles/, resources/), sans manifest.json
   README.md              fiche : statut, contenu, données, tailles, notes, mocks
   mockups/               mocks de référence (exclus du paquet)
-templates/widget/        modèle de départ, avec détection des 8 tailles (scripts/sizes.js)
+templates/widget/        modèle de départ d’un module, avec détection des 4 tailles (scripts/sizes.js)
 docs/                    documentation Markdown (DESIGN.md, SPEC-TEMPLATE.md)
 docs/DESIGN.md           charte graphique (référence unique, en cours de définition)
 docs/SPEC-TEMPLATE.md    fiche type d’un widget
@@ -40,7 +41,7 @@ companion/               Dot Companion (Rust) : serveur 127.0.0.1:47800, configu
 
 Site GitHub Pages (https://mathod95.github.io/xeneon/) : page d’accueil au style dot (`tools/site/index.html`) avec une Xeneon Edge simulée (Dot Home en page 1, une page par maquette, aperçus XL capturés avec Playwright), remplie avec le tableau du README, le statut de chaque fiche et la présence d’une maquette ; chaque maquette de référence est servie sur `/<slug>/`. Généré par `python3 tools/build_site.py` (sortie dans `site/`, ignoré par Git ; `--fragment FICHIER` pour l’aperçu en artefact) et déployé par `.github/workflows/docs.yml` à chaque push sur `main`. Le README et les fiches sont donc la source : les tenir à jour suffit.
 
-Un dossier de widget sans `manifest.json` est une fiche seule : la CI l’ignore. Créer le code avec `./scripts/new-widget.sh <slug> "<Nom>"` (le dossier ne doit pas exister ; sinon copier `templates/widget` à la main sans écraser README.md ni mockups/).
+Seul `widgets/dot-hub` a un `manifest.json` : c’est le seul paquet iCUE construit par la CI. Créer un module avec `./scripts/new-widget.sh <slug> "<Nom>"` (le dossier ne doit pas exister ; sinon copier `templates/widget` à la main sans écraser README.md ni mockups/).
 
 ## Format des widgets iCUE
 
@@ -96,14 +97,14 @@ Le compagnon sert l’interface et la configuration de Dot Hub (voir « Architec
 | github | Dot GitHub | contributions (GraphQL), pull requests, notifications et runs Actions (REST) ; token classique chiffré ; ouvre les pages GitHub dans le navigateur du PC |
 | notes | Dot Notes | notes et listes enregistrées dans un fichier (`%APPDATA%\Xeneon\notes.json`), partagées entre instances, modifiables depuis le PC |
 
-Sans compagnon : seul Dot Clock, widget autonome pour l’instant. Tous les modules de Dot Hub passent par le compagnon, même ceux qui n’ont besoin d’aucun accès Windows (Weather, Calculator, Notes…), puisqu’il sert leur interface. Les données iCUE (capteurs, FPS, Media) sont relayées par la coquille de Dot Hub.
+Sans compagnon : rien. Tous les modules de Dot Hub passent par le compagnon, même ceux qui n’ont besoin d’aucun accès Windows (Weather, Calculator, Notes…), puisqu’il sert leur interface. Les données iCUE (capteurs, FPS, Media) sont relayées par la coquille de Dot Hub.
 
 Compilation Windows : `cargo build --release` sous Windows, ou depuis Linux/WSL avec la cible `x86_64-pc-windows-gnu` et le linker `x86_64-w64-mingw32-gcc`. Pas de dépendances externes inutiles ; appels Win32 directs acceptés.
 
 ## Architecture — décision (25 octobre 2026)
 
-- **Dot Clock reste pour l’instant un widget iCUE autonome**, tel qu’il est, sans compagnon. Il rejoindra Dot Hub par la suite : son code (rendu en points, polices, mises en page, fuseaux) deviendra le module Clock.
-- **Tous les autres widgets deviennent des modules de Dot Hub**, un seul widget iCUE, servi par le compagnon. Un seul paquet à installer et à maintenir, une seule configuration (dans le compagnon), plus de plugins séparés dans iCUE.
+- **Plus aucun widget iCUE autonome** (décision du 26 octobre 2026) : **Dot Hub est le seul widget iCUE**. Chaque `dot-xxx` est un module de Dot Hub, sans `manifest.json`, jamais empaqueté seul. Dot Clock a été le premier module.
+- **Tous les widgets sont des modules de Dot Hub**, un seul widget iCUE, servi par le compagnon. Un seul paquet à installer et à maintenir, une seule configuration (dans le compagnon), plus de plugins séparés dans iCUE.
 - Dot Hub = une **coquille iCUE** minimale + une **interface web servie par le compagnon** (iframe ou redirection vers `http://localhost:<port>`, les deux vérifiées sur l’Edge avec `tests/dot-frametest`).
   - La coquille a la structure de la Checklist (clavier), fait le **pont clavier** vers l’iframe, transmet `uniqueId`, la taille de l’emplacement et les données des plugins iCUE (capteurs, FPS, Media), qui ne sont accessibles que dans la coquille.
   - Plusieurs Dot Hub peuvent être posés sur une page : chaque instance est identifiée par son `uniqueId`, et le compagnon garde son module et sa configuration.

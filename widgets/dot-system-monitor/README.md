@@ -4,6 +4,8 @@
 
 FPS du jeu en cours et 4 capteurs matériels (CPU, GPU) en direct, avec historique consultable au toucher.
 
+Ancien widget iCUE autonome : il n’est plus empaqueté. Il doit devenir un module de Dot Hub, la coquille relayant les capteurs et les FPS d’iCUE.
+
 ## Contenu et interactions
 
 - Compteur FPS dot-matrix, nom du jeu détecté, min / moyenne / max, mini-courbe sur 1 min.

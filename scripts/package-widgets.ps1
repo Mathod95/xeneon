@@ -7,7 +7,7 @@ $dist = Join-Path $root "dist"; $build = Join-Path $root ".build"
 if (Test-Path $build) { Remove-Item -Recurse -Force $build }
 New-Item -ItemType Directory -Force -Path $dist, $build | Out-Null
 Get-ChildItem -Directory (Join-Path $root "widgets") | ForEach-Object {
-    if (-not (Test-Path (Join-Path $_.FullName "manifest.json"))) { Write-Host "-- $($_.Name) : pas encore de code, ignoré"; return }
+    if (-not (Test-Path (Join-Path $_.FullName "manifest.json"))) { Write-Host "-- $($_.Name) : module de Dot Hub, pas de paquet iCUE"; return }
     Write-Host "== $($_.Name)"
     $dest = Join-Path $build $_.Name
     Copy-Item -Recurse $_.FullName $dest
