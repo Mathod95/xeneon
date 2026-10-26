@@ -1,6 +1,6 @@
 # Dot Hub
 
-**Statut :** 🟡 en cours (v0.3.0)
+**Statut :** 🟡 en cours (v0.4.0)
 
 Le widget unique qui regroupe les modules Dot. C’est une coquille iCUE : l’interface est servie par Dot Companion sur le PC et affichée dans une iframe plein cadre.
 
@@ -16,6 +16,7 @@ Le widget unique qui regroupe les modules Dot. C’est une coquille iCUE : l’i
 ## Modules disponibles
 
 - Clock : le code de `widgets/dot-clock`, servi tel quel ; ses réglages viennent de ses balises `x-icue-property`.
+- Steam : le code de `widgets/dot-steam` ; données de Steam lues par le compagnon (`companion/src/steam.rs`).
 
 ## Tailles
 

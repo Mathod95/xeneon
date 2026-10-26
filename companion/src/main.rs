@@ -3,6 +3,8 @@
 //! - écoute uniquement sur 127.0.0.1 (port 47800) ;
 //! - sert l'accueil Dot Hub, la page de réglages et les modules (pour l'instant : Clock) ;
 //! - ouvre la page de réglages dans le navigateur du PC quand on touche SETTINGS sur l'Edge ;
+//! - module Steam (Dot Steam) : jeux, téléchargements, jeu en cours, amis, lancement (voir `steam.rs`) ;
+//! - garde les secrets des modules (clés d'API) chiffrés avec DPAPI sous Windows ;
 //! - garde la configuration de chaque instance de Dot Hub (clé = `uniqueId` iCUE)
 //!   dans `%APPDATA%\Xeneon\config.json`.
 
@@ -17,11 +19,14 @@ use std::sync::atomic::{AtomicU64, Ordering};
 use std::time::{SystemTime, UNIX_EPOCH};
 use tiny_http::{Header, Method, Request, Response, Server, StatusCode};
 
+mod steam;
+
 const PORT: u16 = 47800;
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 
 static WEB: Dir = include_dir!("$CARGO_MANIFEST_DIR/web");
 static CLOCK: Dir = include_dir!("$CARGO_MANIFEST_DIR/../widgets/dot-clock");
+static STEAM: Dir = include_dir!("$CARGO_MANIFEST_DIR/../widgets/dot-steam");
 
 struct Module {
     id: &'static str,
@@ -30,7 +35,10 @@ struct Module {
 }
 
 fn modules() -> Vec<Module> {
-    vec![Module { id: "clock", name: "Dot Clock", files: &CLOCK }]
+    vec![
+        Module { id: "clock", name: "Dot Clock", files: &CLOCK },
+        Module { id: "steam", name: "Dot Steam", files: &STEAM },
+    ]
 }
 
 // ---------------------------------------------------------------- configuration
@@ -272,11 +280,36 @@ fn handle(mut req: Request, cfg: &mut Config) {
                 let list: Vec<Value> = modules().iter().map(|m| json!({ "id": m.id, "name": m.name })).collect();
                 send_json(req, 200, &Value::Array(list))
             }
-            "instances" => send_json(req, 200, &serde_json::to_value(&cfg.instances).unwrap_or(Value::Null)),
+            "instances" => {
+                let m: Map<String, Value> = cfg.instances.iter().map(|(k, i)| (k.clone(), masked(i))).collect();
+                send_json(req, 200, &Value::Object(m))
+            }
+            // Dot Steam : état de Steam pour une instance (ses réglages : jeux choisis, clé d'API des amis)
+            "steam" if seg(2) == "state" => {
+                let uid = query(&url, "uid");
+                let settings = cfg.instances.get(&uid).map(|i| i.settings.clone()).unwrap_or_default();
+                let key = settings.get("steamApiKey").and_then(Value::as_str).and_then(unseal);
+                send_json(req, 200, &steam::state(&settings, key))
+            }
+            "steam" if seg(2) == "art" => {
+                let id: u64 = seg(3).parse().unwrap_or(0);
+                match (id > 0).then(|| steam::art(id, seg(4), &cache_dir())).flatten() {
+                    Some((p, ctype)) => match fs::read(&p) {
+                        Ok(b) => {
+                            let resp = Response::from_data(b)
+                                .with_header(header("Content-Type", ctype))
+                                .with_header(header("Cache-Control", "max-age=86400"));
+                            let _ = req.respond(resp);
+                        }
+                        Err(_) => not_found(req),
+                    },
+                    None => not_found(req),
+                }
+            }
             "theme" => send_json(req, 200, &json!({ "theme": theme_full(cfg), "version": cfg.theme_version, "defaults": THEME_DEFAULTS.iter().map(|(k, v)| (k.to_string(), Value::String(v.to_string()))).collect::<Map<String, Value>>() })),
             "instance" => match cfg.instances.get(seg(2)) {
                 Some(inst) => {
-                    let mut v = serde_json::to_value(inst).unwrap_or(Value::Null);
+                    let mut v = masked(inst);
                     v["theme"] = Value::Object(theme_full(cfg));
                     v["theme_version"] = json!(cfg.theme_version);
                     send_json(req, 200, &v)
@@ -319,10 +352,23 @@ fn handle(mut req: Request, cfg: &mut Config) {
                 inst.name = n.chars().take(40).collect();
             }
             if let Some(Value::Object(s)) = patch.get("settings") {
-                inst.settings = s.clone();
+                let mut next = s.clone();
+                for k in SECRET_KEYS {
+                    match next.get(k).and_then(Value::as_str) {
+                        // masque renvoyé tel quel par la page de réglages : on garde le secret déjà enregistré
+                        Some(MASK) => match inst.settings.get(k) {
+                            Some(old) => { next.insert(k.to_string(), old.clone()); }
+                            None => { next.remove(k); }
+                        },
+                        Some("") | None => {}
+                        Some(plain) if plain.starts_with("dpapi:") || plain.starts_with("plain:") => {}
+                        Some(plain) => { next.insert(k.to_string(), Value::String(seal(plain.trim()))); }
+                    }
+                }
+                inst.settings = next;
             }
             inst.version += 1;
-            let out = serde_json::to_value(&*inst).unwrap_or(Value::Null);
+            let out = masked(inst);
             save_config(cfg);
             send_json(req, 200, &out)
         }
@@ -339,6 +385,13 @@ fn handle(mut req: Request, cfg: &mut Config) {
         (Method::Post, "api") if seg(1) == "open-settings" => {
             let ok = open_settings();
             send_json(req, if ok { 200 } else { 500 }, &json!({ "ok": ok }))
+        }
+
+        // Dot Steam : lancer un jeu (steam://rungameid/<id>, Steam démarre d'abord s'il est fermé)
+        (Method::Post, "api") if seg(1) == "steam" && seg(2) == "launch" => {
+            let id: u64 = seg(3).parse().unwrap_or(0);
+            let ok = id > 0 && open_url(&format!("steam://rungameid/{id}"));
+            send_json(req, if ok { 200 } else { 400 }, &json!({ "ok": ok }))
         }
 
         (Method::Delete, "api") if seg(1) == "instance" => {
@@ -362,21 +415,164 @@ fn open_settings() -> bool {
         return true;
     }
     LAST_OPEN.store(now, Ordering::Relaxed);
-    let url = format!("http://127.0.0.1:{PORT}/settings");
+    open_url(&format!("http://127.0.0.1:{PORT}/settings"))
+}
+
+/// Ouvre une adresse avec le programme associé du PC (navigateur, Steam pour `steam://`…).
+fn open_url(url: &str) -> bool {
     #[cfg(windows)]
     {
         use std::os::windows::process::CommandExt;
         const CREATE_NO_WINDOW: u32 = 0x0800_0000;
         std::process::Command::new("rundll32")
-            .args(["url.dll,FileProtocolHandler", &url])
+            .args(["url.dll,FileProtocolHandler", url])
             .creation_flags(CREATE_NO_WINDOW)
             .spawn()
             .is_ok()
     }
     #[cfg(not(windows))]
     {
-        std::process::Command::new("xdg-open").arg(&url).spawn().is_ok()
+        std::process::Command::new("xdg-open").arg(url).spawn().is_ok()
     }
+}
+
+// ---------------------------------------------------------------- secrets des modules
+
+/// Réglages secrets : jamais renvoyés en clair, gardés chiffrés (DPAPI, liés au compte Windows).
+const SECRET_KEYS: [&str; 1] = ["steamApiKey"];
+const MASK: &str = "••••••••";
+
+fn b64(data: &[u8]) -> String {
+    const T: &[u8; 64] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    let mut out = String::new();
+    for c in data.chunks(3) {
+        let n = (c[0] as u32) << 16 | (*c.get(1).unwrap_or(&0) as u32) << 8 | *c.get(2).unwrap_or(&0) as u32;
+        for k in 0..4 {
+            if k <= c.len() {
+                out.push(T[(n >> (18 - 6 * k) & 63) as usize] as char);
+            } else {
+                out.push('=');
+            }
+        }
+    }
+    out
+}
+
+fn unb64(s: &str) -> Option<Vec<u8>> {
+    let val = |c: u8| -> Option<u32> {
+        Some(match c {
+            b'A'..=b'Z' => c - b'A',
+            b'a'..=b'z' => c - b'a' + 26,
+            b'0'..=b'9' => c - b'0' + 52,
+            b'+' => 62,
+            b'/' => 63,
+            _ => return None,
+        } as u32)
+    };
+    let bytes: Vec<u8> = s.bytes().filter(|c| *c != b'=').collect();
+    let mut out = Vec::new();
+    for c in bytes.chunks(4) {
+        let mut n = 0u32;
+        for (k, b) in c.iter().enumerate() {
+            n |= val(*b)? << (18 - 6 * k);
+        }
+        for k in 0..c.len().saturating_sub(1) {
+            out.push((n >> (16 - 8 * k) & 255) as u8);
+        }
+    }
+    Some(out)
+}
+
+#[cfg(windows)]
+mod dpapi {
+    use std::ffi::c_void;
+    #[repr(C)]
+    struct Blob {
+        cb: u32,
+        pb: *mut u8,
+    }
+    #[link(name = "crypt32")]
+    extern "system" {
+        fn CryptProtectData(i: *const Blob, d: *const u16, e: *const Blob, r: *mut c_void, p: *mut c_void, f: u32, o: *mut Blob) -> i32;
+        fn CryptUnprotectData(i: *const Blob, d: *mut *mut u16, e: *const Blob, r: *mut c_void, p: *mut c_void, f: u32, o: *mut Blob) -> i32;
+    }
+    #[link(name = "kernel32")]
+    extern "system" {
+        fn LocalFree(h: *mut c_void) -> *mut c_void;
+    }
+    const UI_FORBIDDEN: u32 = 1;
+    fn run(data: &[u8], protect: bool) -> Option<Vec<u8>> {
+        let mut buf = data.to_vec();
+        let input = Blob { cb: buf.len() as u32, pb: buf.as_mut_ptr() };
+        let mut out = Blob { cb: 0, pb: std::ptr::null_mut() };
+        let ok = unsafe {
+            if protect {
+                CryptProtectData(&input, std::ptr::null(), std::ptr::null(), std::ptr::null_mut(), std::ptr::null_mut(), UI_FORBIDDEN, &mut out)
+            } else {
+                CryptUnprotectData(&input, std::ptr::null_mut(), std::ptr::null(), std::ptr::null_mut(), std::ptr::null_mut(), UI_FORBIDDEN, &mut out)
+            }
+        };
+        if ok == 0 || out.pb.is_null() {
+            return None;
+        }
+        let v = unsafe { std::slice::from_raw_parts(out.pb, out.cb as usize).to_vec() };
+        unsafe { LocalFree(out.pb as *mut c_void) };
+        Some(v)
+    }
+    pub fn protect(d: &[u8]) -> Option<Vec<u8>> { run(d, true) }
+    pub fn unprotect(d: &[u8]) -> Option<Vec<u8>> { run(d, false) }
+}
+
+/// Chiffre un secret pour config.json ("dpapi:…" sous Windows ; "plain:…" ailleurs, pour les essais).
+fn seal(secret: &str) -> String {
+    #[cfg(windows)]
+    {
+        if let Some(e) = dpapi::protect(secret.as_bytes()) {
+            return format!("dpapi:{}", b64(&e));
+        }
+    }
+    format!("plain:{}", b64(secret.as_bytes()))
+}
+
+fn unseal(stored: &str) -> Option<String> {
+    if let Some(rest) = stored.strip_prefix("plain:") {
+        return String::from_utf8(unb64(rest)?).ok();
+    }
+    #[cfg(windows)]
+    {
+        if let Some(rest) = stored.strip_prefix("dpapi:") {
+            return String::from_utf8(dpapi::unprotect(&unb64(rest)?)?).ok();
+        }
+    }
+    None
+}
+
+/// Copie d'une instance pour l'extérieur : secrets remplacés par un masque.
+fn masked(inst: &Instance) -> Value {
+    let mut v = serde_json::to_value(inst).unwrap_or(Value::Null);
+    if let Some(Value::Object(s)) = v.get_mut("settings") {
+        for k in SECRET_KEYS {
+            if let Some(x) = s.get_mut(k) {
+                if x.as_str().map(|t| !t.is_empty()).unwrap_or(false) {
+                    *x = Value::String(MASK.to_string());
+                }
+            }
+        }
+    }
+    v
+}
+
+fn query(url: &str, key: &str) -> String {
+    url.split_once('?')
+        .map(|(_, q)| q)
+        .unwrap_or("")
+        .split('&')
+        .find_map(|kv| kv.split_once('=').filter(|(k, _)| *k == key).map(|(_, v)| percent_decode(v)))
+        .unwrap_or_default()
+}
+
+fn cache_dir() -> PathBuf {
+    config_path().parent().map(|p| p.join("cache").join("steam")).unwrap_or_else(|| PathBuf::from("cache"))
 }
 
 fn url_encode(s: &str) -> String {

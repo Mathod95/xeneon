@@ -1,0 +1,106 @@
+/* Dot Steam : styles du rendu, partagés par le module Dot Hub et la maquette de référence. */
+@font-face {
+	font-family: "Fira Code";
+	src: url("../resources/fonts/FiraCode-Regular.woff2") format("woff2");
+	font-weight: 400;
+	font-display: block;
+}
+@font-face {
+	font-family: "Fira Code";
+	src: url("../resources/fonts/FiraCode-Medium.woff2") format("woff2");
+	font-weight: 500;
+	font-display: block;
+}
+
+.dot-steam { position: absolute; left: 0; top: 0; transform-origin: 0 0; background: #080808; --accent: #10b981; --lit: #f2f0e9; --label: #b8b6b0; --unlit: #1c1c1c; --alert: #ed403b; font-family: "Fira Code", Consolas, monospace; font-variant-ligatures: none; }
+.dot-steam.xl { width: 2536px; height: 696px; }
+.dot-steam.l { width: 1688px; height: 696px; }
+.dot-steam.m { width: 840px; height: 696px; }
+.dot-steam.s { width: 840px; height: 344px; }
+.dot-steam [hidden] { display: none !important; }
+.dot-steam > * { position: absolute; }
+.dot-steam p { margin: 0; }
+.dot-steam canvas { display: block; }
+.dot-steam button { font-family: inherit; -webkit-tap-highlight-color: transparent; }
+.dot-steam .w-lbl { white-space: nowrap; font-size: 18px; line-height: 24px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); }
+.dot-steam .w-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); }
+.dot-steam.offline .w-dot { background: var(--alert); }
+.dot-steam.launching .w-dot { animation: dot-steam-pulse .8s ease-in-out infinite; }
+@keyframes dot-steam-pulse { 50% { opacity: .3; } }
+@media (prefers-reduced-motion: reduce) { .dot-steam.launching .w-dot { animation: none; } }
+.dot-steam .ell { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-transform: uppercase; }
+
+/* libellé « ● DOT STEAM » : même place et même taille partout */
+.dot-steam .w-dot { left: 56px; top: 51px; }
+.dot-steam .w-name { left: 80px; top: 44px; }
+.dot-steam .w-state { right: 56px; top: 44px; }
+
+/* jeux : jaquette en trame de points, titre, barre d'appui */
+.dot-steam .game { position: relative; display: flex; flex-direction: column; min-width: 0; padding: 0; border: 0; background: transparent; color: inherit; text-align: left; cursor: pointer; user-select: none; touch-action: none; }
+.dot-steam .game .art { position: relative; border-radius: 6px; outline: 3px solid transparent; outline-offset: 6px; }
+.dot-steam .game.go .art, .dot-steam .game.now .art { outline-color: var(--accent); }
+.dot-steam .w-hero .go-k.now::before { content: "● "; }
+.dot-steam .game .t { margin-top: 12px; font-size: 20px; line-height: 26px; letter-spacing: .04em; color: var(--lit); }
+.dot-steam .game .hb { margin-top: 8px; height: 10px; }
+.dot-steam .game:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+/* dernier jeu joué, ou jeu en cours */
+.dot-steam .w-hero .game .t { margin-top: 18px; font-weight: 500; font-size: 44px; line-height: 54px; letter-spacing: .02em; }
+.dot-steam .w-hero .sub { margin-top: 6px; font-size: 22px; line-height: 30px; letter-spacing: .08em; text-transform: uppercase; color: var(--label); white-space: nowrap; }
+.dot-steam .w-hero .go-k { margin-top: 14px; font-size: 20px; line-height: 26px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); }
+
+.dot-steam .w-lib { display: flex; }
+.dot-steam .w-lib.grid { display: grid; }
+
+/* téléchargements et amis */
+.dot-steam .panel .w-lbl { margin-bottom: 18px; }
+.dot-steam .dl { display: flex; justify-content: space-between; gap: 20px; font-size: 22px; line-height: 28px; letter-spacing: .06em; text-transform: uppercase; }
+.dot-steam .dl .n { color: var(--lit); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dot-steam .dl .r { color: var(--label); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.dot-steam .dl.q { margin-top: 18px; }
+.dot-steam .dl.q .n { color: var(--label); }
+.dot-steam .panel .bar { margin-top: 12px; }
+.dot-steam .fr { display: flex; align-items: center; gap: 14px; font-size: 22px; line-height: 34px; letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; }
+.dot-steam .fr i { width: 10px; height: 10px; border-radius: 50%; background: var(--label); opacity: .5; flex: none; }
+.dot-steam .fr.in i { background: var(--accent); opacity: 1; }
+.dot-steam .fr .n { color: var(--lit); }
+.dot-steam .fr .g { color: var(--label); overflow: hidden; text-overflow: ellipsis; }
+.dot-steam .fr.in .g { color: var(--accent); }
+.dot-steam .fr.note { color: var(--label); white-space: normal; line-height: 30px; }
+
+.dot-steam .w-empty { display: flex; flex-direction: column; justify-content: center; gap: 14px; }
+.dot-steam .w-empty .big { font-weight: 500; color: var(--lit); font-size: 64px; line-height: 80px; letter-spacing: .02em; text-transform: uppercase; }
+.dot-steam .w-empty .sm { color: var(--label); font-size: 24px; line-height: 32px; letter-spacing: .08em; text-transform: uppercase; }
+
+/* XL : dernier jeu à gauche, 8 jeux, téléchargements et amis à droite */
+.dot-steam.xl .w-hero { left: 56px; top: 112px; width: 760px; }
+.dot-steam.xl .w-lib { left: 880px; top: 112px; width: 1600px; gap: 20px; }
+.dot-steam.xl .w-dl { left: 880px; top: 492px; width: 760px; }
+.dot-steam.xl .w-fr { left: 1720px; top: 492px; width: 760px; }
+.dot-steam.xl .w-empty { left: 56px; top: 100px; width: 2424px; height: 548px; }
+
+/* L : dernier jeu, 4 jeux, téléchargements */
+.dot-steam.l .w-hero { left: 56px; top: 112px; width: 640px; }
+.dot-steam.l .w-hero .game .t { font-size: 38px; line-height: 48px; }
+.dot-steam.l .w-lib { left: 760px; top: 112px; width: 872px; gap: 20px; }
+.dot-steam.l .w-dl { left: 760px; top: 500px; width: 872px; }
+.dot-steam.l .w-fr { display: none; }
+.dot-steam.l .w-empty { left: 56px; top: 100px; width: 1576px; height: 548px; }
+
+/* M : 4 × 2 jeux */
+.dot-steam.m .w-hero, .dot-steam.m .w-dl, .dot-steam.m .w-fr { display: none; }
+.dot-steam.m .w-lib { left: 56px; top: 104px; width: 728px; gap: 16px 20px; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.dot-steam.m .game .t { margin-top: 8px; font-size: 18px; line-height: 24px; }
+.dot-steam.m .game .hb { margin-top: 4px; height: 8px; }
+.dot-steam.m .w-empty { left: 56px; top: 100px; width: 728px; height: 548px; }
+.dot-steam.m .w-empty .big { font-size: 48px; line-height: 60px; }
+.dot-steam.m .w-empty .sm { font-size: 20px; line-height: 28px; }
+
+/* S : 4 jeux, sans libellés */
+.dot-steam.s .w-dot, .dot-steam.s .w-name, .dot-steam.s .w-state, .dot-steam.s .w-hero, .dot-steam.s .w-dl, .dot-steam.s .w-fr { display: none; }
+.dot-steam.s .w-lib { left: 48px; top: 28px; width: 744px; gap: 20px; }
+.dot-steam.s .game .t { margin-top: 8px; font-size: 16px; line-height: 22px; }
+.dot-steam.s .game .hb { margin-top: 4px; height: 8px; }
+.dot-steam.s .w-empty { left: 48px; top: 48px; width: 744px; height: 248px; }
+.dot-steam.s .w-empty .big { font-size: 40px; line-height: 52px; }
+.dot-steam.s .w-empty .sm { font-size: 20px; line-height: 28px; }

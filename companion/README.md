@@ -16,6 +16,9 @@ Programme Windows qui sert Dot Hub. Il écoute uniquement sur `127.0.0.1:47800`.
 | `GET /api/health`, `GET /api/modules`, `GET /api/instances` | état, modules, instances |
 | `GET` / `PUT` / `DELETE /api/instance/<uniqueId>` | lire, modifier (`module`, `name`, `settings`), oublier une instance |
 | `POST /api/instance/<uniqueId>/identify` | affiche le nom de l’instance sur l’Edge |
+| `GET /api/steam/state?uid=<uniqueId>` | Dot Steam : jeux (choisis ou 8 derniers joués), jeu en cours, téléchargements, amis |
+| `GET /api/steam/art/<appid>/<portrait\|wide>` | Dot Steam : jaquette (cache de Steam, sinon magasin Steam, téléchargée en arrière-plan) |
+| `POST /api/steam/launch/<appid>` | Dot Steam : lance le jeu (`steam://rungameid/<appid>`) |
 | `POST /api/open-settings` | ouvre la page de réglages dans le navigateur par défaut du PC (bouton « SETTINGS » de l’accueil ; un appel toutes les 3 s au plus) |
 | `GET` / `PUT /api/theme` | couleurs communes à tous les modules (`dotAccentColor`, `litDotColor`, `unlitDotColor`, `labelColor`) ; elles passent avant les réglages de chaque instance |
 

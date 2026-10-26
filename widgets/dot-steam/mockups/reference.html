@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<!-- Maquette de référence du Dot Steam (artefact de revue de design). Ouvrir dans un navigateur. -->
+<!-- Maquette de référence du Dot Steam. Elle charge les fichiers du module (styles/, scripts/, resources/) : la base pointe sur le dossier du module. -->
+<base href="../">
 <style>body { margin: 0; }</style>
 </head>
 <body>
@@ -13,6 +14,9 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap">
+<!-- Le module lui-même : mêmes fichiers que sur l'Edge (widgets/dot-steam/styles et scripts) -->
+<link rel="stylesheet" href="styles/steam.css">
+<script src="scripts/steam.js"></script>
 <style>
 /* Layout : maquette de référence en taille réelle (choix S, M, L, XL) avec ses réglages, puis tableau des choix. Même univers que Dot Clock, un seul thème sombre. */
 :root {
@@ -85,108 +89,17 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
 .frame.s { width: calc(840 / 2536 * 100%); aspect-ratio: 840 / 344; }
 @media (max-width: 700px) { .frame.l, .frame.m, .frame.s { width: 100%; } }
 
-/* ---------- le widget : scène en pixels réels de l'emplacement ---------- */
-.stage { position: absolute; left: 0; top: 0; transform-origin: 0 0; background: #080808; --accent: #10b981; --lit: #f2f0e9; --label: #b8b6b0; --unlit: #1c1c1c; --alert: #ed403b; font-family: "Fira Code", Consolas, monospace; font-variant-ligatures: none; }
-.stage.xl { width: 2536px; height: 696px; }
-.stage.l { width: 1688px; height: 696px; }
-.stage.m { width: 840px; height: 696px; }
-.stage.s { width: 840px; height: 344px; }
-.stage > * { position: absolute; }
-.stage p { margin: 0; }
-.stage canvas { display: block; }
-.stage button { font-family: inherit; -webkit-tap-highlight-color: transparent; }
-.w-lbl { white-space: nowrap; font-size: 18px; line-height: 24px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); }
-.w-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); }
-.stage.offline .w-dot { background: var(--alert); }
-.stage.launching .w-dot { animation: pulse .8s ease-in-out infinite; }
-@keyframes pulse { 50% { opacity: .3; } }
-@media (prefers-reduced-motion: reduce) { .stage.launching .w-dot { animation: none; } }
-.ell { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-transform: uppercase; }
-
-/* libellé « ● DOT STEAM » : même place et même taille partout */
-.w-dot { left: 56px; top: 51px; }
-.w-name { left: 80px; top: 44px; }
-.w-state { right: 56px; top: 44px; }
-
-/* jeux : jaquette en trame de points, titre, barre d'appui */
-.game { position: relative; display: flex; flex-direction: column; min-width: 0; padding: 0; border: 0; background: transparent; color: inherit; text-align: left; cursor: pointer; user-select: none; touch-action: none; }
-.game .art { position: relative; border-radius: 6px; outline: 3px solid transparent; outline-offset: 6px; }
-.game.go .art, .game.now .art { outline-color: var(--accent); }
-.w-hero .go-k.now::before { content: "● "; }
-.game .t { margin-top: 12px; font-size: 20px; line-height: 26px; letter-spacing: .04em; color: var(--lit); }
-.game .hb { margin-top: 8px; height: 10px; }
-.game:focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; }
-
-/* dernier jeu joué */
-.w-hero .game .t { margin-top: 18px; font-weight: 500; font-size: 44px; line-height: 54px; letter-spacing: .02em; }
-.w-hero .sub { margin-top: 6px; font-size: 22px; line-height: 30px; letter-spacing: .08em; text-transform: uppercase; color: var(--label); white-space: nowrap; }
-.w-hero .go-k { margin-top: 14px; font-size: 20px; line-height: 26px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); }
-
-.w-lib { display: flex; }
-.w-lib.grid { display: grid; }
-
-/* téléchargements et amis */
-.panel .w-lbl { margin-bottom: 18px; }
-.dl { display: flex; justify-content: space-between; gap: 20px; font-size: 22px; line-height: 28px; letter-spacing: .06em; text-transform: uppercase; }
-.dl .n { color: var(--lit); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.dl .r { color: var(--label); white-space: nowrap; font-variant-numeric: tabular-nums; }
-.dl.q { margin-top: 18px; }
-.dl.q .n { color: var(--label); }
-.panel .bar { margin-top: 12px; }
-.fr { display: flex; align-items: center; gap: 14px; font-size: 22px; line-height: 34px; letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; }
-.fr i { width: 10px; height: 10px; border-radius: 50%; background: var(--label); opacity: .5; flex: none; }
-.fr.in i { background: var(--accent); opacity: 1; }
-.fr .n { color: var(--lit); }
-.fr .g { color: var(--label); overflow: hidden; text-overflow: ellipsis; }
-.fr.in .g { color: var(--accent); }
-
-.w-empty { display: flex; flex-direction: column; justify-content: center; gap: 14px; }
-.w-empty .big { font-weight: 500; color: var(--lit); font-size: 64px; line-height: 80px; letter-spacing: .02em; text-transform: uppercase; }
-.w-empty .sm { color: var(--label); font-size: 24px; line-height: 32px; letter-spacing: .08em; text-transform: uppercase; }
-
-/* XL : dernier jeu à gauche, 8 jeux, téléchargements et amis à droite */
-.stage.xl .w-hero { left: 56px; top: 112px; width: 760px; }
-.stage.xl .w-lib { left: 880px; top: 112px; width: 1600px; gap: 20px; }
-.stage.xl .w-dl { left: 880px; top: 492px; width: 760px; }
-.stage.xl .w-fr { left: 1720px; top: 492px; width: 760px; }
-.stage.xl .w-empty { left: 56px; top: 100px; width: 2424px; height: 548px; }
-
-/* L : dernier jeu, 4 jeux, téléchargements */
-.stage.l .w-hero { left: 56px; top: 112px; width: 640px; }
-.stage.l .w-hero .game .t { font-size: 38px; line-height: 48px; }
-.stage.l .w-lib { left: 760px; top: 112px; width: 872px; gap: 20px; }
-.stage.l .w-dl { left: 760px; top: 500px; width: 872px; }
-.stage.l .w-fr { display: none; }
-.stage.l .w-empty { left: 56px; top: 100px; width: 1576px; height: 548px; }
-
-/* M : 4 × 2 jeux */
-.stage.m .w-hero, .stage.m .w-dl, .stage.m .w-fr { display: none; }
-.stage.m .w-lib { left: 56px; top: 104px; width: 728px; gap: 16px 20px; grid-template-columns: repeat(4, minmax(0, 1fr)); }
-.stage.m .game .t { margin-top: 8px; font-size: 18px; line-height: 24px; }
-.stage.m .game .hb { margin-top: 4px; height: 8px; }
-.stage.m .w-empty { left: 56px; top: 100px; width: 728px; height: 548px; }
-.stage.m .w-empty .big { font-size: 48px; line-height: 60px; }
-.stage.m .w-empty .sm { font-size: 20px; line-height: 28px; }
-
-/* S : 4 jeux, sans libellés */
-.stage.s .w-dot, .stage.s .w-name, .stage.s .w-state, .stage.s .w-hero, .stage.s .w-dl, .stage.s .w-fr { display: none; }
-.stage.s .w-lib { left: 48px; top: 28px; width: 744px; gap: 20px; }
-.stage.s .game .t { margin-top: 8px; font-size: 16px; line-height: 22px; }
-.stage.s .game .hb { margin-top: 4px; height: 8px; }
-.stage.s .w-empty { left: 48px; top: 48px; width: 744px; height: 248px; }
-.stage.s .w-empty .big { font-size: 40px; line-height: 52px; }
-.stage.s .w-empty .sm { font-size: 20px; line-height: 28px; }
 </style>
 
 <div class="wrap">
   <header>
     <div class="eyebrow">Module Dot Hub · CORSAIR XENEON EDGE</div>
     <h1>Dot Steam</h1>
-    <p class="lede">Première proposition, à valider point par point dans le tableau. Reprend les fonctions du Dot Launcher (jusqu'à 8 jeux, lancement au toucher, dernier jeu mis en avant) dans la charte du Dot Clock, et ajoute ce que le compagnon permet : téléchargements et amis en jeu. Les jeux, les jaquettes et les amis sont des exemples fictifs.</p>
+    <p class="lede">La maquette charge le vrai rendu du module (<code>scripts/steam.js</code>, <code>styles/steam.css</code>) : ce qu'on voit ici est ce qui tourne sur l'Edge, avec des données d'exemple. Reprend les fonctions du Dot Launcher (jusqu'à 8 jeux, lancement au toucher, dernier jeu mis en avant) dans la charte du Dot Clock, et ajoute ce que le compagnon permet : téléchargements et amis en jeu. Les jeux, les jaquettes et les amis sont des exemples fictifs.</p>
   </header>
 
   <figure>
-    <div class="tag"><b>Maquette de référence</b><span id="sizeTag">Version 0.2 · taille réelle XL 2536 × 696 px</span></div>
+    <div class="tag"><b>Maquette de référence</b><span id="sizeTag">Version 0.3 · taille réelle XL 2536 × 696 px</span></div>
     <div class="sizebar" role="radiogroup" aria-label="Taille du widget">
       <span>Widget size</span>
       <button type="button" class="preset" data-size="s" aria-pressed="false">S · 840 × 344</button>
@@ -195,16 +108,7 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
       <button type="button" class="preset" data-size="xl" aria-pressed="true">XL · 2536 × 696</button>
     </div>
     <div class="frame xl" id="frame">
-      <div class="stage xl" id="stage">
-        <span class="w-dot"></span>
-        <p class="w-lbl w-name" data-hub-home>DOT STEAM</p>
-        <p class="w-lbl w-state" id="state"></p>
-        <div class="w-hero" id="hero"></div>
-        <div class="w-lib" id="lib"></div>
-        <div class="w-dl panel" id="dl"></div>
-        <div class="w-fr panel" id="fr"></div>
-        <div class="w-empty" id="empty" hidden><p class="big">Steam not running</p><p class="sm">Games still launch: Steam starts first</p></div>
-      </div>
+      <div id="stage"></div>
     </div>
     <div class="settings" aria-label="Réglages simulés">
       <div class="grp" role="radiogroup" aria-label="Exemple">
@@ -270,173 +174,92 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
 (function () {
   "use strict";
   function v(id) { return document.getElementById(id); }
-  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; }
   function val(name) { return document.querySelector("input[name=" + name + "]:checked").value; }
-  var SIZES = {
-    xl: { w: 2536, h: 696, n: 8, libW: 1600, libH: 340, gap: 20, cap: 38, pitch: 8, heroW: 760, tag: "XL 2536 × 696 px", note: "Dernier jeu joué à gauche, 8 jeux, téléchargements et amis à droite." },
-    l: { w: 1688, h: 696, n: 4, libW: 872, libH: 360, gap: 20, cap: 38, pitch: 9, heroW: 640, tag: "L 1688 × 696 px", note: "Dernier jeu joué, 4 jeux, téléchargements." },
-    m: { w: 840, h: 696, n: 8, cols: 4, libW: 728, libH: 544, gap: 20, rowGap: 16, cap: 32, pitch: 7, heroW: 0, tag: "M 840 × 696 px", note: "4 × 2 jeux." },
-    s: { w: 840, h: 344, n: 4, libW: 744, libH: 288, gap: 20, cap: 30, pitch: 7, heroW: 0, tag: "S 840 × 344 px", note: "4 jeux, sans libellés." }
+  var NOTES = {
+    xl: ["XL 2536 × 696 px", "Dernier jeu joué à gauche, 8 jeux, téléchargements et amis à droite."],
+    l: ["L 1688 × 696 px", "Dernier jeu joué, 4 jeux, téléchargements."],
+    m: ["M 840 × 696 px", "4 × 2 jeux."],
+    s: ["S 840 × 344 px", "4 jeux, sans libellés."]
   };
-  var size = "xl", launching = null, launchTimer = null;
-  var frame = v("frame"), stage = v("stage");
+  var frame = v("frame"), stage = v("stage"), scale = 1;
 
-  function fit() { stage.style.transform = "scale(" + frame.clientWidth / SIZES[size].w + ")"; }
-  if (window.ResizeObserver) new ResizeObserver(fit).observe(frame); else window.addEventListener("resize", fit);
-
-  // jaquettes d'exemple, générées (aucune vraie jaquette)
+  // jaquettes d'exemple, générées (aucune vraie jaquette), en images comme celles servies par le compagnon
   function rng(seed) { return function () { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; }; }
   function cover(seed, a, b, w, h, kind) {
     var c = document.createElement("canvas"); c.width = w; c.height = h; var g = c.getContext("2d"), r = rng(seed);
     var gr = g.createLinearGradient(0, 0, w * 0.3, h); gr.addColorStop(0, a); gr.addColorStop(1, b); g.fillStyle = gr; g.fillRect(0, 0, w, h);
-    if (kind === "sun") { var s = g.createRadialGradient(w * .5, h * .38, 4, w * .5, h * .38, w * .42); s.addColorStop(0, "#fff3c4"); s.addColorStop(.5, "#ff8a4c"); s.addColorStop(1, "rgba(255,90,60,0)"); g.fillStyle = s; g.fillRect(0, 0, w, h); }
+    if (kind === "sun") { var sn = g.createRadialGradient(w * .5, h * .38, 4, w * .5, h * .38, w * .42); sn.addColorStop(0, "#fff3c4"); sn.addColorStop(.5, "#ff8a4c"); sn.addColorStop(1, "rgba(255,90,60,0)"); g.fillStyle = sn; g.fillRect(0, 0, w, h); }
     for (var i = 0; i < 7; i++) { g.fillStyle = "rgba(255,255,255," + (0.08 + r() * 0.5) + ")"; g.beginPath(); g.arc(r() * w, r() * h * 0.7, 6 + r() * w * 0.18, 0, Math.PI * 2); g.fill(); }
     g.fillStyle = "rgba(0,0,0,.75)"; g.beginPath(); g.moveTo(0, h);
     for (var x = 0; x <= w; x += w / 8) g.lineTo(x, h * (0.62 + r() * 0.18));
     g.lineTo(w, h); g.fill();
     if (kind === "figure") { g.fillStyle = "#0a0a0a"; g.beginPath(); g.arc(w * .5, h * .5, w * .1, 0, Math.PI * 2); g.fill(); g.fillRect(w * .4, h * .56, w * .2, h * .3); }
-    return c;
+    return c.toDataURL("image/png");
   }
+  var now = Date.now() / 1000;
   var GAMES = [
-    { name: "Neon Courier", seed: 11, a: "#2a0f5c", b: "#e0377a", kind: "figure", last: "2h ago", hours: 142 },
-    { name: "Starfall Drift", seed: 23, a: "#071a3a", b: "#3b8fd4", kind: "sun" },
-    { name: "Hollow Pines", seed: 37, a: "#0d2a1a", b: "#7fb069", kind: "figure" },
-    { name: "Ironveil", seed: 41, a: "#2b2b2b", b: "#b8b8b8", kind: "figure" },
-    { name: "Tidebound", seed: 53, a: "#04263a", b: "#29a3b8", kind: "sun" },
-    { name: "Ember Rally", seed: 67, a: "#3a0a04", b: "#ff7a1a", kind: "sun" },
-    { name: "Glass Atlas", seed: 79, a: "#1b1b3a", b: "#c7c2ff", kind: "figure" },
-    { name: "Rook & Rust", seed: 97, a: "#3a2410", b: "#d9a066", kind: "figure" }
+    { appid: 1, name: "Neon Courier", seed: 11, a: "#2a0f5c", b: "#e0377a", kind: "figure", lastPlayed: now - 7200, playtime: 8520 },
+    { appid: 2, name: "Starfall Drift", seed: 23, a: "#071a3a", b: "#3b8fd4", kind: "sun", lastPlayed: now - 86400, playtime: 3100 },
+    { appid: 3, name: "Hollow Pines", seed: 37, a: "#0d2a1a", b: "#7fb069", kind: "figure", lastPlayed: now - 2 * 86400, playtime: 1500 },
+    { appid: 4, name: "Ironveil", seed: 41, a: "#2b2b2b", b: "#b8b8b8", kind: "figure", lastPlayed: now - 3 * 86400, playtime: 920 },
+    { appid: 5, name: "Tidebound", seed: 53, a: "#04263a", b: "#29a3b8", kind: "sun", lastPlayed: now - 5 * 86400, playtime: 4400 },
+    { appid: 6, name: "Ember Rally", seed: 67, a: "#3a0a04", b: "#ff7a1a", kind: "sun", lastPlayed: now - 8 * 86400, playtime: 600 },
+    { appid: 7, name: "Glass Atlas", seed: 79, a: "#1b1b3a", b: "#c7c2ff", kind: "figure", lastPlayed: now - 12 * 86400, playtime: 2100 },
+    { appid: 8, name: "Rook & Rust", seed: 97, a: "#3a2410", b: "#d9a066", kind: "figure", lastPlayed: now - 20 * 86400, playtime: 300 }
   ];
-  GAMES.forEach(function (g) { g.tall = cover(g.seed, g.a, g.b, 120, 180, g.kind); g.wide = cover(g.seed + 1, g.a, g.b, 230, 108, g.kind); });
-  var FRIENDS = [
-    { name: "Nova", game: "Starfall Drift" }, { name: "Kiro", game: "Ember Rally" }, { name: "Lune", game: "Hollow Pines" },
-    { name: "Atlas", game: "" }, { name: "Mika", game: "" }
-  ];
+  var ART = {};
+  GAMES.forEach(function (g) { ART[g.appid] = { portrait: cover(g.seed, g.a, g.b, 120, 180, g.kind), wide: cover(g.seed + 1, g.a, g.b, 230, 108, g.kind) }; });
+  var FRIENDS = [{ name: "Nova", game: "Starfall Drift", online: true }, { name: "Kiro", game: "Ember Rally", online: true }, { name: "Lune", game: "Hollow Pines", online: true }, { name: "Atlas", game: null, online: true }];
+  var playingId = 1, started = Date.now() - 72 * 60000;
 
-  function colors() {
-    return { lit: v("litColor").value, unlit: v("showUnlit").checked ? v("unlitColor").value : null, accent: v("accentColor").value, label: v("labelColor").value };
+  // état d'exemple, au même format que GET /api/steam/state
+  function sampleState() {
+    var sample = val("sample");
+    var games = GAMES.map(function (g) { return { appid: g.appid, name: g.name, lastPlayed: g.lastPlayed, playtime: g.playtime }; });
+    var downloads = sample === "idle" ? [] : [
+      { appid: 5, name: "Tidebound · update", progress: 0.62, total: 6.2e9, speed: 38e6, eta: 240, active: true },
+      { appid: 7, name: "Glass Atlas", progress: 0, total: 41e9, speed: null, eta: null, active: false }
+    ];
+    var p = sample === "playing" ? GAMES.filter(function (g) { return g.appid === playingId; })[0] : null;
+    return {
+      steam: { found: true, running: sample !== "offline" },
+      playing: p ? { appid: p.appid, name: p.name, since: started } : null,
+      hero: 1, games: games, downloads: downloads,
+      friends: { enabled: true, error: null, list: FRIENDS }
+    };
   }
-  function dither(src, w, h, pitch, c) {
-    var cv = document.createElement("canvas"), dpr = 2;
-    cv.width = w * dpr; cv.height = h * dpr; cv.style.width = w + "px"; cv.style.height = h + "px";
-    var ctx = cv.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    var nx = Math.floor(w / pitch), ny = Math.floor(h / pitch), ox = (w - nx * pitch) / 2 + pitch / 2, oy = (h - ny * pitch) / 2 + pitch / 2, maxR = pitch * 0.46;
-    var sm = document.createElement("canvas"); sm.width = nx; sm.height = ny;
-    var sg = sm.getContext("2d"); sg.imageSmoothingQuality = "high"; sg.drawImage(src, 0, 0, nx, ny);
-    var d = sg.getImageData(0, 0, nx, ny).data, color = val("coverStyle") === "color", lo = 1, hi = 0;
-    for (var q = 0; q < d.length; q += 4) { var l0 = (0.2126 * d[q] + 0.7152 * d[q + 1] + 0.0722 * d[q + 2]) / 255; if (l0 < lo) lo = l0; if (l0 > hi) hi = l0; }
-    var span = Math.max(hi - lo, 0.2);
-    for (var y = 0; y < ny; y++) for (var x = 0; x < nx; x++) {
-      var cx = ox + x * pitch, cy = oy + y * pitch;
-      if (c.unlit) { ctx.fillStyle = c.unlit; ctx.beginPath(); ctx.arc(cx, cy, maxR, 0, Math.PI * 2); ctx.fill(); }
-      var i = (y * nx + x) * 4, r = d[i], g = d[i + 1], b = d[i + 2];
-      var lum = Math.min(1, Math.max(0, ((0.2126 * r + 0.7152 * g + 0.0722 * b) / 255 - lo) / span));
-      var rad = color ? maxR * (0.35 + 0.65 * Math.pow(lum, 0.7)) : maxR * Math.pow(lum, 0.9);
-      if (rad < 0.6) continue;
-      ctx.fillStyle = color ? "rgb(" + r + "," + g + "," + b + ")" : c.lit;
-      ctx.beginPath(); ctx.arc(cx, cy, rad, 0, Math.PI * 2); ctx.fill();
+  // réglages simulés → mêmes noms que les propriétés du module
+  function prop(name, def) {
+    switch (name) {
+      case "launchWith": return val("trigger");
+      case "coverStyle": return val("coverStyle");
+      case "showFriends": return v("showFriends").checked;
+      case "showUnlitDots": return v("showUnlit").checked;
+      case "dotAccentColor": return v("accentColor").value;
+      case "litDotColor": return v("litColor").value;
+      case "unlitDotColor": return v("unlitColor").value;
+      case "labelColor": return v("labelColor").value;
     }
-    return cv;
-  }
-  function bar(w, frac, pitch, c) {
-    var cv = document.createElement("canvas"), dpr = 2, n = Math.max(1, Math.floor(w / pitch)), h = pitch;
-    cv.width = w * dpr; cv.height = h * dpr; cv.style.width = w + "px"; cv.style.height = h + "px";
-    var ctx = cv.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    var k = Math.round(n * Math.max(0, Math.min(1, frac)));
-    for (var i = 0; i < n; i++) {
-      ctx.fillStyle = i < k ? c.accent : (c.unlit || "#1c1c1c");
-      ctx.beginPath(); ctx.arc(i * pitch + pitch / 2, h / 2, pitch * 0.36, 0, Math.PI * 2); ctx.fill();
-    }
-    return cv;
+    return def;
   }
 
-  // lancement selon le réglage : appui long, toucher ou double toucher
-  function wire(b, g, w) {
-    var mode = val("trigger"), raf = null, t0 = 0, lastTap = 0;
-    var hb = b.querySelector(".hb");
-    function paint(p) { hb.innerHTML = ""; if (p > 0) hb.appendChild(bar(w, p, size === "xl" || size === "l" ? 10 : 8, colors())); }
-    if (mode === "hold") {
-      var stop = function () { if (raf) cancelAnimationFrame(raf); raf = null; paint(0); };
-      b.addEventListener("pointerdown", function (e) {
-        e.preventDefault(); t0 = performance.now();
-        (function step(now) { var p = Math.min(1, (now - t0) / 800); paint(p); if (p >= 1) { raf = null; launch(g); return; } raf = requestAnimationFrame(step); })(t0);
-      });
-      ["pointerup", "pointerleave", "pointercancel"].forEach(function (n) { b.addEventListener(n, stop); });
-    } else if (mode === "tap") {
-      b.addEventListener("click", function () { launch(g); });
-    } else {
-      b.addEventListener("click", function () { var now = Date.now(); if (now - lastTap < 400) { lastTap = 0; launch(g); } else lastTap = now; });
-    }
-  }
-  function launch(g) {
-    launching = g.name; clearTimeout(launchTimer);
-    launchTimer = setTimeout(function () { launching = null; render(); }, 2500);
+  var steam = DotSteam.mount(stage, {
+    size: "xl",
+    art: function (appid, kind) { return (ART[appid] || {})[kind] || ""; },
+    // dans la maquette, le jeu « démarre » 2,5 s après le lancement
+    onLaunch: function (appid) {
+      setTimeout(function () { playingId = appid; started = Date.now(); document.querySelector("input[name=sample][value=playing]").checked = true; render(); }, 2500);
+    },
+    pixelRatio: function () { return Math.max(1, scale * (window.devicePixelRatio || 1)); }
+  });
+  function render() { steam.render(sampleState(), DotSteam.fromProperties(prop)); }
+  function fit() {
+    if (!frame.clientWidth) return;
+    scale = frame.clientWidth / steam.slot()[0];
+    stage.style.transform = "scale(" + scale + ")";
     render();
   }
-  function gameNode(g, src, w, h, c, big) {
-    var b = el("button", "game" + (launching === g.name ? " go" : "")); b.type = "button";
-    b.setAttribute("aria-label", "Launch " + g.name); b.style.width = w + "px";
-    var a = el("div", "art"); a.appendChild(dither(src, w, h, big ? SIZES[size].pitch + 2 : SIZES[size].pitch, c)); b.appendChild(a);
-    b.appendChild(el("p", "t ell", g.name));
-    b.appendChild(el("div", "hb"));
-    wire(b, g, w);
-    return b;
-  }
-
-  function render() {
-    var sample = val("sample"), c = colors(), Z = SIZES[size];
-    stage.style.setProperty("--accent", c.accent);
-    stage.style.setProperty("--lit", c.lit);
-    stage.style.setProperty("--label", c.label);
-    var offline = sample === "offline", now = sample === "playing";
-    stage.className = "stage " + size + (offline ? " offline" : "") + (launching ? " launching" : "");
-    var playing = FRIENDS.filter(function (f) { return f.game; }).length;
-    v("state").textContent = launching ? "LAUNCHING · " + launching.toUpperCase() : offline ? "STEAM · OFFLINE" : now ? "PLAYING · " + GAMES[0].name.toUpperCase() : "ONLINE · " + playing + " FRIENDS IN GAME";
-
-    // dernier jeu joué
-    var hero = v("hero"); hero.innerHTML = ""; hero.hidden = !Z.heroW;
-    if (Z.heroW) {
-      var g0 = GAMES[0], hw = Z.heroW, hh = Math.round(hw * 215 / 460);
-      var hb = gameNode(g0, g0.wide, hw, hh, c, true); hero.appendChild(hb);
-      if (now) hb.classList.add("now");
-      hero.appendChild(el("p", "sub", now ? "Playing for 1 h 12 min · " + (g0.hours + 1) + " h total" : "Last played " + g0.last + " · " + g0.hours + " h"));
-      hero.appendChild(el("p", "go-k" + (now ? " now" : ""), now ? "Now playing" : { hold: "Hold to play", tap: "Tap to play", double: "Double tap to play" }[val("trigger")]));
-    }
-    // bibliothèque
-    var lib = v("lib"); lib.innerHTML = "";
-    var cols = Z.cols || Z.n, rows = Math.ceil(Z.n / cols), rowGap = Z.rowGap || 0;
-    var pw = Math.floor(Math.min((Z.libW - Z.gap * (cols - 1)) / cols, ((Z.libH - rowGap * (rows - 1)) / rows - Z.cap) * 2 / 3)), ph = Math.round(pw * 1.5);
-    lib.className = "w-lib" + (Z.cols ? " grid" : "");
-    var list = Z.heroW ? GAMES.slice(Z.n === 4 ? 1 : 0, (Z.n === 4 ? 1 : 0) + Z.n) : GAMES.slice(0, Z.n);
-    list.forEach(function (g) { var n = gameNode(g, g.tall, pw, ph, c, false); if (now && g === GAMES[0]) n.classList.add("now"); lib.appendChild(n); });
-
-    // téléchargements
-    var dl = v("dl"); dl.innerHTML = ""; dl.hidden = offline || !Z.heroW;
-    if (!dl.hidden) {
-      if (sample === "idle") {
-        dl.appendChild(el("p", "w-lbl", "Downloads"));
-        dl.appendChild(el("div", "dl q")).appendChild(el("span", "n", "No downloads · 8 games up to date"));
-      } else {
-        dl.appendChild(el("p", "w-lbl", "Downloads · 2"));
-        if (now) dl.firstChild.textContent = "Downloads · paused while playing";
-        var r1 = el("div", "dl"); r1.appendChild(el("span", "n", "Tidebound · update")); r1.appendChild(el("span", "r", now ? "62% · paused" : "62% · 38 MB/s · 4 min")); dl.appendChild(r1);
-        var bb = el("div", "bar"); bb.appendChild(bar(size === "xl" ? 760 : 872, 0.62, 14, c)); dl.appendChild(bb);
-        var r2 = el("div", "dl q"); r2.appendChild(el("span", "n", "Glass Atlas")); r2.appendChild(el("span", "r", "Queued · 41 GB")); dl.appendChild(r2);
-      }
-    }
-    // amis
-    var fr = v("fr"); fr.innerHTML = ""; fr.hidden = offline || size !== "xl" || !v("showFriends").checked;
-    if (!fr.hidden) {
-      fr.appendChild(el("p", "w-lbl", "Friends · " + playing + " in game"));
-      FRIENDS.slice(0, 3).forEach(function (f) {
-        var row = el("div", "fr" + (f.game ? " in" : "")); row.appendChild(el("i"));
-        row.appendChild(el("span", "n", f.name)); row.appendChild(el("span", "g", f.game ? "· " + f.game : "· Online"));
-        fr.appendChild(row);
-      });
-    }
-    v("empty").hidden = true;
-    if (offline) { v("dl").hidden = true; v("fr").hidden = true; }
-  }
+  if (window.ResizeObserver) new ResizeObserver(fit).observe(frame); else window.addEventListener("resize", fit);
 
   document.querySelectorAll(".settings input").forEach(function (i) { i.addEventListener("input", render); i.addEventListener("change", render); });
   document.querySelectorAll(".preset[data-accent]").forEach(function (b) {
@@ -444,16 +267,16 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
   });
   document.querySelectorAll(".sizebar .preset").forEach(function (b) {
     b.addEventListener("click", function () {
-      size = b.getAttribute("data-size");
+      var size = b.getAttribute("data-size");
       document.querySelectorAll(".sizebar .preset").forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
       frame.className = "frame " + size;
-      v("sizeTag").textContent = "Version 0.2 · taille réelle " + SIZES[size].tag;
-      v("sizeNote").textContent = SIZES[size].note;
-      render(); fit();
+      v("sizeTag").textContent = "Version 0.3 · taille réelle " + NOTES[size][0];
+      v("sizeNote").textContent = NOTES[size][1];
+      steam.setSize(size); fit();
     });
   });
-
-  render(); fit();
+  fit();
+  setInterval(render, 30000);
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(render);
 })();
 </script>

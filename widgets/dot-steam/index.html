@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Dot Steam</title>
+
+		<meta name="x-icue-property" content="games" data-label="'Games to show (Steam links or app IDs, comma separated; empty = 8 last played)'" data-type="textfield" data-default="''" />
+		<meta name="x-icue-property" content="launchWith" data-label="'Launch with'" data-type="combobox" data-default="'hold'" data-values="[{'key':'hold','value':'Hold'},{'key':'tap','value':'Tap'},{'key':'double','value':'Double tap'}]" />
+		<meta name="x-icue-property" content="coverStyle" data-label="'Cover style'" data-type="combobox" data-default="'color'" data-values="[{'key':'color','value':'Color'},{'key':'mono','value':'Mono'}]" />
+		<meta name="x-icue-property" content="showFriends" data-label="'Show friends'" data-type="switch" data-default="true" />
+		<meta name="x-icue-property" content="steamApiKey" data-label="'Steam Web API key (friends; kept encrypted on this PC)'" data-type="textfield" data-default="''" />
+		<meta name="x-icue-property" content="showUnlitDots" data-label="'Show unlit dots'" data-type="switch" data-default="true" />
+
+		<meta name="x-icue-property" content="dotAccentColor" data-label="'Accent color'" data-type="color" data-default="'#10B981'" />
+		<meta name="x-icue-property" content="litDotColor" data-label="'Lit dot color'" data-type="color" data-default="'#F2F0E9'" />
+		<meta name="x-icue-property" content="unlitDotColor" data-label="'Unlit dot color'" data-type="color" data-default="'#1C1C1C'" />
+		<meta name="x-icue-property" content="labelColor" data-label="'Label color'" data-type="color" data-default="'#B8B6B0'" />
+
+		<link rel="stylesheet" href="styles/steam.css" />
+		<link rel="stylesheet" href="styles/main.css" />
+	</head>
+	<body>
+		<div id="stage"></div>
+		<script src="scripts/sizes.js"></script>
+		<script src="scripts/steam.js"></script>
+		<script src="scripts/widget.js"></script>
+	</body>
+</html>

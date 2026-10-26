@@ -107,6 +107,12 @@ a { color: var(--accent); }
 			w.addEventListener("change", function () { onChange(w.value); });
 		} else {
 			w = el("input"); w.type = "text"; w.value = value == null ? "" : value;
+			// secret (clé d'API…) : masqué, jamais renvoyé en clair par le compagnon ; un clic l'efface pour en saisir un nouveau
+			if (/apikey|secret|token|password/i.test(p.key)) {
+				w.type = "password"; w.autocomplete = "off";
+				w.addEventListener("focus", function () { if (w.value === "••••••••") w.value = ""; });
+				w.addEventListener("blur", function () { if (w.value === "" && value === "••••••••") w.value = value; });
+			}
 			w.addEventListener("input", function () { onChange(w.value); });
 		}
 		return w;
