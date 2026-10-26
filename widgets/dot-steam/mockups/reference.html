@@ -111,7 +111,8 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
 /* jeux : jaquette en trame de points, titre, barre d'appui */
 .game { position: relative; display: flex; flex-direction: column; min-width: 0; padding: 0; border: 0; background: transparent; color: inherit; text-align: left; cursor: pointer; user-select: none; touch-action: none; }
 .game .art { position: relative; border-radius: 6px; outline: 3px solid transparent; outline-offset: 6px; }
-.game.go .art { outline-color: var(--accent); }
+.game.go .art, .game.now .art { outline-color: var(--accent); }
+.w-hero .go-k.now::before { content: "● "; }
 .game .t { margin-top: 12px; font-size: 20px; line-height: 26px; letter-spacing: .04em; color: var(--lit); }
 .game .hb { margin-top: 8px; height: 10px; }
 .game:focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; }
@@ -185,7 +186,7 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
   </header>
 
   <figure>
-    <div class="tag"><b>Maquette de référence</b><span id="sizeTag">Version 0.1 · taille réelle XL 2536 × 696 px</span></div>
+    <div class="tag"><b>Maquette de référence</b><span id="sizeTag">Version 0.2 · taille réelle XL 2536 × 696 px</span></div>
     <div class="sizebar" role="radiogroup" aria-label="Taille du widget">
       <span>Widget size</span>
       <button type="button" class="preset" data-size="s" aria-pressed="false">S · 840 × 344</button>
@@ -209,6 +210,7 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
       <div class="grp" role="radiogroup" aria-label="Exemple">
         <span>Exemple</span>
         <label><input type="radio" name="sample" value="online" checked> Online</label>
+        <label><input type="radio" name="sample" value="playing"> Playing</label>
         <label><input type="radio" name="sample" value="idle"> No downloads</label>
         <label><input type="radio" name="sample" value="offline"> Steam closed</label>
       </div>
@@ -247,15 +249,17 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
         <tbody>
           <tr><td>1</td><td>Nom et module</td><td>Dot Launcher devient Dot Steam : tout passe par Steam, et Dot Apps lance déjà les programmes Windows. Module de Dot Hub servi par Dot Companion (<code>/m/steam/</code>), pas de widget iCUE autonome.</td></tr>
           <tr class="todo"><td>2</td><td>Données</td><td>Le compagnon lit les fichiers locaux de Steam : bibliothèques (<code>steamapps/libraryfolders.vdf</code>), jeux installés et téléchargements (<code>appmanifest_&lt;id&gt;.acf</code>), dernier lancement et temps de jeu (<code>userdata/&lt;id&gt;/config/localconfig.vdf</code>), jaquettes du cache local, sinon le CDN Steam. Lancement : le compagnon ouvre <code>steam://rungameid/&lt;id&gt;</code>. Amis : API Web Steam (clé d'API et SteamID64 dans les réglages du compagnon), seulement si le réglage est rempli.</td></tr>
-          <tr class="todo"><td>3</td><td>Jeux</td><td>Jusqu'à 8 jeux choisis dans les réglages du compagnon (lien Steam ou app ID), jaquette 600 × 900 en trame de points et titre. 8 en XL et M, 4 en L et S.</td></tr>
-          <tr class="todo"><td>4</td><td>Lancement</td><td>Au choix (« Launch with ») : garder le doigt (par défaut, une barre de points se remplit sous la jaquette), toucher ou double toucher. Pendant le lancement : cadre en accent autour de la jaquette, état LAUNCHING en haut à droite.</td></tr>
-          <tr class="todo"><td>5</td><td>Dernier jeu joué</td><td>En grand à gauche en XL et L : jaquette large (capsule 460 × 215) en points, titre, dernier lancement et temps de jeu total.</td></tr>
-          <tr class="todo"><td>6</td><td>Téléchargements</td><td>Jeu en cours de téléchargement ou de mise à jour : nom, pourcentage, débit, temps restant, barre de points ; jeux en attente en dessous. « No downloads » quand rien ne télécharge. XL et L.</td></tr>
-          <tr class="todo"><td>7</td><td>Amis</td><td>Amis en jeu d'abord (point en accent et nom du jeu), puis en ligne. XL seulement, masquable (« Show friends »).</td></tr>
-          <tr class="todo"><td>8</td><td>Libellés</td><td>« DOT STEAM » en haut à gauche, à la même place et à la même taille que dans tous les modules (point à 56 / 51 px, texte à 80 / 44 px, Fira Code 18 px), toucher qui ramène à Dot Home. Le titre personnalisable du Dot Launcher disparaît, pour garder le libellé identique partout. À droite : état Steam et nombre d'amis en jeu.</td></tr>
+          <tr><td>3</td><td>Jeux</td><td>Par défaut, les 8 derniers jeux joués (dernier lancement de chaque jeu). Réglage « Games » pour choisir soi-même les jeux à afficher (lien Steam ou app ID), dans l'ordre voulu. Jaquettes 600 × 900 en trame de points : cache local de Steam (<code>appcache/librarycache</code>), sinon les images publiques du magasin Steam.</td></tr>
+          <tr><td>4</td><td>Lancement</td><td>Les trois modes, au choix dans le réglage « Launch with » : garder le doigt (par défaut, une barre de points se remplit sous la jaquette), toucher, double toucher. Pendant le lancement : cadre en accent autour de la jaquette, état LAUNCHING en haut à droite.</td></tr>
+          <tr><td>5</td><td>Dernier jeu joué</td><td>En grand à gauche en XL et L : jaquette large (capsule 460 × 215) en points, titre, dernier lancement et temps de jeu total.</td></tr>
+          <tr><td>6</td><td>Téléchargements</td><td>Jeu en cours de téléchargement ou de mise à jour : nom, pourcentage, débit, temps restant, barre de points ; jeux en attente en dessous. Le pourcentage vient des fichiers de Steam ; le débit et le temps restant sont estimés par le compagnon. Pendant une partie, Steam met les téléchargements en pause par défaut : « PAUSED WHILE PLAYING ». « No downloads » quand rien ne télécharge.</td></tr>
+          <tr><td>7</td><td>Amis</td><td>Dès la première version. Amis en jeu d'abord (point en accent et nom du jeu), puis en ligne. API Web Steam avec une clé d'API (réglage du compagnon, gardée chiffrée) ; ton identifiant Steam est lu dans les fichiers de Steam (compte connecté). Masquable (« Show friends »).</td></tr>
+          <tr><td>8</td><td>Libellés</td><td>« DOT STEAM » en haut à gauche, à la même place et à la même taille que dans tous les modules (point à 56 / 51 px, texte à 80 / 44 px, Fira Code 18 px), toucher qui ramène à Dot Home. Le titre personnalisable du Dot Launcher disparaît, pour garder le libellé identique partout. À droite : état Steam et nombre d'amis en jeu.</td></tr>
           <tr class="todo"><td>9</td><td>Couleurs</td><td>Couleurs communes de la carte « Couleurs » de Dot Companion. Les thèmes du Dot Launcher (Cyberpunk, Cozy…) sont remplacés par ces couleurs. Bleu Steam <code>#66C0F4</code> proposé comme accent.</td></tr>
-          <tr class="todo"><td>10</td><td>Steam fermé</td><td>« STEAM NOT RUNNING » : les jeux restent lançables (Steam démarre d'abord), téléchargements et amis masqués.</td></tr>
-          <tr class="todo"><td>11</td><td>Tailles</td><td><b>XL</b> : dernier jeu à gauche, 8 jeux en ligne, téléchargements et amis en dessous.<br><b>L</b> : dernier jeu, 4 jeux, téléchargements.<br><b>M</b> : 4 × 2 jeux.<br><b>S</b> : 4 jeux, sans libellés.</td></tr>
+          <tr><td>10</td><td>Steam fermé</td><td>« STEAM NOT RUNNING » : les jeux restent lançables (Steam démarre d'abord), téléchargements et amis masqués.</td></tr>
+          <tr><td>11</td><td>Tailles</td><td><b>XL</b> d'abord : dernier jeu à gauche, 8 jeux en ligne, téléchargements et amis en dessous. L, M et S gardées telles quelles, reprises plus tard.</td></tr>
+          <tr class="todo"><td>12</td><td>En jeu</td><td>Le compagnon sait quel jeu tourne (registre de Steam, <code>RunningAppID</code>). Vue « Playing » : « PLAYING · NOM » à droite du libellé, le jeu en cours en grand à gauche avec un cadre en accent, durée de la partie et temps total, sa jaquette encadrée dans la rangée, téléchargements « PAUSED WHILE PLAYING ».</td></tr>
+          <tr class="todo"><td>13</td><td>Style des jaquettes</td><td>Mono (points de la couleur des points allumés) ou Color (couleurs de la jaquette), réglage « Cover style ». Valeur par défaut à choisir.</td></tr>
         </tbody>
       </table>
     </div>
@@ -384,18 +388,19 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
     stage.style.setProperty("--accent", c.accent);
     stage.style.setProperty("--lit", c.lit);
     stage.style.setProperty("--label", c.label);
-    var offline = sample === "offline";
+    var offline = sample === "offline", now = sample === "playing";
     stage.className = "stage " + size + (offline ? " offline" : "") + (launching ? " launching" : "");
     var playing = FRIENDS.filter(function (f) { return f.game; }).length;
-    v("state").textContent = launching ? "LAUNCHING · " + launching.toUpperCase() : offline ? "STEAM · OFFLINE" : "ONLINE · " + playing + " FRIENDS IN GAME";
+    v("state").textContent = launching ? "LAUNCHING · " + launching.toUpperCase() : offline ? "STEAM · OFFLINE" : now ? "PLAYING · " + GAMES[0].name.toUpperCase() : "ONLINE · " + playing + " FRIENDS IN GAME";
 
     // dernier jeu joué
     var hero = v("hero"); hero.innerHTML = ""; hero.hidden = !Z.heroW;
     if (Z.heroW) {
       var g0 = GAMES[0], hw = Z.heroW, hh = Math.round(hw * 215 / 460);
       var hb = gameNode(g0, g0.wide, hw, hh, c, true); hero.appendChild(hb);
-      hero.appendChild(el("p", "sub", "Last played " + g0.last + " · " + g0.hours + " h"));
-      hero.appendChild(el("p", "go-k", { hold: "Hold to play", tap: "Tap to play", double: "Double tap to play" }[val("trigger")]));
+      if (now) hb.classList.add("now");
+      hero.appendChild(el("p", "sub", now ? "Playing for 1 h 12 min · " + (g0.hours + 1) + " h total" : "Last played " + g0.last + " · " + g0.hours + " h"));
+      hero.appendChild(el("p", "go-k" + (now ? " now" : ""), now ? "Now playing" : { hold: "Hold to play", tap: "Tap to play", double: "Double tap to play" }[val("trigger")]));
     }
     // bibliothèque
     var lib = v("lib"); lib.innerHTML = "";
@@ -403,7 +408,7 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
     var pw = Math.floor(Math.min((Z.libW - Z.gap * (cols - 1)) / cols, ((Z.libH - rowGap * (rows - 1)) / rows - Z.cap) * 2 / 3)), ph = Math.round(pw * 1.5);
     lib.className = "w-lib" + (Z.cols ? " grid" : "");
     var list = Z.heroW ? GAMES.slice(Z.n === 4 ? 1 : 0, (Z.n === 4 ? 1 : 0) + Z.n) : GAMES.slice(0, Z.n);
-    list.forEach(function (g) { lib.appendChild(gameNode(g, g.tall, pw, ph, c, false)); });
+    list.forEach(function (g) { var n = gameNode(g, g.tall, pw, ph, c, false); if (now && g === GAMES[0]) n.classList.add("now"); lib.appendChild(n); });
 
     // téléchargements
     var dl = v("dl"); dl.innerHTML = ""; dl.hidden = offline || !Z.heroW;
@@ -413,7 +418,8 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
         dl.appendChild(el("div", "dl q")).appendChild(el("span", "n", "No downloads · 8 games up to date"));
       } else {
         dl.appendChild(el("p", "w-lbl", "Downloads · 2"));
-        var r1 = el("div", "dl"); r1.appendChild(el("span", "n", "Tidebound · update")); r1.appendChild(el("span", "r", "62% · 38 MB/s · 4 min")); dl.appendChild(r1);
+        if (now) dl.firstChild.textContent = "Downloads · paused while playing";
+        var r1 = el("div", "dl"); r1.appendChild(el("span", "n", "Tidebound · update")); r1.appendChild(el("span", "r", now ? "62% · paused" : "62% · 38 MB/s · 4 min")); dl.appendChild(r1);
         var bb = el("div", "bar"); bb.appendChild(bar(size === "xl" ? 760 : 872, 0.62, 14, c)); dl.appendChild(bb);
         var r2 = el("div", "dl q"); r2.appendChild(el("span", "n", "Glass Atlas")); r2.appendChild(el("span", "r", "Queued · 41 GB")); dl.appendChild(r2);
       }
@@ -441,7 +447,7 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
       size = b.getAttribute("data-size");
       document.querySelectorAll(".sizebar .preset").forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
       frame.className = "frame " + size;
-      v("sizeTag").textContent = "Version 0.1 · taille réelle " + SIZES[size].tag;
+      v("sizeTag").textContent = "Version 0.2 · taille réelle " + SIZES[size].tag;
       v("sizeNote").textContent = SIZES[size].note;
       render(); fit();
     });
