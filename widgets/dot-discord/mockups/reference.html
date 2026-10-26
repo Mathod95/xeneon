@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Maquette de référence du Dot Discord (artefact de revue de design). Ouvrir dans un navigateur. -->
+<style>body { margin: 0; }</style>
+</head>
+<body>
+<title>Dot Discord</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap">
+<style>
+/* Layout : maquette de référence en taille réelle (choix S, M, L, XL) avec ses réglages, puis tableau des choix. Même univers que Dot Clock, un seul thème sombre. */
+:root {
+  --page: #111111;
+  --panel: #0a0a0a;
+  --line: #262626;
+  --text: #e6e6e6;
+  --muted: #8c8c8c;
+  --brand: #10b981;
+  --mono: "IBM Plex Mono", "Cascadia Mono", Consolas, monospace;
+  --sans: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { background: var(--page); color: var(--text); }
+body {
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.55;
+  padding-block: 40px 72px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 1480px; margin: 0 auto; display: grid; gap: 40px; }
+header { display: grid; gap: 10px; }
+.eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); display: flex; align-items: center; gap: 10px; }
+.eyebrow::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--brand); }
+h1 { font-family: var(--mono); font-weight: 500; font-size: clamp(28px, 4vw, 44px); line-height: 1.1; margin: 0; letter-spacing: -.01em; }
+.lede { color: var(--muted); max-width: 72ch; margin: 0; }
+
+figure { margin: 0; display: grid; gap: 12px; min-width: 0; }
+.tag { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.tag b { color: var(--text); font-weight: 500; font-size: 14px; }
+figcaption { color: var(--muted); font-size: 14px; }
+
+/* tableau */
+.diff-head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; }
+h2 { font-family: var(--mono); font-weight: 500; font-size: 13px; letter-spacing: .14em; text-transform: uppercase; margin: 0; }
+.hint { color: var(--muted); font-size: 14px; margin: 0; }
+.table-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; }
+table { width: 100%; border-collapse: collapse; min-width: 640px; }
+th, td { text-align: left; padding: 14px 16px; vertical-align: top; border-bottom: 1px solid var(--line); }
+tr:last-child td { border-bottom: 0; }
+thead th { font-family: var(--mono); font-weight: 500; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); background: var(--panel); }
+td:first-child { font-family: var(--mono); color: var(--muted); width: 3.5em; font-variant-numeric: tabular-nums; }
+td:nth-child(2) { font-weight: 500; width: 15em; }
+tr.todo td:nth-child(3) { color: var(--muted); }
+code { font-family: var(--mono); font-size: 13px; color: var(--text); }
+
+/* réglages simulés */
+.settings { display: flex; flex-wrap: wrap; gap: 12px 28px; align-items: center; padding: 14px 16px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); }
+.settings label { display: inline-flex; align-items: center; gap: 10px; font-family: var(--mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); cursor: pointer; }
+.settings input[type=color] { width: 36px; height: 28px; padding: 0; border: 1px solid var(--line); border-radius: 6px; background: none; cursor: pointer; }
+.settings input[type=checkbox], .settings input[type=radio] { width: 18px; height: 18px; accent-color: var(--brand); cursor: pointer; }
+.settings .grp { display: inline-flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.settings .grp > span { font-family: var(--mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--text); }
+.preset { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; padding: 6px 10px; border-radius: 6px; border: 1px solid var(--line); background: transparent; color: var(--text); cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+.preset i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+.preset:focus-visible, .tab:focus-visible, .ses:focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; }
+.sizebar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; }
+.sizebar > span { font-family: var(--mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-right: 6px; }
+.sizebar .preset[aria-pressed="true"] { background: var(--text); color: #0a0a0a; border-color: var(--text); }
+
+/* cadre à l'échelle de l'XL : la largeur suit la vraie largeur de l'emplacement */
+.frame { position: relative; max-width: 100%; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: #080808; }
+.frame.xl { width: 100%; aspect-ratio: 2536 / 696; }
+.frame.l { width: calc(1688 / 2536 * 100%); aspect-ratio: 1688 / 696; }
+.frame.m { width: calc(840 / 2536 * 100%); aspect-ratio: 840 / 696; }
+.frame.s { width: calc(840 / 2536 * 100%); aspect-ratio: 840 / 344; }
+@media (max-width: 700px) { .frame.l, .frame.m, .frame.s { width: 100%; } }
+
+/* ---------- le widget : scène en pixels réels de l'emplacement ---------- */
+.stage { position: absolute; left: 0; top: 0; transform-origin: 0 0; background: #080808; --accent: #10b981; --lit: #f2f0e9; --label: #b8b6b0; --unlit: #1c1c1c; --alert: #ed403b; font-family: "Fira Code", Consolas, monospace; font-variant-ligatures: none; }
+.stage.xl { width: 2536px; height: 696px; }
+.stage.l { width: 1688px; height: 696px; }
+.stage.m { width: 840px; height: 696px; }
+.stage.s { width: 840px; height: 344px; }
+.stage > * { position: absolute; }
+.stage p { margin: 0; }
+.stage canvas { display: block; }
+.stage button { font-family: inherit; -webkit-tap-highlight-color: transparent; }
+.w-lbl { white-space: nowrap; font-size: 18px; line-height: 24px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); }
+.w-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); }
+.stage.closed .w-dot { background: var(--alert); }
+.ell { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-transform: uppercase; }
+
+/* libellé « ● DOT DISCORD » : même place et même taille partout */
+.w-dot { left: 56px; top: 51px; }
+.w-name { left: 80px; top: 44px; }
+.w-state { right: 56px; top: 44px; font-variant-numeric: tabular-nums; }
+
+/* participants */
+.w-ppl { display: grid; }
+.p { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 0; padding: 0; border: 0; background: transparent; color: inherit; cursor: pointer; }
+.p .nm { margin-top: 14px; max-width: 100%; font-size: 22px; line-height: 28px; letter-spacing: .06em; color: var(--lit); }
+.p .st { font-size: 16px; line-height: 22px; letter-spacing: .14em; text-transform: uppercase; color: var(--label); opacity: .7; white-space: nowrap; }
+.p.speaking .st { color: var(--accent); opacity: 1; }
+.p.muted .st { color: var(--alert); opacity: 1; }
+.p .vol { margin-top: 10px; }
+.p:focus-visible, .ctl:focus-visible, .vb:focus-visible, .join:focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; }
+
+/* volumes du micro et du son */
+.w-vols { display: flex; flex-direction: column; gap: 26px; }
+.vb { padding: 14px 0; margin: -14px 0; border: 0; background: transparent; cursor: pointer; text-align: left; touch-action: none; }
+.vb .k { display: flex; justify-content: space-between; font-size: 18px; line-height: 24px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); margin-bottom: 12px; }
+.vb .k b { font-weight: 400; color: var(--lit); }
+
+/* commandes */
+.w-ctls { display: flex; justify-content: space-between; }
+.cw { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+.ctl { position: relative; display: grid; place-items: center; padding: 0; border-radius: 50%; border: 2px solid #2a2a2a; background: transparent; color: var(--lit); cursor: pointer; }
+.ctl svg { width: 40%; height: 40%; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.ctl.off { background: var(--alert); border-color: var(--alert); color: #fff; }
+.ctl.leave { color: var(--alert); }
+.ctl:active { transform: scale(.96); }
+.ctl .ring { position: absolute; inset: -2px; border-radius: 50%; background: conic-gradient(var(--alert) calc(var(--p, 0) * 1turn), transparent 0); -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 6px), #000 calc(100% - 5px)); mask: radial-gradient(farthest-side, transparent calc(100% - 6px), #000 calc(100% - 5px)); pointer-events: none; }
+.cw .k { font-size: 18px; line-height: 24px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); white-space: nowrap; }
+.cw .k.off { color: var(--alert); }
+
+/* hors vocal, Discord fermé */
+.w-empty { display: flex; flex-direction: column; justify-content: center; align-items: flex-start; gap: 14px; }
+.w-empty .big { font-weight: 500; color: var(--lit); font-size: 64px; line-height: 80px; letter-spacing: .02em; text-transform: uppercase; }
+.w-empty .sm { color: var(--label); font-size: 24px; line-height: 32px; letter-spacing: .08em; text-transform: uppercase; }
+.join { margin-top: 18px; padding: 18px 32px; border-radius: 999px; border: 2px solid var(--accent); background: transparent; color: var(--accent); font-size: 22px; line-height: 28px; letter-spacing: .14em; text-transform: uppercase; cursor: pointer; }
+
+/* XL : participants à gauche, volumes et commandes à droite */
+.stage.xl .w-ppl { left: 56px; top: 104px; width: 1640px; height: 544px; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(0, 1fr)); gap: 16px 24px; }
+.stage.xl .w-vols { left: 1800px; top: 128px; width: 680px; }
+.stage.xl .w-ctls { left: 1800px; top: 400px; width: 680px; }
+.stage.xl .ctl { width: 168px; height: 168px; }
+.stage.xl .w-empty { left: 56px; top: 100px; width: 1640px; height: 548px; }
+
+/* L : 3 × 2 participants, volumes et commandes à droite */
+.stage.l .w-ppl { left: 56px; top: 104px; width: 1000px; height: 544px; grid-template-columns: repeat(3, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(0, 1fr)); gap: 16px 20px; }
+.stage.l .w-vols { left: 1136px; top: 128px; width: 496px; }
+.stage.l .w-ctls { left: 1136px; top: 420px; width: 496px; }
+.stage.l .ctl { width: 136px; height: 136px; }
+.stage.l .w-empty { left: 56px; top: 100px; width: 1000px; height: 548px; }
+
+/* M : 3 × 2 participants, commandes en bas */
+.stage.m .w-ppl { left: 56px; top: 100px; width: 728px; height: 380px; grid-template-columns: repeat(3, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(0, 1fr)); gap: 8px 16px; }
+.stage.m .p .nm { margin-top: 8px; font-size: 18px; line-height: 24px; }
+.stage.m .p .st { font-size: 14px; line-height: 20px; }
+.stage.m .w-vols { display: none; }
+.stage.m .w-ctls { left: 96px; right: 96px; bottom: 40px; }
+.stage.m .ctl { width: 112px; height: 112px; }
+.stage.m .cw { gap: 10px; }
+.stage.m .w-empty { left: 56px; top: 100px; width: 728px; height: 548px; }
+.stage.m .w-empty .big { font-size: 48px; line-height: 60px; }
+.stage.m .w-empty .sm { font-size: 20px; line-height: 28px; }
+
+/* S : avatars en ligne, micro et son à droite, sans libellés */
+.stage.s .w-dot, .stage.s .w-name, .stage.s .w-state, .stage.s .w-vols, .stage.s .cw.leave-w, .stage.s .cw .k { display: none; }
+.stage.s .w-ppl { left: 40px; top: 48px; width: 450px; height: 248px; grid-template-columns: repeat(3, minmax(0, 1fr)); grid-template-rows: 1fr; gap: 12px; }
+.stage.s .p .nm { margin-top: 10px; font-size: 18px; line-height: 24px; }
+.stage.s .p .st { display: none; }
+.stage.s .w-ctls { right: 48px; top: 104px; gap: 28px; }
+.stage.s .ctl { width: 112px; height: 112px; }
+.stage.s .w-empty { left: 48px; top: 48px; width: 744px; height: 248px; }
+.stage.s .w-empty .big { font-size: 40px; line-height: 52px; }
+.stage.s .w-empty .sm { font-size: 20px; line-height: 28px; }
+.stage.s .join { margin-top: 8px; padding: 14px 26px; font-size: 18px; }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Module Dot Hub · CORSAIR XENEON EDGE</div>
+    <h1>Dot Discord</h1>
+    <p class="lede">Première proposition, à valider point par point dans le tableau. Le salon vocal en cours sur l'Edge : qui est là, qui parle, et les commandes micro, son et raccrocher, dans la charte du Dot Clock. Les pseudos, les avatars et le serveur sont des exemples fictifs.</p>
+  </header>
+
+  <figure>
+    <div class="tag"><b>Maquette de référence</b><span id="sizeTag">Version 0.1 · taille réelle XL 2536 × 696 px</span></div>
+    <div class="sizebar" role="radiogroup" aria-label="Taille du widget">
+      <span>Widget size</span>
+      <button type="button" class="preset" data-size="s" aria-pressed="false">S · 840 × 344</button>
+      <button type="button" class="preset" data-size="m" aria-pressed="false">M · 840 × 696</button>
+      <button type="button" class="preset" data-size="l" aria-pressed="false">L · 1688 × 696</button>
+      <button type="button" class="preset" data-size="xl" aria-pressed="true">XL · 2536 × 696</button>
+    </div>
+    <div class="frame xl" id="frame">
+      <div class="stage xl" id="stage">
+        <span class="w-dot"></span>
+        <p class="w-lbl w-name" data-hub-home>DOT DISCORD</p>
+        <p class="w-lbl w-state" id="state"></p>
+        <div class="w-ppl" id="ppl"></div>
+        <div class="w-empty" id="empty" hidden><p class="big" id="emptyBig"></p><p class="sm" id="emptySm"></p><button type="button" class="join" id="joinBtn">Join #squad</button></div>
+        <div class="w-vols" id="vols">
+          <button type="button" class="vb" data-k="in" aria-label="Input volume"><span class="k"><span>Input</span><b id="inVal"></b></span><span class="bb"></span></button>
+          <button type="button" class="vb" data-k="out" aria-label="Output volume"><span class="k"><span>Output</span><b id="outVal"></b></span><span class="bb"></span></button>
+        </div>
+        <div class="w-ctls" id="ctls">
+          <div class="cw"><button type="button" class="ctl" id="micBtn" aria-label="Mute microphone"><svg viewBox="0 0 24 24" id="micIcon"></svg></button><p class="k" id="micK">Mic on</p></div>
+          <div class="cw"><button type="button" class="ctl" id="deafBtn" aria-label="Deafen"><svg viewBox="0 0 24 24" id="deafIcon"></svg></button><p class="k" id="deafK">Sound on</p></div>
+          <div class="cw leave-w"><button type="button" class="ctl leave" id="leaveBtn" aria-label="Leave call (hold)"><svg viewBox="0 0 24 24"><path d="M3 15c5-5 13-5 18 0l-2.5 2.5-3-2v-2.5c-2.3-.8-4.7-.8-7 0V15.5l-3 2z" fill="currentColor" stroke="none"/></svg><span class="ring" id="ring"></span></button><p class="k">Hold to leave</p></div>
+        </div>
+      </div>
+    </div>
+    <div class="settings" aria-label="Réglages simulés">
+      <div class="grp" role="radiogroup" aria-label="Exemple">
+        <span>Exemple</span>
+        <label><input type="radio" name="sample" value="full" checked> In call · 6</label>
+        <label><input type="radio" name="sample" value="duo"> In call · 2</label>
+        <label><input type="radio" name="sample" value="none"> Not in voice</label>
+        <label><input type="radio" name="sample" value="closed"> Discord closed</label>
+      </div>
+      <div class="grp" role="radiogroup" aria-label="Avatar style">
+        <span>Avatar style</span>
+        <label><input type="radio" name="avStyle" value="mono" checked> Mono</label>
+        <label><input type="radio" name="avStyle" value="color"> Color</label>
+      </div>
+      <label><input type="checkbox" id="showVols" checked> Show volumes</label>
+      <label><input type="checkbox" id="showUnlit" checked> Show unlit dots</label>
+      <label>Accent color <input type="color" id="accentColor" value="#10b981"></label>
+      <label>Lit dot color <input type="color" id="litColor" value="#f2f0e9"></label>
+      <label>Unlit dot color <input type="color" id="unlitColor" value="#1c1c1c"></label>
+      <label>Label color <input type="color" id="labelColor" value="#b8b6b0"></label>
+      <button type="button" class="preset" data-accent="#10b981"><i style="background:#10b981"></i>Émeraude</button>
+      <button type="button" class="preset" data-accent="#5865f2"><i style="background:#5865f2"></i>Blurple</button>
+      <button type="button" class="preset" data-accent="#ed403b"><i style="background:#ed403b"></i>Rouge A</button>
+    </div>
+    <figcaption><span id="sizeNote">Participants à gauche, volumes et commandes à droite.</span> La maquette marche : micro et son se coupent, un toucher sur un participant affiche son volume, glisser sur une barre règle le volume, garder le doigt 1 s sur le bouton rouge quitte le salon.</figcaption>
+  </figure>
+
+  <section style="display:grid;gap:14px">
+    <div class="diff-head">
+      <h2>Choix de design</h2>
+      <p class="hint">Tout est à valider. Complété au fur et à mesure.</p>
+    </div>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>#</th><th>Élément</th><th>Proposition</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>Module</td><td>Module de Dot Hub servi par Dot Companion (<code>/m/discord/</code>). Pas de widget iCUE autonome.</td></tr>
+          <tr class="todo"><td>2</td><td>Données</td><td>Le compagnon parle au client Discord du PC par son RPC local (canal <code>discord-ipc-0</code>), avec les droits <code>rpc</code>, <code>rpc.voice.read</code> et <code>rpc.voice.write</code>. Ces droits sont réservés aux applications approuvées par Discord : l'idée est que chacun crée sa propre application sur le portail développeur (ID et secret dans les réglages du compagnon), qui marche pour son propriétaire. À vérifier avant de développer. Repli sans RPC : raccourcis clavier pour micro et son, sans la liste des participants.</td></tr>
+          <tr class="todo"><td>3</td><td>Participants</td><td>Avatar en trame de points, pseudo, état. Anneau de points en accent autour de qui parle. Micro coupé ou son coupé : état en rouge (MUTED, DEAFENED). Un toucher affiche une barre de volume pour ce participant (réglage local, comme dans Discord). 8 participants au plus en XL, 6 en L et M, 3 en S ; au-delà, « +N » sur la dernière case.</td></tr>
+          <tr class="todo"><td>4</td><td>Commandes</td><td>Micro et son (couper le son coupe aussi le micro, comme dans Discord). Bouton plein en rouge quand c'est coupé, quelle que soit la couleur d'accent. Quitter le salon : garder le doigt 1 s, un anneau se remplit. En S : micro et son seulement.</td></tr>
+          <tr class="todo"><td>5</td><td>Volumes</td><td>Volume du micro et du son en barres de points, réglables en glissant. XL et L seulement, masquables (« Show volumes »).</td></tr>
+          <tr class="todo"><td>6</td><td>Libellés</td><td>« DOT DISCORD » en haut à gauche, à la même place et à la même taille que dans tous les modules (point à 56 / 51 px, texte à 80 / 44 px, Fira Code 18 px), toucher qui ramène à Dot Home. À droite : serveur, salon et durée de l'appel.</td></tr>
+          <tr class="todo"><td>7</td><td>Couleurs</td><td>Couleurs communes de la carte « Couleurs » de Dot Companion. Blurple <code>#5865F2</code> proposé comme accent.</td></tr>
+          <tr class="todo"><td>8</td><td>Hors vocal</td><td>« NOT IN VOICE », dernier salon rejoint et un bouton pour y revenir. Discord fermé : « DISCORD NOT RUNNING », point du libellé en rouge. Jamais de participant inventé.</td></tr>
+          <tr class="todo"><td>9</td><td>Plus tard</td><td>Partage d'écran et caméra en cours (pictogramme sur l'avatar), notifications de messages, choix du périphérique audio.</td></tr>
+          <tr class="todo"><td>10</td><td>Tailles</td><td><b>XL</b> : 4 × 2 participants à gauche, volumes et 3 commandes à droite.<br><b>L</b> : 3 × 2 participants, volumes et commandes à droite.<br><b>M</b> : 3 × 2 participants, commandes en bas.<br><b>S</b> : 3 avatars, micro et son, sans libellés.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  function v(id) { return document.getElementById(id); }
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; }
+  function val(name) { return document.querySelector("input[name=" + name + "]:checked").value; }
+  var SIZES = {
+    xl: { w: 2536, h: 696, max: 8, av: 196, avPitch: 8, vol: 680, tag: "XL 2536 × 696 px", note: "Participants à gauche, volumes et commandes à droite." },
+    l: { w: 1688, h: 696, max: 6, av: 168, avPitch: 8, vol: 496, tag: "L 1688 × 696 px", note: "Participants à gauche, volumes et commandes à droite." },
+    m: { w: 840, h: 696, max: 6, av: 112, avPitch: 7, vol: 0, tag: "M 840 × 696 px", note: "Participants en haut, commandes en bas." },
+    s: { w: 840, h: 344, max: 3, av: 132, avPitch: 7, vol: 0, tag: "S 840 × 344 px", note: "3 avatars, micro et son, sans libellés." }
+  };
+  var size = "xl", mic = true, sound = true, vin = 0.8, vout = 0.65, sel = -1, t0 = Date.now() - (1 * 3600 + 24 * 60 + 10) * 1000;
+  var frame = v("frame"), stage = v("stage");
+
+  function fit() { stage.style.transform = "scale(" + frame.clientWidth / SIZES[size].w + ")"; }
+  if (window.ResizeObserver) new ResizeObserver(fit).observe(frame); else window.addEventListener("resize", fit);
+
+  // avatars d'exemple, dessinés à la main
+  function art(paint) { var c = document.createElement("canvas"); c.width = c.height = 128; paint(c.getContext("2d")); return c; }
+  function disc(g, x, y, r, col) { g.fillStyle = col; g.beginPath(); g.arc(x, y, r, 0, Math.PI * 2); g.fill(); }
+  function face(bg, skin, hair) { return art(function (g) { g.fillStyle = bg; g.fillRect(0, 0, 128, 128); disc(g, 64, 140, 52, hair); disc(g, 64, 56, 28, skin); g.fillStyle = hair; g.beginPath(); g.arc(64, 50, 30, Math.PI, 0); g.fill(); }); }
+  var PEOPLE = [
+    { name: "You", av: face("#2b3b6b", "#f1c7a4", "#3a2416"), mute: false, vol: 1 },
+    { name: "Nova", av: art(function (g) { g.fillStyle = "#4c1d6b"; g.fillRect(0, 0, 128, 128); disc(g, 64, 64, 40, "#ff9bd2"); disc(g, 64, 64, 18, "#fff2fb"); }), vol: 1 },
+    { name: "Kiro", av: face("#0f4d4a", "#c98e64", "#111"), vol: 0.8 },
+    { name: "Lune", av: art(function (g) { g.fillStyle = "#0b0f24"; g.fillRect(0, 0, 128, 128); disc(g, 70, 58, 36, "#f6f0c8"); disc(g, 86, 48, 32, "#0b0f24"); }), mute: true, vol: 1 },
+    { name: "Atlas", av: art(function (g) { var gr = g.createLinearGradient(0, 0, 128, 128); gr.addColorStop(0, "#f7b733"); gr.addColorStop(1, "#fc4a1a"); g.fillStyle = gr; g.fillRect(0, 0, 128, 128); g.fillStyle = "#3b1205"; g.beginPath(); g.moveTo(10, 110); g.lineTo(64, 30); g.lineTo(118, 110); g.fill(); }), deaf: true, vol: 1 },
+    { name: "Pixel_Mika", av: face("#6b2b2b", "#f5d6bd", "#e8b04a"), vol: 1.2 }
+  ];
+  var speaking = { 1: true, 2: false };
+
+  function colors() {
+    return { lit: v("litColor").value, unlit: v("showUnlit").checked ? v("unlitColor").value : null, accent: v("accentColor").value, label: v("labelColor").value, alert: "#ed403b" };
+  }
+  // avatar rond en trame de points, anneau en accent pour qui parle
+  function avatar(src, px, pitch, ring, c) {
+    var cv = document.createElement("canvas"), dpr = 2;
+    cv.width = px * dpr; cv.height = px * dpr; cv.style.width = px + "px"; cv.style.height = px + "px";
+    var ctx = cv.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    var n = Math.floor(px / pitch), off = (px - n * pitch) / 2 + pitch / 2, R = n * pitch / 2, maxR = pitch * 0.46;
+    var sm = document.createElement("canvas"); sm.width = sm.height = n;
+    var sg = sm.getContext("2d"); sg.imageSmoothingQuality = "high"; sg.drawImage(src, 0, 0, n, n);
+    var d = sg.getImageData(0, 0, n, n).data, color = val("avStyle") === "color", lo = 1, hi = 0;
+    for (var q = 0; q < d.length; q += 4) { var l0 = (0.2126 * d[q] + 0.7152 * d[q + 1] + 0.0722 * d[q + 2]) / 255; if (l0 < lo) lo = l0; if (l0 > hi) hi = l0; }
+    var span = Math.max(hi - lo, 0.2);
+    for (var y = 0; y < n; y++) for (var x = 0; x < n; x++) {
+      var cx = off + x * pitch, cy = off + y * pitch, dist = Math.hypot(cx - px / 2, cy - px / 2);
+      if (dist > R - pitch * 0.3) continue;
+      var edge = dist > R - pitch * 1.3;
+      if (edge) { var rc = ring ? c.accent : c.unlit; if (rc) { ctx.fillStyle = rc; ctx.beginPath(); ctx.arc(cx, cy, maxR * (ring ? 1 : 0.9), 0, Math.PI * 2); ctx.fill(); } continue; }
+      if (c.unlit) { ctx.fillStyle = c.unlit; ctx.beginPath(); ctx.arc(cx, cy, maxR, 0, Math.PI * 2); ctx.fill(); }
+      var i = (y * n + x) * 4, r = d[i], g = d[i + 1], b = d[i + 2];
+      var lum = Math.min(1, Math.max(0, ((0.2126 * r + 0.7152 * g + 0.0722 * b) / 255 - lo) / span));
+      var rad = color ? maxR * (0.35 + 0.65 * Math.pow(lum, 0.7)) : maxR * Math.pow(lum, 0.9);
+      if (rad < 0.6) continue;
+      ctx.fillStyle = color ? "rgb(" + r + "," + g + "," + b + ")" : c.lit;
+      ctx.beginPath(); ctx.arc(cx, cy, rad, 0, Math.PI * 2); ctx.fill();
+    }
+    return cv;
+  }
+  function bar(w, frac, pitch, c) {
+    var cv = document.createElement("canvas"), dpr = 2, n = Math.floor(w / pitch), h = pitch;
+    cv.width = w * dpr; cv.height = h * dpr; cv.style.width = w + "px"; cv.style.height = h + "px";
+    var ctx = cv.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    var k = Math.round(n * Math.max(0, Math.min(1, frac)));
+    for (var i = 0; i < n; i++) {
+      ctx.fillStyle = i < k ? c.accent : (c.unlit || "#1c1c1c");
+      ctx.beginPath(); ctx.arc(i * pitch + pitch / 2, h / 2, pitch * 0.36, 0, Math.PI * 2); ctx.fill();
+    }
+    return cv;
+  }
+  var ICON = {
+    mic: '<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/>',
+    micOff: '<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3M4 4l16 16"/>',
+    deaf: '<path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="3" y="14" width="4" height="6" rx="1.5"/><rect x="17" y="14" width="4" height="6" rx="1.5"/>',
+    deafOff: '<path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="3" y="14" width="4" height="6" rx="1.5"/><rect x="17" y="14" width="4" height="6" rx="1.5"/><path d="M4 4l16 16"/>'
+  };
+  function hms(ms) { var s = Math.floor(ms / 1000), h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60), x = s % 60; return h + ":" + (m < 10 ? "0" : "") + m + ":" + (x < 10 ? "0" : "") + x; }
+
+  function header() {
+    var sample = val("sample");
+    v("state").textContent = sample === "closed" ? "OFFLINE" : sample === "none" ? "NOT IN VOICE" : "PIXEL CREW · #SQUAD · " + hms(Date.now() - t0);
+  }
+
+  function render() {
+    var sample = val("sample"), c = colors(), Z = SIZES[size];
+    stage.style.setProperty("--accent", c.accent);
+    stage.style.setProperty("--lit", c.lit);
+    stage.style.setProperty("--label", c.label);
+    stage.className = "stage " + size + " " + sample;
+    header();
+    var inCall = sample === "full" || sample === "duo";
+    v("ppl").hidden = !inCall; v("ctls").hidden = !inCall;
+    v("vols").hidden = !inCall || !v("showVols").checked || !Z.vol;
+    v("empty").hidden = inCall;
+    if (!inCall) {
+      v("emptyBig").textContent = sample === "closed" ? "Discord not running" : "Not in voice";
+      v("emptySm").textContent = sample === "closed" ? "Start Discord on your PC" : "Last channel · Pixel Crew · #squad";
+      v("joinBtn").hidden = sample === "closed";
+      return;
+    }
+    // participants
+    var all = sample === "duo" ? PEOPLE.slice(0, 2) : PEOPLE, list = all.slice(0, Z.max);
+    var ppl = v("ppl"); ppl.innerHTML = "";
+    if (size === "xl" || size === "l") {
+      var cols = size === "xl" ? 4 : 3;
+      ppl.style.gridTemplateRows = list.length <= cols ? "minmax(0, 1fr)" : "";
+      ppl.style.gridTemplateColumns = list.length <= cols ? "repeat(" + Math.max(list.length, 2) + ", minmax(0, 1fr))" : "";
+    } else { ppl.style.gridTemplateRows = ""; ppl.style.gridTemplateColumns = ""; }
+    var big = (size === "xl" || size === "l") && list.length <= (size === "xl" ? 4 : 3);
+    list.forEach(function (p, i) {
+      var me = i === 0, muted = me ? (!mic || !sound) : (p.mute || p.deaf), deaf = me ? !sound : p.deaf, talk = !muted && !!speaking[i];
+      var b = el("button", "p" + (talk ? " speaking" : "") + (muted ? " muted" : "")); b.type = "button";
+      b.setAttribute("aria-label", p.name);
+      var px = big ? Math.round(Z.av * 1.45) : Z.av;
+      b.appendChild(avatar(p.av, px, big ? Z.avPitch + 2 : Z.avPitch, talk, c));
+      b.appendChild(el("p", "nm ell", p.name));
+      b.appendChild(el("p", "st", deaf ? "Deafened" : muted ? "Muted" : talk ? "Speaking" : sel === i ? "Volume " + Math.round(p.vol * 100) + "%" : "Connected"));
+      if (sel === i && !me && size !== "s") {
+        var vb = el("div", "vol"); vb.appendChild(bar(Math.min(px + 40, 220), p.vol / 2, 10, c)); b.appendChild(vb);
+        var setV = function (ev) { var r = vb.getBoundingClientRect(); p.vol = Math.round(Math.max(0, Math.min(1, (ev.clientX - r.left) / r.width)) * 40) / 20; render(); };
+        vb.addEventListener("pointerdown", function (ev) { ev.stopPropagation(); vb.setPointerCapture(ev.pointerId); setV(ev); vb.onpointermove = setV; });
+        vb.addEventListener("pointerup", function () { vb.onpointermove = null; });
+        vb.addEventListener("click", function (ev) { ev.stopPropagation(); });
+      }
+      if (i === list.length - 1 && all.length > list.length) b.querySelector(".nm").textContent = "+" + (all.length - list.length + 1) + " more";
+      b.addEventListener("click", function () { if (!me) { sel = sel === i ? -1 : i; render(); } });
+      ppl.appendChild(b);
+    });
+    // volumes
+    v("inVal").textContent = Math.round(vin * 100) + "%"; v("outVal").textContent = Math.round(vout * 100) + "%";
+    document.querySelectorAll(".vb").forEach(function (b) {
+      var bb = b.querySelector(".bb"); bb.innerHTML = ""; if (Z.vol) bb.appendChild(bar(Z.vol, b.getAttribute("data-k") === "in" ? vin : vout, 16, c));
+    });
+    // commandes
+    v("micBtn").className = "ctl" + (!mic || !sound ? " off" : ""); v("micIcon").innerHTML = !mic || !sound ? ICON.micOff : ICON.mic;
+    v("deafBtn").className = "ctl" + (!sound ? " off" : ""); v("deafIcon").innerHTML = !sound ? ICON.deafOff : ICON.deaf;
+    v("micK").textContent = !mic || !sound ? "Muted" : "Mic on"; v("micK").className = "k" + (!mic || !sound ? " off" : "");
+    v("deafK").textContent = !sound ? "Deafened" : "Sound on"; v("deafK").className = "k" + (!sound ? " off" : "");
+  }
+
+  // ---------- interactions de la maquette
+  v("micBtn").addEventListener("click", function () { if (!sound) { sound = true; mic = true; } else mic = !mic; render(); });
+  v("deafBtn").addEventListener("click", function () { sound = !sound; render(); });
+  v("joinBtn").addEventListener("click", function () { document.querySelector("input[name=sample][value=full]").checked = true; t0 = Date.now(); render(); });
+  document.querySelectorAll(".vb").forEach(function (b) {
+    var setV = function (ev) {
+      var r = b.querySelector(".bb").getBoundingClientRect(), f = Math.round(Math.max(0, Math.min(1, (ev.clientX - r.left) / r.width)) * 20) / 20;
+      if (b.getAttribute("data-k") === "in") vin = f; else vout = f; render();
+    };
+    b.addEventListener("pointerdown", function (ev) { b.setPointerCapture(ev.pointerId); setV(ev); b.onpointermove = setV; });
+    b.addEventListener("pointerup", function () { b.onpointermove = null; });
+  });
+  var hold = null, h0 = 0;
+  function cancelHold() { if (hold) cancelAnimationFrame(hold); hold = null; v("ring").style.setProperty("--p", 0); }
+  v("leaveBtn").addEventListener("pointerdown", function (e) {
+    e.preventDefault(); h0 = performance.now();
+    (function step(now) {
+      var p = Math.min(1, (now - h0) / 1000);
+      v("ring").style.setProperty("--p", p);
+      if (p >= 1) { cancelHold(); document.querySelector("input[name=sample][value=none]").checked = true; render(); return; }
+      hold = requestAnimationFrame(step);
+    })(h0);
+  });
+  ["pointerup", "pointerleave", "pointercancel"].forEach(function (ev) { v("leaveBtn").addEventListener(ev, cancelHold); });
+
+  // qui parle : change de temps en temps
+  setInterval(function () {
+    header();
+    if (val("sample") === "full" || val("sample") === "duo") {
+      speaking = {}; [0, 1, 2, 5].forEach(function (i) { if (Math.random() < 0.35) speaking[i] = true; });
+      if (!mic) delete speaking[0];
+      render();
+    }
+  }, 1200);
+
+  document.querySelectorAll(".settings input").forEach(function (i) { i.addEventListener("input", render); i.addEventListener("change", render); });
+  document.querySelectorAll(".preset[data-accent]").forEach(function (b) {
+    b.addEventListener("click", function () { v("accentColor").value = b.getAttribute("data-accent"); render(); });
+  });
+  document.querySelectorAll(".sizebar .preset").forEach(function (b) {
+    b.addEventListener("click", function () {
+      size = b.getAttribute("data-size");
+      document.querySelectorAll(".sizebar .preset").forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+      frame.className = "frame " + size;
+      v("sizeTag").textContent = "Version 0.1 · taille réelle " + SIZES[size].tag;
+      v("sizeNote").textContent = SIZES[size].note;
+      render(); fit();
+    });
+  });
+
+  render(); fit();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(render);
+})();
+</script>
+</body>
+</html>
