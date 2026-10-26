@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Maquette de référence du Dot Steam (artefact de revue de design). Ouvrir dans un navigateur. -->
+<style>body { margin: 0; }</style>
+</head>
+<body>
+<title>Dot Steam</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap">
+<style>
+/* Layout : maquette de référence en taille réelle (choix S, M, L, XL) avec ses réglages, puis tableau des choix. Même univers que Dot Clock, un seul thème sombre. */
+:root {
+  --page: #111111;
+  --panel: #0a0a0a;
+  --line: #262626;
+  --text: #e6e6e6;
+  --muted: #8c8c8c;
+  --brand: #10b981;
+  --mono: "IBM Plex Mono", "Cascadia Mono", Consolas, monospace;
+  --sans: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { background: var(--page); color: var(--text); }
+body {
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.55;
+  padding-block: 40px 72px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 1480px; margin: 0 auto; display: grid; gap: 40px; }
+header { display: grid; gap: 10px; }
+.eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); display: flex; align-items: center; gap: 10px; }
+.eyebrow::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--brand); }
+h1 { font-family: var(--mono); font-weight: 500; font-size: clamp(28px, 4vw, 44px); line-height: 1.1; margin: 0; letter-spacing: -.01em; }
+.lede { color: var(--muted); max-width: 72ch; margin: 0; }
+
+figure { margin: 0; display: grid; gap: 12px; min-width: 0; }
+.tag { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.tag b { color: var(--text); font-weight: 500; font-size: 14px; }
+figcaption { color: var(--muted); font-size: 14px; }
+
+/* tableau */
+.diff-head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; }
+h2 { font-family: var(--mono); font-weight: 500; font-size: 13px; letter-spacing: .14em; text-transform: uppercase; margin: 0; }
+.hint { color: var(--muted); font-size: 14px; margin: 0; }
+.table-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; }
+table { width: 100%; border-collapse: collapse; min-width: 640px; }
+th, td { text-align: left; padding: 14px 16px; vertical-align: top; border-bottom: 1px solid var(--line); }
+tr:last-child td { border-bottom: 0; }
+thead th { font-family: var(--mono); font-weight: 500; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); background: var(--panel); }
+td:first-child { font-family: var(--mono); color: var(--muted); width: 3.5em; font-variant-numeric: tabular-nums; }
+td:nth-child(2) { font-weight: 500; width: 15em; }
+tr.todo td:nth-child(3) { color: var(--muted); }
+code { font-family: var(--mono); font-size: 13px; color: var(--text); }
+
+/* réglages simulés */
+.settings { display: flex; flex-wrap: wrap; gap: 12px 28px; align-items: center; padding: 14px 16px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); }
+.settings label { display: inline-flex; align-items: center; gap: 10px; font-family: var(--mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); cursor: pointer; }
+.settings input[type=color] { width: 36px; height: 28px; padding: 0; border: 1px solid var(--line); border-radius: 6px; background: none; cursor: pointer; }
+.settings input[type=checkbox], .settings input[type=radio] { width: 18px; height: 18px; accent-color: var(--brand); cursor: pointer; }
+.settings .grp { display: inline-flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.settings .grp > span { font-family: var(--mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--text); }
+.preset { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; padding: 6px 10px; border-radius: 6px; border: 1px solid var(--line); background: transparent; color: var(--text); cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+.preset i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+.preset:focus-visible, .tab:focus-visible, .ses:focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; }
+.sizebar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; }
+.sizebar > span { font-family: var(--mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-right: 6px; }
+.sizebar .preset[aria-pressed="true"] { background: var(--text); color: #0a0a0a; border-color: var(--text); }
+
+/* cadre à l'échelle de l'XL : la largeur suit la vraie largeur de l'emplacement */
+.frame { position: relative; max-width: 100%; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: #080808; }
+.frame.xl { width: 100%; aspect-ratio: 2536 / 696; }
+.frame.l { width: calc(1688 / 2536 * 100%); aspect-ratio: 1688 / 696; }
+.frame.m { width: calc(840 / 2536 * 100%); aspect-ratio: 840 / 696; }
+.frame.s { width: calc(840 / 2536 * 100%); aspect-ratio: 840 / 344; }
+@media (max-width: 700px) { .frame.l, .frame.m, .frame.s { width: 100%; } }
+
+/* ---------- le widget : scène en pixels réels de l'emplacement ---------- */
+.stage { position: absolute; left: 0; top: 0; transform-origin: 0 0; background: #080808; --accent: #10b981; --lit: #f2f0e9; --label: #b8b6b0; --unlit: #1c1c1c; --alert: #ed403b; font-family: "Fira Code", Consolas, monospace; font-variant-ligatures: none; }
+.stage.xl { width: 2536px; height: 696px; }
+.stage.l { width: 1688px; height: 696px; }
+.stage.m { width: 840px; height: 696px; }
+.stage.s { width: 840px; height: 344px; }
+.stage > * { position: absolute; }
+.stage p { margin: 0; }
+.stage canvas { display: block; }
+.stage button { font-family: inherit; -webkit-tap-highlight-color: transparent; }
+.w-lbl { white-space: nowrap; font-size: 18px; line-height: 24px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); }
+.w-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); }
+.stage.offline .w-dot { background: var(--alert); }
+.stage.launching .w-dot { animation: pulse .8s ease-in-out infinite; }
+@keyframes pulse { 50% { opacity: .3; } }
+@media (prefers-reduced-motion: reduce) { .stage.launching .w-dot { animation: none; } }
+.ell { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-transform: uppercase; }
+
+/* libellé « ● DOT STEAM » : même place et même taille partout */
+.w-dot { left: 56px; top: 51px; }
+.w-name { left: 80px; top: 44px; }
+.w-state { right: 56px; top: 44px; }
+
+/* jeux : jaquette en trame de points, titre, barre d'appui */
+.game { position: relative; display: flex; flex-direction: column; min-width: 0; padding: 0; border: 0; background: transparent; color: inherit; text-align: left; cursor: pointer; user-select: none; touch-action: none; }
+.game .art { position: relative; border-radius: 6px; outline: 3px solid transparent; outline-offset: 6px; }
+.game.go .art { outline-color: var(--accent); }
+.game .t { margin-top: 12px; font-size: 20px; line-height: 26px; letter-spacing: .04em; color: var(--lit); }
+.game .hb { margin-top: 8px; height: 10px; }
+.game:focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; }
+
+/* dernier jeu joué */
+.w-hero .game .t { margin-top: 18px; font-weight: 500; font-size: 44px; line-height: 54px; letter-spacing: .02em; }
+.w-hero .sub { margin-top: 6px; font-size: 22px; line-height: 30px; letter-spacing: .08em; text-transform: uppercase; color: var(--label); white-space: nowrap; }
+.w-hero .go-k { margin-top: 14px; font-size: 20px; line-height: 26px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); }
+
+.w-lib { display: flex; }
+.w-lib.grid { display: grid; }
+
+/* téléchargements et amis */
+.panel .w-lbl { margin-bottom: 18px; }
+.dl { display: flex; justify-content: space-between; gap: 20px; font-size: 22px; line-height: 28px; letter-spacing: .06em; text-transform: uppercase; }
+.dl .n { color: var(--lit); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dl .r { color: var(--label); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.dl.q { margin-top: 18px; }
+.dl.q .n { color: var(--label); }
+.panel .bar { margin-top: 12px; }
+.fr { display: flex; align-items: center; gap: 14px; font-size: 22px; line-height: 34px; letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; }
+.fr i { width: 10px; height: 10px; border-radius: 50%; background: var(--label); opacity: .5; flex: none; }
+.fr.in i { background: var(--accent); opacity: 1; }
+.fr .n { color: var(--lit); }
+.fr .g { color: var(--label); overflow: hidden; text-overflow: ellipsis; }
+.fr.in .g { color: var(--accent); }
+
+.w-empty { display: flex; flex-direction: column; justify-content: center; gap: 14px; }
+.w-empty .big { font-weight: 500; color: var(--lit); font-size: 64px; line-height: 80px; letter-spacing: .02em; text-transform: uppercase; }
+.w-empty .sm { color: var(--label); font-size: 24px; line-height: 32px; letter-spacing: .08em; text-transform: uppercase; }
+
+/* XL : dernier jeu à gauche, 8 jeux, téléchargements et amis à droite */
+.stage.xl .w-hero { left: 56px; top: 112px; width: 760px; }
+.stage.xl .w-lib { left: 880px; top: 112px; width: 1600px; gap: 20px; }
+.stage.xl .w-dl { left: 880px; top: 492px; width: 760px; }
+.stage.xl .w-fr { left: 1720px; top: 492px; width: 760px; }
+.stage.xl .w-empty { left: 56px; top: 100px; width: 2424px; height: 548px; }
+
+/* L : dernier jeu, 4 jeux, téléchargements */
+.stage.l .w-hero { left: 56px; top: 112px; width: 640px; }
+.stage.l .w-hero .game .t { font-size: 38px; line-height: 48px; }
+.stage.l .w-lib { left: 760px; top: 112px; width: 872px; gap: 20px; }
+.stage.l .w-dl { left: 760px; top: 500px; width: 872px; }
+.stage.l .w-fr { display: none; }
+.stage.l .w-empty { left: 56px; top: 100px; width: 1576px; height: 548px; }
+
+/* M : 4 × 2 jeux */
+.stage.m .w-hero, .stage.m .w-dl, .stage.m .w-fr { display: none; }
+.stage.m .w-lib { left: 56px; top: 104px; width: 728px; gap: 16px 20px; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.stage.m .game .t { margin-top: 8px; font-size: 18px; line-height: 24px; }
+.stage.m .game .hb { margin-top: 4px; height: 8px; }
+.stage.m .w-empty { left: 56px; top: 100px; width: 728px; height: 548px; }
+.stage.m .w-empty .big { font-size: 48px; line-height: 60px; }
+.stage.m .w-empty .sm { font-size: 20px; line-height: 28px; }
+
+/* S : 4 jeux, sans libellés */
+.stage.s .w-dot, .stage.s .w-name, .stage.s .w-state, .stage.s .w-hero, .stage.s .w-dl, .stage.s .w-fr { display: none; }
+.stage.s .w-lib { left: 48px; top: 28px; width: 744px; gap: 20px; }
+.stage.s .game .t { margin-top: 8px; font-size: 16px; line-height: 22px; }
+.stage.s .game .hb { margin-top: 4px; height: 8px; }
+.stage.s .w-empty { left: 48px; top: 48px; width: 744px; height: 248px; }
+.stage.s .w-empty .big { font-size: 40px; line-height: 52px; }
+.stage.s .w-empty .sm { font-size: 20px; line-height: 28px; }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Module Dot Hub · CORSAIR XENEON EDGE</div>
+    <h1>Dot Steam</h1>
+    <p class="lede">Première proposition, à valider point par point dans le tableau. Reprend les fonctions du Dot Launcher (jusqu'à 8 jeux, lancement au toucher, dernier jeu mis en avant) dans la charte du Dot Clock, et ajoute ce que le compagnon permet : téléchargements et amis en jeu. Les jeux, les jaquettes et les amis sont des exemples fictifs.</p>
+  </header>
+
+  <figure>
+    <div class="tag"><b>Maquette de référence</b><span id="sizeTag">Version 0.1 · taille réelle XL 2536 × 696 px</span></div>
+    <div class="sizebar" role="radiogroup" aria-label="Taille du widget">
+      <span>Widget size</span>
+      <button type="button" class="preset" data-size="s" aria-pressed="false">S · 840 × 344</button>
+      <button type="button" class="preset" data-size="m" aria-pressed="false">M · 840 × 696</button>
+      <button type="button" class="preset" data-size="l" aria-pressed="false">L · 1688 × 696</button>
+      <button type="button" class="preset" data-size="xl" aria-pressed="true">XL · 2536 × 696</button>
+    </div>
+    <div class="frame xl" id="frame">
+      <div class="stage xl" id="stage">
+        <span class="w-dot"></span>
+        <p class="w-lbl w-name" data-hub-home>DOT STEAM</p>
+        <p class="w-lbl w-state" id="state"></p>
+        <div class="w-hero" id="hero"></div>
+        <div class="w-lib" id="lib"></div>
+        <div class="w-dl panel" id="dl"></div>
+        <div class="w-fr panel" id="fr"></div>
+        <div class="w-empty" id="empty" hidden><p class="big">Steam not running</p><p class="sm">Games still launch: Steam starts first</p></div>
+      </div>
+    </div>
+    <div class="settings" aria-label="Réglages simulés">
+      <div class="grp" role="radiogroup" aria-label="Exemple">
+        <span>Exemple</span>
+        <label><input type="radio" name="sample" value="online" checked> Online</label>
+        <label><input type="radio" name="sample" value="idle"> No downloads</label>
+        <label><input type="radio" name="sample" value="offline"> Steam closed</label>
+      </div>
+      <div class="grp" role="radiogroup" aria-label="Launch with">
+        <span>Launch with</span>
+        <label><input type="radio" name="trigger" value="hold" checked> Hold</label>
+        <label><input type="radio" name="trigger" value="tap"> Tap</label>
+        <label><input type="radio" name="trigger" value="double"> Double tap</label>
+      </div>
+      <div class="grp" role="radiogroup" aria-label="Cover style">
+        <span>Cover style</span>
+        <label><input type="radio" name="coverStyle" value="mono" checked> Mono</label>
+        <label><input type="radio" name="coverStyle" value="color"> Color</label>
+      </div>
+      <label><input type="checkbox" id="showFriends" checked> Show friends</label>
+      <label><input type="checkbox" id="showUnlit" checked> Show unlit dots</label>
+      <label>Accent color <input type="color" id="accentColor" value="#10b981"></label>
+      <label>Lit dot color <input type="color" id="litColor" value="#f2f0e9"></label>
+      <label>Unlit dot color <input type="color" id="unlitColor" value="#1c1c1c"></label>
+      <label>Label color <input type="color" id="labelColor" value="#b8b6b0"></label>
+      <button type="button" class="preset" data-accent="#10b981"><i style="background:#10b981"></i>Émeraude</button>
+      <button type="button" class="preset" data-accent="#66c0f4"><i style="background:#66c0f4"></i>Bleu Steam</button>
+      <button type="button" class="preset" data-accent="#ed403b"><i style="background:#ed403b"></i>Rouge A</button>
+    </div>
+    <figcaption><span id="sizeNote">Dernier jeu joué à gauche, 8 jeux, téléchargements et amis à droite.</span> La maquette marche : garder le doigt sur un jeu (ou toucher, ou double toucher, selon « Launch with ») le lance.</figcaption>
+  </figure>
+
+  <section style="display:grid;gap:14px">
+    <div class="diff-head">
+      <h2>Choix de design</h2>
+      <p class="hint">Tout est à valider. Complété au fur et à mesure.</p>
+    </div>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>#</th><th>Élément</th><th>Proposition</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>Nom et module</td><td>Dot Launcher devient Dot Steam : tout passe par Steam, et Dot Apps lance déjà les programmes Windows. Module de Dot Hub servi par Dot Companion (<code>/m/steam/</code>), pas de widget iCUE autonome.</td></tr>
+          <tr class="todo"><td>2</td><td>Données</td><td>Le compagnon lit les fichiers locaux de Steam : bibliothèques (<code>steamapps/libraryfolders.vdf</code>), jeux installés et téléchargements (<code>appmanifest_&lt;id&gt;.acf</code>), dernier lancement et temps de jeu (<code>userdata/&lt;id&gt;/config/localconfig.vdf</code>), jaquettes du cache local, sinon le CDN Steam. Lancement : le compagnon ouvre <code>steam://rungameid/&lt;id&gt;</code>. Amis : API Web Steam (clé d'API et SteamID64 dans les réglages du compagnon), seulement si le réglage est rempli.</td></tr>
+          <tr class="todo"><td>3</td><td>Jeux</td><td>Jusqu'à 8 jeux choisis dans les réglages du compagnon (lien Steam ou app ID), jaquette 600 × 900 en trame de points et titre. 8 en XL et M, 4 en L et S.</td></tr>
+          <tr class="todo"><td>4</td><td>Lancement</td><td>Au choix (« Launch with ») : garder le doigt (par défaut, une barre de points se remplit sous la jaquette), toucher ou double toucher. Pendant le lancement : cadre en accent autour de la jaquette, état LAUNCHING en haut à droite.</td></tr>
+          <tr class="todo"><td>5</td><td>Dernier jeu joué</td><td>En grand à gauche en XL et L : jaquette large (capsule 460 × 215) en points, titre, dernier lancement et temps de jeu total.</td></tr>
+          <tr class="todo"><td>6</td><td>Téléchargements</td><td>Jeu en cours de téléchargement ou de mise à jour : nom, pourcentage, débit, temps restant, barre de points ; jeux en attente en dessous. « No downloads » quand rien ne télécharge. XL et L.</td></tr>
+          <tr class="todo"><td>7</td><td>Amis</td><td>Amis en jeu d'abord (point en accent et nom du jeu), puis en ligne. XL seulement, masquable (« Show friends »).</td></tr>
+          <tr class="todo"><td>8</td><td>Libellés</td><td>« DOT STEAM » en haut à gauche, à la même place et à la même taille que dans tous les modules (point à 56 / 51 px, texte à 80 / 44 px, Fira Code 18 px), toucher qui ramène à Dot Home. Le titre personnalisable du Dot Launcher disparaît, pour garder le libellé identique partout. À droite : état Steam et nombre d'amis en jeu.</td></tr>
+          <tr class="todo"><td>9</td><td>Couleurs</td><td>Couleurs communes de la carte « Couleurs » de Dot Companion. Les thèmes du Dot Launcher (Cyberpunk, Cozy…) sont remplacés par ces couleurs. Bleu Steam <code>#66C0F4</code> proposé comme accent.</td></tr>
+          <tr class="todo"><td>10</td><td>Steam fermé</td><td>« STEAM NOT RUNNING » : les jeux restent lançables (Steam démarre d'abord), téléchargements et amis masqués.</td></tr>
+          <tr class="todo"><td>11</td><td>Tailles</td><td><b>XL</b> : dernier jeu à gauche, 8 jeux en ligne, téléchargements et amis en dessous.<br><b>L</b> : dernier jeu, 4 jeux, téléchargements.<br><b>M</b> : 4 × 2 jeux.<br><b>S</b> : 4 jeux, sans libellés.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  function v(id) { return document.getElementById(id); }
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; }
+  function val(name) { return document.querySelector("input[name=" + name + "]:checked").value; }
+  var SIZES = {
+    xl: { w: 2536, h: 696, n: 8, libW: 1600, libH: 340, gap: 20, cap: 38, pitch: 8, heroW: 760, tag: "XL 2536 × 696 px", note: "Dernier jeu joué à gauche, 8 jeux, téléchargements et amis à droite." },
+    l: { w: 1688, h: 696, n: 4, libW: 872, libH: 360, gap: 20, cap: 38, pitch: 9, heroW: 640, tag: "L 1688 × 696 px", note: "Dernier jeu joué, 4 jeux, téléchargements." },
+    m: { w: 840, h: 696, n: 8, cols: 4, libW: 728, libH: 544, gap: 20, rowGap: 16, cap: 32, pitch: 7, heroW: 0, tag: "M 840 × 696 px", note: "4 × 2 jeux." },
+    s: { w: 840, h: 344, n: 4, libW: 744, libH: 288, gap: 20, cap: 30, pitch: 7, heroW: 0, tag: "S 840 × 344 px", note: "4 jeux, sans libellés." }
+  };
+  var size = "xl", launching = null, launchTimer = null;
+  var frame = v("frame"), stage = v("stage");
+
+  function fit() { stage.style.transform = "scale(" + frame.clientWidth / SIZES[size].w + ")"; }
+  if (window.ResizeObserver) new ResizeObserver(fit).observe(frame); else window.addEventListener("resize", fit);
+
+  // jaquettes d'exemple, générées (aucune vraie jaquette)
+  function rng(seed) { return function () { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; }; }
+  function cover(seed, a, b, w, h, kind) {
+    var c = document.createElement("canvas"); c.width = w; c.height = h; var g = c.getContext("2d"), r = rng(seed);
+    var gr = g.createLinearGradient(0, 0, w * 0.3, h); gr.addColorStop(0, a); gr.addColorStop(1, b); g.fillStyle = gr; g.fillRect(0, 0, w, h);
+    if (kind === "sun") { var s = g.createRadialGradient(w * .5, h * .38, 4, w * .5, h * .38, w * .42); s.addColorStop(0, "#fff3c4"); s.addColorStop(.5, "#ff8a4c"); s.addColorStop(1, "rgba(255,90,60,0)"); g.fillStyle = s; g.fillRect(0, 0, w, h); }
+    for (var i = 0; i < 7; i++) { g.fillStyle = "rgba(255,255,255," + (0.08 + r() * 0.5) + ")"; g.beginPath(); g.arc(r() * w, r() * h * 0.7, 6 + r() * w * 0.18, 0, Math.PI * 2); g.fill(); }
+    g.fillStyle = "rgba(0,0,0,.75)"; g.beginPath(); g.moveTo(0, h);
+    for (var x = 0; x <= w; x += w / 8) g.lineTo(x, h * (0.62 + r() * 0.18));
+    g.lineTo(w, h); g.fill();
+    if (kind === "figure") { g.fillStyle = "#0a0a0a"; g.beginPath(); g.arc(w * .5, h * .5, w * .1, 0, Math.PI * 2); g.fill(); g.fillRect(w * .4, h * .56, w * .2, h * .3); }
+    return c;
+  }
+  var GAMES = [
+    { name: "Neon Courier", seed: 11, a: "#2a0f5c", b: "#e0377a", kind: "figure", last: "2h ago", hours: 142 },
+    { name: "Starfall Drift", seed: 23, a: "#071a3a", b: "#3b8fd4", kind: "sun" },
+    { name: "Hollow Pines", seed: 37, a: "#0d2a1a", b: "#7fb069", kind: "figure" },
+    { name: "Ironveil", seed: 41, a: "#2b2b2b", b: "#b8b8b8", kind: "figure" },
+    { name: "Tidebound", seed: 53, a: "#04263a", b: "#29a3b8", kind: "sun" },
+    { name: "Ember Rally", seed: 67, a: "#3a0a04", b: "#ff7a1a", kind: "sun" },
+    { name: "Glass Atlas", seed: 79, a: "#1b1b3a", b: "#c7c2ff", kind: "figure" },
+    { name: "Rook & Rust", seed: 97, a: "#3a2410", b: "#d9a066", kind: "figure" }
+  ];
+  GAMES.forEach(function (g) { g.tall = cover(g.seed, g.a, g.b, 120, 180, g.kind); g.wide = cover(g.seed + 1, g.a, g.b, 230, 108, g.kind); });
+  var FRIENDS = [
+    { name: "Nova", game: "Starfall Drift" }, { name: "Kiro", game: "Ember Rally" }, { name: "Lune", game: "Hollow Pines" },
+    { name: "Atlas", game: "" }, { name: "Mika", game: "" }
+  ];
+
+  function colors() {
+    return { lit: v("litColor").value, unlit: v("showUnlit").checked ? v("unlitColor").value : null, accent: v("accentColor").value, label: v("labelColor").value };
+  }
+  function dither(src, w, h, pitch, c) {
+    var cv = document.createElement("canvas"), dpr = 2;
+    cv.width = w * dpr; cv.height = h * dpr; cv.style.width = w + "px"; cv.style.height = h + "px";
+    var ctx = cv.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    var nx = Math.floor(w / pitch), ny = Math.floor(h / pitch), ox = (w - nx * pitch) / 2 + pitch / 2, oy = (h - ny * pitch) / 2 + pitch / 2, maxR = pitch * 0.46;
+    var sm = document.createElement("canvas"); sm.width = nx; sm.height = ny;
+    var sg = sm.getContext("2d"); sg.imageSmoothingQuality = "high"; sg.drawImage(src, 0, 0, nx, ny);
+    var d = sg.getImageData(0, 0, nx, ny).data, color = val("coverStyle") === "color", lo = 1, hi = 0;
+    for (var q = 0; q < d.length; q += 4) { var l0 = (0.2126 * d[q] + 0.7152 * d[q + 1] + 0.0722 * d[q + 2]) / 255; if (l0 < lo) lo = l0; if (l0 > hi) hi = l0; }
+    var span = Math.max(hi - lo, 0.2);
+    for (var y = 0; y < ny; y++) for (var x = 0; x < nx; x++) {
+      var cx = ox + x * pitch, cy = oy + y * pitch;
+      if (c.unlit) { ctx.fillStyle = c.unlit; ctx.beginPath(); ctx.arc(cx, cy, maxR, 0, Math.PI * 2); ctx.fill(); }
+      var i = (y * nx + x) * 4, r = d[i], g = d[i + 1], b = d[i + 2];
+      var lum = Math.min(1, Math.max(0, ((0.2126 * r + 0.7152 * g + 0.0722 * b) / 255 - lo) / span));
+      var rad = color ? maxR * (0.35 + 0.65 * Math.pow(lum, 0.7)) : maxR * Math.pow(lum, 0.9);
+      if (rad < 0.6) continue;
+      ctx.fillStyle = color ? "rgb(" + r + "," + g + "," + b + ")" : c.lit;
+      ctx.beginPath(); ctx.arc(cx, cy, rad, 0, Math.PI * 2); ctx.fill();
+    }
+    return cv;
+  }
+  function bar(w, frac, pitch, c) {
+    var cv = document.createElement("canvas"), dpr = 2, n = Math.max(1, Math.floor(w / pitch)), h = pitch;
+    cv.width = w * dpr; cv.height = h * dpr; cv.style.width = w + "px"; cv.style.height = h + "px";
+    var ctx = cv.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    var k = Math.round(n * Math.max(0, Math.min(1, frac)));
+    for (var i = 0; i < n; i++) {
+      ctx.fillStyle = i < k ? c.accent : (c.unlit || "#1c1c1c");
+      ctx.beginPath(); ctx.arc(i * pitch + pitch / 2, h / 2, pitch * 0.36, 0, Math.PI * 2); ctx.fill();
+    }
+    return cv;
+  }
+
+  // lancement selon le réglage : appui long, toucher ou double toucher
+  function wire(b, g, w) {
+    var mode = val("trigger"), raf = null, t0 = 0, lastTap = 0;
+    var hb = b.querySelector(".hb");
+    function paint(p) { hb.innerHTML = ""; if (p > 0) hb.appendChild(bar(w, p, size === "xl" || size === "l" ? 10 : 8, colors())); }
+    if (mode === "hold") {
+      var stop = function () { if (raf) cancelAnimationFrame(raf); raf = null; paint(0); };
+      b.addEventListener("pointerdown", function (e) {
+        e.preventDefault(); t0 = performance.now();
+        (function step(now) { var p = Math.min(1, (now - t0) / 800); paint(p); if (p >= 1) { raf = null; launch(g); return; } raf = requestAnimationFrame(step); })(t0);
+      });
+      ["pointerup", "pointerleave", "pointercancel"].forEach(function (n) { b.addEventListener(n, stop); });
+    } else if (mode === "tap") {
+      b.addEventListener("click", function () { launch(g); });
+    } else {
+      b.addEventListener("click", function () { var now = Date.now(); if (now - lastTap < 400) { lastTap = 0; launch(g); } else lastTap = now; });
+    }
+  }
+  function launch(g) {
+    launching = g.name; clearTimeout(launchTimer);
+    launchTimer = setTimeout(function () { launching = null; render(); }, 2500);
+    render();
+  }
+  function gameNode(g, src, w, h, c, big) {
+    var b = el("button", "game" + (launching === g.name ? " go" : "")); b.type = "button";
+    b.setAttribute("aria-label", "Launch " + g.name); b.style.width = w + "px";
+    var a = el("div", "art"); a.appendChild(dither(src, w, h, big ? SIZES[size].pitch + 2 : SIZES[size].pitch, c)); b.appendChild(a);
+    b.appendChild(el("p", "t ell", g.name));
+    b.appendChild(el("div", "hb"));
+    wire(b, g, w);
+    return b;
+  }
+
+  function render() {
+    var sample = val("sample"), c = colors(), Z = SIZES[size];
+    stage.style.setProperty("--accent", c.accent);
+    stage.style.setProperty("--lit", c.lit);
+    stage.style.setProperty("--label", c.label);
+    var offline = sample === "offline";
+    stage.className = "stage " + size + (offline ? " offline" : "") + (launching ? " launching" : "");
+    var playing = FRIENDS.filter(function (f) { return f.game; }).length;
+    v("state").textContent = launching ? "LAUNCHING · " + launching.toUpperCase() : offline ? "STEAM · OFFLINE" : "ONLINE · " + playing + " FRIENDS IN GAME";
+
+    // dernier jeu joué
+    var hero = v("hero"); hero.innerHTML = ""; hero.hidden = !Z.heroW;
+    if (Z.heroW) {
+      var g0 = GAMES[0], hw = Z.heroW, hh = Math.round(hw * 215 / 460);
+      var hb = gameNode(g0, g0.wide, hw, hh, c, true); hero.appendChild(hb);
+      hero.appendChild(el("p", "sub", "Last played " + g0.last + " · " + g0.hours + " h"));
+      hero.appendChild(el("p", "go-k", { hold: "Hold to play", tap: "Tap to play", double: "Double tap to play" }[val("trigger")]));
+    }
+    // bibliothèque
+    var lib = v("lib"); lib.innerHTML = "";
+    var cols = Z.cols || Z.n, rows = Math.ceil(Z.n / cols), rowGap = Z.rowGap || 0;
+    var pw = Math.floor(Math.min((Z.libW - Z.gap * (cols - 1)) / cols, ((Z.libH - rowGap * (rows - 1)) / rows - Z.cap) * 2 / 3)), ph = Math.round(pw * 1.5);
+    lib.className = "w-lib" + (Z.cols ? " grid" : "");
+    var list = Z.heroW ? GAMES.slice(Z.n === 4 ? 1 : 0, (Z.n === 4 ? 1 : 0) + Z.n) : GAMES.slice(0, Z.n);
+    list.forEach(function (g) { lib.appendChild(gameNode(g, g.tall, pw, ph, c, false)); });
+
+    // téléchargements
+    var dl = v("dl"); dl.innerHTML = ""; dl.hidden = offline || !Z.heroW;
+    if (!dl.hidden) {
+      if (sample === "idle") {
+        dl.appendChild(el("p", "w-lbl", "Downloads"));
+        dl.appendChild(el("div", "dl q")).appendChild(el("span", "n", "No downloads · 8 games up to date"));
+      } else {
+        dl.appendChild(el("p", "w-lbl", "Downloads · 2"));
+        var r1 = el("div", "dl"); r1.appendChild(el("span", "n", "Tidebound · update")); r1.appendChild(el("span", "r", "62% · 38 MB/s · 4 min")); dl.appendChild(r1);
+        var bb = el("div", "bar"); bb.appendChild(bar(size === "xl" ? 760 : 872, 0.62, 14, c)); dl.appendChild(bb);
+        var r2 = el("div", "dl q"); r2.appendChild(el("span", "n", "Glass Atlas")); r2.appendChild(el("span", "r", "Queued · 41 GB")); dl.appendChild(r2);
+      }
+    }
+    // amis
+    var fr = v("fr"); fr.innerHTML = ""; fr.hidden = offline || size !== "xl" || !v("showFriends").checked;
+    if (!fr.hidden) {
+      fr.appendChild(el("p", "w-lbl", "Friends · " + playing + " in game"));
+      FRIENDS.slice(0, 3).forEach(function (f) {
+        var row = el("div", "fr" + (f.game ? " in" : "")); row.appendChild(el("i"));
+        row.appendChild(el("span", "n", f.name)); row.appendChild(el("span", "g", f.game ? "· " + f.game : "· Online"));
+        fr.appendChild(row);
+      });
+    }
+    v("empty").hidden = true;
+    if (offline) { v("dl").hidden = true; v("fr").hidden = true; }
+  }
+
+  document.querySelectorAll(".settings input").forEach(function (i) { i.addEventListener("input", render); i.addEventListener("change", render); });
+  document.querySelectorAll(".preset[data-accent]").forEach(function (b) {
+    b.addEventListener("click", function () { v("accentColor").value = b.getAttribute("data-accent"); render(); });
+  });
+  document.querySelectorAll(".sizebar .preset").forEach(function (b) {
+    b.addEventListener("click", function () {
+      size = b.getAttribute("data-size");
+      document.querySelectorAll(".sizebar .preset").forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+      frame.className = "frame " + size;
+      v("sizeTag").textContent = "Version 0.1 · taille réelle " + SIZES[size].tag;
+      v("sizeNote").textContent = SIZES[size].note;
+      render(); fit();
+    });
+  });
+
+  render(); fit();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(render);
+})();
+</script>
+</body>
+</html>

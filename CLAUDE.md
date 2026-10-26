@@ -85,7 +85,7 @@ Le compagnon sert l’interface et la configuration de Dot Hub (voir « Architec
 |---|---|---|
 | audio | Dot Audio | volume, mixeur par app, mute de tous les micros, périphériques par défaut (API audio Windows) ; égaliseur via Equalizer APO |
 | hub | Dot Hub | sert l’interface web de Dot Hub et de ses modules, la configuration (fichier + page de réglages sur le PC) et l’état de chaque instance (`uniqueId` → module affiché, réglages) |
-| apps | Dot Apps, Dot Launcher (repli) | lancer des programmes / `steam://` |
+| apps | Dot Apps | lancer des programmes |
 | bambulab | Dot Bambu Lab | MQTT TLS en réseau local (IP + code d’accès) |
 | discord | Dot Discord | RPC local (accès réservé aux apps approuvées) ; repli : raccourcis clavier |
 | battery | Dot Battery | casque Logitech via HID++ (sans G HUB), Bluetooth via Windows |
@@ -96,6 +96,8 @@ Le compagnon sert l’interface et la configuration de Dot Hub (voir « Architec
 | ia | Dot IA | limites d’utilisation Claude de plusieurs comptes (session 5 h, hebdo) ; source à vérifier (pas d’API publique documentée) |
 | github | Dot GitHub | contributions (GraphQL), pull requests, notifications et runs Actions (REST) ; token classique chiffré ; ouvre les pages GitHub dans le navigateur du PC |
 | notes | Dot Notes | notes et listes enregistrées dans un fichier (`%APPDATA%\Xeneon\notes.json`), partagées entre instances, modifiables depuis le PC |
+| steam | Dot Steam | fichiers locaux de Steam (bibliothèques, `appmanifest`, `localconfig.vdf`, jaquettes en cache) ; lancement `steam://rungameid/<id>` ; amis via l’API Web Steam (clé + SteamID64) |
+| homeassistant | Dot Home Assistant | API WebSocket de Home Assistant (jeton longue durée) : états et appels de services |
 
 Sans compagnon : rien. Tous les modules de Dot Hub passent par le compagnon, même ceux qui n’ont besoin d’aucun accès Windows (Weather, Calculator, Notes…), puisqu’il sert leur interface. Les données iCUE (capteurs, FPS, Media) sont relayées par la coquille de Dot Hub.
 
@@ -123,7 +125,7 @@ Compilation Windows : `cargo build --release` sous Windows, ou depuis Linux/WSL 
 - **Dot System Monitor** v1.1.0 : fonctionnel (FPS + 4 capteurs + historique, dot-matrix). Mise en page faite pour L/XL ; **S et M à refaire**. À migrer sur `sizes.js` du template.
 - **Dot Clock** v0.1.2 : codé (S, M, L, XL). Référence : `widgets/dot-clock/mockups/reference.html`.
 - **Dot Hub** + **Dot Companion** : v0.1, première version de bout en bout avec le module Clock (coquille, accueil, réglages sur le PC, pont clavier). L’exe Windows est compilé par GitHub Actions.
-- **Dot Notes, Dot Weather, Dot IA, Dot Home, Dot GitHub, Dot Calculator, Dot Spotify** : en conception, maquette de référence dans `widgets/<slug>/mockups/reference.html` (choix de design à valider ; Dot Spotify mis de côté).
-- **Dot Audio, Dot Calendar, Dot Launcher** : spécifiés avec mocks.
+- **Dot Notes, Dot Weather, Dot IA, Dot Home, Dot GitHub, Dot Calculator, Dot Spotify, Dot Plex, Dot Bambu Lab, Dot Home Assistant, Dot Discord, Dot Steam** : en conception, maquette de référence dans `widgets/<slug>/mockups/reference.html` (choix de design à valider ; Dot Spotify mis de côté).
+- **Dot Audio, Dot Calendar** : spécifiés avec mocks.
 - Autres : fiche seule (idée).
 - **Prochaine étape** : définir la charte graphique (`docs/DESIGN.md`) à partir du mock de charte fourni par Mathod95, puis en faire le template de base de tous les widgets.
