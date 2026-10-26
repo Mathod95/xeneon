@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Maquette de référence du Dot Apps (artefact de revue de design). Ouvrir dans un navigateur. -->
+<style>body { margin: 0; }</style>
+</head>
+<body>
+<title>Dot Apps</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap">
+<style>
+/* Layout : maquette de référence en taille réelle (choix S, M, L, XL) avec ses réglages, puis tableau des choix. Même univers que Dot Clock, un seul thème sombre. */
+:root {
+  --page: #111111;
+  --panel: #0a0a0a;
+  --line: #262626;
+  --text: #e6e6e6;
+  --muted: #8c8c8c;
+  --brand: #10b981;
+  --mono: "IBM Plex Mono", "Cascadia Mono", Consolas, monospace;
+  --sans: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { background: var(--page); color: var(--text); }
+body {
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.55;
+  padding-block: 40px 72px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 1480px; margin: 0 auto; display: grid; gap: 40px; }
+header { display: grid; gap: 10px; }
+.eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); display: flex; align-items: center; gap: 10px; }
+.eyebrow::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--brand); }
+h1 { font-family: var(--mono); font-weight: 500; font-size: clamp(28px, 4vw, 44px); line-height: 1.1; margin: 0; letter-spacing: -.01em; }
+.lede { color: var(--muted); max-width: 72ch; margin: 0; }
+
+figure { margin: 0; display: grid; gap: 12px; min-width: 0; }
+.tag { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.tag b { color: var(--text); font-weight: 500; font-size: 14px; }
+figcaption { color: var(--muted); font-size: 14px; }
+
+/* tableau */
+.diff-head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; }
+h2 { font-family: var(--mono); font-weight: 500; font-size: 13px; letter-spacing: .14em; text-transform: uppercase; margin: 0; }
+.hint { color: var(--muted); font-size: 14px; margin: 0; }
+.table-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; }
+table { width: 100%; border-collapse: collapse; min-width: 640px; }
+th, td { text-align: left; padding: 14px 16px; vertical-align: top; border-bottom: 1px solid var(--line); }
+tr:last-child td { border-bottom: 0; }
+thead th { font-family: var(--mono); font-weight: 500; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); background: var(--panel); }
+td:first-child { font-family: var(--mono); color: var(--muted); width: 3.5em; font-variant-numeric: tabular-nums; }
+td:nth-child(2) { font-weight: 500; width: 15em; }
+tr.todo td:nth-child(3) { color: var(--muted); }
+code { font-family: var(--mono); font-size: 13px; color: var(--text); }
+
+/* réglages simulés */
+.settings { display: flex; flex-wrap: wrap; gap: 12px 28px; align-items: center; padding: 14px 16px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); }
+.settings label { display: inline-flex; align-items: center; gap: 10px; font-family: var(--mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); cursor: pointer; }
+.settings input[type=color] { width: 36px; height: 28px; padding: 0; border: 1px solid var(--line); border-radius: 6px; background: none; cursor: pointer; }
+.settings input[type=checkbox], .settings input[type=radio] { width: 18px; height: 18px; accent-color: var(--brand); cursor: pointer; }
+.settings .grp { display: inline-flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.settings .grp > span { font-family: var(--mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--text); }
+.preset { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; padding: 6px 10px; border-radius: 6px; border: 1px solid var(--line); background: transparent; color: var(--text); cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+.preset i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+.preset:focus-visible, .tab:focus-visible, .ses:focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; }
+.sizebar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; }
+.sizebar > span { font-family: var(--mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-right: 6px; }
+.sizebar .preset[aria-pressed="true"] { background: var(--text); color: #0a0a0a; border-color: var(--text); }
+
+/* cadre à l'échelle de l'XL : la largeur suit la vraie largeur de l'emplacement */
+.frame { position: relative; max-width: 100%; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: #080808; }
+.frame.xl { width: 100%; aspect-ratio: 2536 / 696; }
+.frame.l { width: calc(1688 / 2536 * 100%); aspect-ratio: 1688 / 696; }
+.frame.m { width: calc(840 / 2536 * 100%); aspect-ratio: 840 / 696; }
+.frame.s { width: calc(840 / 2536 * 100%); aspect-ratio: 840 / 344; }
+@media (max-width: 700px) { .frame.l, .frame.m, .frame.s { width: 100%; } }
+
+/* ---------- le widget : scène en pixels réels de l'emplacement XL ---------- */
+.frame.xl { width: 100%; aspect-ratio: 2536 / 696; }
+.stage { position: absolute; left: 0; top: 0; width: 2536px; height: 696px; transform-origin: 0 0; background: #080808; --accent: #10b981; --lit: #f2f0e9; --label: #b8b6b0; --unlit: #1c1c1c; font-family: "Fira Code", Consolas, monospace; font-variant-ligatures: none; }
+.stage > * { position: absolute; }
+.stage p { margin: 0; }
+.stage canvas { display: block; }
+.stage button { font-family: inherit; -webkit-tap-highlight-color: transparent; }
+.w-lbl { white-space: nowrap; font-size: 18px; line-height: 24px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); }
+.w-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); }
+.stage.opening .w-dot { animation: pulse .8s ease-in-out infinite; }
+@keyframes pulse { 50% { opacity: .3; } }
+@media (prefers-reduced-motion: reduce) { .stage.opening .w-dot { animation: none; } }
+.ell { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-transform: uppercase; }
+
+/* libellé « ● DOT APPS » : même place et même taille partout */
+.w-dot { left: 56px; top: 51px; }
+.w-name { left: 80px; top: 44px; }
+.w-state { right: 56px; top: 44px; }
+
+/* groupes */
+.tabs { left: 56px; top: 100px; display: flex; gap: 40px; height: 24px; }
+.tab { margin: -18px 0; padding: 18px 0; border: 0; background: transparent; cursor: pointer; font-size: 18px; line-height: 24px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); opacity: .5; }
+.tab[aria-selected="true"] { color: var(--lit); opacity: 1; }
+
+/* grille d'applications : 8 × 2 */
+.grid { left: 56px; top: 156px; width: 2424px; height: 492px; display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(0, 1fr)); gap: 24px; }
+.stage.flat .grid { top: 112px; height: 536px; }
+.app { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 0; padding: 0; border: 0; border-radius: 18px; background: transparent; color: var(--lit); cursor: pointer; user-select: none; touch-action: none; }
+.app .ic { position: relative; border-radius: 34px; outline: 3px solid transparent; outline-offset: 8px; }
+.app:active .ic, .app.go .ic { outline-color: var(--accent); }
+.app .n { margin-top: 18px; max-width: 100%; font-size: 22px; line-height: 28px; letter-spacing: .06em; }
+.app .run { margin-top: 10px; width: 8px; height: 8px; border-radius: 50%; background: transparent; }
+.app.running .run { background: var(--accent); }
+.app .hb { position: absolute; left: 50%; bottom: 0; transform: translateX(-50%); }
+.app:focus-visible, .tab:focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Module Dot Hub · CORSAIR XENEON EDGE</div>
+    <h1>Dot Apps</h1>
+    <p class="lede">Première proposition, à valider point par point dans le tableau. Lanceur d'applications Windows : une grille d'icônes en trame de points, un toucher pour ouvrir, dans la charte du Dot Clock. Format XL seulement pour l'instant. Les icônes sont des pictogrammes génériques dessinés pour la maquette ; sur l'Edge, ce seraient les vraies icônes des applications, passées en points.</p>
+  </header>
+
+  <figure>
+    <div class="tag"><b>Maquette de référence</b><span>Version 0.1 · taille réelle XL 2536 × 696 px</span></div>
+    <div class="frame xl" id="frame">
+      <div class="stage" id="stage">
+        <span class="w-dot"></span>
+        <p class="w-lbl w-name" data-hub-home>DOT APPS</p>
+        <p class="w-lbl w-state" id="state"></p>
+        <div class="tabs" role="tablist" aria-label="Groupes" id="tabs"></div>
+        <div class="grid" id="grid"></div>
+      </div>
+    </div>
+    <div class="settings" aria-label="Réglages simulés">
+      <div class="grp" role="radiogroup" aria-label="Launch with">
+        <span>Launch with</span>
+        <label><input type="radio" name="trigger" value="tap" checked> Tap</label>
+        <label><input type="radio" name="trigger" value="hold"> Hold</label>
+      </div>
+      <div class="grp" role="radiogroup" aria-label="Icon style">
+        <span>Icon style</span>
+        <label><input type="radio" name="iconStyle" value="mono" checked> Mono</label>
+        <label><input type="radio" name="iconStyle" value="color"> Color</label>
+      </div>
+      <label><input type="checkbox" id="showGroups" checked> Show groups</label>
+      <label><input type="checkbox" id="showRunning" checked> Show running</label>
+      <label><input type="checkbox" id="showUnlit" checked> Show unlit dots</label>
+      <label>Accent color <input type="color" id="accentColor" value="#10b981"></label>
+      <label>Lit dot color <input type="color" id="litColor" value="#f2f0e9"></label>
+      <label>Unlit dot color <input type="color" id="unlitColor" value="#1c1c1c"></label>
+      <label>Label color <input type="color" id="labelColor" value="#b8b6b0"></label>
+      <button type="button" class="preset" data-accent="#10b981"><i style="background:#10b981"></i>Émeraude</button>
+      <button type="button" class="preset" data-accent="#3d8bff"><i style="background:#3d8bff"></i>Bleu</button>
+      <button type="button" class="preset" data-accent="#ed403b"><i style="background:#ed403b"></i>Rouge A</button>
+    </div>
+    <figcaption>Groupes en onglets, 16 applications en 8 × 2. La maquette marche : toucher une icône l'ouvre (ou garder le doigt, selon « Launch with »), le point sous l'icône montre les applications déjà ouvertes.</figcaption>
+  </figure>
+
+  <section style="display:grid;gap:14px">
+    <div class="diff-head">
+      <h2>Choix de design</h2>
+      <p class="hint">Tout est à valider. Complété au fur et à mesure.</p>
+    </div>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>#</th><th>Élément</th><th>Proposition</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>Module</td><td>Module de Dot Hub servi par Dot Companion (<code>/m/apps/</code>). Pas de widget iCUE autonome.</td></tr>
+          <tr class="todo"><td>2</td><td>Choix des applications</td><td>Dans les réglages du compagnon : une liste à cocher des applications du menu Démarrer (programmes classiques et applications du Store), ou un chemin libre (programme, raccourci, dossier, fichier, adresse web). Ordre réglable, groupes au choix.</td></tr>
+          <tr class="todo"><td>3</td><td>Icônes</td><td>Le compagnon extrait la vraie icône de chaque application (taille 256 px quand elle existe) et le module la passe en trame de points : « Icon style » Mono (couleur des points allumés) ou Color (couleurs de l'icône).</td></tr>
+          <tr class="todo"><td>4</td><td>Lancement</td><td>Un toucher (par défaut) ou un appui long (« Launch with »). Le compagnon ouvre l'application (<code>ShellExecute</code>, ou <code>shell:AppsFolder\…</code> pour une application du Store). Pendant l'ouverture : cadre en accent autour de l'icône, état OPENING en haut à droite.</td></tr>
+          <tr class="todo"><td>5</td><td>Applications ouvertes</td><td>Point en accent sous l'icône quand l'application tourne (liste des processus). Un toucher sur une application ouverte la ramène au premier plan ; Windows limite ce droit pour un programme en arrière-plan, à vérifier. Masquable (« Show running »).</td></tr>
+          <tr class="todo"><td>6</td><td>Groupes</td><td>Onglets comme les pièces de Dot Home Assistant (« All », puis les groupes créés dans les réglages). Masquables (« Show groups ») : la grille monte alors sous le libellé.</td></tr>
+          <tr class="todo"><td>7</td><td>Libellés</td><td>« DOT APPS » en haut à gauche, à la même place et à la même taille que dans tous les modules (point à 56 / 51 px, texte à 80 / 44 px, Fira Code 18 px), toucher qui ramène à Dot Home. À droite : nombre d'applications ouvertes, ou OPENING · nom.</td></tr>
+          <tr class="todo"><td>8</td><td>Couleurs</td><td>Couleurs communes de la carte « Couleurs » de Dot Companion.</td></tr>
+          <tr class="todo"><td>9</td><td>Plus tard</td><td>Actions système dans la grille (verrouiller, mettre en veille, capture d'écran), pages au-delà de 16 applications. Les jeux Steam restent dans Dot Steam.</td></tr>
+          <tr class="todo"><td>10</td><td>Tailles</td><td><b>XL</b> : groupes en onglets, 8 × 2 applications. S, M et L plus tard.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  function v(id) { return document.getElementById(id); }
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; }
+  function val(name) { return document.querySelector("input[name=" + name + "]:checked").value; }
+  var frame = v("frame"), stage = v("stage"), group = "all", opening = null, timer = null;
+  function fit() { stage.style.transform = "scale(" + frame.clientWidth / 2536 + ")"; }
+  if (window.ResizeObserver) new ResizeObserver(fit).observe(frame); else window.addEventListener("resize", fit);
+
+  // pictogrammes génériques dessinés pour la maquette (aucun logo)
+  function icon(bg, fg, draw) {
+    var c = document.createElement("canvas"); c.width = c.height = 96; var g = c.getContext("2d");
+    g.fillStyle = bg; g.beginPath(); g.roundRect ? g.roundRect(4, 4, 88, 88, 22) : g.rect(4, 4, 88, 88); g.fill();
+    g.fillStyle = fg; g.strokeStyle = fg; g.lineWidth = 8; g.lineCap = "round"; g.lineJoin = "round"; draw(g); return c;
+  }
+  var GLYPH = {
+    globe: function (g) { g.beginPath(); g.arc(48, 48, 26, 0, 7); g.stroke(); g.beginPath(); g.ellipse(48, 48, 11, 26, 0, 0, 7); g.stroke(); g.beginPath(); g.moveTo(22, 48); g.lineTo(74, 48); g.stroke(); },
+    chat: function (g) { g.beginPath(); g.roundRect ? g.roundRect(20, 24, 56, 38, 12) : g.rect(20, 24, 56, 38); g.fill(); g.beginPath(); g.moveTo(32, 60); g.lineTo(28, 76); g.lineTo(46, 60); g.fill(); },
+    note: function (g) { g.beginPath(); g.arc(36, 66, 10, 0, 7); g.fill(); g.beginPath(); g.arc(64, 60, 10, 0, 7); g.fill(); g.fillRect(42, 26, 6, 40); g.fillRect(70, 20, 6, 40); g.beginPath(); g.moveTo(42, 26); g.lineTo(76, 20); g.lineTo(76, 30); g.lineTo(42, 36); g.fill(); },
+    code: function (g) { g.beginPath(); g.moveTo(36, 30); g.lineTo(20, 48); g.lineTo(36, 66); g.stroke(); g.beginPath(); g.moveTo(60, 30); g.lineTo(76, 48); g.lineTo(60, 66); g.stroke(); },
+    term: function (g) { g.beginPath(); g.moveTo(24, 32); g.lineTo(40, 46); g.lineTo(24, 60); g.stroke(); g.beginPath(); g.moveTo(48, 64); g.lineTo(72, 64); g.stroke(); },
+    folder: function (g) { g.beginPath(); g.moveTo(18, 30); g.lineTo(40, 30); g.lineTo(46, 38); g.lineTo(78, 38); g.lineTo(78, 70); g.lineTo(18, 70); g.closePath(); g.fill(); },
+    pad: function (g) { g.beginPath(); g.roundRect ? g.roundRect(16, 34, 64, 30, 15) : g.rect(16, 34, 64, 30); g.fill(); },
+    cam: function (g) { g.beginPath(); g.arc(48, 48, 24, 0, 7); g.stroke(); g.beginPath(); g.arc(48, 48, 9, 0, 7); g.fill(); },
+    brush: function (g) { g.beginPath(); g.moveTo(70, 22); g.lineTo(40, 58); g.stroke(); g.beginPath(); g.arc(34, 64, 10, 0, 7); g.fill(); },
+    mail: function (g) { g.strokeRect(20, 28, 56, 40); g.beginPath(); g.moveTo(20, 30); g.lineTo(48, 52); g.lineTo(76, 30); g.stroke(); },
+    text: function (g) { g.fillRect(24, 26, 48, 7); g.fillRect(24, 42, 40, 7); g.fillRect(24, 58, 46, 7); },
+    gear: function (g) { g.beginPath(); g.arc(48, 48, 15, 0, 7); g.stroke(); for (var i = 0; i < 8; i++) { var a = i * Math.PI / 4; g.beginPath(); g.moveTo(48 + Math.cos(a) * 22, 48 + Math.sin(a) * 22); g.lineTo(48 + Math.cos(a) * 30, 48 + Math.sin(a) * 30); g.stroke(); } },
+    calc: function (g) { for (var y = 0; y < 3; y++) for (var x = 0; x < 3; x++) g.fillRect(24 + x * 18, 24 + y * 18, 12, 12); },
+    play: function (g) { g.beginPath(); g.moveTo(38, 28); g.lineTo(68, 48); g.lineTo(38, 68); g.fill(); },
+    photo: function (g) { g.beginPath(); g.moveTo(18, 70); g.lineTo(40, 40); g.lineTo(54, 58); g.lineTo(64, 46); g.lineTo(78, 70); g.fill(); g.beginPath(); g.arc(66, 30, 8, 0, 7); g.fill(); },
+    cal: function (g) { g.strokeRect(22, 26, 52, 46); g.fillRect(22, 26, 52, 12); g.fillRect(34, 50, 8, 8); g.fillRect(52, 50, 8, 8); }
+  };
+  var APPS = [
+    { n: "Firefox", g: "globe", bg: "#2b2a6b", fg: "#ff9a3d", grp: ["work"], run: true },
+    { n: "Discord", g: "chat", bg: "#3b3f9e", fg: "#ffffff", grp: ["gaming"], run: true },
+    { n: "Spotify", g: "note", bg: "#121212", fg: "#4ade80", grp: [], run: true },
+    { n: "VS Code", g: "code", bg: "#0b3a63", fg: "#5cc3ff", grp: ["work", "create"], run: true },
+    { n: "Terminal", g: "term", bg: "#1a1a1a", fg: "#e6e6e6", grp: ["work"] },
+    { n: "Explorer", g: "folder", bg: "#2b2400", fg: "#ffd34d", grp: ["work"] },
+    { n: "Steam", g: "pad", bg: "#10233a", fg: "#c7d5e0", grp: ["gaming"] },
+    { n: "OBS", g: "cam", bg: "#222", fg: "#e6e6e6", grp: ["create", "gaming"] },
+    { n: "Krita", g: "brush", bg: "#2a1640", fg: "#ff79c6", grp: ["create"] },
+    { n: "Outlook", g: "mail", bg: "#0f2f57", fg: "#7cc4ff", grp: ["work"] },
+    { n: "Notepad", g: "text", bg: "#e8e8e8", fg: "#3a3a3a", grp: ["work"] },
+    { n: "Settings", g: "gear", bg: "#2a2a2a", fg: "#cfcfcf", grp: [] },
+    { n: "Calculator", g: "calc", bg: "#202020", fg: "#9ad0ff", grp: ["work"] },
+    { n: "VLC", g: "play", bg: "#3a1d00", fg: "#ff8a00", grp: ["create"] },
+    { n: "Photos", g: "photo", bg: "#103a3a", fg: "#7ef0d8", grp: ["create"] },
+    { n: "Calendar", g: "cal", bg: "#3a1010", fg: "#ff8080", grp: ["work"] }
+  ];
+  APPS.forEach(function (a) { a.art = icon(a.bg, a.fg, GLYPH[a.g]); });
+  var GROUPS = [{ id: "all", n: "All" }, { id: "work", n: "Work" }, { id: "gaming", n: "Gaming" }, { id: "create", n: "Create" }];
+
+  function colors() { return { lit: v("litColor").value, unlit: v("showUnlit").checked ? v("unlitColor").value : null, accent: v("accentColor").value, label: v("labelColor").value }; }
+  function dither(src, px, pitch, c) {
+    var cv = document.createElement("canvas"), dpr = 2; cv.width = cv.height = px * dpr; cv.style.width = cv.style.height = px + "px";
+    var ctx = cv.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    var n = Math.floor(px / pitch), off = (px - n * pitch) / 2 + pitch / 2, maxR = pitch * .46;
+    var sm = document.createElement("canvas"); sm.width = sm.height = n; var sg = sm.getContext("2d"); sg.imageSmoothingQuality = "high"; sg.drawImage(src, 0, 0, n, n);
+    var d = sg.getImageData(0, 0, n, n).data, color = val("iconStyle") === "color";
+    for (var y = 0; y < n; y++) for (var x = 0; x < n; x++) {
+      var cx = off + x * pitch, cy = off + y * pitch, i = (y * n + x) * 4;
+      if (c.unlit) { ctx.fillStyle = c.unlit; ctx.beginPath(); ctx.arc(cx, cy, maxR, 0, 7); ctx.fill(); }
+      if (d[i + 3] < 40) continue;
+      var lum = (0.2126 * d[i] + 0.7152 * d[i + 1] + 0.0722 * d[i + 2]) / 255;
+      var rad = color ? maxR * (0.4 + 0.6 * Math.pow(lum, .6)) : maxR * Math.pow(lum, .8);
+      if (rad < .6) continue;
+      ctx.fillStyle = color ? "rgb(" + d[i] + "," + d[i + 1] + "," + d[i + 2] + ")" : c.lit;
+      ctx.beginPath(); ctx.arc(cx, cy, rad, 0, 7); ctx.fill();
+    }
+    return cv;
+  }
+  function bar(w, frac, pitch, c) {
+    var cv = document.createElement("canvas"), dpr = 2, n = Math.floor(w / pitch); cv.width = w * dpr; cv.height = pitch * dpr; cv.style.width = w + "px"; cv.style.height = pitch + "px";
+    var ctx = cv.getContext("2d"), k = Math.round(n * frac); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    for (var i = 0; i < n; i++) { ctx.fillStyle = i < k ? c.accent : (c.unlit || "#1c1c1c"); ctx.beginPath(); ctx.arc(i * pitch + pitch / 2, pitch / 2, pitch * .36, 0, 7); ctx.fill(); }
+    return cv;
+  }
+
+  function open(a) {
+    opening = a.n; clearTimeout(timer);
+    timer = setTimeout(function () { opening = null; a.run = true; render(); }, 1800);
+    render();
+  }
+  function wire(b, a) {
+    if (val("trigger") === "tap") { b.addEventListener("click", function () { open(a); }); return; }
+    var raf = null, t0 = 0, hb = b.querySelector(".hb");
+    function paint(p) { hb.innerHTML = ""; if (p > 0) hb.appendChild(bar(160, p, 10, colors())); }
+    function stop() { if (raf) cancelAnimationFrame(raf); raf = null; paint(0); }
+    b.addEventListener("pointerdown", function (e) {
+      e.preventDefault(); t0 = performance.now();
+      (function step(now) { var p = Math.min(1, (now - t0) / 700); paint(p); if (p >= 1) { raf = null; open(a); return; } raf = requestAnimationFrame(step); })(t0);
+    });
+    ["pointerup", "pointerleave", "pointercancel"].forEach(function (n) { b.addEventListener(n, stop); });
+  }
+
+  function render() {
+    var c = colors(), groups = v("showGroups").checked;
+    if (!groups) group = "all";
+    stage.style.setProperty("--accent", c.accent); stage.style.setProperty("--lit", c.lit); stage.style.setProperty("--label", c.label);
+    stage.className = "stage" + (groups ? "" : " flat") + (opening ? " opening" : "");
+    var running = APPS.filter(function (a) { return a.run; }).length;
+    v("state").textContent = opening ? "OPENING · " + opening.toUpperCase() : running + " RUNNING";
+    var tabs = v("tabs"); tabs.innerHTML = ""; tabs.hidden = !groups;
+    GROUPS.forEach(function (gr) {
+      var t = el("button", "tab", gr.n); t.type = "button"; t.setAttribute("role", "tab"); t.setAttribute("aria-selected", gr.id === group ? "true" : "false");
+      t.addEventListener("click", function () { group = gr.id; render(); }); tabs.appendChild(t);
+    });
+    var grid = v("grid"); grid.innerHTML = "";
+    APPS.filter(function (a) { return group === "all" || a.grp.indexOf(group) >= 0; }).slice(0, 16).forEach(function (a) {
+      var b = el("button", "app" + (a.run && v("showRunning").checked ? " running" : "") + (opening === a.n ? " go" : "")); b.type = "button";
+      b.setAttribute("aria-label", "Open " + a.n);
+      var ic = el("div", "ic"); ic.appendChild(dither(a.art, 160, 10, c)); b.appendChild(ic);
+      b.appendChild(el("p", "n ell", a.n));
+      b.appendChild(el("span", "run"));
+      b.appendChild(el("div", "hb"));
+      wire(b, a);
+      grid.appendChild(b);
+    });
+  }
+
+  document.querySelectorAll(".settings input").forEach(function (i) { i.addEventListener("input", render); i.addEventListener("change", render); });
+  document.querySelectorAll(".preset[data-accent]").forEach(function (b) { b.addEventListener("click", function () { v("accentColor").value = b.getAttribute("data-accent"); render(); }); });
+  render(); fit();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(render);
+})();
+</script>
+</body>
+</html>
