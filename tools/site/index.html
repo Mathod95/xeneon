@@ -70,9 +70,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outlin
 .status::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--c, var(--idea)); }
 .card h3 { margin: 0; font-size: 21px; font-weight: 700; letter-spacing: .02em; text-wrap: balance; }
 .card p { margin: 0; color: var(--label); font-size: 15px; min-width: 0; }
-.foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; padding-top: 14px; border-top: 1px solid var(--line); font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; }
-.comp { color: var(--muted); }
-.comp b { color: var(--label); font-weight: 500; }
+.foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 10px; padding-top: 14px; border-top: 1px solid var(--line); font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; }
 .links { display: flex; gap: 16px; }
 .links a { text-decoration: none; color: var(--label); }
 .links a:hover { color: var(--lit); }
@@ -159,7 +157,6 @@ footer a { color: var(--label); text-decoration: none; }
         <button type="button" class="chip" data-f="all" aria-pressed="true">Tous</button>
         <button type="button" class="chip" data-f="mock" aria-pressed="false">Avec maquette</button>
         <button type="button" class="chip" data-f="wip" aria-pressed="false">En cours</button>
-        <button type="button" class="chip" data-f="solo" aria-pressed="false">Sans compagnon</button>
       </div>
     </div>
     <div class="grid" id="grid"></div>
@@ -264,7 +261,7 @@ footer a { color: var(--label); text-decoration: none; }
 
   function stats() {
     var ul = document.getElementById("stats");
-    [[WIDGETS.length, "widgets"], [WIDGETS.filter(function (w) { return w.mockup; }).length, "maquettes"], [WIDGETS.filter(function (w) { return w.kind === "wip"; }).length, "en cours"], [WIDGETS.filter(function (w) { return w.comp === "Non"; }).length, "sans compagnon"]].forEach(function (s) {
+    [[WIDGETS.length, "widgets"], [WIDGETS.filter(function (w) { return w.mockup; }).length, "maquettes"], [WIDGETS.filter(function (w) { return w.kind === "wip"; }).length, "en cours"]].forEach(function (s) {
       var li = el("li"); li.appendChild(el("b", "", String(s[0]))); li.appendChild(document.createTextNode(s[1])); ul.appendChild(li);
     });
   }
@@ -274,7 +271,7 @@ footer a { color: var(--label); text-decoration: none; }
     var grid = document.getElementById("grid");
     grid.innerHTML = "";
     var list = WIDGETS.filter(function (w) {
-      return filter === "all" || (filter === "mock" && w.mockup) || (filter === "wip" && w.kind === "wip") || (filter === "solo" && w.comp === "Non");
+      return filter === "all" || (filter === "mock" && w.mockup) || (filter === "wip" && w.kind === "wip");
     });
     list.forEach(function (w) {
       var card = el("article", "card" + (w.mockup ? " has" : ""));
@@ -287,7 +284,6 @@ footer a { color: var(--label); text-decoration: none; }
       card.appendChild(el("h3", "", w.name));
       card.appendChild(el("p", "", w.desc));
       var foot = el("div", "foot");
-      var comp = el("span", "comp", "Compagnon "); comp.appendChild(el("b", "", w.comp)); foot.appendChild(comp);
       var links = el("span", "links");
       if (w.mockup) {
         var a = el("a", "mock", "Maquette →"); a.href = BASE + w.slug + "/"; links.appendChild(a);

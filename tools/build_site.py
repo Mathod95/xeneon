@@ -43,16 +43,15 @@ def widgets():
     rows = []
     text = (ROOT / "README.md").read_text(encoding="utf-8")
     for line in text.splitlines():
-        m = re.match(r"\|\s*\[(.+?)\]\(widgets/([\w-]+)\)\s*\|(.*)\|(.*)\|\s*$", line)
+        m = re.match(r"\|\s*\[(.+?)\]\(widgets/([\w-]+)\)\s*\|(.*?)\|\s*$", line)
         if not m:
             continue
-        name, slug, desc, comp = m.group(1), m.group(2), m.group(3).strip(), m.group(4).strip()
+        name, slug, desc = m.group(1), m.group(2), m.group(3).strip()
         label, kind = status_of(slug)
         rows.append({
             "name": name,
             "slug": slug,
             "desc": desc,
-            "comp": comp,
             "status": label,
             "kind": kind,
             "mockup": (ROOT / "widgets" / slug / "mockups" / "reference.html").exists(),
