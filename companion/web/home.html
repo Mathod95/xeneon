@@ -16,7 +16,7 @@ html, body { width: 100%; height: 100%; overflow: hidden; background: #080808; u
 .lbl { margin: 0; white-space: nowrap; font-size: 18px; line-height: 24px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); }
 .head { position: absolute; left: 56px; right: 56px; top: 30px; height: 60px; display: flex; align-items: center; gap: 14px; }
 .stage.xl .head { top: 26px; }  /* libellé « ● DOT … » à 56 / 51 et 80 / 44, comme Dot Clock */
-.head .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); }
+.head .dot { flex: none; width: 10px; height: 10px; border-radius: 50%; background: var(--accent); }
 .head .grow { flex: 1; }
 
 /* tuiles */
@@ -92,7 +92,8 @@ html, body { width: 100%; height: 100%; overflow: hidden; background: #080808; u
 		head.appendChild(el("span", "dot"));
 		head.appendChild(el("p", "lbl", "DOT HOME" + (inst.name ? " · " + inst.name : "")));
 		head.appendChild(el("span", "grow"));
-		head.appendChild(el("p", "lbl", "SETTINGS · 127.0.0.1:47800/SETTINGS"));
+		// en M, la place manque : l'adresse seule
+		head.appendChild(el("p", "lbl", (size === "m" ? "" : "SETTINGS · ") + "127.0.0.1:47800/SETTINGS"));
 		stage.appendChild(head);
 
 		var grid = el("div", "tiles");
