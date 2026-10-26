@@ -42,6 +42,8 @@ def status_of(slug):
 def widgets():
     rows = []
     text = (ROOT / "README.md").read_text(encoding="utf-8")
+    en_file = ROOT / "tools" / "site" / "modules.en.json"
+    en = json.loads(en_file.read_text(encoding="utf-8")) if en_file.exists() else {}
     for line in text.splitlines():
         m = re.match(r"\|\s*\[(.+?)\]\(widgets/([\w-]+)\)\s*\|(.*?)\|\s*$", line)
         if not m:
@@ -52,6 +54,7 @@ def widgets():
             "name": name,
             "slug": slug,
             "desc": desc,
+            "desc_en": en.get(slug, ""),
             "status": label,
             "kind": kind,
             "mockup": (ROOT / "widgets" / slug / "mockups" / "reference.html").exists(),

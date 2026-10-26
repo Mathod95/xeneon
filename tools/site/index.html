@@ -4,7 +4,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap">
 <style>
-/* Layout : en-tête MATHOD, titre en gros points sur une grille de points, chiffres clés, filtres, puis une carte par widget. Un seul thème sombre, celui des widgets. */
+/* Layout : en-tête MATHOD (FR / EN), titre en gros points, chiffres clés, Dot Hub (le projet), la Xeneon Edge simulée, puis une carte par module. Un seul thème sombre, celui des widgets. */
 :root {
   --bg: #080808;
   --panel: #0e0e0e;
@@ -43,6 +43,22 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outlin
 .brand::before { content: ""; width: 12px; height: 12px; border-radius: 50%; background: var(--accent); }
 .ext { font-family: var(--mono); font-size: 13px; letter-spacing: .16em; text-transform: uppercase; color: var(--label); text-decoration: none; padding: 10px 16px; border: 1px solid var(--line); border-radius: 999px; background: var(--bg); }
 .ext:hover { color: var(--lit); border-color: #333; }
+.topr { display: flex; align-items: center; gap: 12px; }
+.lang { display: flex; gap: 4px; padding: 4px; border: 1px solid var(--line); border-radius: 999px; background: var(--bg); }
+.lang .chip { padding: 6px 12px; border: 0; }
+
+/* Dot Hub : ce qu'est le projet */
+.hubsec { display: grid; gap: 22px; padding: clamp(20px, 3vw, 32px); border: 1px solid #262626; border-radius: 20px; background: var(--panel); }
+.hub-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.hub-head .id { display: flex; align-items: center; gap: 18px; }
+.hub-head canvas { display: block; width: 64px; height: 64px; }
+.hub-head h2 { margin: 0; font-family: var(--mono); font-weight: 500; font-size: clamp(22px, 2.6vw, 28px); letter-spacing: .14em; text-transform: uppercase; }
+.hub-lead { margin: 0; max-width: 72ch; font-size: clamp(16px, 1.6vw, 19px); color: var(--lit); text-wrap: pretty; }
+.steps { margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: 12px; counter-reset: st; }
+.steps li { counter-increment: st; display: grid; grid-template-columns: auto 1fr; gap: 14px; align-items: start; padding: 16px 18px; border: 1px solid var(--line); border-radius: 14px; color: var(--label); font-size: 15px; }
+.steps li::before { content: counter(st); display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: var(--accent); color: var(--bg); font-family: var(--mono); font-weight: 500; font-size: 14px; }
+.steps b { color: var(--lit); font-weight: 600; }
+.hub-links { font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; flex-wrap: wrap; }
 
 /* titre */
 .hero { display: grid; gap: 22px; }
@@ -125,44 +141,68 @@ footer a { color: var(--label); text-decoration: none; }
 <div class="wrap">
   <div class="top">
     <span class="brand">MATHOD</span>
-    <a class="ext" href="https://github.com/Mathod95/xeneon" target="_blank" rel="noopener">GitHub ↗</a>
+    <div class="topr">
+      <div class="lang" role="group" aria-label="Language">
+        <button type="button" class="chip" data-lang="fr" aria-pressed="false">FR</button>
+        <button type="button" class="chip" data-lang="en" aria-pressed="false">EN</button>
+      </div>
+      <a class="ext" href="https://github.com/Mathod95/xeneon" target="_blank" rel="noopener">GitHub ↗</a>
+    </div>
   </div>
 
   <section class="hero" aria-labelledby="title">
     <h1 id="title" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Dot Hub</h1>
     <canvas id="titleDots" width="2160" height="300" aria-hidden="true"></canvas>
-    <p class="tagline">Widget iCUE pour le CORSAIR XENEON EDGE<i>●</i>2560 × 720, tactile, Dot style.</p>
+    <p class="tagline" data-i18n-html="tagline"></p>
     <ul class="stats" id="stats"></ul>
   </section>
 
-  <section class="edge-sec" aria-label="Aperçu sur la Xeneon Edge">
+  <section class="hubsec" aria-labelledby="hubTitle">
+    <div class="hub-head">
+      <div class="id"><canvas id="hubPic" width="140" height="140" aria-hidden="true"></canvas><h2 id="hubTitle">Dot Hub</h2></div>
+      <span class="status" id="hubStatus"></span>
+    </div>
+    <p class="hub-lead" data-i18n="hubLead"></p>
+    <ol class="steps">
+      <li><span data-i18n-html="step1"></span></li>
+      <li><span data-i18n-html="step2"></span></li>
+      <li><span data-i18n-html="step3"></span></li>
+    </ol>
+    <div class="links hub-links">
+      <a class="mock" id="hubMock" href="#" data-i18n="mockup"></a>
+      <a href="https://github.com/Mathod95/xeneon/releases/latest" target="_blank" rel="noopener" data-i18n="download"></a>
+      <a id="hubFiche" href="#" target="_blank" rel="noopener" data-i18n="fiche"></a>
+    </div>
+  </section>
+
+  <section class="edge-sec" data-i18n-label="edgeLabel">
     <div class="bar">
-      <h2>Sur la Xeneon Edge</h2>
-      <p class="hint">Touche une tuile de Dot Hub pour ouvrir le module, ou glisse.</p>
+      <h2 data-i18n="onEdge"></h2>
+      <p class="hint" data-i18n="edgeHint"></p>
     </div>
     <div class="edge"><div class="screen" id="screen"><div class="native" id="native"><div class="strip" id="strip"></div></div></div></div>
     <div class="pager">
       <div class="dots" id="dots" role="group" aria-label="Pages"></div>
-      <div class="where"><span id="where"></span><a id="open" href="#" hidden>Maquette →</a></div>
+      <div class="where"><span id="where"></span><a id="open" href="#" hidden data-i18n="mockup"></a></div>
       <div class="nav">
-        <button type="button" class="chip" id="prev" aria-label="Page précédente">‹</button>
+        <button type="button" class="chip" id="prev" data-i18n-label="prev">‹</button>
         <button type="button" class="chip" id="homeBtn">Dot Hub</button>
-        <button type="button" class="chip" id="next" aria-label="Page suivante">›</button>
+        <button type="button" class="chip" id="next" data-i18n-label="next">›</button>
       </div>
     </div>
   </section>
 
-  <section style="display:grid;gap:18px" aria-label="Widgets" id="list">
+  <section style="display:grid;gap:18px" data-i18n-label="modules" id="list">
     <div class="bar">
-      <h2>Les widgets</h2>
-      <div class="chips" role="group" aria-label="Filtrer">
-        <button type="button" class="chip" data-f="all" aria-pressed="true">Tous</button>
-        <button type="button" class="chip" data-f="mock" aria-pressed="false">Avec maquette</button>
-        <button type="button" class="chip" data-f="wip" aria-pressed="false">En cours</button>
+      <h2 data-i18n="modules"></h2>
+      <div class="chips" role="group" data-i18n-label="filter">
+        <button type="button" class="chip" data-f="all" aria-pressed="true" data-i18n="fAll"></button>
+        <button type="button" class="chip" data-f="mock" aria-pressed="false" data-i18n="fMock"></button>
+        <button type="button" class="chip" data-f="wip" aria-pressed="false" data-i18n="fWip"></button>
       </div>
     </div>
     <div class="grid" id="grid"></div>
-    <p class="none" id="none" hidden>Aucun widget pour ce filtre.</p>
+    <p class="none" id="none" hidden data-i18n="none"></p>
   </section>
 
   <footer>
@@ -178,7 +218,55 @@ footer a { color: var(--label); text-decoration: none; }
   "use strict";
   var BASE = "__BASE__";
   var REPO = "https://github.com/Mathod95/xeneon/tree/main/widgets/";
-  var WIDGETS = JSON.parse(document.getElementById("data").textContent);
+  var ALL = JSON.parse(document.getElementById("data").textContent);
+  // Dot Hub est le projet lui-même : présenté à part, pas dans la liste des modules
+  var HUB = ALL.filter(function (w) { return w.slug === "dot-hub"; })[0];
+  var WIDGETS = ALL.filter(function (w) { return w.slug !== "dot-hub"; });
+
+  // ---------- français / anglais
+  var STR = {
+    fr: {
+      tagline: "Widget iCUE pour le CORSAIR XENEON EDGE<i>●</i>2560 × 720, tactile, Dot style.",
+      hubLead: "Un seul widget iCUE pour tous les modules Dot. Dot Companion tourne sur le PC : il sert les modules et garde leurs réglages. Sur l'Edge, un toucher passe d'un module à l'autre ; sur le PC, tout se règle depuis le navigateur.",
+      step1: "<b>Lance Dot Companion</b> sur le PC.",
+      step2: "<b>Ajoute Dot Hub</b> sur l'Edge dans iCUE.",
+      step3: "<b>Choisis un module</b> d'un toucher, règle-le depuis ⚙ SETTINGS.",
+      mockup: "Maquette →", download: "Télécharger ↗", fiche: "Fiche ↗",
+      edgeLabel: "Aperçu sur la Xeneon Edge", onEdge: "Sur la Xeneon Edge", edgeHint: "Touche une tuile de Dot Hub pour ouvrir le module, ou glisse.",
+      prev: "Page précédente", next: "Page suivante",
+      modules: "Les modules", filter: "Filtrer", fAll: "Tous", fMock: "Avec maquette", fWip: "En cours", none: "Aucun module pour ce filtre.",
+      sModules: "modules", sMock: "maquettes", sWip: "en cours",
+      alt: " en taille XL", openMock: " · OUVRIR LA MAQUETTE →",
+      kind: { wip: "en cours", spec: "spécifié", design: "en conception", idea: "idée" }
+    },
+    en: {
+      tagline: "iCUE widget for the CORSAIR XENEON EDGE<i>●</i>2560 × 720, touch, Dot style.",
+      hubLead: "One iCUE widget for every Dot module. Dot Companion runs on your PC: it serves the modules and keeps their settings. On the Edge, a tap switches from one module to another; on the PC, everything is set up from your browser.",
+      step1: "<b>Run Dot Companion</b> on your PC.",
+      step2: "<b>Add Dot Hub</b> to your Edge in iCUE.",
+      step3: "<b>Pick a module</b> with a tap, set it up from ⚙ SETTINGS.",
+      mockup: "Mockup →", download: "Download ↗", fiche: "Details ↗",
+      edgeLabel: "Preview on the Xeneon Edge", onEdge: "On the Xeneon Edge", edgeHint: "Tap a Dot Hub tile to open the module, or swipe.",
+      prev: "Previous page", next: "Next page",
+      modules: "The modules", filter: "Filter", fAll: "All", fMock: "With mockup", fWip: "In progress", none: "No module for this filter.",
+      sModules: "modules", sMock: "mockups", sWip: "in progress",
+      alt: " at XL size", openMock: " · OPEN THE MOCKUP →",
+      kind: { wip: "in progress", spec: "specified", design: "in design", idea: "idea" }
+    }
+  };
+  var lang = "fr";
+  try {
+    var q = new URLSearchParams(location.search).get("lang");
+    lang = q === "en" || q === "fr" ? q : localStorage.getItem("dotpage-lang") || ((navigator.language || "fr").slice(0, 2) === "fr" ? "fr" : "en");
+  } catch (e) { lang = (navigator.language || "fr").slice(0, 2) === "fr" ? "fr" : "en"; }
+  if (!STR[lang]) lang = "fr";
+  function t(k) { return STR[lang][k]; }
+  function desc(w) { return lang === "en" && w.desc_en ? w.desc_en : w.desc; }
+  function statusText(w) {
+    if (lang === "fr") return w.status;
+    var m = /\(([^)]*)\)/.exec(w.status);
+    return t("kind")[w.kind] + (m ? " (" + m[1] + ")" : "");
+  }
 
   // police 5 × 7 points pour le titre
   var F = {
@@ -244,6 +332,7 @@ footer a { color: var(--label); text-decoration: none; }
     "dot-ia": ["...#...", "...#...", "#..#..#", ".#####.", "#..#..#", "...#...", "...#..."],
     "dot-home": ["...#...", "..###..", ".#####.", "#######", ".#...#.", ".#.#.#.", ".#####."],
     "dot-github": ["#...#..", "#...#..", "#..#...", "#.#....", "##.....", "#......", "#......"],
+    "dot-hub": ["###.###", "#.#.#.#", "###.###", ".......", "###.###", "#.#.#.#", "###.###"],
     "dot-calculator": [".#...#.", "###.###", ".#.....", ".......", "#.#.###", ".#.....", "#.#.###"]
   };
   var BLANK = [".......", ".......", "...#...", "..###..", "...#...", ".......", "......."];
@@ -263,8 +352,8 @@ footer a { color: var(--label); text-decoration: none; }
   function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; }
 
   function stats() {
-    var ul = document.getElementById("stats");
-    [[WIDGETS.length, "widgets"], [WIDGETS.filter(function (w) { return w.mockup; }).length, "maquettes"], [WIDGETS.filter(function (w) { return w.kind === "wip"; }).length, "en cours"]].forEach(function (s) {
+    var ul = document.getElementById("stats"); ul.innerHTML = "";
+    [[WIDGETS.length, t("sModules")], [WIDGETS.filter(function (w) { return w.mockup; }).length, t("sMock")], [WIDGETS.filter(function (w) { return w.kind === "wip"; }).length, t("sWip")]].forEach(function (s) {
       var li = el("li"); li.appendChild(el("b", "", String(s[0]))); li.appendChild(document.createTextNode(s[1])); ul.appendChild(li);
     });
   }
@@ -281,19 +370,19 @@ footer a { color: var(--label); text-decoration: none; }
       var row = el("div", "row");
       var cv = pic(w.slug, w.mockup ? "#f2f0e9" : "#5f5d58");
       row.appendChild(cv);
-      var st = el("span", "status", w.status); st.style.setProperty("--c", KIND[w.kind] || KIND.idea);
+      var st = el("span", "status", statusText(w)); st.style.setProperty("--c", KIND[w.kind] || KIND.idea);
       row.appendChild(st);
       card.appendChild(row);
       card.appendChild(el("h3", "", w.name));
-      card.appendChild(el("p", "", w.desc));
+      card.appendChild(el("p", "", desc(w)));
       var foot = el("div", "foot");
       var links = el("span", "links");
       if (w.mockup) {
-        var a = el("a", "mock", "Maquette →"); a.href = BASE + w.slug + "/"; links.appendChild(a);
+        var a = el("a", "mock", t("mockup")); a.href = BASE + w.slug + "/"; links.appendChild(a);
         card.addEventListener("mouseenter", function () { row.replaceChild(pic(w.slug, "#10b981"), row.firstChild); });
         card.addEventListener("mouseleave", function () { row.replaceChild(pic(w.slug, "#f2f0e9"), row.firstChild); });
       }
-      var f = el("a", "", "Fiche ↗"); f.href = REPO + w.slug; f.target = "_blank"; f.rel = "noopener"; links.appendChild(f);
+      var f = el("a", "", t("fiche")); f.href = REPO + w.slug; f.target = "_blank"; f.rel = "noopener"; links.appendChild(f);
       foot.appendChild(links);
       card.appendChild(foot);
       grid.appendChild(card);
@@ -338,11 +427,11 @@ footer a { color: var(--label); text-decoration: none; }
     PAGES.forEach(function (w) {
       var pg = el("div", "pg"), sl = el("div", "slot");
       if (SHOTS[w.slug]) {
-        var img = el("img"); img.src = SHOTS[w.slug]; img.alt = w.name + " en taille XL"; img.draggable = false;
+        var img = el("img"); img.src = SHOTS[w.slug]; img.alt = w.name + t("alt"); img.draggable = false;
         sl.appendChild(img);
       } else {
         var a = el("a", "ph"); a.href = BASE + w.slug + "/";
-        a.appendChild(pic(w.slug, "#f2f0e9")); a.appendChild(el("p", "lbl", w.name + " · OUVRIR LA MAQUETTE →"));
+        a.appendChild(pic(w.slug, "#f2f0e9")); a.appendChild(el("p", "lbl", w.name + t("openMock")));
         sl.appendChild(a);
       }
       pg.appendChild(sl); strip.appendChild(pg);
@@ -376,10 +465,36 @@ footer a { color: var(--label); text-decoration: none; }
   document.getElementById("prev").addEventListener("click", function () { go(cur - 1); });
   document.getElementById("next").addEventListener("click", function () { go(cur + 1); });
   document.getElementById("homeBtn").addEventListener("click", function () { go(0); });
-  buildEdge(); go(0); fitEdge();
+  // ---------- Dot Hub
+  function renderHub() {
+    var c = document.getElementById("hubPic"), ctx = c.getContext("2d"), g = PICS["dot-hub"], p = 20;
+    ctx.clearRect(0, 0, 140, 140);
+    for (var y = 0; y < 7; y++) for (var x = 0; x < 7; x++) { ctx.beginPath(); ctx.fillStyle = g[y][x] === "#" ? "#10b981" : "#1c1c1c"; ctx.arc(x * p + p / 2, y * p + p / 2, p * .36, 0, 7); ctx.fill(); }
+    if (!HUB) return;
+    var st = document.getElementById("hubStatus"); st.textContent = statusText(HUB); st.style.setProperty("--c", KIND[HUB.kind] || KIND.idea);
+    var m = document.getElementById("hubMock"); m.hidden = !HUB.mockup; m.href = BASE + "dot-hub/";
+    document.getElementById("hubFiche").href = REPO + "dot-hub";
+  }
+
+  function applyLang() {
+    document.documentElement.lang = lang;
+    document.querySelectorAll("[data-i18n]").forEach(function (e) { e.textContent = t(e.getAttribute("data-i18n")); });
+    document.querySelectorAll("[data-i18n-html]").forEach(function (e) { e.innerHTML = t(e.getAttribute("data-i18n-html")); });
+    document.querySelectorAll("[data-i18n-label]").forEach(function (e) { e.setAttribute("aria-label", t(e.getAttribute("data-i18n-label"))); });
+    document.querySelectorAll(".lang .chip").forEach(function (b) { b.setAttribute("aria-pressed", b.getAttribute("data-lang") === lang ? "true" : "false"); });
+    stats(); render(); renderHub();
+    strip.innerHTML = ""; document.getElementById("dots").innerHTML = "";
+    buildEdge(); go(cur);
+  }
+  document.querySelectorAll(".lang .chip").forEach(function (b) {
+    b.addEventListener("click", function () {
+      lang = b.getAttribute("data-lang");
+      try { localStorage.setItem("dotpage-lang", lang); } catch (e) {}
+      applyLang();
+    });
+  });
 
   drawTitle("DOT HUB");
-  stats();
-  render();
+  applyLang(); fitEdge();
 })();
 </script>
