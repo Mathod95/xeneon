@@ -166,6 +166,23 @@ footer a { color: var(--label); text-decoration: none; }
     <ul class="stats" id="stats"></ul>
   </section>
 
+  <section class="edge-sec" data-i18n-label="edgeLabel">
+    <div class="bar">
+      <h2 data-i18n="onEdge"></h2>
+      <p class="hint" data-i18n="edgeHint"></p>
+    </div>
+    <div class="edge"><div class="screen" id="screen"><div class="native" id="native"><div class="strip" id="strip"></div></div></div></div>
+    <div class="pager">
+      <div class="dots" id="dots" role="group" aria-label="Pages"></div>
+      <div class="where"><span id="where"></span><a id="open" href="#" hidden data-i18n="mockup"></a></div>
+      <div class="nav">
+        <button type="button" class="chip" id="prev" data-i18n-label="prev">‹</button>
+        <button type="button" class="chip" id="homeBtn">Dot Hub</button>
+        <button type="button" class="chip" id="next" data-i18n-label="next">›</button>
+      </div>
+    </div>
+  </section>
+
   <section class="hubsec" aria-labelledby="hubTitle">
     <div class="hub-head">
       <div class="id"><canvas id="hubPic" width="140" height="140" aria-hidden="true"></canvas><h2 id="hubTitle">Dot Hub</h2></div>
@@ -188,23 +205,6 @@ footer a { color: var(--label); text-decoration: none; }
       <a class="mock" id="hubMock" href="#" data-i18n="mockup"></a>
       <a href="https://github.com/Mathod95/xeneon/releases/latest" target="_blank" rel="noopener" data-i18n="download"></a>
       <a id="hubFiche" href="#" target="_blank" rel="noopener" data-i18n="fiche"></a>
-    </div>
-  </section>
-
-  <section class="edge-sec" data-i18n-label="edgeLabel">
-    <div class="bar">
-      <h2 data-i18n="onEdge"></h2>
-      <p class="hint" data-i18n="edgeHint"></p>
-    </div>
-    <div class="edge"><div class="screen" id="screen"><div class="native" id="native"><div class="strip" id="strip"></div></div></div></div>
-    <div class="pager">
-      <div class="dots" id="dots" role="group" aria-label="Pages"></div>
-      <div class="where"><span id="where"></span><a id="open" href="#" hidden data-i18n="mockup"></a></div>
-      <div class="nav">
-        <button type="button" class="chip" id="prev" data-i18n-label="prev">‹</button>
-        <button type="button" class="chip" id="homeBtn">Dot Hub</button>
-        <button type="button" class="chip" id="next" data-i18n-label="next">›</button>
-      </div>
     </div>
   </section>
 
