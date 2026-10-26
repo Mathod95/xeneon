@@ -1,6 +1,6 @@
 # Dot Hub
 
-**Statut :** 🟡 en cours (v0.1.0)
+**Statut :** 🟡 en cours (v0.2.0)
 
 Le widget unique qui regroupe les modules Dot. C’est une coquille iCUE : l’interface est servie par Dot Companion sur le PC et affichée dans une iframe plein cadre.
 

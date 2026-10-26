@@ -1,6 +1,6 @@
 # Dot Clock
 
-**Statut :** 🟡 en cours (v0.1.2)
+**Statut :** 🟡 en cours (v0.1.3)
 
 Grande horloge dot-matrix : heures et minutes en gros points, deux-points et secondes en couleur d’accent, date et fuseau horaire.
 
