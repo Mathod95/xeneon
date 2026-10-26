@@ -125,7 +125,7 @@ Compilation Windows : `cargo build --release` sous Windows, ou depuis Linux/WSL 
 - **Dot System Monitor** v1.1.0 : fonctionnel (FPS + 4 capteurs + historique, dot-matrix). Mise en page faite pour L/XL ; **S et M à refaire**. À migrer sur `sizes.js` du template.
 - **Dot Clock** v0.1.2 : codé (S, M, L, XL). Référence : `widgets/dot-clock/mockups/reference.html`.
 - **Dot Hub** + **Dot Companion** : v0.1, première version de bout en bout avec le module Clock (coquille, accueil, réglages sur le PC, pont clavier). L’exe Windows est compilé par GitHub Actions.
-- **Dot Notes, Dot Weather, Dot IA, Dot Home, Dot GitHub, Dot Calculator, Dot Spotify, Dot Plex, Dot Bambu Lab, Dot Home Assistant, Dot Discord, Dot Steam** : en conception, maquette de référence dans `widgets/<slug>/mockups/reference.html` (choix de design à valider ; Dot Spotify mis de côté).
-- **Dot Audio, Dot Calendar** : spécifiés avec mocks.
+- **Dot Notes, Dot Weather, Dot IA, Dot Home, Dot GitHub, Dot Calculator, Dot Spotify, Dot Plex, Dot Bambu Lab, Dot Home Assistant, Dot Discord, Dot Steam, Dot Audio** : en conception, maquette de référence dans `widgets/<slug>/mockups/reference.html` (choix de design à valider ; Dot Spotify mis de côté).
+- **Dot Calendar** : spécifié avec mocks.
 - Autres : fiche seule (idée).
 - **Prochaine étape** : définir la charte graphique (`docs/DESIGN.md`) à partir du mock de charte fourni par Mathod95, puis en faire le template de base de tous les widgets.

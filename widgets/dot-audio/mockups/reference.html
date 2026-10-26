@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Maquette de référence du Dot Audio (artefact de revue de design). Ouvrir dans un navigateur. -->
+<style>body { margin: 0; }</style>
+</head>
+<body>
+<title>Dot Audio</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap">
+<style>
+/* Layout : maquette de référence en taille réelle (choix S, M, L, XL) avec ses réglages, puis tableau des choix. Même univers que Dot Clock, un seul thème sombre. */
+:root {
+  --page: #111111;
+  --panel: #0a0a0a;
+  --line: #262626;
+  --text: #e6e6e6;
+  --muted: #8c8c8c;
+  --brand: #10b981;
+  --mono: "IBM Plex Mono", "Cascadia Mono", Consolas, monospace;
+  --sans: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { background: var(--page); color: var(--text); }
+body {
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.55;
+  padding-block: 40px 72px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 1480px; margin: 0 auto; display: grid; gap: 40px; }
+header { display: grid; gap: 10px; }
+.eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); display: flex; align-items: center; gap: 10px; }
+.eyebrow::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--brand); }
+h1 { font-family: var(--mono); font-weight: 500; font-size: clamp(28px, 4vw, 44px); line-height: 1.1; margin: 0; letter-spacing: -.01em; }
+.lede { color: var(--muted); max-width: 72ch; margin: 0; }
+
+figure { margin: 0; display: grid; gap: 12px; min-width: 0; }
+.tag { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.tag b { color: var(--text); font-weight: 500; font-size: 14px; }
+figcaption { color: var(--muted); font-size: 14px; }
+
+/* tableau */
+.diff-head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; }
+h2 { font-family: var(--mono); font-weight: 500; font-size: 13px; letter-spacing: .14em; text-transform: uppercase; margin: 0; }
+.hint { color: var(--muted); font-size: 14px; margin: 0; }
+.table-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; }
+table { width: 100%; border-collapse: collapse; min-width: 640px; }
+th, td { text-align: left; padding: 14px 16px; vertical-align: top; border-bottom: 1px solid var(--line); }
+tr:last-child td { border-bottom: 0; }
+thead th { font-family: var(--mono); font-weight: 500; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); background: var(--panel); }
+td:first-child { font-family: var(--mono); color: var(--muted); width: 3.5em; font-variant-numeric: tabular-nums; }
+td:nth-child(2) { font-weight: 500; width: 15em; }
+tr.todo td:nth-child(3) { color: var(--muted); }
+code { font-family: var(--mono); font-size: 13px; color: var(--text); }
+
+/* réglages simulés */
+.settings { display: flex; flex-wrap: wrap; gap: 12px 28px; align-items: center; padding: 14px 16px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); }
+.settings label { display: inline-flex; align-items: center; gap: 10px; font-family: var(--mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); cursor: pointer; }
+.settings input[type=color] { width: 36px; height: 28px; padding: 0; border: 1px solid var(--line); border-radius: 6px; background: none; cursor: pointer; }
+.settings input[type=checkbox], .settings input[type=radio] { width: 18px; height: 18px; accent-color: var(--brand); cursor: pointer; }
+.settings .grp { display: inline-flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.settings .grp > span { font-family: var(--mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--text); }
+.preset { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; padding: 6px 10px; border-radius: 6px; border: 1px solid var(--line); background: transparent; color: var(--text); cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+.preset i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+.preset:focus-visible, .tab:focus-visible, .ses:focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; }
+.sizebar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; }
+.sizebar > span { font-family: var(--mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-right: 6px; }
+.sizebar .preset[aria-pressed="true"] { background: var(--text); color: #0a0a0a; border-color: var(--text); }
+
+/* cadre à l'échelle de l'XL : la largeur suit la vraie largeur de l'emplacement */
+.frame { position: relative; max-width: 100%; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: #080808; }
+.frame.xl { width: 100%; aspect-ratio: 2536 / 696; }
+.frame.l { width: calc(1688 / 2536 * 100%); aspect-ratio: 1688 / 696; }
+.frame.m { width: calc(840 / 2536 * 100%); aspect-ratio: 840 / 696; }
+.frame.s { width: calc(840 / 2536 * 100%); aspect-ratio: 840 / 344; }
+@media (max-width: 700px) { .frame.l, .frame.m, .frame.s { width: 100%; } }
+
+/* ---------- le widget : scène en pixels réels de l'emplacement ---------- */
+.stage { position: absolute; left: 0; top: 0; transform-origin: 0 0; background: #080808; --accent: #10b981; --lit: #f2f0e9; --label: #b8b6b0; --unlit: #1c1c1c; --alert: #ed403b; font-family: "Fira Code", Consolas, monospace; font-variant-ligatures: none; overflow: hidden; }
+.stage.xl { width: 2536px; height: 696px; }
+.stage.l { width: 1688px; height: 696px; }
+.stage.m { width: 840px; height: 696px; }
+.stage.s { width: 840px; height: 344px; }
+.stage > * { position: absolute; }
+.stage p { margin: 0; }
+.stage canvas { display: block; }
+.stage button { font-family: inherit; -webkit-tap-highlight-color: transparent; }
+.w-lbl { white-space: nowrap; font-size: 18px; line-height: 24px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); }
+.w-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); }
+.stage.playing .w-dot { animation: pulse 1.6s ease-in-out infinite; }
+@keyframes pulse { 50% { opacity: .3; } }
+@media (prefers-reduced-motion: reduce) { .stage.playing .w-dot { animation: none; } }
+.ell { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-transform: uppercase; }
+
+/* libellé « ● DOT AUDIO » : même place et même taille partout */
+.w-dot { left: 56px; top: 51px; }
+.w-name { left: 80px; top: 44px; }
+.w-state { right: 56px; top: 44px; }
+.stage.micoff .w-state { color: var(--alert); }
+
+/* boutons */
+.dev { padding: 14px 0; margin: -14px 0; border: 0; background: transparent; cursor: pointer; font-size: 18px; line-height: 24px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); white-space: nowrap; max-width: 100%; overflow: hidden; text-overflow: ellipsis; text-align: left; }
+.dev b { font-weight: 400; color: var(--lit); }
+.rb { display: grid; place-items: center; padding: 0; border-radius: 50%; border: 2px solid #2a2a2a; background: transparent; color: var(--lit); cursor: pointer; }
+.rb svg { width: 40%; height: 40%; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.rb.off { background: var(--alert); border-color: var(--alert); color: #fff; }
+.rb.fill { background: var(--lit); border-color: var(--lit); color: #080808; }
+.rb.fill svg { fill: currentColor; stroke: none; }
+.rb:active { transform: scale(.96); }
+.dev:focus-visible, .rb:focus-visible, .tab:focus-visible, .fd:focus-visible, .row:focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; }
+
+/* sortie */
+.w-out .digits { margin-top: 24px; }
+.w-out .vb { margin-top: 30px; touch-action: none; cursor: pointer; }
+.w-out .spk { position: absolute; right: 0; top: 76px; width: 96px; height: 96px; }
+
+/* micro : bouton rond, anneau de niveau en direct */
+.w-mic { display: flex; align-items: center; gap: 32px; }
+.w-mic .ring { position: relative; flex: none; }
+.w-mic .ring canvas { position: absolute; inset: 0; pointer-events: none; }
+.w-mic .ring .rb { position: absolute; inset: 22%; width: auto; height: auto; }
+.w-mic .tx { min-width: 0; }
+.w-mic .st { margin-top: 10px; font-size: 28px; line-height: 36px; letter-spacing: .1em; text-transform: uppercase; color: var(--lit); }
+.w-mic .st.off { color: var(--alert); }
+.w-mic .hint { margin-top: 4px; font-size: 18px; line-height: 24px; letter-spacing: .1em; text-transform: uppercase; color: var(--label); opacity: .6; }
+
+/* mixeur et égaliseur */
+.tabs { display: flex; align-items: center; gap: 40px; height: 24px; }
+.tab { margin: -18px 0; padding: 18px 0; border: 0; background: transparent; cursor: pointer; font-size: 18px; line-height: 24px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); opacity: .5; }
+.tab[aria-selected="true"] { color: var(--lit); opacity: 1; }
+.tabs .grow { flex: 1; }
+.tabs .dev { opacity: 1; }
+.chs { display: flex; margin-top: 28px; }
+.ch { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; }
+.ch .v { font-size: 26px; line-height: 32px; color: var(--lit); font-variant-numeric: tabular-nums; }
+.ch.muted .v { color: var(--label); opacity: .45; }
+.fd { margin-top: 12px; padding: 0; border: 0; background: transparent; cursor: ns-resize; touch-action: none; }
+.ch .n { margin-top: 14px; max-width: 100%; font-size: 18px; line-height: 24px; letter-spacing: .1em; color: var(--label); }
+.ch .mb { margin-top: 14px; width: 56px; height: 56px; }
+
+/* lecture en cours (plugin iCUE Media) */
+.w-np .t { margin-top: 26px; font-weight: 500; font-size: 36px; line-height: 46px; color: var(--lit); }
+.w-np .a { margin-top: 4px; font-size: 22px; line-height: 30px; letter-spacing: .08em; color: var(--label); }
+.w-np .ctls { position: absolute; left: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-content: space-between; }
+.w-np .rb { width: 88px; height: 88px; }
+.w-np .rb.fill { width: 112px; height: 112px; }
+
+/* choix des périphériques */
+.w-pick { inset: 0; background: rgba(8, 8, 8, .97); display: grid; grid-template-columns: 1fr 1fr; gap: 64px; padding: 112px 56px 48px; }
+.w-pick .col { min-width: 0; }
+.row { display: flex; align-items: center; gap: 18px; width: 100%; padding: 16px 0; border: 0; border-bottom: 2px solid #1d1d1d; background: transparent; cursor: pointer; text-align: left; font-size: 26px; line-height: 34px; letter-spacing: .06em; text-transform: uppercase; color: var(--label); }
+.row i { width: 14px; height: 14px; border-radius: 50%; background: var(--unlit); flex: none; }
+.row.on { color: var(--lit); }
+.row.on i { background: var(--accent); }
+.row span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.w-pick .close { position: absolute; right: 56px; top: 92px; width: 72px; height: 72px; }
+
+/* XL : sortie et micro, mixeur, lecture en cours */
+.stage.xl .w-out { left: 56px; top: 112px; width: 560px; }
+.stage.xl .w-mic { left: 56px; top: 472px; width: 560px; }
+.stage.xl .w-mix { left: 704px; top: 112px; width: 1112px; height: 536px; }
+.stage.xl .w-np { left: 1900px; top: 112px; width: 580px; height: 536px; }
+
+/* L : sortie et micro, mixeur */
+.stage.l .w-out { left: 56px; top: 112px; width: 560px; }
+.stage.l .w-mic { left: 56px; top: 472px; width: 560px; }
+.stage.l .w-mix { left: 704px; top: 112px; width: 928px; height: 536px; }
+.stage.l .w-np { display: none; }
+
+/* M : sortie, micro à droite, mixeur court en bas */
+.stage.m .w-out { left: 56px; top: 104px; width: 728px; }
+.stage.m .w-out .digits { margin-top: 20px; }
+.stage.m .w-out .vb { margin-top: 24px; }
+.stage.m .w-out .spk { right: 152px; top: 64px; width: 104px; height: 104px; }
+.stage.m .w-mic { right: 40px; top: 152px; }
+.stage.m .w-mic .tx { display: none; }
+.stage.m .w-mix { left: 56px; top: 376px; width: 728px; height: 280px; }
+.stage.m .chs { margin-top: 18px; }
+.stage.m .ch .v { font-size: 20px; line-height: 26px; }
+.stage.m .fd { margin-top: 6px; }
+.stage.m .ch .n { margin-top: 8px; font-size: 15px; line-height: 20px; }
+.stage.m .ch .mb { margin-top: 8px; width: 44px; height: 44px; }
+.stage.m .w-np { display: none; }
+
+/* S : sortie et micro, sans libellés */
+.stage.s .w-dot, .stage.s .w-name, .stage.s .w-state, .stage.s .w-out .dev, .stage.s .w-mix, .stage.s .w-np, .stage.s .w-mic .tx { display: none; }
+.stage.s .w-out { left: 48px; top: 40px; width: 744px; }
+.stage.s .w-out .digits { margin-top: 0; }
+.stage.s .w-out .vb { margin-top: 30px; }
+.stage.s .w-out .spk { right: 176px; top: 0; width: 112px; height: 112px; }
+.stage.s .w-mic { right: 32px; top: 22px; }
+.stage.s .w-pick { padding: 40px 48px; gap: 40px; }
+.stage.s .w-pick .close { top: 24px; right: 32px; }
+.stage.s .row { font-size: 20px; line-height: 26px; padding: 10px 0; }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Module Dot Hub · CORSAIR XENEON EDGE</div>
+    <h1>Dot Audio</h1>
+    <p class="lede">Première proposition, à valider point par point dans le tableau. Reprend les fonctions du cahier des charges de Dot Audio (volume, coupure de tous les micros, mixeur par application, périphériques, lecture en cours, égaliseur) dans la charte du Dot Clock. Les applications, les périphériques et le morceau sont des exemples fictifs.</p>
+  </header>
+
+  <figure>
+    <div class="tag"><b>Maquette de référence</b><span id="sizeTag">Version 0.1 · taille réelle XL 2536 × 696 px</span></div>
+    <div class="sizebar" role="radiogroup" aria-label="Taille du widget">
+      <span>Widget size</span>
+      <button type="button" class="preset" data-size="s" aria-pressed="false">S · 840 × 344</button>
+      <button type="button" class="preset" data-size="m" aria-pressed="false">M · 840 × 696</button>
+      <button type="button" class="preset" data-size="l" aria-pressed="false">L · 1688 × 696</button>
+      <button type="button" class="preset" data-size="xl" aria-pressed="true">XL · 2536 × 696</button>
+    </div>
+    <div class="frame xl" id="frame">
+      <div class="stage xl playing" id="stage">
+        <span class="w-dot"></span>
+        <p class="w-lbl w-name" data-hub-home>DOT AUDIO</p>
+        <p class="w-lbl w-state" id="state"></p>
+        <div class="w-out" id="out">
+          <button type="button" class="dev" id="outDev"></button>
+          <div class="digits" id="digits"></div>
+          <div class="vb" id="vb" role="slider" aria-label="Output volume"></div>
+          <button type="button" class="rb spk" id="spkBtn" aria-label="Mute output"><svg viewBox="0 0 24 24" id="spkIcon"></svg></button>
+        </div>
+        <div class="w-mic" id="mic">
+          <div class="ring" id="ring"><canvas id="ringCv"></canvas><button type="button" class="rb" id="micBtn" aria-label="Mute all microphones"><svg viewBox="0 0 24 24" id="micIcon"></svg></button></div>
+          <div class="tx"><button type="button" class="dev" id="inDev"></button><p class="st" id="micSt"></p><p class="hint">Tap mutes every mic</p></div>
+        </div>
+        <div class="w-mix" id="mix">
+          <div class="tabs" role="tablist">
+            <button type="button" class="tab" role="tab" data-tab="mixer">Mixer</button>
+            <button type="button" class="tab" role="tab" data-tab="eq">Equalizer</button>
+            <span class="grow"></span>
+            <button type="button" class="dev" id="presetBtn" hidden></button>
+          </div>
+          <div class="chs" id="chs"></div>
+        </div>
+        <div class="w-np" id="np">
+          <canvas id="cover"></canvas>
+          <p class="t ell" id="npT"></p>
+          <p class="a ell" id="npA"></p>
+          <div class="ctls">
+            <button type="button" class="rb" id="prevBtn" aria-label="Previous"><svg viewBox="0 0 24 24"><path d="M6 5v14M19 5v14L8 12z" fill="currentColor"/></svg></button>
+            <button type="button" class="rb fill" id="playBtn" aria-label="Play / pause"><svg viewBox="0 0 24 24" id="playIcon"></svg></button>
+            <button type="button" class="rb" id="nextBtn" aria-label="Next"><svg viewBox="0 0 24 24"><path d="M18 5v14M5 5v14l11-7z" fill="currentColor"/></svg></button>
+          </div>
+        </div>
+        <div class="w-pick" id="pick" hidden></div>
+      </div>
+    </div>
+    <div class="settings" aria-label="Réglages simulés">
+      <div class="grp" role="radiogroup" aria-label="Exemple">
+        <span>Exemple</span>
+        <label><input type="radio" name="sample" value="normal" checked> Normal</label>
+        <label><input type="radio" name="sample" value="micoff"> Mics muted</label>
+        <label><input type="radio" name="sample" value="spkoff"> Output muted</label>
+        <label><input type="radio" name="sample" value="nomedia"> Nothing playing</label>
+      </div>
+      <div class="grp" role="radiogroup" aria-label="Cover style">
+        <span>Cover style</span>
+        <label><input type="radio" name="coverStyle" value="mono" checked> Mono</label>
+        <label><input type="radio" name="coverStyle" value="color"> Color</label>
+      </div>
+      <label><input type="checkbox" id="showUnlit" checked> Show unlit dots</label>
+      <label>Accent color <input type="color" id="accentColor" value="#10b981"></label>
+      <label>Lit dot color <input type="color" id="litColor" value="#f2f0e9"></label>
+      <label>Unlit dot color <input type="color" id="unlitColor" value="#1c1c1c"></label>
+      <label>Label color <input type="color" id="labelColor" value="#b8b6b0"></label>
+      <button type="button" class="preset" data-accent="#10b981"><i style="background:#10b981"></i>Émeraude</button>
+      <button type="button" class="preset" data-accent="#ff8a3d"><i style="background:#ff8a3d"></i>Orange</button>
+      <button type="button" class="preset" data-accent="#3d8bff"><i style="background:#3d8bff"></i>Bleu</button>
+    </div>
+    <figcaption><span id="sizeNote">Sortie et micro à gauche, mixeur ou égaliseur au centre, lecture en cours à droite.</span> La maquette marche : glisser sur la barre de volume et sur les faders, toucher le micro coupe tous les micros, toucher le nom d'un périphérique ouvre le choix des périphériques.</figcaption>
+  </figure>
+
+  <section style="display:grid;gap:14px">
+    <div class="diff-head">
+      <h2>Choix de design</h2>
+      <p class="hint">Tout est à valider. Complété au fur et à mesure.</p>
+    </div>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>#</th><th>Élément</th><th>Proposition</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>Module</td><td>Module de Dot Hub servi par Dot Companion (<code>/m/audio/</code>). Pas de widget iCUE autonome.</td></tr>
+          <tr class="todo"><td>2</td><td>Données</td><td>Le compagnon passe par l'API audio de Windows : volume et mute de la sortie (<code>IAudioEndpointVolume</code>), une session par application pour le mixeur (<code>IAudioSessionManager2</code>, <code>ISimpleAudioVolume</code>), niveaux en direct (<code>IAudioMeterInformation</code>), liste des périphériques et changement du périphérique par défaut. Il suit en direct les changements faits dans Windows. Lecture en cours : plugin iCUE Media, relayé par la coquille de Dot Hub.</td></tr>
+          <tr class="todo"><td>3</td><td>Sortie</td><td>Volume en gros points (le % en accent), barre de points réglable en glissant, bouton mute. Nom du périphérique au-dessus : un toucher ouvre le choix des périphériques.</td></tr>
+          <tr class="todo"><td>4</td><td>Micro</td><td>Bouton rond entouré d'un anneau de points qui suit le niveau du micro en direct. Un toucher coupe <b>tous</b> les micros (pas seulement celui par défaut) : bouton plein en rouge, état « ALL MICS MUTED » en rouge, point d'état à droite du libellé. Le rouge reste fixe, quelle que soit la couleur d'accent.</td></tr>
+          <tr class="todo"><td>5</td><td>Mixeur</td><td>Un fader en points par application qui joue du son : valeur, colonne de points réglable en glissant (le point du niveau en accent), petite colonne de niveau en direct à côté, nom, bouton mute. 6 applications en XL, L et M ; au-delà, les plus récentes. Compatible avec Discord, Sonar, Wave Link ou Voicemeeter, vus comme des applications.</td></tr>
+          <tr class="todo"><td>6</td><td>Égaliseur</td><td>Onglet « Equalizer » : 10 bandes de 31 Hz à 16 kHz, de −12 à +12 dB, points depuis la ligne du 0. Préréglages (Flat, Bass boost, Voice, Custom). Windows n'a pas d'égaliseur global : le compagnon écrit un filtre <code>GraphicEQ</code> dans la configuration d'Equalizer APO, à installer à part. Onglet masqué si Equalizer APO est absent.</td></tr>
+          <tr class="todo"><td>7</td><td>Lecture en cours</td><td>Pochette en trame de points, titre, artiste, précédent / lecture-pause / suivant, comme Dot Spotify. XL seulement. « NOTHING PLAYING » quand rien ne joue.</td></tr>
+          <tr class="todo"><td>8</td><td>Périphériques</td><td>Panneau par-dessus le module : sorties à gauche, micros à droite, le périphérique par défaut marqué d'un point en accent. Un toucher le choisit et ferme le panneau.</td></tr>
+          <tr class="todo"><td>9</td><td>Libellés</td><td>« DOT AUDIO » en haut à gauche, à la même place et à la même taille que dans tous les modules (point à 56 / 51 px, texte à 80 / 44 px, Fira Code 18 px), toucher qui ramène à Dot Home. À droite : état des micros (MIC LIVE ou ALL MICS MUTED en rouge).</td></tr>
+          <tr class="todo"><td>10</td><td>Couleurs</td><td>Couleurs communes de la carte « Couleurs » de Dot Companion, à la place des thèmes du cahier des charges (rouge, orange, bleu, crème) ; orange et bleu proposés comme accents.</td></tr>
+          <tr class="todo"><td>11</td><td>Tailles</td><td><b>XL</b> : sortie et micro à gauche, mixeur ou égaliseur au centre, lecture en cours à droite.<br><b>L</b> : sortie et micro, mixeur ou égaliseur.<br><b>M</b> : sortie, mute et micro en haut, mixeur court en bas.<br><b>S</b> : volume, barre, mute et micro, sans libellés.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  function v(id) { return document.getElementById(id); }
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; }
+  function val(name) { return document.querySelector("input[name=" + name + "]:checked").value; }
+  var SIZES = {
+    xl: { w: 2536, h: 696, digit: 20, barW: 560, barP: 20, ring: 168, rows: 16, fp: 20, cover: 300, tag: "XL 2536 × 696 px", note: "Sortie et micro à gauche, mixeur ou égaliseur au centre, lecture en cours à droite." },
+    l: { w: 1688, h: 696, digit: 20, barW: 560, barP: 20, ring: 168, rows: 16, fp: 20, cover: 0, tag: "L 1688 × 696 px", note: "Sortie et micro à gauche, mixeur ou égaliseur à droite." },
+    m: { w: 840, h: 696, digit: 16, barW: 728, barP: 20, ring: 136, rows: 7, fp: 17, cover: 0, tag: "M 840 × 696 px", note: "Sortie, mute et micro en haut, mixeur court en bas." },
+    s: { w: 840, h: 344, digit: 14, barW: 744, barP: 20, ring: 152, rows: 0, fp: 0, cover: 0, tag: "S 840 × 344 px", note: "Volume, barre, mute et micro, sans libellés." }
+  };
+  var size = "xl", tab = "mixer", vol = 0.64, spkMuted = false, micMuted = false, playing = true, picker = false;
+  var OUTS = ["Speakers · Realtek Audio", "Headset · USB Audio", "Monitor · NVIDIA HDMI"], INS = ["USB Audio Device", "Headset · USB Audio", "Webcam"];
+  var outSel = 0, inSel = 0;
+  var APPS = [
+    { n: "Spotify", v: 0.72 }, { n: "Discord", v: 0.55 }, { n: "Neon Courier", v: 0.9 },
+    { n: "Firefox", v: 0.4, m: true }, { n: "OBS", v: 0.64 }, { n: "System", v: 0.8 }
+  ];
+  var BANDS = ["31", "62", "125", "250", "500", "1k", "2k", "4k", "8k", "16k"];
+  var PRESETS = { Flat: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "Bass boost": [8, 7, 5, 2, 0, 0, 0, 0, 1, 2], Voice: [-4, -3, -1, 1, 3, 5, 5, 3, 0, -2] };
+  var preset = "Bass boost", eq = PRESETS[preset].slice();
+  var frame = v("frame"), stage = v("stage");
+
+  function fit() { stage.style.transform = "scale(" + frame.clientWidth / SIZES[size].w + ")"; }
+  if (window.ResizeObserver) new ResizeObserver(fit).observe(frame); else window.addEventListener("resize", fit);
+
+  var FONT = {
+    "0": ["01110", "10001", "10011", "10101", "11001", "10001", "01110"], "1": ["00100", "01100", "00100", "00100", "00100", "00100", "01110"],
+    "2": ["01110", "10001", "00001", "00010", "00100", "01000", "11111"], "3": ["11111", "00010", "00100", "00010", "00001", "10001", "01110"],
+    "4": ["00010", "00110", "01010", "10010", "11111", "00010", "00010"], "5": ["11111", "10000", "11110", "00001", "00001", "10001", "01110"],
+    "6": ["00110", "01000", "10000", "11110", "10001", "10001", "01110"], "7": ["11111", "00001", "00010", "00100", "01000", "01000", "01000"],
+    "8": ["01110", "10001", "10001", "01110", "10001", "10001", "01110"], "9": ["01110", "10001", "10001", "01111", "00001", "00010", "01100"],
+    "%": ["11000", "11001", "00010", "00100", "01000", "10011", "00011"], " ": ["00000", "00000", "00000", "00000", "00000", "00000", "00000"]
+  };
+  function colors() {
+    return { lit: v("litColor").value, unlit: v("showUnlit").checked ? v("unlitColor").value : null, accent: v("accentColor").value, label: v("labelColor").value, alert: "#ed403b" };
+  }
+  function canvas(w, h) { var cv = document.createElement("canvas"), dpr = 2; cv.width = w * dpr; cv.height = h * dpr; cv.style.width = w + "px"; cv.style.height = h + "px"; var ctx = cv.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); return { cv: cv, ctx: ctx }; }
+  function dot(ctx, x, y, r, col) { if (!col) return; ctx.fillStyle = col; ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill(); }
+  function dotText(str, pitch, c, dim) {
+    str = ("    " + str).slice(-4);
+    var k2 = canvas(23 * pitch, 7 * pitch);
+    for (var k = 0; k < 4; k++) {
+      var g = FONT[str[k]] || FONT[" "];
+      for (var y = 0; y < 7; y++) for (var x = 0; x < 6; x++) {
+        if (k === 3 && x === 5) continue;
+        var on = x < 5 && g[y][x] === "1";
+        dot(k2.ctx, (k * 6 + x) * pitch + pitch / 2, y * pitch + pitch / 2, pitch * 0.4, on ? (str[k] === "%" ? c.accent : dim ? c.label : c.lit) : c.unlit);
+      }
+    }
+    return k2.cv;
+  }
+  function hbar(w, frac, pitch, c, dim) {
+    var n = Math.floor(w / pitch), k2 = canvas(n * pitch, pitch), k = Math.round(n * frac);
+    for (var i = 0; i < n; i++) dot(k2.ctx, i * pitch + pitch / 2, pitch / 2, pitch * 0.36, i < k ? (i === k - 1 ? c.accent : dim ? c.label : c.lit) : (c.unlit || "#1c1c1c"));
+    return k2.cv;
+  }
+  // fader vertical : colonne principale + petite colonne de niveau en direct
+  function fader(rows, pitch, frac, live, c, muted) {
+    var k2 = canvas(pitch * 2, rows * pitch), k = Math.round(rows * frac), lv = Math.round(rows * live);
+    for (var i = 0; i < rows; i++) {
+      var y = (rows - 1 - i) * pitch + pitch / 2;
+      dot(k2.ctx, pitch / 2, y, pitch * 0.36, i < k ? (muted ? c.label : i === k - 1 ? c.accent : c.lit) : (c.unlit || "#1c1c1c"));
+      dot(k2.ctx, pitch * 1.45, y, pitch * 0.16, i < lv && !muted ? c.label : (c.unlit || null));
+    }
+    return k2.cv;
+  }
+  function eqFader(rows, pitch, db, c) {
+    var k2 = canvas(pitch, rows * pitch), mid = Math.floor(rows / 2), t = Math.round(db / 12 * mid);
+    for (var i = 0; i < rows; i++) {
+      var y = i * pitch + pitch / 2, r = mid - i;
+      var lit = t >= 0 ? (r >= 0 && r <= t) : (r <= 0 && r >= t);
+      var col = r === t ? c.accent : lit ? c.lit : r === 0 ? c.label : (c.unlit || "#1c1c1c");
+      dot(k2.ctx, pitch / 2, y, pitch * (r === 0 && !lit ? 0.2 : 0.36), col);
+    }
+    return k2.cv;
+  }
+  var ICON = {
+    spk: '<path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/>',
+    spkOff: '<path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path d="M16 9l5 6M21 9l-5 6"/>',
+    mic: '<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/>',
+    micOff: '<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3M4 4l16 16"/>',
+    play: '<path d="M7 4v16l13-8z"/>', pause: '<path d="M6 4h4v16H6zM14 4h4v16h-4z"/>'
+  };
+
+  // pochette d'exemple
+  var ART = (function () { var c = document.createElement("canvas"); c.width = c.height = 128; var g = c.getContext("2d"); var gr = g.createLinearGradient(0, 0, 128, 128); gr.addColorStop(0, "#1b1446"); gr.addColorStop(1, "#6a2c70"); g.fillStyle = gr; g.fillRect(0, 0, 128, 128); var s = g.createRadialGradient(48, 52, 3, 48, 52, 44); s.addColorStop(0, "#ffd38a"); s.addColorStop(.6, "#ff6a5c"); s.addColorStop(1, "rgba(255,80,90,0)"); g.fillStyle = s; g.fillRect(0, 0, 128, 128); var m = g.createRadialGradient(96, 94, 2, 96, 94, 24); m.addColorStop(0, "#9ff3e4"); m.addColorStop(1, "rgba(60,200,190,0)"); g.fillStyle = m; g.fillRect(0, 0, 128, 128); return c; })();
+  function drawCover(px, c, empty) {
+    var cv = v("cover"), dpr = 2; cv.width = cv.height = px * dpr; cv.style.width = cv.style.height = px + "px";
+    var ctx = cv.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, px, px);
+    var pitch = 12, n = Math.floor(px / pitch), off = (px - n * pitch) / 2 + pitch / 2, maxR = pitch * .46;
+    var sm = document.createElement("canvas"); sm.width = sm.height = n; var sg = sm.getContext("2d"); sg.drawImage(ART, 0, 0, n, n);
+    var d = sg.getImageData(0, 0, n, n).data, color = val("coverStyle") === "color";
+    for (var y = 0; y < n; y++) for (var x = 0; x < n; x++) {
+      var cx = off + x * pitch, cy = off + y * pitch; dot(ctx, cx, cy, maxR, c.unlit);
+      if (empty) continue;
+      var i = (y * n + x) * 4, lum = (0.2126 * d[i] + 0.7152 * d[i + 1] + 0.0722 * d[i + 2]) / 255;
+      var rad = color ? maxR * (0.35 + 0.65 * Math.pow(lum, .7)) : maxR * Math.pow(Math.min(1, lum * 1.4), .9);
+      if (rad > .6) dot(ctx, cx, cy, rad, color ? "rgb(" + d[i] + "," + d[i + 1] + "," + d[i + 2] + ")" : c.lit);
+    }
+  }
+  // anneau du micro : points autour du bouton, allumés selon le niveau
+  var micLevel = 0.5;
+  function drawRing(c) {
+    var px = SIZES[size].ring, ring = v("ring"); ring.style.width = ring.style.height = px + "px";
+    var cv = v("ringCv"), dpr = 2; cv.width = cv.height = px * dpr; cv.style.width = cv.style.height = px + "px";
+    var ctx = cv.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, px, px);
+    var n = 28, R = px / 2 - 8, lit = micMuted ? 0 : Math.round(n * micLevel);
+    for (var i = 0; i < n; i++) {
+      var a = -Math.PI / 2 + i / n * Math.PI * 2;
+      dot(ctx, px / 2 + Math.cos(a) * R, px / 2 + Math.sin(a) * R, px / 48, i < lit ? c.accent : (c.unlit || "#1c1c1c"));
+    }
+  }
+
+  var liveLv = APPS.map(function (a) { return a.v * 0.7; });
+  function renderMixer(c) {
+    var Z = SIZES[size], chs = v("chs"); chs.innerHTML = "";
+    document.querySelectorAll(".tab").forEach(function (t) { t.setAttribute("aria-selected", t.getAttribute("data-tab") === tab ? "true" : "false"); });
+    v("presetBtn").hidden = tab !== "eq";
+    v("presetBtn").innerHTML = "Preset · <b>" + preset + "</b>";
+    if (!Z.rows) return;
+    if (tab === "mixer") {
+      APPS.forEach(function (a, i) {
+        var ch = el("div", "ch" + (a.m ? " muted" : ""));
+        ch.appendChild(el("p", "v", String(Math.round(a.v * 100))));
+        var fd = el("button", "fd"); fd.type = "button"; fd.setAttribute("aria-label", a.n + " volume");
+        fd.appendChild(fader(Z.rows, Z.fp, a.v, liveLv[i], c, a.m)); ch.appendChild(fd);
+        dragV(fd, function (f) { a.v = f; });
+        ch.appendChild(el("p", "n ell", a.n));
+        var mb = el("button", "rb mb" + (a.m ? " off" : "")); mb.type = "button"; mb.setAttribute("aria-label", "Mute " + a.n);
+        mb.innerHTML = '<svg viewBox="0 0 24 24">' + (a.m ? ICON.spkOff : ICON.spk) + "</svg>";
+        mb.addEventListener("click", function () { a.m = !a.m; render(); });
+        ch.appendChild(mb); chs.appendChild(ch);
+      });
+    } else {
+      BANDS.forEach(function (b, i) {
+        var ch = el("div", "ch");
+        ch.appendChild(el("p", "v", (eq[i] > 0 ? "+" : "") + eq[i]));
+        var fd = el("button", "fd"); fd.type = "button"; fd.setAttribute("aria-label", b + " Hz");
+        var rows = Z.rows % 2 ? Z.rows : Z.rows + 1;
+        fd.appendChild(eqFader(rows, Z.fp, eq[i], c)); ch.appendChild(fd);
+        dragV(fd, function (f) { eq[i] = Math.round(f * 24 - 12); preset = "Custom"; });
+        ch.appendChild(el("p", "n", b));
+        chs.appendChild(ch);
+      });
+    }
+  }
+  function dragV(fd, set) {
+    var go = function (ev) { var r = fd.getBoundingClientRect(); set(Math.max(0, Math.min(1, 1 - (ev.clientY - r.top) / r.height))); render(); };
+    fd.addEventListener("pointerdown", function (ev) { fd.setPointerCapture(ev.pointerId); go(ev); fd.onpointermove = go; });
+    fd.addEventListener("pointerup", function () { fd.onpointermove = null; });
+  }
+
+  function renderPicker() {
+    var p = v("pick"); p.innerHTML = ""; p.hidden = !picker; if (!picker) return;
+    [["Output", OUTS, outSel, function (i) { outSel = i; }], ["Microphone", INS, inSel, function (i) { inSel = i; }]].forEach(function (g) {
+      var col = el("div", "col"); col.appendChild(el("p", "w-lbl", g[0]));
+      g[1].forEach(function (name, i) {
+        var r = el("button", "row" + (i === g[2] ? " on" : "")); r.type = "button"; r.appendChild(el("i")); r.appendChild(el("span", "", name));
+        r.addEventListener("click", function () { g[3](i); picker = false; render(); });
+        col.appendChild(r);
+      });
+      p.appendChild(col);
+    });
+    var x = el("button", "rb close"); x.type = "button"; x.setAttribute("aria-label", "Close"); x.innerHTML = '<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+    x.addEventListener("click", function () { picker = false; render(); }); p.appendChild(x);
+  }
+
+  function render() {
+    var c = colors(), Z = SIZES[size], sample = val("sample");
+    stage.style.setProperty("--accent", c.accent);
+    stage.style.setProperty("--lit", c.lit);
+    stage.style.setProperty("--label", c.label);
+    stage.style.setProperty("--unlit", c.unlit || "#1c1c1c");
+    stage.className = "stage " + size + (playing && sample !== "nomedia" ? " playing" : "") + (micMuted ? " micoff" : "");
+    v("state").textContent = micMuted ? "ALL MICS MUTED" : "MIC LIVE";
+    // sortie
+    v("outDev").innerHTML = "Output · <b>" + OUTS[outSel] + "</b> ▾";
+    var d = v("digits"); d.innerHTML = ""; d.appendChild(dotText(Math.round(vol * 100) + "%", Z.digit, c, spkMuted));
+    var vb = v("vb"); vb.innerHTML = ""; vb.appendChild(hbar(Z.barW, vol, Z.barP, c, spkMuted)); vb.setAttribute("aria-valuenow", Math.round(vol * 100));
+    v("spkBtn").className = "rb spk" + (spkMuted ? " off" : ""); v("spkIcon").innerHTML = spkMuted ? ICON.spkOff : ICON.spk;
+    // micro
+    v("inDev").innerHTML = "Mic · <b>" + INS[inSel] + "</b> ▾";
+    v("micBtn").className = "rb" + (micMuted ? " off" : ""); v("micIcon").innerHTML = micMuted ? ICON.micOff : ICON.mic;
+    v("micSt").textContent = micMuted ? "All mics muted" : "Live"; v("micSt").className = "st" + (micMuted ? " off" : "");
+    drawRing(c);
+    renderMixer(c);
+    // lecture en cours
+    if (Z.cover) {
+      var none = sample === "nomedia";
+      drawCover(Z.cover, c, none);
+      v("npT").textContent = none ? "Nothing playing" : "Neon Grid";
+      v("npA").textContent = none ? "Start playback on your PC" : "The Pixels · Low Resolution";
+      v("playIcon").innerHTML = playing && !none ? ICON.pause : ICON.play;
+      ["prevBtn", "playBtn", "nextBtn"].forEach(function (id) { v(id).disabled = none; v(id).style.opacity = none ? .3 : 1; });
+    }
+    renderPicker();
+  }
+
+  // ---------- interactions de la maquette
+  (function () {
+    var vb = v("vb"), go = function (ev) { var r = vb.firstChild.getBoundingClientRect(); vol = Math.round(Math.max(0, Math.min(1, (ev.clientX - r.left) / r.width)) * 100) / 100; spkMuted = false; render(); };
+    vb.addEventListener("pointerdown", function (ev) { vb.setPointerCapture(ev.pointerId); go(ev); vb.onpointermove = go; });
+    vb.addEventListener("pointerup", function () { vb.onpointermove = null; });
+  })();
+  v("spkBtn").addEventListener("click", function () { spkMuted = !spkMuted; render(); });
+  v("micBtn").addEventListener("click", function () { micMuted = !micMuted; render(); });
+  v("outDev").addEventListener("click", function () { picker = true; render(); });
+  v("inDev").addEventListener("click", function () { picker = true; render(); });
+  v("playBtn").addEventListener("click", function () { playing = !playing; render(); });
+  v("presetBtn").addEventListener("click", function () { var k = Object.keys(PRESETS), i = (k.indexOf(preset) + 1) % k.length; preset = k[i]; eq = PRESETS[preset].slice(); render(); });
+  document.querySelectorAll(".tab").forEach(function (t) { t.addEventListener("click", function () { tab = t.getAttribute("data-tab"); render(); }); });
+  document.querySelectorAll("input[name=sample]").forEach(function (i) {
+    i.addEventListener("change", function () { micMuted = i.value === "micoff"; spkMuted = i.value === "spkoff"; render(); });
+  });
+  document.querySelectorAll(".settings input:not([name=sample])").forEach(function (i) { i.addEventListener("input", render); i.addEventListener("change", render); });
+  document.querySelectorAll(".preset[data-accent]").forEach(function (b) {
+    b.addEventListener("click", function () { v("accentColor").value = b.getAttribute("data-accent"); render(); });
+  });
+  document.querySelectorAll(".sizebar .preset").forEach(function (b) {
+    b.addEventListener("click", function () {
+      size = b.getAttribute("data-size");
+      document.querySelectorAll(".sizebar .preset").forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+      frame.className = "frame " + size;
+      v("sizeTag").textContent = "Version 0.1 · taille réelle " + SIZES[size].tag;
+      v("sizeNote").textContent = SIZES[size].note;
+      render(); fit();
+    });
+  });
+
+  // niveaux en direct (micro et applications)
+  setInterval(function () {
+    micLevel = Math.max(0.05, Math.min(1, micLevel + (Math.random() - 0.5) * 0.5));
+    liveLv = APPS.map(function (a) { return a.m ? 0 : a.v * (0.4 + Math.random() * 0.6); });
+    var c = colors(); drawRing(c); if (tab === "mixer" && !picker) renderMixer(c);
+  }, 180);
+
+  render(); fit();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(render);
+})();
+</script>
+</body>
+</html>
