@@ -102,6 +102,9 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
 .stage.xl .head { top: 26px; }
 .head .dot { flex: none; width: 10px; height: 10px; border-radius: 50%; background: var(--accent); }
 .head .grow { flex: 1; }
+.head .set { display: flex; align-items: center; gap: 12px; margin: -18px -14px; padding: 18px 14px; border: 0; border-radius: 12px; background: transparent; color: var(--label); }
+.head .set svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.8; }
+.head .set:active, .head .set.done { color: var(--accent); }
 .tiles { position: absolute; left: 40px; right: 40px; top: 112px; bottom: 40px; display: grid; gap: 20px; }
 .stage.xl .tiles { grid-template-columns: repeat(5, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(0, 1fr)); }
 .stage.l .tiles { grid-template-columns: repeat(4, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(0, 1fr)); }
@@ -198,7 +201,7 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
         <tbody>
           <tr><td>1</td><td>Coquille</td><td>Le seul widget iCUE (<code>dot-hub.icuewidget</code>). Il vérifie toutes les 4 s que Dot Companion répond sur <code>127.0.0.1:47800</code>, puis affiche son interface dans une iframe plein cadre (<code>/i/&lt;uniqueId&gt;</code>). Codé.</td></tr>
           <tr><td>2</td><td>Instances</td><td>Chaque Dot Hub posé dans iCUE est une instance, reconnue par son <code>uniqueId</code>. Le compagnon retient son nom, son module et ses réglages. Codé.</td></tr>
-          <tr><td>3</td><td>Dot Home</td><td>Accueil quand aucun module n'est choisi : « DOT HUB » et le nom de l'instance, adresse des réglages à droite, une tuile par module (pictogramme 7 × 7 points, nom, heure en direct pour Clock). 10 tuiles en XL, 8 en L, 6 en M, 4 en S. Codé.</td></tr>
+          <tr><td>3</td><td>Dot Home</td><td>Accueil quand aucun module n'est choisi : « DOT HUB » et le nom de l'instance, bouton « ⚙ SETTINGS » à droite (le compagnon ouvre la page de réglages dans le navigateur du PC), une tuile par module (pictogramme 7 × 7 points, nom, heure en direct pour Clock). 10 tuiles en XL, 8 en L, 6 en M, 4 en S. Codé.</td></tr>
           <tr class="todo"><td>4</td><td>Plus de modules que de cases</td><td>Avec tous les modules prévus (21), la grille déborde : pages à prévoir (points de page, glisser). À décider.</td></tr>
           <tr><td>5</td><td>Retour à Dot Home</td><td>Toucher le libellé « ● DOT … » d'un module (zone tactile d'au moins 60 px) ou garder le doigt 1 s n'importe où sur le module. Codé.</td></tr>
           <tr><td>6</td><td>Réglages sur le PC</td><td><code>http://127.0.0.1:47800/settings</code> : carte « Couleurs » pour tous les modules, puis une carte par instance (nom, module, réglages du module, « Identifier », supprimer). Changements appliqués en 2 s sur l'Edge. Codé.</td></tr>
@@ -246,12 +249,12 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
     calculator: [".#...#.", "###.###", ".#.....", ".......", "#.#.###", ".#.....", "#.#.###"]
   };
   var MODULES = {
-    now: [{ id: "clock", name: "Clock" }],
+    now: [{ id: "clock", name: "Dot Clock" }],
     planned: [
-      { id: "clock", name: "Clock" }, { id: "weather", name: "Weather" }, { id: "calendar", name: "Calendar" }, { id: "audio", name: "Audio" },
-      { id: "spotify", name: "Spotify" }, { id: "steam", name: "Steam" }, { id: "discord", name: "Discord" }, { id: "plex", name: "Plex" },
-      { id: "homeassistant", name: "Home Assistant" }, { id: "bambulab", name: "Bambu Lab" }, { id: "sysmon", name: "System Monitor" },
-      { id: "notes", name: "Notes" }, { id: "github", name: "GitHub" }, { id: "ia", name: "IA" }, { id: "calculator", name: "Calculator" }
+      { id: "clock", name: "Dot Clock" }, { id: "weather", name: "Dot Weather" }, { id: "calendar", name: "Dot Calendar" }, { id: "audio", name: "Dot Audio" },
+      { id: "spotify", name: "Dot Spotify" }, { id: "steam", name: "Dot Steam" }, { id: "discord", name: "Dot Discord" }, { id: "plex", name: "Dot Plex" },
+      { id: "homeassistant", name: "Dot Home Assistant" }, { id: "bambulab", name: "Dot Bambu Lab" }, { id: "sysmon", name: "Dot System Monitor" },
+      { id: "notes", name: "Dot Notes" }, { id: "github", name: "Dot GitHub" }, { id: "ia", name: "Dot IA" }, { id: "calculator", name: "Dot Calculator" }
     ]
   };
   var CAP = { xl: 10, l: 8, m: 6, s: 4 };
@@ -270,6 +273,18 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
     if (id === "clock") { var d = new Date(); return (d.getHours() < 10 ? "0" : "") + d.getHours() + ":" + (d.getMinutes() < 10 ? "0" : "") + d.getMinutes(); }
     return "";
   }
+  // SETTINGS : sur l'Edge, le compagnon ouvre la page de réglages dans le navigateur du PC
+  var GEAR = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1"/></svg>';
+  function settingsButton() {
+    var b = el("button", "set"); b.type = "button"; b.setAttribute("aria-label", "Open Dot Hub settings on the PC");
+    b.innerHTML = GEAR;
+    var t = el("span", "lbl", "SETTINGS"); t.style.color = "inherit"; b.appendChild(t);
+    b.addEventListener("click", function () {
+      b.classList.add("done"); t.textContent = "OPENED ON THE PC";
+      setTimeout(function () { b.classList.remove("done"); t.textContent = "SETTINGS"; }, 3000);
+    });
+    return b;
+  }
   function renderHome() {
     var stage = v("home"), dims = SLOTS[size], t = theme(), name = v("instName").value.trim();
     stage.className = "stage " + size;
@@ -280,8 +295,7 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
     head.appendChild(el("span", "dot"));
     head.appendChild(el("p", "lbl", "DOT HUB" + (name ? " · " + name : "")));
     head.appendChild(el("span", "grow"));
-    // en M, la place manque : l'adresse seule
-    head.appendChild(el("p", "lbl", (size === "m" ? "" : "SETTINGS · ") + "127.0.0.1:47800/SETTINGS"));
+    head.appendChild(settingsButton());
     stage.appendChild(head);
     var grid = el("div", "tiles");
     MODULES[val("mods")].slice(0, CAP[size]).forEach(function (m) {

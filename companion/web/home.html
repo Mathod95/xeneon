@@ -18,6 +18,10 @@ html, body { width: 100%; height: 100%; overflow: hidden; background: #080808; u
 .stage.xl .head { top: 26px; }  /* libellé « ● DOT … » à 56 / 51 et 80 / 44, comme Dot Clock */
 .head .dot { flex: none; width: 10px; height: 10px; border-radius: 50%; background: var(--accent); }
 .head .grow { flex: 1; }
+/* bouton SETTINGS : ouvre les réglages dans le navigateur du PC (zone tactile de 60 px) */
+.head .set { display: flex; align-items: center; gap: 12px; margin: -18px -14px; padding: 18px 14px; border: 0; border-radius: 12px; background: transparent; color: var(--label); }
+.head .set svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.8; }
+.head .set:active, .head .set.done { color: var(--accent); }
 
 /* tuiles */
 .tiles { position: absolute; left: 40px; right: 40px; top: 112px; bottom: 40px; display: grid; gap: 20px; }
@@ -92,8 +96,7 @@ html, body { width: 100%; height: 100%; overflow: hidden; background: #080808; u
 		head.appendChild(el("span", "dot"));
 		head.appendChild(el("p", "lbl", "DOT HUB" + (inst.name ? " · " + inst.name : "")));
 		head.appendChild(el("span", "grow"));
-		// en M, la place manque : l'adresse seule
-		head.appendChild(el("p", "lbl", (size === "m" ? "" : "SETTINGS · ") + "127.0.0.1:47800/SETTINGS"));
+		head.appendChild(settingsButton());
 		stage.appendChild(head);
 
 		var grid = el("div", "tiles");
@@ -107,6 +110,21 @@ html, body { width: 100%; height: 100%; overflow: hidden; background: #080808; u
 			grid.appendChild(b);
 		});
 		stage.appendChild(grid);
+	}
+	// SETTINGS : le compagnon ouvre http://127.0.0.1:47800/settings dans le navigateur du PC
+	var GEAR = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1"/></svg>';
+	function settingsButton() {
+		var b = el("button", "set"); b.type = "button";
+		b.setAttribute("aria-label", "Open Dot Hub settings on the PC");
+		b.innerHTML = GEAR;
+		var t = el("span", "lbl", "SETTINGS"); t.style.color = "inherit"; b.appendChild(t);
+		b.addEventListener("click", function () {
+			fetch("/api/open-settings", { method: "POST" }).then(function (r) { return r.json(); }).then(function (j) {
+				b.classList.add("done"); t.textContent = j && j.ok ? "OPENED ON THE PC" : "CANNOT OPEN BROWSER";
+				setTimeout(function () { b.classList.remove("done"); t.textContent = "SETTINGS"; }, 3000);
+			}).catch(function () {});
+		});
+		return b;
 	}
 	function choose(id, b) {
 		b.classList.add("going");

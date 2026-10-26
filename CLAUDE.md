@@ -113,6 +113,8 @@ Compilation Windows : `cargo build --release` sous Windows, ou depuis Linux/WSL 
   - Plusieurs Dot Hub peuvent être posés sur une page : chaque instance est identifiée par son `uniqueId`, et le compagnon garde son module et sa configuration.
   - Dot Home devient l’accueil interne de Dot Hub : changer de module ne demande plus de changer de page iCUE.
   - Sans compagnon, Dot Hub affiche seulement « COMPANION NOT RUNNING ».
+  - **Tout passe par le compagnon, ou rien** (règle de Mathod95, 27 octobre 2026) : jamais d’interface de module intégrée dans le paquet Dot Hub, même pour les modules simples (Clock, Weather, Calculator…). La coquille ne contient que l’écran d’attente, l’écran d’erreur et le pont clavier.
+  - Bouton « ⚙ SETTINGS » de l’accueil : `POST /api/open-settings`, le compagnon ouvre `http://127.0.0.1:47800/settings` dans le navigateur par défaut du PC.
 - Les fiches `widgets/<slug>/` et leurs maquettes restent la référence de design de chaque module.
 
 ## Navigation entre pages iCUE

@@ -1,7 +1,8 @@
 //! Dot Companion : programme Windows qui sert Dot Hub.
 //!
 //! - écoute uniquement sur 127.0.0.1 (port 47800) ;
-//! - sert l'accueil Dot Home, la page de réglages et les modules (pour l'instant : Clock) ;
+//! - sert l'accueil Dot Hub, la page de réglages et les modules (pour l'instant : Clock) ;
+//! - ouvre la page de réglages dans le navigateur du PC quand on touche SETTINGS sur l'Edge ;
 //! - garde la configuration de chaque instance de Dot Hub (clé = `uniqueId` iCUE)
 //!   dans `%APPDATA%\Xeneon\config.json`.
 
@@ -12,6 +13,7 @@ use std::collections::BTreeMap;
 use std::fs;
 use std::io::Read;
 use std::path::PathBuf;
+use std::sync::atomic::{AtomicU64, Ordering};
 use std::time::{SystemTime, UNIX_EPOCH};
 use tiny_http::{Header, Method, Request, Response, Server, StatusCode};
 
@@ -333,6 +335,12 @@ fn handle(mut req: Request, cfg: &mut Config) {
             None => send_json(req, 404, &json!({ "error": "unknown instance" })),
         },
 
+        // bouton SETTINGS de l'accueil : ouvre les réglages dans le navigateur du PC
+        (Method::Post, "api") if seg(1) == "open-settings" => {
+            let ok = open_settings();
+            send_json(req, if ok { 200 } else { 500 }, &json!({ "ok": ok }))
+        }
+
         (Method::Delete, "api") if seg(1) == "instance" => {
             cfg.instances.remove(seg(2));
             save_config(cfg);
@@ -340,6 +348,34 @@ fn handle(mut req: Request, cfg: &mut Config) {
         }
 
         _ => not_found(req),
+    }
+}
+
+/// Ouvre la page de réglages dans le navigateur par défaut du PC.
+/// Un seul appel toutes les 3 s, pour ne pas ouvrir plusieurs onglets sur un double toucher.
+static LAST_OPEN: AtomicU64 = AtomicU64::new(0);
+
+fn open_settings() -> bool {
+    let now = now_ms();
+    let last = LAST_OPEN.load(Ordering::Relaxed);
+    if now.saturating_sub(last) < 3000 {
+        return true;
+    }
+    LAST_OPEN.store(now, Ordering::Relaxed);
+    let url = format!("http://127.0.0.1:{PORT}/settings");
+    #[cfg(windows)]
+    {
+        use std::os::windows::process::CommandExt;
+        const CREATE_NO_WINDOW: u32 = 0x0800_0000;
+        std::process::Command::new("rundll32")
+            .args(["url.dll,FileProtocolHandler", &url])
+            .creation_flags(CREATE_NO_WINDOW)
+            .spawn()
+            .is_ok()
+    }
+    #[cfg(not(windows))]
+    {
+        std::process::Command::new("xdg-open").arg(&url).spawn().is_ok()
     }
 }
 
