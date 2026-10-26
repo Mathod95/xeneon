@@ -264,6 +264,14 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
       </table>
     </div>
   </section>
+
+  <section style="display:grid;gap:28px">
+    <div class="diff-head">
+      <h2>Vues</h2>
+      <p class="hint">La même scène XL dans chaque état. Les réglages plus haut (couleurs, points éteints, amis) s'appliquent aussi ici.</p>
+    </div>
+    <div id="views" style="display:grid;gap:40px"></div>
+  </section>
 </div>
 
 <script>
@@ -278,7 +286,7 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
     m: { w: 840, h: 696, n: 8, cols: 4, libW: 728, libH: 544, gap: 20, rowGap: 16, cap: 32, pitch: 7, heroW: 0, tag: "M 840 × 696 px", note: "4 × 2 jeux." },
     s: { w: 840, h: 344, n: 4, libW: 744, libH: 288, gap: 20, cap: 30, pitch: 7, heroW: 0, tag: "S 840 × 344 px", note: "4 jeux, sans libellés." }
   };
-  var size = "xl", launching = null, launchTimer = null;
+  var size = "xl", launching = null, launchTimer = null, VIEW = null;
   var frame = v("frame"), stage = v("stage");
 
   function fit() { stage.style.transform = "scale(" + frame.clientWidth / SIZES[size].w + ")"; }
@@ -323,7 +331,7 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
     var nx = Math.floor(w / pitch), ny = Math.floor(h / pitch), ox = (w - nx * pitch) / 2 + pitch / 2, oy = (h - ny * pitch) / 2 + pitch / 2, maxR = pitch * 0.46;
     var sm = document.createElement("canvas"); sm.width = nx; sm.height = ny;
     var sg = sm.getContext("2d"); sg.imageSmoothingQuality = "high"; sg.drawImage(src, 0, 0, nx, ny);
-    var d = sg.getImageData(0, 0, nx, ny).data, color = val("coverStyle") === "color", lo = 1, hi = 0;
+    var d = sg.getImageData(0, 0, nx, ny).data, color = VIEW.cover === "color", lo = 1, hi = 0;
     for (var q = 0; q < d.length; q += 4) { var l0 = (0.2126 * d[q] + 0.7152 * d[q + 1] + 0.0722 * d[q + 2]) / 255; if (l0 < lo) lo = l0; if (l0 > hi) hi = l0; }
     var span = Math.max(hi - lo, 0.2);
     for (var y = 0; y < ny; y++) for (var x = 0; x < nx; x++) {
@@ -352,7 +360,7 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
 
   // lancement selon le réglage : appui long, toucher ou double toucher
   function wire(b, g, w) {
-    var mode = val("trigger"), raf = null, t0 = 0, lastTap = 0;
+    var mode = VIEW.trigger, raf = null, t0 = 0, lastTap = 0;
     var hb = b.querySelector(".hb");
     function paint(p) { hb.innerHTML = ""; if (p > 0) hb.appendChild(bar(w, p, size === "xl" || size === "l" ? 10 : 8, colors())); }
     if (mode === "hold") {
@@ -374,36 +382,40 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
     render();
   }
   function gameNode(g, src, w, h, c, big) {
-    var b = el("button", "game" + (launching === g.name ? " go" : "")); b.type = "button";
+    var b = el("button", "game" + (VIEW.launching === g.name ? " go" : "")); b.type = "button";
     b.setAttribute("aria-label", "Launch " + g.name); b.style.width = w + "px";
-    var a = el("div", "art"); a.appendChild(dither(src, w, h, big ? SIZES[size].pitch + 2 : SIZES[size].pitch, c)); b.appendChild(a);
+    var a = el("div", "art"); a.appendChild(dither(src, w, h, big ? SIZES[VIEW.size].pitch + 2 : SIZES[VIEW.size].pitch, c)); b.appendChild(a);
     b.appendChild(el("p", "t ell", g.name));
-    b.appendChild(el("div", "hb"));
-    wire(b, g, w);
+    var hb = el("div", "hb"); b.appendChild(hb);
+    if (VIEW.interactive) wire(b, g, w);
+    else if (VIEW.hold && VIEW.hold.name === g.name) hb.appendChild(bar(w, VIEW.hold.p, 10, c));
     return b;
   }
 
-  function render() {
-    var sample = val("sample"), c = colors(), Z = SIZES[size];
-    stage.style.setProperty("--accent", c.accent);
-    stage.style.setProperty("--lit", c.lit);
-    stage.style.setProperty("--label", c.label);
+  function render(view) {
+    if (!view) view = { stage: stage, size: document.querySelector(".sizebar .preset[aria-pressed=true]").getAttribute("data-size"), sample: val("sample"), cover: val("coverStyle"), trigger: val("trigger"), launching: launching, interactive: true };
+    VIEW = view;
+    var st = view.stage, q = function (sel) { return st.querySelector(sel); };
+    var size = view.size, sample = view.sample, c = colors(), Z = SIZES[size];
+    st.style.setProperty("--accent", c.accent);
+    st.style.setProperty("--lit", c.lit);
+    st.style.setProperty("--label", c.label);
     var offline = sample === "offline", now = sample === "playing";
-    stage.className = "stage " + size + (offline ? " offline" : "") + (launching ? " launching" : "");
+    st.className = "stage " + size + (offline ? " offline" : "") + (view.launching ? " launching" : "");
     var playing = FRIENDS.filter(function (f) { return f.game; }).length;
-    v("state").textContent = launching ? "LAUNCHING · " + launching.toUpperCase() : offline ? "STEAM · OFFLINE" : now ? "PLAYING · " + GAMES[0].name.toUpperCase() : "ONLINE · " + playing + " FRIENDS IN GAME";
+    q(".w-state").textContent = view.launching ? "LAUNCHING · " + view.launching.toUpperCase() : offline ? "STEAM · OFFLINE" : now ? "PLAYING · " + GAMES[0].name.toUpperCase() : "ONLINE · " + playing + " FRIENDS IN GAME";
 
     // dernier jeu joué
-    var hero = v("hero"); hero.innerHTML = ""; hero.hidden = !Z.heroW;
+    var hero = q(".w-hero"); hero.innerHTML = ""; hero.hidden = !Z.heroW;
     if (Z.heroW) {
       var g0 = GAMES[0], hw = Z.heroW, hh = Math.round(hw * 215 / 460);
       var hb = gameNode(g0, g0.wide, hw, hh, c, true); hero.appendChild(hb);
       if (now) hb.classList.add("now");
       hero.appendChild(el("p", "sub", now ? "Playing for 1 h 12 min · " + (g0.hours + 1) + " h total" : "Last played " + g0.last + " · " + g0.hours + " h"));
-      hero.appendChild(el("p", "go-k" + (now ? " now" : ""), now ? "Now playing" : { hold: "Hold to play", tap: "Tap to play", double: "Double tap to play" }[val("trigger")]));
+      hero.appendChild(el("p", "go-k" + (now ? " now" : ""), now ? "Now playing" : { hold: "Hold to play", tap: "Tap to play", double: "Double tap to play" }[view.trigger]));
     }
     // bibliothèque
-    var lib = v("lib"); lib.innerHTML = "";
+    var lib = q(".w-lib"); lib.innerHTML = "";
     var cols = Z.cols || Z.n, rows = Math.ceil(Z.n / cols), rowGap = Z.rowGap || 0;
     var pw = Math.floor(Math.min((Z.libW - Z.gap * (cols - 1)) / cols, ((Z.libH - rowGap * (rows - 1)) / rows - Z.cap) * 2 / 3)), ph = Math.round(pw * 1.5);
     lib.className = "w-lib" + (Z.cols ? " grid" : "");
@@ -411,7 +423,7 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
     list.forEach(function (g) { var n = gameNode(g, g.tall, pw, ph, c, false); if (now && g === GAMES[0]) n.classList.add("now"); lib.appendChild(n); });
 
     // téléchargements
-    var dl = v("dl"); dl.innerHTML = ""; dl.hidden = offline || !Z.heroW;
+    var dl = q(".w-dl"); dl.innerHTML = ""; dl.hidden = offline || !Z.heroW;
     if (!dl.hidden) {
       if (sample === "idle") {
         dl.appendChild(el("p", "w-lbl", "Downloads"));
@@ -425,7 +437,7 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
       }
     }
     // amis
-    var fr = v("fr"); fr.innerHTML = ""; fr.hidden = offline || size !== "xl" || !v("showFriends").checked;
+    var fr = q(".w-fr"); fr.innerHTML = ""; fr.hidden = offline || size !== "xl" || !v("showFriends").checked;
     if (!fr.hidden) {
       fr.appendChild(el("p", "w-lbl", "Friends · " + playing + " in game"));
       FRIENDS.slice(0, 3).forEach(function (f) {
@@ -434,13 +446,43 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
         fr.appendChild(row);
       });
     }
-    v("empty").hidden = true;
-    if (offline) { v("dl").hidden = true; v("fr").hidden = true; }
+    q(".w-empty").hidden = true;
+    if (offline) { q(".w-dl").hidden = true; q(".w-fr").hidden = true; }
   }
 
-  document.querySelectorAll(".settings input").forEach(function (i) { i.addEventListener("input", render); i.addEventListener("change", render); });
+  // ---------- vues : la même scène XL, figée dans un état donné
+  var VIEWS = [
+    { t: "Jaquettes en Mono", n: "Points de la couleur des points allumés, taille selon la luminosité.", o: { sample: "online", cover: "mono" } },
+    { t: "Jaquettes en Color", n: "Points aux couleurs de la jaquette.", o: { sample: "online", cover: "color" } },
+    { t: "Appui long en cours", n: "« Launch with » sur Hold : la barre de points se remplit sous la jaquette tant que le doigt reste posé (0,8 s).", o: { sample: "online", trigger: "hold", hold: { name: "Hollow Pines", p: 0.6 } } },
+    { t: "Lancement", n: "Une fois la barre pleine (ou au toucher, au double toucher) : cadre en accent et LAUNCHING · NOM à droite.", o: { sample: "online", launching: "Hollow Pines" } },
+    { t: "En jeu (Playing)", n: "Le jeu en cours en grand avec un cadre en accent, téléchargements en pause pendant la partie.", o: { sample: "playing" } },
+    { t: "Aucun téléchargement", n: "Rien à télécharger : les jeux sont à jour.", o: { sample: "idle" } },
+    { t: "Steam fermé", n: "Téléchargements et amis masqués ; les jeux restent lançables, Steam démarre d'abord.", o: { sample: "offline" } }
+  ];
+  var host = v("views");
+  VIEWS.forEach(function (vw) {
+    var fig = el("figure");
+    var tag = el("div", "tag"); tag.appendChild(el("b", "", vw.t)); tag.appendChild(el("span", "", "XL 2536 × 696 px")); fig.appendChild(tag);
+    var fr = el("div", "frame xl"), st = stage.cloneNode(true);
+    st.removeAttribute("id"); st.querySelectorAll("[id]").forEach(function (e) { e.removeAttribute("id"); });
+    fr.appendChild(st); fig.appendChild(fr);
+    fig.appendChild(el("figcaption", "", vw.n));
+    host.appendChild(fig);
+    vw.stage = st; vw.frame = fr;
+    var fitV = function () { st.style.transform = "scale(" + fr.clientWidth / 2536 + ")"; };
+    if (window.ResizeObserver) new ResizeObserver(fitV).observe(fr); else window.addEventListener("resize", fitV);
+  });
+  function renderAll() {
+    render();
+    VIEWS.forEach(function (vw) {
+      render({ stage: vw.stage, size: "xl", sample: vw.o.sample, cover: vw.o.cover || val("coverStyle"), trigger: vw.o.trigger || val("trigger"), launching: vw.o.launching || null, hold: vw.o.hold || null, interactive: false });
+    });
+  }
+
+  document.querySelectorAll(".settings input").forEach(function (i) { i.addEventListener("input", renderAll); i.addEventListener("change", renderAll); });
   document.querySelectorAll(".preset[data-accent]").forEach(function (b) {
-    b.addEventListener("click", function () { v("accentColor").value = b.getAttribute("data-accent"); render(); });
+    b.addEventListener("click", function () { v("accentColor").value = b.getAttribute("data-accent"); renderAll(); });
   });
   document.querySelectorAll(".sizebar .preset").forEach(function (b) {
     b.addEventListener("click", function () {
@@ -453,8 +495,8 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
     });
   });
 
-  render(); fit();
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(render);
+  renderAll(); fit();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(renderAll);
 })();
 </script>
 </body>
