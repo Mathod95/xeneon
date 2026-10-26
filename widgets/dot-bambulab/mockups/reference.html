@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Maquette de référence du Dot Bambu Lab (artefact de revue de design). Ouvrir dans un navigateur. -->
+<style>body { margin: 0; }</style>
+</head>
+<body>
+<title>Dot Bambu Lab</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap">
+<style>
+/* Layout : maquette de référence en taille réelle (choix S, M, L, XL) avec ses réglages, puis tableau des choix. Même univers que Dot Clock, un seul thème sombre. */
+:root {
+  --page: #111111;
+  --panel: #0a0a0a;
+  --line: #262626;
+  --text: #e6e6e6;
+  --muted: #8c8c8c;
+  --brand: #10b981;
+  --mono: "IBM Plex Mono", "Cascadia Mono", Consolas, monospace;
+  --sans: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { background: var(--page); color: var(--text); }
+body {
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.55;
+  padding-block: 40px 72px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 1480px; margin: 0 auto; display: grid; gap: 40px; }
+header { display: grid; gap: 10px; }
+.eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); display: flex; align-items: center; gap: 10px; }
+.eyebrow::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--brand); }
+h1 { font-family: var(--mono); font-weight: 500; font-size: clamp(28px, 4vw, 44px); line-height: 1.1; margin: 0; letter-spacing: -.01em; }
+.lede { color: var(--muted); max-width: 72ch; margin: 0; }
+
+figure { margin: 0; display: grid; gap: 12px; min-width: 0; }
+.tag { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.tag b { color: var(--text); font-weight: 500; font-size: 14px; }
+figcaption { color: var(--muted); font-size: 14px; }
+
+/* tableau */
+.diff-head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; }
+h2 { font-family: var(--mono); font-weight: 500; font-size: 13px; letter-spacing: .14em; text-transform: uppercase; margin: 0; }
+.hint { color: var(--muted); font-size: 14px; margin: 0; }
+.table-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; }
+table { width: 100%; border-collapse: collapse; min-width: 640px; }
+th, td { text-align: left; padding: 14px 16px; vertical-align: top; border-bottom: 1px solid var(--line); }
+tr:last-child td { border-bottom: 0; }
+thead th { font-family: var(--mono); font-weight: 500; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); background: var(--panel); }
+td:first-child { font-family: var(--mono); color: var(--muted); width: 3.5em; font-variant-numeric: tabular-nums; }
+td:nth-child(2) { font-weight: 500; width: 15em; }
+tr.todo td:nth-child(3) { color: var(--muted); }
+code { font-family: var(--mono); font-size: 13px; color: var(--text); }
+
+/* réglages simulés */
+.settings { display: flex; flex-wrap: wrap; gap: 12px 28px; align-items: center; padding: 14px 16px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); }
+.settings label { display: inline-flex; align-items: center; gap: 10px; font-family: var(--mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); cursor: pointer; }
+.settings input[type=color] { width: 36px; height: 28px; padding: 0; border: 1px solid var(--line); border-radius: 6px; background: none; cursor: pointer; }
+.settings input[type=checkbox], .settings input[type=radio] { width: 18px; height: 18px; accent-color: var(--brand); cursor: pointer; }
+.settings .grp { display: inline-flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.settings .grp > span { font-family: var(--mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--text); }
+.preset { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; padding: 6px 10px; border-radius: 6px; border: 1px solid var(--line); background: transparent; color: var(--text); cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+.preset i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+.preset:focus-visible, .tab:focus-visible, .ses:focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; }
+.sizebar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; }
+.sizebar > span { font-family: var(--mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-right: 6px; }
+.sizebar .preset[aria-pressed="true"] { background: var(--text); color: #0a0a0a; border-color: var(--text); }
+
+/* cadre à l'échelle de l'XL : la largeur suit la vraie largeur de l'emplacement */
+.frame { position: relative; max-width: 100%; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: #080808; }
+.frame.xl { width: 100%; aspect-ratio: 2536 / 696; }
+.frame.l { width: calc(1688 / 2536 * 100%); aspect-ratio: 1688 / 696; }
+.frame.m { width: calc(840 / 2536 * 100%); aspect-ratio: 840 / 696; }
+.frame.s { width: calc(840 / 2536 * 100%); aspect-ratio: 840 / 344; }
+@media (max-width: 700px) { .frame.l, .frame.m, .frame.s { width: 100%; } }
+
+/* ---------- le widget : scène en pixels réels de l'emplacement ---------- */
+.stage { position: absolute; left: 0; top: 0; transform-origin: 0 0; background: #080808; --accent: #10b981; --lit: #f2f0e9; --label: #b8b6b0; --unlit: #1c1c1c; --alert: #ed403b; font-family: "Fira Code", Consolas, monospace; font-variant-ligatures: none; }
+.stage.xl { width: 2536px; height: 696px; }
+.stage.l { width: 1688px; height: 696px; }
+.stage.m { width: 840px; height: 696px; }
+.stage.s { width: 840px; height: 344px; }
+.stage > * { position: absolute; }
+.stage p { margin: 0; }
+.stage canvas { display: block; }
+.w-lbl { white-space: nowrap; font-size: 18px; line-height: 24px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); }
+.w-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); }
+.stage.printing .w-dot { animation: pulse 1.6s ease-in-out infinite; }
+.stage.error .w-dot { background: var(--alert); }
+@keyframes pulse { 50% { opacity: .3; } }
+@media (prefers-reduced-motion: reduce) { .stage.printing .w-dot { animation: none; } }
+.ell { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-transform: uppercase; }
+
+/* libellé « ● DOT BAMBU LAB » : même place et même taille partout */
+.w-dot { left: 56px; top: 51px; }
+.w-name { left: 80px; top: 44px; }
+.w-state { right: 56px; top: 44px; }
+.stage.error .w-state { color: var(--alert); }
+
+/* progression : pourcentage en gros points, barre, fichier, couches, temps */
+.w-prog { display: flex; flex-direction: column; }
+.w-prog .bar { margin-top: 36px; }
+.w-prog .file { margin-top: 28px; font-weight: 500; color: var(--lit); font-size: 44px; line-height: 54px; letter-spacing: .02em; }
+.w-prog .info { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 4px 28px; font-size: 24px; line-height: 32px; letter-spacing: .08em; text-transform: uppercase; color: var(--label); white-space: nowrap; }
+.w-prog .info .left { color: var(--lit); }
+.w-prog .alert { margin-top: 10px; color: var(--alert); font-size: 24px; line-height: 32px; letter-spacing: .08em; text-transform: uppercase; }
+.w-prog .big { font-weight: 500; color: var(--lit); font-size: 96px; line-height: 112px; letter-spacing: .02em; text-transform: uppercase; }
+.w-prog .sub { margin-top: 12px; color: var(--label); font-size: 24px; line-height: 32px; letter-spacing: .08em; text-transform: uppercase; }
+
+/* températures */
+.w-temps { display: flex; }
+.tmp { min-width: 0; }
+.tmp .k { font-size: 18px; line-height: 24px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); }
+.tmp .v { margin-top: 6px; white-space: nowrap; color: var(--lit); font-size: 64px; line-height: 76px; font-variant-numeric: tabular-nums; }
+.tmp .v small { font-size: 26px; color: var(--label); margin-left: 10px; letter-spacing: .04em; }
+.tmp .hb { margin-top: 10px; }
+
+/* AMS : une bobine par emplacement, remplie selon le reste */
+.w-ams { display: flex; flex-direction: column; }
+.w-ams .slots { display: flex; margin-top: 24px; }
+.slot { min-width: 0; display: flex; flex-direction: column; align-items: center; text-align: center; }
+.slot .ty { margin-top: 14px; color: var(--lit); font-size: 22px; line-height: 28px; letter-spacing: .06em; }
+.slot .re { text-transform: uppercase; color: var(--label); font-size: 18px; line-height: 24px; letter-spacing: .1em; }
+.slot.on .re { color: var(--accent); }
+
+/* commandes */
+.w-ctls { display: flex; align-items: center; }
+.ctl { position: relative; display: grid; place-items: center; padding: 0; border-radius: 50%; border: 2px solid #2a2a2a; background: transparent; color: var(--lit); cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.ctl svg { width: 38%; height: 38%; fill: currentColor; }
+.ctl.main { background: var(--lit); border-color: var(--lit); color: #080808; }
+.ctl.main svg { width: 34%; height: 34%; }
+.ctl:active { transform: scale(.96); }
+.ctl:disabled { opacity: .3; cursor: default; }
+.ctl.lamp.on { border-color: var(--accent); color: var(--accent); }
+.ctl .ring { position: absolute; inset: -2px; border-radius: 50%; background: conic-gradient(var(--alert) calc(var(--p, 0) * 1turn), transparent 0); -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 6px), #000 calc(100% - 5px)); mask: radial-gradient(farthest-side, transparent calc(100% - 6px), #000 calc(100% - 5px)); pointer-events: none; }
+.ctl:focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; }
+.w-hint { font-size: 18px; line-height: 24px; letter-spacing: .14em; text-transform: uppercase; color: var(--label); opacity: .6; white-space: nowrap; }
+
+/* XL : progression, températures, AMS et commandes côte à côte */
+.stage.xl .w-prog { left: 56px; top: 112px; width: 900px; }
+.stage.xl .w-temps { left: 1040px; top: 112px; width: 460px; height: 536px; flex-direction: column; justify-content: space-between; }
+.stage.xl .w-ams { left: 1600px; top: 112px; width: 880px; }
+.stage.xl .w-ams .slots { gap: 32px; }
+.stage.xl .w-ctls { right: 56px; bottom: 48px; gap: 32px; }
+.stage.xl .ctl { width: 112px; height: 112px; }
+.stage.xl .ctl.main { width: 136px; height: 136px; }
+.stage.xl .w-hint { left: 1600px; bottom: 104px; }
+
+/* L : progression à gauche ; températures, AMS et commandes à droite */
+.stage.l .w-prog { left: 56px; top: 112px; width: 760px; }
+.stage.l .w-prog .file { font-size: 40px; line-height: 50px; }
+.stage.l .w-temps { left: 880px; top: 112px; width: 752px; gap: 32px; }
+.stage.l .tmp { flex: 1; }
+.stage.l .tmp .v { font-size: 48px; line-height: 60px; }
+.stage.l .tmp .v small { font-size: 22px; }
+.stage.l .w-ams { left: 880px; top: 296px; width: 752px; }
+.stage.l .w-ams .slots { gap: 24px; margin-top: 16px; }
+.stage.l .w-ctls { right: 56px; bottom: 48px; gap: 24px; }
+.stage.l .ctl { width: 96px; height: 96px; }
+.stage.l .ctl.main { width: 112px; height: 112px; }
+.stage.l .w-hint { left: 880px; bottom: 90px; }
+
+/* M : progression et températures, commandes en bas */
+.stage.m .w-prog { left: 56px; top: 104px; width: 728px; }
+.stage.m .w-prog .bar { margin-top: 26px; }
+.stage.m .w-prog .file { margin-top: 20px; font-size: 34px; line-height: 44px; }
+.stage.m .w-prog .info, .stage.m .w-prog .alert, .stage.m .w-prog .sub { font-size: 20px; line-height: 28px; }
+.stage.m .w-prog .big { font-size: 64px; line-height: 80px; }
+.stage.m .w-temps { left: 56px; top: 432px; width: 728px; gap: 24px; }
+.stage.m .tmp { flex: 1; }
+.stage.m .tmp .v { font-size: 40px; line-height: 50px; }
+.stage.m .tmp .v small { font-size: 18px; margin-left: 6px; }
+.stage.m .tmp .hb { display: none; }
+.stage.m .w-ams, .stage.m .w-hint { display: none; }
+.stage.m .w-ctls { right: 56px; bottom: 40px; gap: 24px; }
+.stage.m .ctl { width: 88px; height: 88px; }
+.stage.m .ctl.main { width: 104px; height: 104px; }
+
+/* S : progression seule, sans libellés ni commandes */
+.stage.s .w-dot, .stage.s .w-name, .stage.s .w-state, .stage.s .w-ams, .stage.s .w-ctls, .stage.s .w-hint, .stage.s .w-temps { display: none; }
+.stage.s .w-prog { left: 48px; top: 48px; width: 744px; }
+.stage.s .w-prog .bar { margin-top: 22px; }
+.stage.s .w-prog .file { margin-top: 18px; font-size: 32px; line-height: 40px; }
+.stage.s .w-prog .info, .stage.s .w-prog .alert, .stage.s .w-prog .sub { margin-top: 6px; font-size: 20px; line-height: 28px; }
+.stage.s .w-prog .big { font-size: 56px; line-height: 68px; }
+.stage.s .w-mini { right: 48px; top: 56px; text-align: right; font-size: 22px; line-height: 34px; letter-spacing: .1em; color: var(--label); white-space: nowrap; }
+.stage.s .w-mini b { color: var(--lit); font-weight: 400; }
+.stage:not(.s) .w-mini { display: none; }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Module Dot Hub · CORSAIR XENEON EDGE</div>
+    <h1>Dot Bambu Lab</h1>
+    <p class="lede">Première proposition, à valider point par point dans le tableau. Suivi d'une imprimante 3D Bambu Lab en réseau local : progression en gros points, températures, AMS et commandes, dans la charte du Dot Clock. Les fichiers et les valeurs sont des exemples fictifs.</p>
+  </header>
+
+  <figure>
+    <div class="tag"><b>Maquette de référence</b><span id="sizeTag">Version 0.1 · taille réelle XL 2536 × 696 px</span></div>
+    <div class="sizebar" role="radiogroup" aria-label="Taille du widget">
+      <span>Widget size</span>
+      <button type="button" class="preset" data-size="s" aria-pressed="false">S · 840 × 344</button>
+      <button type="button" class="preset" data-size="m" aria-pressed="false">M · 840 × 696</button>
+      <button type="button" class="preset" data-size="l" aria-pressed="false">L · 1688 × 696</button>
+      <button type="button" class="preset" data-size="xl" aria-pressed="true">XL · 2536 × 696</button>
+    </div>
+    <div class="frame xl" id="frame">
+      <div class="stage xl printing" id="stage">
+        <span class="w-dot"></span>
+        <p class="w-lbl w-name" data-hub-home>DOT BAMBU LAB</p>
+        <p class="w-lbl w-state" id="state">X1C · PRINTING</p>
+        <div class="w-prog" id="prog"></div>
+        <p class="w-mini" id="mini"></p>
+        <div class="w-temps" id="temps"></div>
+        <div class="w-ams" id="ams">
+          <p class="w-lbl" id="amsLbl">AMS · 4 SLOTS</p>
+          <div class="slots" id="slots"></div>
+        </div>
+        <p class="w-hint" id="hint">Hold ■ to stop</p>
+        <div class="w-ctls">
+          <button type="button" class="ctl lamp" id="lampBtn" aria-label="Chamber light"><svg viewBox="0 0 24 24"><path d="M9 21h6v-1.5H9zM12 2a7 7 0 0 0-4 12.7V18h8v-3.3A7 7 0 0 0 12 2z"/></svg></button>
+          <button type="button" class="ctl main" id="pauseBtn" aria-label="Pause / resume"><svg viewBox="0 0 24 24" id="pauseIcon"></svg></button>
+          <button type="button" class="ctl" id="stopBtn" aria-label="Stop print (hold)"><svg viewBox="0 0 24 24"><path d="M5 5h14v14H5z"/></svg><span class="ring" id="ring"></span></button>
+        </div>
+      </div>
+    </div>
+    <div class="settings" aria-label="Réglages simulés">
+      <div class="grp" role="radiogroup" aria-label="Exemple">
+        <span>Exemple</span>
+        <label><input type="radio" name="sample" value="printing" checked> Printing</label>
+        <label><input type="radio" name="sample" value="paused"> Paused</label>
+        <label><input type="radio" name="sample" value="error"> Error</label>
+        <label><input type="radio" name="sample" value="finished"> Finished</label>
+        <label><input type="radio" name="sample" value="idle"> Idle</label>
+        <label><input type="radio" name="sample" value="offline"> Offline</label>
+      </div>
+      <div class="grp" role="radiogroup" aria-label="Printer">
+        <span>Printer</span>
+        <label><input type="radio" name="model" value="X1C" checked> X1C</label>
+        <label><input type="radio" name="model" value="P1S"> P1S</label>
+        <label><input type="radio" name="model" value="A1"> A1</label>
+      </div>
+      <label><input type="checkbox" id="showAms" checked> Show AMS</label>
+      <label><input type="checkbox" id="showUnlit" checked> Show unlit dots</label>
+      <label>Accent color <input type="color" id="accentColor" value="#10b981"></label>
+      <label>Lit dot color <input type="color" id="litColor" value="#f2f0e9"></label>
+      <label>Unlit dot color <input type="color" id="unlitColor" value="#1c1c1c"></label>
+      <label>Label color <input type="color" id="labelColor" value="#b8b6b0"></label>
+      <button type="button" class="preset" data-accent="#10b981"><i style="background:#10b981"></i>Émeraude</button>
+      <button type="button" class="preset" data-accent="#00ae42"><i style="background:#00ae42"></i>Vert Bambu</button>
+      <button type="button" class="preset" data-accent="#ed403b"><i style="background:#ed403b"></i>Rouge A</button>
+    </div>
+    <figcaption><span id="sizeNote">Progression à gauche, températures au centre, AMS et commandes à droite.</span> La maquette marche : le bouton central met en pause ou reprend, la lampe s'allume, et il faut garder le doigt 2 s sur stop pour annuler l'impression.</figcaption>
+  </figure>
+
+  <section style="display:grid;gap:14px">
+    <div class="diff-head">
+      <h2>Choix de design</h2>
+      <p class="hint">Tout est à valider. Complété au fur et à mesure.</p>
+    </div>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>#</th><th>Élément</th><th>Proposition</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>Module</td><td>Module de Dot Hub servi par Dot Companion (<code>/m/bambulab/</code>). Pas de widget iCUE autonome.</td></tr>
+          <tr class="todo"><td>2</td><td>Données</td><td>Le compagnon se connecte à l'imprimante en réseau local : MQTT sur TLS, port <code>8883</code>, utilisateur <code>bblp</code>, mot de passe = code d'accès LAN affiché sur l'imprimante, sujet <code>device/&lt;numéro de série&gt;/report</code>. Une demande <code>pushall</code> au démarrage donne l'état complet, puis l'imprimante envoie les changements. Adresse IP, numéro de série et code d'accès se règlent dans la page de réglages du compagnon et restent sur le PC.</td></tr>
+          <tr class="todo"><td>3</td><td>Progression</td><td>Pourcentage en gros points (<code>mc_percent</code>), le signe % en couleur d'accent, barre de points, nom du fichier (<code>subtask_name</code>), couche en cours sur total (<code>layer_num</code>, <code>total_layer_num</code>), temps restant (<code>mc_remaining_time</code>) et heure de fin calculée, vitesse (Silent, Standard, Sport, Ludicrous).</td></tr>
+          <tr class="todo"><td>4</td><td>Températures</td><td>Buse et plateau avec la consigne en petit et une barre qui se remplit pendant la chauffe. Chambre sur X1C (seul modèle avec la sonde) ; sur P1S et A1, la vitesse du ventilateur de pièce à la place.</td></tr>
+          <tr class="todo"><td>5</td><td>AMS</td><td>Une bobine en points par emplacement, de la couleur du filament (<code>tray_color</code>), remplie selon le reste estimé (<code>remain</code>), type en dessous. L'emplacement en cours est marqué « ▶ IN USE » en accent. Masquable (« Show AMS ») ; caché sans AMS et en M et S.</td></tr>
+          <tr class="todo"><td>6</td><td>Commandes</td><td>Lampe de la chambre, pause / reprise (bouton plein), stop. Stop demande de garder le doigt 2 s (un anneau se remplit) pour éviter d'annuler une impression par erreur. Pas de commandes en S.</td></tr>
+          <tr class="todo"><td>7</td><td>Erreurs</td><td>Erreur HMS ou arrêt de l'imprimante : point du libellé et état en rouge, message en clair sous la progression (par exemple « FILAMENT RAN OUT · AMS SLOT 2 »). Le rouge reste fixe, quelle que soit la couleur d'accent.</td></tr>
+          <tr class="todo"><td>8</td><td>Libellés</td><td>« DOT BAMBU LAB » en haut à gauche, à la même place et à la même taille que dans tous les modules (point à 56 / 51 px, texte à 80 / 44 px, Fira Code 18 px), point qui pulse pendant l'impression, toucher qui ramène à Dot Home. À droite : modèle et état (PRINTING, PAUSED, ERROR, DONE, IDLE, OFFLINE).</td></tr>
+          <tr class="todo"><td>9</td><td>Couleurs</td><td>Couleurs communes de la carte « Couleurs » de Dot Companion. Vert Bambu <code>#00AE42</code> proposé comme accent.</td></tr>
+          <tr class="todo"><td>10</td><td>Sans impression</td><td>« READY » et la dernière impression ; températures et AMS restent visibles, pause et stop grisés. Imprimante injoignable : « PRINTER OFFLINE » et « CHECK IP AND ACCESS CODE IN DOT COMPANION », jamais de valeur inventée.</td></tr>
+          <tr class="todo"><td>11</td><td>Plus tard</td><td>Vignette du plateau en trame de points (dans le fichier 3MF, à lire par FTPS sur l'imprimante) et image de la caméra. Plusieurs imprimantes : une instance du module par imprimante.</td></tr>
+          <tr class="todo"><td>12</td><td>Tailles</td><td><b>XL</b> : progression à gauche, températures au centre, AMS et commandes à droite.<br><b>L</b> : progression à gauche ; températures, AMS et commandes à droite.<br><b>M</b> : progression, températures en ligne, commandes en bas.<br><b>S</b> : progression, buse et plateau, sans libellés ni commandes.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  function v(id) { return document.getElementById(id); }
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; }
+  function val(name) { return document.querySelector("input[name=" + name + "]:checked").value; }
+  var SIZES = {
+    xl: { w: 2536, h: 696, digit: 34, bar: 18, progW: 900, tempBar: 12, tempW: 420, spool: 168, tag: "XL 2536 × 696 px", note: "Progression à gauche, températures au centre, AMS et commandes à droite." },
+    l: { w: 1688, h: 696, digit: 30, bar: 16, progW: 760, tempBar: 10, tempW: 228, spool: 116, tag: "L 1688 × 696 px", note: "Progression à gauche ; températures, AMS et commandes à droite." },
+    m: { w: 840, h: 696, digit: 15, bar: 14, progW: 728, tempBar: 10, tempW: 0, spool: 0, tag: "M 840 × 696 px", note: "Progression et températures en ligne, commandes en bas." },
+    s: { w: 840, h: 344, digit: 11, bar: 12, progW: 744, tempBar: 0, tempW: 0, spool: 0, tag: "S 840 × 344 px", note: "Progression, buse et plateau, sans libellés ni commandes." }
+  };
+  var size = "xl", lamp = true;
+  var frame = v("frame"), stage = v("stage");
+
+  function fit() { stage.style.transform = "scale(" + frame.clientWidth / SIZES[size].w + ")"; }
+  if (window.ResizeObserver) new ResizeObserver(fit).observe(frame); else window.addEventListener("resize", fit);
+
+  // ---------- police 5 × 7 points pour le pourcentage
+  var FONT = {
+    "0": ["01110", "10001", "10011", "10101", "11001", "10001", "01110"],
+    "1": ["00100", "01100", "00100", "00100", "00100", "00100", "01110"],
+    "2": ["01110", "10001", "00001", "00010", "00100", "01000", "11111"],
+    "3": ["11111", "00010", "00100", "00010", "00001", "10001", "01110"],
+    "4": ["00010", "00110", "01010", "10010", "11111", "00010", "00010"],
+    "5": ["11111", "10000", "11110", "00001", "00001", "10001", "01110"],
+    "6": ["00110", "01000", "10000", "11110", "10001", "10001", "01110"],
+    "7": ["11111", "00001", "00010", "00100", "01000", "01000", "01000"],
+    "8": ["01110", "10001", "10001", "01110", "10001", "10001", "01110"],
+    "9": ["01110", "10001", "10001", "01111", "00001", "00010", "01100"],
+    "%": ["11000", "11001", "00010", "00100", "01000", "10011", "00011"],
+    " ": ["00000", "00000", "00000", "00000", "00000", "00000", "00000"]
+  };
+  function dotText(str, pitch, c) {
+    // toujours 4 cases (« 100% ») : la mise en page ne bouge pas
+    str = ("    " + str).slice(-4);
+    var cols = 4 * 6 - 1, cv = document.createElement("canvas"), dpr = 2, w = cols * pitch, h = 7 * pitch;
+    cv.width = w * dpr; cv.height = h * dpr; cv.style.width = w + "px"; cv.style.height = h + "px";
+    var ctx = cv.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    for (var k = 0; k < 4; k++) {
+      var g = FONT[str[k]] || FONT[" "];
+      for (var y = 0; y < 7; y++) for (var x = 0; x < 6; x++) {
+        if (k === 3 && x === 5) continue;
+        var on = x < 5 && g[y][x] === "1";
+        var col = on ? (str[k] === "%" ? c.accent : c.lit) : c.unlit;
+        if (!col) continue;
+        ctx.fillStyle = col; ctx.beginPath(); ctx.arc((k * 6 + x) * pitch + pitch / 2, y * pitch + pitch / 2, pitch * 0.4, 0, Math.PI * 2); ctx.fill();
+      }
+    }
+    return cv;
+  }
+
+  // barre de points
+  function bar(w, frac, pitch, c, on) {
+    var cv = document.createElement("canvas"), dpr = 2, n = Math.floor(w / pitch), h = pitch;
+    cv.width = w * dpr; cv.height = h * dpr; cv.style.width = w + "px"; cv.style.height = h + "px";
+    var ctx = cv.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    var k = Math.round(n * Math.max(0, Math.min(1, frac)));
+    for (var i = 0; i < n; i++) {
+      ctx.fillStyle = i < k ? (on || c.accent) : (c.unlit || "#1c1c1c");
+      ctx.beginPath(); ctx.arc(i * pitch + pitch / 2, h / 2, pitch * 0.36, 0, Math.PI * 2); ctx.fill();
+    }
+    return cv;
+  }
+
+  // bobine : disque de points, rempli depuis le bas selon le reste
+  function spool(px, color, remain, active, c) {
+    var cv = document.createElement("canvas"), dpr = 2;
+    cv.width = px * dpr; cv.height = px * dpr; cv.style.width = px + "px"; cv.style.height = px + "px";
+    var ctx = cv.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    // filament trop sombre pour se voir sur le fond : éclairci
+    var rgb = parseInt(color.slice(1), 16), lumi = (0.2126 * (rgb >> 16) + 0.7152 * (rgb >> 8 & 255) + 0.0722 * (rgb & 255)) / 255;
+    if (lumi < 0.22) color = "#5a5a5a";
+    var pitch = px / 15, R = px / 2 - pitch / 2, hub = R * 0.28;
+    for (var y = 0; y < 15; y++) for (var x = 0; x < 15; x++) {
+      var cx = x * pitch + pitch / 2, cy = y * pitch + pitch / 2, d = Math.hypot(cx - px / 2, cy - px / 2);
+      if (d > R + 0.5) continue;
+      var rim = d > R - pitch * 0.9, filled = (15 - y) / 15 <= remain + 0.001;
+      var col = d < hub ? null : rim ? (active ? c.accent : (c.unlit || "#1c1c1c")) : filled ? color : (c.unlit || "#1c1c1c");
+      if (!col) continue;
+      ctx.fillStyle = col; ctx.beginPath(); ctx.arc(cx, cy, pitch * 0.4, 0, Math.PI * 2); ctx.fill();
+    }
+    return cv;
+  }
+
+  var JOB = { file: "Benchy_hull_v2.3mf", pct: 67, layer: 142, layers: 212, left: 84, speed: "Standard" };
+  var AMS = [
+    { color: "#f2f0e9", type: "PLA Basic", remain: 0.82 },
+    { color: "#2f6fd6", type: "PETG HF", remain: 0.04 },
+    { color: "#e9862b", type: "PLA Matte", remain: 0.55 },
+    { color: "#1a1a1a", type: "PLA Basic", remain: 0.31 }
+  ];
+  var ACTIVE = 2;
+
+  function colors() {
+    return { lit: v("litColor").value, unlit: v("showUnlit").checked ? v("unlitColor").value : null, accent: v("accentColor").value, label: v("labelColor").value, alert: "#ed403b" };
+  }
+  function dur(min) { var h = Math.floor(min / 60), m = min % 60; return (h ? h + "h " : "") + m + "m"; }
+  function eta(min) { var d = new Date(Date.now() + min * 60000); return (d.getHours() < 10 ? "0" : "") + d.getHours() + ":" + (d.getMinutes() < 10 ? "0" : "") + d.getMinutes(); }
+
+  function render() {
+    var sample = val("sample"), model = val("model"), c = colors(), Z = SIZES[size];
+    stage.style.setProperty("--accent", c.accent);
+    stage.style.setProperty("--lit", c.lit);
+    stage.style.setProperty("--label", c.label);
+    var active = sample === "printing" || sample === "paused" || sample === "error";
+    stage.className = "stage " + size + " " + sample;
+    v("state").textContent = model + " · " + { printing: "PRINTING", paused: "PAUSED", error: "ERROR", finished: "DONE", idle: "IDLE", offline: "OFFLINE" }[sample];
+
+    // progression
+    var prog = v("prog"); prog.innerHTML = "";
+    if (sample === "offline") {
+      prog.appendChild(el("p", "big", "Printer offline"));
+      prog.appendChild(el("p", "sub", "Check IP and access code in Dot Companion"));
+    } else if (sample === "idle") {
+      prog.appendChild(el("p", "big", "Ready"));
+      prog.appendChild(el("p", "sub", "Last print · Cable_clip_x8.3mf · 2h ago"));
+    } else {
+      var pct = sample === "finished" ? 100 : JOB.pct;
+      prog.appendChild(dotText(pct + "%", Z.digit, c));
+      var b = el("div", "bar"); b.appendChild(bar(Z.progW, pct / 100, Z.bar, c, sample === "error" ? c.alert : null)); prog.appendChild(b);
+      prog.appendChild(el("p", "file ell", JOB.file.replace(/\.3mf$/i, "")));
+      var info = el("div", "info");
+      if (sample === "finished") {
+        info.appendChild(el("span", "left", "Done at " + eta(-12)));
+        info.appendChild(el("span", "", "3h 12m · " + JOB.layers + " layers"));
+      } else {
+        info.appendChild(el("span", "", "Layer " + JOB.layer + " / " + JOB.layers));
+        info.appendChild(el("span", "left", dur(JOB.left) + " left"));
+        if (size !== "s") info.appendChild(el("span", "", "Ends " + eta(JOB.left)));
+        if (size === "xl") info.appendChild(el("span", "", JOB.speed));
+      }
+      prog.appendChild(info);
+      if (sample === "error") prog.appendChild(el("p", "alert ell", "Filament ran out · AMS slot 2"));
+    }
+
+    // températures
+    var temps = v("temps"); temps.innerHTML = ""; temps.hidden = sample === "offline";
+    var hot = active;
+    var T = [
+      { k: "Nozzle", v: hot ? 219 : 27, t: hot ? 220 : 0 },
+      { k: "Bed", v: hot ? 61 : 25, t: hot ? 65 : 0 },
+      model === "X1C" ? { k: "Chamber", v: hot ? 38 : 24, t: 0 } : { k: "Part fan", v: hot ? 80 : 0, t: 0, unit: "%" }
+    ];
+    T.forEach(function (x) {
+      var d = el("div", "tmp");
+      d.appendChild(el("p", "k", x.k));
+      var vv = el("p", "v", x.v + (x.unit || "°"));
+      vv.appendChild(el("small", "", x.t ? "/ " + x.t + "°" : (x.unit ? "" : "")));
+      d.appendChild(vv);
+      if (Z.tempW && x.t) { var hb = el("div", "hb"); hb.appendChild(bar(Z.tempW, x.v / x.t, Z.tempBar, c)); d.appendChild(hb); }
+      else if (Z.tempW) { var sp = el("div", "hb"); sp.style.height = Z.tempBar + "px"; d.appendChild(sp); }
+      temps.appendChild(d);
+    });
+    v("mini").innerHTML = sample === "offline" ? "" : "NOZZLE <b>" + T[0].v + "°</b><br>BED <b>" + T[1].v + "°</b>";
+
+    // AMS
+    var ams = v("ams"), slots = v("slots"); slots.innerHTML = "";
+    ams.hidden = sample === "offline" || !v("showAms").checked || !Z.spool;
+    v("amsLbl").textContent = (model === "A1" ? "AMS lite" : "AMS") + " · 4 slots";
+    if (!ams.hidden) AMS.forEach(function (a, i) {
+      var on = active && i === ACTIVE;
+      var s = el("div", "slot" + (on ? " on" : ""));
+      s.style.width = (Z.spool + 24) + "px";
+      s.appendChild(spool(Z.spool, a.color, a.remain, on, c));
+      s.appendChild(el("p", "ty ell", a.type));
+      s.appendChild(el("p", "re", on ? "▶ In use" : Math.round(a.remain * 100) + "%"));
+      slots.appendChild(s);
+    });
+
+    // commandes
+    var canPause = sample === "printing" || sample === "paused" || sample === "error";
+    v("pauseBtn").disabled = !canPause;
+    v("stopBtn").disabled = !canPause;
+    v("lampBtn").disabled = sample === "offline";
+    v("lampBtn").classList.toggle("on", lamp && sample !== "offline");
+    v("pauseIcon").innerHTML = sample === "printing" ? '<path d="M6 4h4v16H6zM14 4h4v16h-4z"/>' : '<path d="M7 4v16l13-8z"/>';
+    v("hint").hidden = !canPause;
+  }
+
+  // ---------- interactions de la maquette
+  function setSample(x) { document.querySelector("input[name=sample][value=" + x + "]").checked = true; render(); }
+  v("pauseBtn").addEventListener("click", function () { setSample(val("sample") === "printing" ? "paused" : "printing"); });
+  v("lampBtn").addEventListener("click", function () { lamp = !lamp; render(); });
+  // stop : garder le doigt 2 s
+  var hold = null, t0 = 0;
+  function cancelHold() { if (hold) cancelAnimationFrame(hold); hold = null; v("ring").style.setProperty("--p", 0); }
+  v("stopBtn").addEventListener("pointerdown", function (e) {
+    if (v("stopBtn").disabled) return;
+    e.preventDefault(); t0 = performance.now();
+    (function step(now) {
+      var p = Math.min(1, (now - t0) / 2000);
+      v("ring").style.setProperty("--p", p);
+      if (p >= 1) { cancelHold(); setSample("idle"); return; }
+      hold = requestAnimationFrame(step);
+    })(t0);
+  });
+  ["pointerup", "pointerleave", "pointercancel"].forEach(function (ev) { v("stopBtn").addEventListener(ev, cancelHold); });
+
+  document.querySelectorAll(".settings input").forEach(function (i) {
+    i.addEventListener("input", render); i.addEventListener("change", render);
+  });
+  document.querySelectorAll(".preset[data-accent]").forEach(function (b) {
+    b.addEventListener("click", function () { v("accentColor").value = b.getAttribute("data-accent"); render(); });
+  });
+  document.querySelectorAll(".sizebar .preset").forEach(function (b) {
+    b.addEventListener("click", function () {
+      size = b.getAttribute("data-size");
+      document.querySelectorAll(".sizebar .preset").forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+      frame.className = "frame " + size;
+      v("sizeTag").textContent = "Version 0.1 · taille réelle " + SIZES[size].tag;
+      v("sizeNote").textContent = SIZES[size].note;
+      render(); fit();
+    });
+  });
+
+  render(); fit();
+  setInterval(render, 30000);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(render);
+})();
+</script>
+</body>
+</html>
