@@ -161,13 +161,13 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
         <div id="clock" hidden></div>
         <div class="down" id="down" hidden><p class="brand"><span class="dot"></span>DOT HUB</p><p class="msg" id="msg"></p><p class="sub" id="sub"></p></div>
         <div class="ident" id="ident" hidden></div>
-        <div class="press" id="press" hidden><span>HOLD 1 S · DOT HOME</span></div>
+        <div class="press" id="press" hidden><span>HOLD 1 S · HOME</span></div>
       </div>
     </div>
     <div class="settings" aria-label="Réglages simulés">
       <div class="grp" role="radiogroup" aria-label="Screen">
         <span>Screen</span>
-        <label><input type="radio" name="screen" value="home" checked> Dot Home</label>
+        <label><input type="radio" name="screen" value="home" checked> Home</label>
         <label><input type="radio" name="screen" value="module"> Module · Clock</label>
         <label><input type="radio" name="screen" value="identify"> Identify</label>
         <label><input type="radio" name="screen" value="connecting"> Connecting</label>
@@ -198,7 +198,7 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
         <tbody>
           <tr><td>1</td><td>Coquille</td><td>Le seul widget iCUE (<code>dot-hub.icuewidget</code>). Il vérifie toutes les 4 s que Dot Companion répond sur <code>127.0.0.1:47800</code>, puis affiche son interface dans une iframe plein cadre (<code>/i/&lt;uniqueId&gt;</code>). Codé.</td></tr>
           <tr><td>2</td><td>Instances</td><td>Chaque Dot Hub posé dans iCUE est une instance, reconnue par son <code>uniqueId</code>. Le compagnon retient son nom, son module et ses réglages. Codé.</td></tr>
-          <tr><td>3</td><td>Dot Home</td><td>Accueil quand aucun module n'est choisi : « DOT HOME » et le nom de l'instance, adresse des réglages à droite, une tuile par module (pictogramme 7 × 7 points, nom, heure en direct pour Clock). 10 tuiles en XL, 8 en L, 6 en M, 4 en S. Codé.</td></tr>
+          <tr><td>3</td><td>Dot Home</td><td>Accueil quand aucun module n'est choisi : « DOT HUB » et le nom de l'instance, adresse des réglages à droite, une tuile par module (pictogramme 7 × 7 points, nom, heure en direct pour Clock). 10 tuiles en XL, 8 en L, 6 en M, 4 en S. Codé.</td></tr>
           <tr class="todo"><td>4</td><td>Plus de modules que de cases</td><td>Avec tous les modules prévus (21), la grille déborde : pages à prévoir (points de page, glisser). À décider.</td></tr>
           <tr><td>5</td><td>Retour à Dot Home</td><td>Toucher le libellé « ● DOT … » d'un module (zone tactile d'au moins 60 px) ou garder le doigt 1 s n'importe où sur le module. Codé.</td></tr>
           <tr><td>6</td><td>Réglages sur le PC</td><td><code>http://127.0.0.1:47800/settings</code> : carte « Couleurs » pour tous les modules, puis une carte par instance (nom, module, réglages du module, « Identifier », supprimer). Changements appliqués en 2 s sur l'Edge. Codé.</td></tr>
@@ -278,7 +278,7 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
     stage.innerHTML = "";
     var head = el("div", "head");
     head.appendChild(el("span", "dot"));
-    head.appendChild(el("p", "lbl", "DOT HOME" + (name ? " · " + name : "")));
+    head.appendChild(el("p", "lbl", "DOT HUB" + (name ? " · " + name : "")));
     head.appendChild(el("span", "grow"));
     // en M, la place manque : l'adresse seule
     head.appendChild(el("p", "lbl", (size === "m" ? "" : "SETTINGS · ") + "127.0.0.1:47800/SETTINGS"));

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Dot Home</title>
+<title>Dot Hub</title>
 <!-- Iso à la maquette de référence widgets/dot-home/mockups/reference.html (mêmes tailles, mêmes valeurs) -->
 <style>
 @font-face { font-family: "Fira Code"; src: url("/m/clock/resources/fonts/FiraCode-Regular.woff2") format("woff2"); font-weight: 400; }
@@ -90,7 +90,7 @@ html, body { width: 100%; height: 100%; overflow: hidden; background: #080808; u
 
 		var head = el("div", "head");
 		head.appendChild(el("span", "dot"));
-		head.appendChild(el("p", "lbl", "DOT HOME" + (inst.name ? " · " + inst.name : "")));
+		head.appendChild(el("p", "lbl", "DOT HUB" + (inst.name ? " · " + inst.name : "")));
 		head.appendChild(el("span", "grow"));
 		// en M, la place manque : l'adresse seule
 		head.appendChild(el("p", "lbl", (size === "m" ? "" : "SETTINGS · ") + "127.0.0.1:47800/SETTINGS"));

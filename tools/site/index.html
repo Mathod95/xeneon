@@ -78,7 +78,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outlin
 .empty { color: var(--muted); }
 .none { color: var(--label); font-family: var(--mono); }
 
-/* la Xeneon Edge : Dot Home en page 1, une page par widget */
+/* la Xeneon Edge : l'accueil de Dot Hub (iso à companion/web/home.html en XL), puis une page par module */
 .edge-sec { display: grid; gap: 16px; }
 .hint { margin: 0; color: var(--label); font-size: 14px; }
 .edge { padding: clamp(6px, 1.2%, 18px); border-radius: clamp(10px, 1.6vw, 24px); background: linear-gradient(180deg, #161616, #0b0b0b); border: 1px solid #2a2a2a; box-shadow: 0 40px 80px -40px #000, inset 0 1px 0 #262626; }
@@ -93,14 +93,14 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outlin
 .dh-head { position: absolute; left: 56px; right: 56px; top: 26px; height: 60px; display: flex; align-items: center; gap: 14px; }
 .dh-head::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--accent); }
 .dh-head .grow { flex: 1; }
-.dh-tiles { position: absolute; left: 40px; right: 40px; top: 112px; bottom: 40px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(0, 1fr)); gap: 20px; }
-.dh-tile { position: relative; display: grid; grid-template-rows: 1fr auto; gap: 14px; padding: 22px 26px; min-width: 0; min-height: 0; border: 2px solid #1d1d1d; border-radius: 18px; background: transparent; color: var(--lit); text-align: left; font-family: inherit; cursor: pointer; }
+.dh-tiles { position: absolute; left: 40px; right: 40px; top: 112px; bottom: 40px; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(0, 1fr)); gap: 20px; }
+.dh-tile { position: relative; display: grid; grid-template-rows: 1fr auto; gap: 14px; padding: 22px 24px; min-width: 0; min-height: 0; border: 2px solid #1d1d1d; border-radius: 18px; background: transparent; color: var(--lit); text-align: left; font-family: inherit; cursor: pointer; }
 .dh-tile:hover, .dh-tile:focus-visible { border-color: var(--accent); background: #0d0d0d; outline: none; }
 .dh-tile .pic { display: grid; place-items: center; min-height: 0; }
 .dh-tile .pic canvas { width: 133px; height: 133px; }
 .dh-tile .meta { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
-.dh-tile .name { font-size: 26px; letter-spacing: .12em; text-transform: uppercase; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.dh-tile .page { font-size: 18px; letter-spacing: .14em; color: var(--label); }
+.dh-tile .name { font-size: 24px; letter-spacing: .12em; text-transform: uppercase; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dh-tile .live { position: absolute; top: 18px; right: 22px; font-size: 18px; letter-spacing: .14em; color: var(--accent); }
 .dh-tile.more { place-items: center; grid-template-rows: 1fr; border-style: dashed; color: var(--label); font-size: 22px; letter-spacing: .2em; }
 .ph { position: absolute; inset: 0; display: grid; place-items: center; align-content: center; gap: 30px; text-decoration: none; color: var(--lit); }
 .ph canvas { width: 280px; height: 280px; }
@@ -136,7 +136,7 @@ footer a { color: var(--label); text-decoration: none; }
   <section class="edge-sec" aria-label="Aperçu sur la Xeneon Edge">
     <div class="bar">
       <h2>Sur la Xeneon Edge</h2>
-      <p class="hint">Touche une tuile de Dot Home, ou glisse, pour changer de page.</p>
+      <p class="hint">Touche une tuile de Dot Hub pour ouvrir le module, ou glisse.</p>
     </div>
     <div class="edge"><div class="screen" id="screen"><div class="native" id="native"><div class="strip" id="strip"></div></div></div></div>
     <div class="pager">
@@ -144,7 +144,7 @@ footer a { color: var(--label); text-decoration: none; }
       <div class="where"><span id="where"></span><a id="open" href="#" hidden>Maquette →</a></div>
       <div class="nav">
         <button type="button" class="chip" id="prev" aria-label="Page précédente">‹</button>
-        <button type="button" class="chip" id="homeBtn">Dot Home</button>
+        <button type="button" class="chip" id="homeBtn">Dot Hub</button>
         <button type="button" class="chip" id="next" aria-label="Page suivante">›</button>
       </div>
     </div>
@@ -308,24 +308,25 @@ footer a { color: var(--label); text-decoration: none; }
 
   // ---------- la Xeneon Edge
   var SHOTS = JSON.parse(document.getElementById("previews").textContent);
-  var PAGES = WIDGETS.filter(function (w) { return w.mockup && w.slug !== "dot-home"; });
+  var PAGES = WIDGETS.filter(function (w) { return w.mockup && w.slug !== "dot-home" && w.slug !== "dot-hub"; });
   var cur = 0, strip = document.getElementById("strip"), screen = document.getElementById("screen"), native = document.getElementById("native");
   function fitEdge() { native.style.transform = "scale(" + screen.clientWidth / 2560 + ")"; }
   if (window.ResizeObserver) new ResizeObserver(fitEdge).observe(screen); else window.addEventListener("resize", fitEdge);
   function buildEdge() {
     var home = el("div", "pg"), slot = el("div", "slot");
     var hd = el("div", "dh-head");
-    hd.appendChild(el("p", "lbl", "DOT HOME · PAGE 1")); hd.appendChild(el("span", "grow")); hd.appendChild(el("p", "lbl", "TAP A TILE"));
+    hd.appendChild(el("p", "lbl", "DOT HUB")); hd.appendChild(el("span", "grow")); hd.appendChild(el("p", "lbl", "SETTINGS · 127.0.0.1:47800/SETTINGS"));
     slot.appendChild(hd);
     var tiles = el("div", "dh-tiles");
-    PAGES.slice(0, 7).forEach(function (w, i) {
-      var b = el("button", "dh-tile"); b.type = "button"; b.setAttribute("aria-label", "Page " + (i + 2) + ", " + w.name);
+    PAGES.slice(0, 9).forEach(function (w, i) {
+      var b = el("button", "dh-tile"); b.type = "button"; b.setAttribute("aria-label", "Open " + w.name);
       var pc = el("div", "pic"); pc.appendChild(pic(w.slug, "#f2f0e9")); b.appendChild(pc);
-      var meta = el("div", "meta"); meta.appendChild(el("span", "name", w.name)); meta.appendChild(el("span", "page", "P" + (i + 2))); b.appendChild(meta);
+      var meta = el("div", "meta"); meta.appendChild(el("span", "name", w.name.replace(/^Dot /, ""))); b.appendChild(meta);
+      if (w.slug === "dot-clock") { var d0 = new Date(); b.appendChild(el("span", "live", (d0.getHours() < 10 ? "0" : "") + d0.getHours() + ":" + (d0.getMinutes() < 10 ? "0" : "") + d0.getMinutes())); }
       b.addEventListener("click", function () { if (!dragged) go(i + 1); });
       tiles.appendChild(b);
     });
-    var more = el("button", "dh-tile more", "ALL WIDGETS ↓"); more.type = "button";
+    var more = el("button", "dh-tile more", "ALL MODULES ↓"); more.type = "button";
     more.addEventListener("click", function () { if (!dragged) document.getElementById("list").scrollIntoView({ behavior: "smooth" }); });
     tiles.appendChild(more);
     slot.appendChild(tiles);
@@ -355,7 +356,7 @@ footer a { color: var(--label); text-decoration: none; }
     strip.style.transform = "translateX(" + (-cur * 2560) + "px)";
     document.querySelectorAll("#dots button").forEach(function (d, k) { d.setAttribute("aria-current", k === cur ? "true" : "false"); });
     var w = PAGES[cur - 1];
-    document.getElementById("where").textContent = "Page " + (cur + 1) + " · " + (w ? w.name : "Dot Home");
+    document.getElementById("where").textContent = "Page " + (cur + 1) + " · " + (w ? w.name : "Dot Hub");
     var open = document.getElementById("open");
     open.hidden = !w; if (w) open.href = BASE + w.slug + "/";
   }
