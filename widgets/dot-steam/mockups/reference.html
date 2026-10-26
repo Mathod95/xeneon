@@ -222,8 +222,8 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
       </div>
       <div class="grp" role="radiogroup" aria-label="Cover style">
         <span>Cover style</span>
-        <label><input type="radio" name="coverStyle" value="mono" checked> Mono</label>
-        <label><input type="radio" name="coverStyle" value="color"> Color</label>
+        <label><input type="radio" name="coverStyle" value="mono"> Mono</label>
+        <label><input type="radio" name="coverStyle" value="color" checked> Color</label>
       </div>
       <label><input type="checkbox" id="showFriends" checked> Show friends</label>
       <label><input type="checkbox" id="showUnlit" checked> Show unlit dots</label>
@@ -232,7 +232,7 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
       <label>Unlit dot color <input type="color" id="unlitColor" value="#1c1c1c"></label>
       <label>Label color <input type="color" id="labelColor" value="#b8b6b0"></label>
       <button type="button" class="preset" data-accent="#10b981"><i style="background:#10b981"></i>Émeraude</button>
-      <button type="button" class="preset" data-accent="#66c0f4"><i style="background:#66c0f4"></i>Bleu Steam</button>
+      <button type="button" class="preset" data-accent="#66c0f4"><i style="background:#66c0f4"></i>Bleu</button>
       <button type="button" class="preset" data-accent="#ed403b"><i style="background:#ed403b"></i>Rouge A</button>
     </div>
     <figcaption><span id="sizeNote">Dernier jeu joué à gauche, 8 jeux, téléchargements et amis à droite.</span> La maquette marche : garder le doigt sur un jeu (ou toucher, ou double toucher, selon « Launch with ») le lance.</figcaption>
@@ -255,11 +255,11 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
           <tr><td>6</td><td>Téléchargements</td><td>Jeu en cours de téléchargement ou de mise à jour : nom, pourcentage, débit, temps restant, barre de points ; jeux en attente en dessous. Le pourcentage vient des fichiers de Steam ; le débit et le temps restant sont estimés par le compagnon. Pendant une partie, Steam met les téléchargements en pause par défaut : « PAUSED WHILE PLAYING ». « No downloads » quand rien ne télécharge.</td></tr>
           <tr><td>7</td><td>Amis</td><td>Dès la première version. Amis en jeu d'abord (point en accent et nom du jeu), puis en ligne. API Web Steam avec une clé d'API (réglage du compagnon, gardée chiffrée) ; ton identifiant Steam est lu dans les fichiers de Steam (compte connecté). Masquable (« Show friends »).</td></tr>
           <tr><td>8</td><td>Libellés</td><td>« DOT STEAM » en haut à gauche, à la même place et à la même taille que dans tous les modules (point à 56 / 51 px, texte à 80 / 44 px, Fira Code 18 px), toucher qui ramène à Dot Home. Le titre personnalisable du Dot Launcher disparaît, pour garder le libellé identique partout. À droite : état Steam et nombre d'amis en jeu.</td></tr>
-          <tr class="todo"><td>9</td><td>Couleurs</td><td>Couleurs communes de la carte « Couleurs » de Dot Companion. Les thèmes du Dot Launcher (Cyberpunk, Cozy…) sont remplacés par ces couleurs. Bleu Steam <code>#66C0F4</code> proposé comme accent.</td></tr>
+          <tr><td>9</td><td>Couleurs</td><td>Une seule couleur d'accent pour tout Dot Hub, pour l'instant : couleurs communes de la carte « Couleurs » de Dot Companion. Les thèmes du Dot Launcher (Cyberpunk, Cozy…) disparaissent.</td></tr>
           <tr><td>10</td><td>Steam fermé</td><td>« STEAM NOT RUNNING » : les jeux restent lançables (Steam démarre d'abord), téléchargements et amis masqués.</td></tr>
           <tr><td>11</td><td>Tailles</td><td><b>XL</b> d'abord : dernier jeu à gauche, 8 jeux en ligne, téléchargements et amis en dessous. L, M et S gardées telles quelles, reprises plus tard.</td></tr>
           <tr class="todo"><td>12</td><td>En jeu</td><td>Le compagnon sait quel jeu tourne (registre de Steam, <code>RunningAppID</code>). Vue « Playing » : « PLAYING · NOM » à droite du libellé, le jeu en cours en grand à gauche avec un cadre en accent, durée de la partie et temps total, sa jaquette encadrée dans la rangée, téléchargements « PAUSED WHILE PLAYING ».</td></tr>
-          <tr class="todo"><td>13</td><td>Style des jaquettes</td><td>Mono (points de la couleur des points allumés) ou Color (couleurs de la jaquette), réglage « Cover style ». Valeur par défaut à choisir.</td></tr>
+          <tr><td>13</td><td>Style des jaquettes</td><td>Color par défaut (points aux couleurs de la jaquette) ; Mono au choix (points de la couleur des points allumés), réglage « Cover style ».</td></tr>
         </tbody>
       </table>
     </div>
