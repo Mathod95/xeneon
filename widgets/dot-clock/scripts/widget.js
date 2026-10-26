@@ -2,7 +2,6 @@
  * Dot Clock : horloge dot-matrix pour la CORSAIR XENEON EDGE.
  * Référence visuelle : widgets/dot-clock/mockups/reference.html (mêmes valeurs, mêmes mises en page).
  * Une mise en page par taille : XL et L (heure + secondes à droite), M (secondes sous l'heure), S (heure seule, date et fuseau en bas).
- * Vertical : mise en page provisoire calculée (à concevoir).
  */
 (function () {
 	"use strict";
@@ -10,10 +9,7 @@
 	var BOLD = window.DotFont.BOLD, THIN = window.DotFont.THIN, cell = window.DotFont.cell;
 	var MONTHS = ["JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE", "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"];
 	var DAYS = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"];
-	var SLOTS = {
-		h: { s: [840, 344], m: [840, 696], l: [1688, 696], xl: [2536, 696] },
-		v: { s: [696, 416], m: [696, 840], l: [696, 1688], xl: [696, 2536] }
-	};
+	var SLOTS = { s: [840, 344], m: [840, 696], l: [1688, 696], xl: [2536, 696] };
 
 	// Géométrie du bloc horaire relevée sur le mock (échelle 1, origine = centre du premier point de la case 1)
 	var G = {
@@ -23,7 +19,7 @@
 		sideX: 837.3, secY: 79.5, ampmTop: -10, ampmBottom: 168.1,
 		sidePitch: 10.35, sideRadius: 3.6,
 		height: 247.2,                       // du haut du premier point au bas du dernier
-		centerY: 110,                        // milieu vertical du bloc, depuis la première ligne
+		centerY: 110,                        // milieu en hauteur du bloc, depuis la première ligne
 		centerWithSide: 465.4,               // milieu horizontal avec la colonne secondes / AM-PM
 		centerNoSide: 393.8,                 // milieu horizontal de HH:MM seul
 		widthWithSide: 958,
@@ -168,17 +164,10 @@
 	};
 	var S_LABELS = { date: { left: 56, bottom: 42 }, tz: { right: 56, bottom: 44 } };
 
-	function layoutFor(size, orient, W, H) {
-		if (orient === "h") {
-			if (size === "xl" || size === "l") return { mode: "row", k: 1.14, cy: H / 2, labels: CORNERS };
-			if (size === "s") return { mode: "row", k: 0.72, cy: 138, labels: S_LABELS };
-			return { mode: "stack", k: 0.93, labels: CORNERS };
-		}
-		// vertical : provisoire, on garde la disposition qui laisse les plus gros chiffres
-		var kRow = Math.min(1.14, (W - 112) / G.widthWithSide, (H - 176) / G.height);
-		var kStack = Math.min(1.14, (W - 80) / G.widthNoSide, (H - 176 - 124) / G.height);
-		if (kRow >= kStack) return { mode: "row", k: kRow, cy: H / 2, labels: size === "s" ? S_LABELS : CORNERS };
-		return { mode: "stack", k: kStack, labels: CORNERS };
+	function layoutFor(size, H) {
+		if (size === "xl" || size === "l") return { mode: "row", k: 1.14, cy: H / 2, labels: CORNERS };
+		if (size === "s") return { mode: "row", k: 0.72, cy: 138, labels: S_LABELS };
+		return { mode: "stack", k: 0.93, labels: CORNERS };
 	}
 
 	function place(el, pos) {
@@ -197,12 +186,12 @@
 	}
 
 	// ------------------------------------------------------------------ dessin
-	var state = { size: "xl", orient: "h", W: 2536, H: 696, scale: 1 };
+	var state = { size: "xl", W: 2536, H: 696, scale: 1 };
 
 	function setupStage() {
 		var root = document.documentElement;
-		var size = root.getAttribute("data-size") || "xl", orient = root.getAttribute("data-orientation") || "h";
-		var dims = SLOTS[orient][size];
+		var size = root.getAttribute("data-size") || "xl";
+		var dims = SLOTS[size] || SLOTS.xl;
 		var W = dims[0], H = dims[1];
 		var scale = Math.min(window.innerWidth / W, window.innerHeight / H);
 		var stage = $("stage");
@@ -212,7 +201,7 @@
 		var cv = $("dots"), dpr = window.devicePixelRatio || 1;
 		cv.width = Math.round(W * scale * dpr);
 		cv.height = Math.round(H * scale * dpr);
-		state = { size: size, orient: orient, W: W, H: H, scale: scale, dpr: dpr };
+		state = { size: size, W: W, H: H, scale: scale, dpr: dpr };
 	}
 
 	function drawSide(ctx, s, chars, x, y, p, r, on, off) {
@@ -225,7 +214,7 @@
 		var now = new Date();
 		var t = nowParts(now, s.timeZone);
 		var W = state.W, H = state.H;
-		var L = layoutFor(state.size, state.orient, W, H);
+		var L = layoutFor(state.size, H);
 
 		var root = document.documentElement.style;
 		root.setProperty("--accent", s.accent);

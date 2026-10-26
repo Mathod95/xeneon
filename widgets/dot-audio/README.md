@@ -8,7 +8,7 @@ Volume général, mixeur par application, coupure de tous les micros, changement
 
 - Sortie : volume en grands chiffres dot, barre de points, bouton mute, sélecteur de périphérique.
 - Micro : bouton rond avec anneau de niveau en direct ; un tap coupe tous les micros (pas seulement celui par défaut), état MUTED en rouge.
-- Mixeur : un fader vertical en points par application (initiale, valeur, nom, bouton mute).
+- Mixeur : un fader en points par application (initiale, valeur, nom, bouton mute).
 - Lecture en cours : pochette en trame de points, titre, artiste, précédent / lecture / suivant.
 - Sélecteur de périphérique en panneau superposé (sortie et micro).
 - Égaliseur.
@@ -23,7 +23,7 @@ Volume général, mixeur par application, coupure de tous les micros, changement
 
 ## Tailles
 
-- [ ] S · M · L · XL (voir `mockups/06-layouts.png`, sans les mises en page verticales)
+- [ ] S · M · L · XL (voir `mockups/06-layouts.png`)
 
 ## Mocks
 

@@ -66,7 +66,7 @@ Un dossier de widget sans `manifest.json` est une fiche seule : la CI l’ignore
 | L | 1688 × 696 |
 | XL | 2536 × 696 |
 
-**Jamais de vertical** : on ne conçoit ni ne code de mise en page verticale.
+**Jamais de vertical** : uniquement ces quatre tailles, rien d’autre n’est conçu ni codé.
 
   `templates/widget/scripts/sizes.js` pose `data-size` (s/m/l/xl) sur `<html>`, d’après le rapport largeur / hauteur (l’aperçu de l’éditeur iCUE est réduit) ; S et L horizontaux sont séparés par la hauteur.
 - Ne pas nommer une propriété `accentColor`, `textColor` ou `backgroundColor` si sa valeur par défaut doit s’appliquer : iCUE les remplace par le style de page tant que « Style personnalisé » est désactivé.

@@ -10,9 +10,8 @@
 	}
 
 	function render(e) {
-		var d = e ? e.detail : { size: document.documentElement.dataset.size, orientation: document.documentElement.dataset.orientation, width: innerWidth, height: innerHeight };
-		document.getElementById("sizeLabel").textContent =
-			d.size.toUpperCase() + " " + (d.orientation === "h" ? "horizontal" : "vertical") + " · " + d.width + " × " + d.height;
+		var d = e ? e.detail : { size: document.documentElement.dataset.size, width: innerWidth, height: innerHeight };
+		document.getElementById("sizeLabel").textContent = d.size.toUpperCase() + " · " + d.width + " × " + d.height;
 	}
 
 	window.icueEvents = {

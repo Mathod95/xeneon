@@ -47,21 +47,14 @@ html, body { width: 100%; height: 100%; overflow: hidden; background: #080808; u
 	"use strict";
 	var uid = new URLSearchParams(location.search).get("uid") || "";
 	var stage = document.getElementById("stage");
-	var SLOTS = {
-		h: { s: [840, 344], m: [840, 696], l: [1688, 696], xl: [2536, 696] },
-		v: { s: [696, 416], m: [696, 840], l: [696, 1688], xl: [696, 2536] }
-	};
+	var SLOTS = { s: [840, 344], m: [840, 696], l: [1688, 696], xl: [2536, 696] };
 	var PITCH = { xl: 19, l: 13, m: 9, s: 12 };
 	// même détection que widgets/dot-clock/scripts/sizes.js (rapport largeur / hauteur)
 	function classify(w, h) {
 		var r = w / h;
-		if (r >= 2.98) return { size: "xl", o: "h" };
-		if (r >= 2.02) return { size: h >= 489 ? "l" : "s", o: "h" };
-		if (r >= 1.42) return { size: "s", o: "v" };
-		if (r >= 1.0) return { size: "m", o: "h" };
-		if (r >= 0.584) return { size: "m", o: "v" };
-		if (r >= 0.336) return { size: "l", o: "v" };
-		return { size: "xl", o: "v" };
+		if (r >= 2.98) return "xl";
+		if (r >= 2.02) return h >= 489 ? "l" : "s";
+		return "m";
 	}
 	// pictogrammes 7 × 7 points, ceux de la maquette Dot Home
 	var PICS = {
@@ -86,9 +79,9 @@ html, body { width: 100%; height: 100%; overflow: hidden; background: #080808; u
 
 	var modules = [], inst = {};
 	function render() {
-		var c = classify(window.innerWidth || 2536, window.innerHeight || 696), dims = SLOTS[c.o][c.size];
+		var size = classify(window.innerWidth || 2536, window.innerHeight || 696), dims = SLOTS[size];
 		var W = dims[0], H = dims[1], scale = Math.min(window.innerWidth / W, window.innerHeight / H) || 1;
-		stage.className = "stage " + c.size;
+		stage.className = "stage " + size;
 		stage.style.width = W + "px"; stage.style.height = H + "px";
 		stage.style.transform = "translate(" + (window.innerWidth - W * scale) / 2 + "px," + (window.innerHeight - H * scale) / 2 + "px) scale(" + scale + ")";
 		stage.innerHTML = "";
@@ -104,7 +97,7 @@ html, body { width: 100%; height: 100%; overflow: hidden; background: #080808; u
 		modules.forEach(function (m) {
 			var b = el("button", "tile"); b.type = "button";
 			b.setAttribute("aria-label", "Open " + m.name);
-			var p = el("div", "pic"); p.appendChild(pic(m.id, PITCH[c.size])); b.appendChild(p);
+			var p = el("div", "pic"); p.appendChild(pic(m.id, PITCH[size])); b.appendChild(p);
 			var meta = el("div", "meta"); meta.appendChild(el("span", "name", m.name)); b.appendChild(meta);
 			var lv = live(m.id); if (lv) b.appendChild(el("span", "live", lv));
 			b.addEventListener("click", function () { choose(m.id, b); });

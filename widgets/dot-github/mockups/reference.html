@@ -225,7 +225,7 @@ canvas { display: block; }
           <tr class="todo"><td>8</td><td>Statut</td><td>Point couleur d'accent : réussi ou approuvé. Rouge : échec ou changements demandés. Ambre clignotant : en cours. Blanc : review demandée ou non lu.</td></tr>
           <tr class="todo"><td>9</td><td>Hors ligne</td><td>Dernières données connues avec « UPDATED 2 H AGO » en rouge, jamais de valeur inventée. Sans aucune donnée : « NO DATA · CHECK COMPANION ».</td></tr>
           <tr class="todo"><td>10</td><td>Couleurs</td><td>Mêmes réglages que Dot Clock : « Accent color », « Lit dot color », « Unlit dot color », « Label color ». Fond <code>#080808</code>. Rouge d'échec <code>#ED403B</code>, ambre <code>#F5B942</code>.</td></tr>
-          <tr class="todo"><td>11</td><td>Tailles</td><td><b>XL</b> : graphe 12 mois et statistiques à gauche, onglets à droite.<br><b>L</b> : graphe 8 mois et statistiques à gauche, onglets à droite.<br><b>M</b> : trois compteurs en gros points en haut (PRS, INBOX, CI FAILING), graphe 6 mois en bas ; toucher un compteur ouvre sa liste, avec BACK pour revenir.<br><b>S</b> : graphe 6 mois et série à gauche, compteurs à droite.<br>Vertical : à concevoir.</td></tr>
+          <tr class="todo"><td>11</td><td>Tailles</td><td><b>XL</b> : graphe 12 mois et statistiques à gauche, onglets à droite.<br><b>L</b> : graphe 8 mois et statistiques à gauche, onglets à droite.<br><b>M</b> : trois compteurs en gros points en haut (PRS, INBOX, CI FAILING), graphe 6 mois en bas ; toucher un compteur ouvre sa liste, avec BACK pour revenir.<br><b>S</b> : graphe 6 mois et série à gauche, compteurs à droite.</td></tr>
           <tr class="todo"><td>12</td><td>Compagnon</td><td>Oui : sans lui, pas de token ni de données.</td></tr>
         </tbody>
       </table>
@@ -290,7 +290,7 @@ canvas { display: block; }
     var fail = s.scen === "fail";
     return {
       prs: [
-        { st: "info", t: "Dot Clock: vertical layouts", m: "XENEON #14 · REVIEW REQUESTED", r: "2 H", url: "github.com/" + u + "/xeneon/pull/14" },
+        { st: "info", t: "Dot Clock: S and M layouts", m: "XENEON #14 · REVIEW REQUESTED", r: "2 H", url: "github.com/" + u + "/xeneon/pull/14" },
         { st: "ok", t: "Site: reference mockups index", m: "XENEON #13 · APPROVED", r: "1 D", url: "github.com/" + u + "/xeneon/pull/13" },
         { st: fail ? "fail" : "ok", t: "traefik: bump to v3.5", m: "HOMELAB #41 · " + (fail ? "CI FAILED" : "CHECKS PASSED"), r: "3 D", url: "github.com/" + u + "/homelab/pull/41" },
         { st: "fail", t: "plex: move transcode to tmpfs", m: "HOMELAB #39 · CHANGES REQUESTED", r: "4 D", url: "github.com/" + u + "/homelab/pull/39" },
