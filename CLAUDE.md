@@ -20,6 +20,7 @@ La liste des widgets et leur description est dans `README.md`. Chaque widget a s
 - **Libellé « ● DOT XXXX » toujours au même endroit et à la même taille**, dans tous les widgets, modules et maquettes, actuels et futurs : point de 10 px en couleur d’accent à 56 px du bord gauche et 51 px du haut, texte Fira Code 18 px (interligne 24 px, capitales espacées .2em) à 80 px du bord gauche et 44 px du haut. Rien d’autre dans ce coin (pochette, image, compteur…). Repère : Dot Clock. **Pour l’instant appliqué en XL seulement** ; les autres tailles seront alignées plus tard.
 - **Le code doit toujours être iso aux maquettes de référence** (artefacts `widgets/<slug>/mockups/reference.html`) : mêmes tailles d’emplacement, mêmes positions, mêmes valeurs CSS. Reprendre leur CSS et leur logique de rendu plutôt que de réinventer une mise en page. Toute différence voulue est signalée.
 - **Pour l’instant, on ne travaille que le format XL** (maquettes, code, corrections). Les tailles S, M et L existantes restent telles quelles et seront reprises plus tard.
+- **Un module par service** : pas de module fourre-tout (Dot Homelab a été découpé en Dot Radarr, Dot Sonarr, Dot Seerr…). Chaque service auto-hébergé a son propre `dot-xxx`.
 - Les mocks fournis peuvent ne pas être au style dot : ce sont des références de fonctionnalités, le style est toujours à refaire en dot-matrix.
 
 ## Organisation
@@ -93,7 +94,7 @@ Le compagnon sert l’interface et la configuration de Dot Hub (voir « Architec
 | network | Dot Network | ping ICMP, débit, speedtest |
 | slack | Dot Slack | API Web de Slack (jeton d’utilisateur `xoxp-…`) et Socket Mode (`xapp-…`) : non lus, mentions, statut, pause des notifications |
 | gmail | Dot Gmail | IMAP Gmail (mot de passe d’application) : non lus par catégorie, derniers messages, lu / archiver |
-| homelab | Dot Homelab, Dot Plex, Dot Seerr, Dot qBittorrent, Dot Proxmox, Dot Portainer, Dot ArgoCD | Radarr, Sonarr, Seerr, Plex, qBittorrent, Proxmox VE, Portainer, Argo CD… (un sous-module par application, jetons et clés d’API chiffrés sur le PC) |
+| homelab | Dot Plex, Dot Radarr, Dot Sonarr, Dot Seerr, Dot qBittorrent, Dot Proxmox, Dot Portainer, Dot ArgoCD | un sous-module par application auto-hébergée (Plex, Radarr, Sonarr, Seerr, qBittorrent, Proxmox VE, Portainer, Argo CD), jetons et clés d’API chiffrés sur le PC |
 | kubernetes | Dot Kubernetes | kubeconfig du PC, API du cluster (nœuds, pods, déploiements) |
 | ics | Dot Calendar (repli) | récupérer les ICS si le serveur bloque l’accès direct |
 | ia | Dot IA | limites d’utilisation Claude de plusieurs comptes (session 5 h, hebdo) ; source à vérifier (pas d’API publique documentée) |

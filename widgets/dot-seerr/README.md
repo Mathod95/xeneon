@@ -7,4 +7,4 @@ Demandes de films et de séries de Seerr : en attente, approuvées et disponible
 ## Données
 
 - API de Seerr (`/api/v1/request`) avec la clé d’API (en-tête `X-Api-Key`), gardée chiffrée sur le PC.
-- Actions : approuver ou refuser une demande (`/api/v1/request/<id>/approve`, `/decline`). Recoupe en partie Dot Homelab (demandes en attente).
+- Actions : approuver ou refuser une demande (`/api/v1/request/<id>/approve`, `/decline`).

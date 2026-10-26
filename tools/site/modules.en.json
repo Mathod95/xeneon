@@ -17,7 +17,6 @@
   "dot-network": "Continuous ping to chosen servers with latency and packet loss history, live upload and download speed, and a speed test started with a tap.",
   "dot-gmail": "Gmail unread mail by category and latest messages (sender, subject), with open, mark as read and archive, on one or more accounts.",
   "dot-slack": "Slack mentions and direct messages, unread channels and latest messages, status and notification pause with one tap.",
-  "dot-homelab": "Dashboard for self-hosted services: downloads in progress and upcoming releases from Radarr and Sonarr, pending Seerr requests, online/offline state of other apps.",
   "dot-notes": "Checklists and free notes typed right on the screen, one tab per list, kept from one session to the next.",
   "dot-plex": "What's playing on your Plex server (who watches what, progress, quality), recently added and On Deck.",
   "dot-ia": "Claude usage limits of two accounts side by side: 5-hour session and weekly limit, with reset time.",
@@ -29,5 +28,7 @@
   "dot-proxmox": "Proxmox VE nodes and guests: CPU, memory and storage, VMs and containers running or stopped, start and stop with a tap.",
   "dot-kubernetes": "Kubernetes cluster: ready nodes, pods by phase, restarts and incomplete deployments, per namespace.",
   "dot-qbittorrent": "qBittorrent downloads: live upload and download speed, active torrents with progress, pause, resume and alternative speed limit.",
-  "dot-portainer": "Docker containers through Portainer: state, CPU and memory, stacks, start, stop and restart with a tap."
+  "dot-portainer": "Docker containers through Portainer: state, CPU and memory, stacks, start, stop and restart with a tap.",
+  "dot-radarr": "Radarr movies: downloads in progress with progress, upcoming releases and missing movies, search started with a tap.",
+  "dot-sonarr": "Sonarr series: episodes downloading, upcoming episodes and missing episodes, search started with a tap."
 }
