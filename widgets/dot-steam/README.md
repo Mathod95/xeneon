@@ -1,6 +1,6 @@
 # Dot Steam
 
-**Statut :** 🟡 en cours (v0.2.0 à essayer, XL)
+**Statut :** 🟡 en cours (v0.2.0)
 
 Jeux Steam sur l’Edge : jusqu’à 8 jeux lancés au toucher, dernier jeu joué mis en avant, jeu en cours, téléchargements (ou ton profil et ton statut) et amis en jeu. Module de Dot Hub, servi par Dot Companion. Anciennement Dot Launcher.
 

@@ -89,10 +89,10 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outlin
 .card { display: grid; grid-template-rows: auto auto 1fr auto; gap: 14px; padding: 22px; min-width: 0; border: 1px solid var(--line); border-radius: 18px; background: var(--panel); }
 .card.has { border-color: #262626; }
 .card.has:hover { border-color: var(--accent); }
-.card .row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.card canvas { display: block; width: 70px; height: 70px; }
+.card .row { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-width: 0; }
+.card canvas { display: block; flex: none; width: 70px; height: 70px; }
 .status { display: inline-flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--label); white-space: nowrap; }
-.status::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--c, var(--idea)); }
+.status::before { content: ""; flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--c, var(--idea)); }
 .card h3 { margin: 0; font-size: 21px; font-weight: 700; letter-spacing: .02em; text-wrap: balance; }
 .card p { margin: 0; color: var(--label); font-size: 15px; min-width: 0; }
 .foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 10px; padding-top: 14px; border-top: 1px solid var(--line); font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; }

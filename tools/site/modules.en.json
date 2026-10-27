@@ -4,7 +4,7 @@
   "dot-system-monitor": "FPS of the running game and 4 live hardware sensors (CPU, GPU), with a history you can browse by touch.",
   "dot-audio": "Master volume, mute every mic with one tap, per-app mixer, equalizer, audio device switching and now playing.",
   "dot-calendar": "Dot-matrix clock, month, week and agenda views, and a countdown to the next event with a JOIN button for Meet, Zoom and Teams. Google, Outlook and iCloud calendars through private ICS links, offline public holidays. Light and dark themes, any accent color, all 8 Edge sizes.",
-  "dot-steam": "Steam games: up to 8 dot-matrix games launched by touch (hold, tap or double tap), last played game in the spotlight, downloads in progress and friends in game.",
+  "dot-steam": "Steam games: up to 8 dot-matrix games launched by touch (hold, tap or double tap), last played game in the spotlight, downloads in progress (or your profile and status) and friends in game.",
   "dot-spotify": "Spotify player.",
   "dot-clock": "Big dot-matrix clock: hours and minutes in large dots, seconds and colon in the accent color, 12 h or 24 h, bold or thin dot font. Free date format, any time zone (city, abbreviation or offset), custom footer text, adjustable colors. One layout per size.",
   "dot-bambulab": "Bambu Lab 3D printer monitor: progress, temperatures, AMS, pause and stop.",
