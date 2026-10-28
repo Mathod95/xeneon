@@ -42,6 +42,17 @@ legend { padding: 0; margin-bottom: 4px; }
 .meta { font: 12px var(--mono); color: var(--muted); word-break: break-all; }
 .empty { color: var(--label); }
 a { color: var(--accent); }
+/* réglages d'un module dans la carte d'aperçu : au style des maquettes de référence */
+.settings { display: flex; flex-wrap: wrap; gap: 12px 28px; align-items: center; padding: 14px 16px; border: 1px solid var(--line); border-radius: 10px; background: #0a0a0a; }
+.settings label { display: inline-flex; align-items: center; gap: 10px; font: 12px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); cursor: pointer; }
+.settings input[type=color] { width: 36px; height: 28px; }
+.settings input[type=checkbox], .settings input[type=radio] { width: 18px; height: 18px; accent-color: var(--accent); cursor: pointer; }
+.settings select, .settings input[type=text] { font-size: 13px; padding: 6px 8px; background: #141414; }
+.settings input[type=text] { width: 16em; max-width: 100%; letter-spacing: .06em; }
+.settings .grp { display: inline-flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.settings .preset { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 6px; font-size: 11px; letter-spacing: .1em; }
+.settings .preset i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+.settings .grp > span { font: 12px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--lit); }
 /* aperçu : l'écran de la XENEON EDGE avec le Dot Hub choisi, en direct */
 .chips { display: flex; flex-wrap: wrap; gap: 8px; }
 .chips button[aria-pressed="true"] { background: var(--lit); border-color: var(--lit); color: var(--bg); }
@@ -67,7 +78,7 @@ a { color: var(--accent); }
 	"use strict";
 	var MODULES = [], SCHEMAS = {}, saveTimers = {}, THEME_KEYS = [];
 	// aperçu : Dot Hub affiché, sa taille dans l'aperçu, son cadre ; état de chaque Dot Hub et couleurs communes
-	var INST = {}, THEME = null, PREVIEW = { size: "xl", frames: [] };
+	var INST = {}, THEME = null, PREVIEW = { size: "xl", cards: [] };
 	var SLOTS = { xl: [2536, 696], l: [1688, 696], m: [840, 696], s: [840, 344] };
 	var THEME_LABELS = { dotAccentColor: "Accent color", litDotColor: "Lit dot color", unlitDotColor: "Unlit dot color", labelColor: "Label color" };
 	function lit(v) { try { return Function("return (" + v + ")")(); } catch (e) { return v; } }
@@ -195,13 +206,13 @@ a { color: var(--accent); }
 
 	// carte « Couleurs » : communes à tous les modules et à toutes les instances
 	function themeCard(t) {
-		var c = el("section", "card"), head = el("header");
+		var c = el("section", "card theme-card"), head = el("header");
 		head.appendChild(el("h2", "lbl", "Couleurs · tous les modules"));
 		c.appendChild(head);
 		var theme = Object.assign({}, t.theme), grid = el("div", "grid");
 		THEME_KEYS.forEach(function (k) {
-			var f = el("label", "field inline"), w = el("input"); w.type = "color"; w.value = String(theme[k]).slice(0, 7);
-			w.addEventListener("input", function () { theme[k] = w.value.toUpperCase(); THEME = theme; pushPreview(); saveTheme(theme); });
+			var f = el("label", "field inline"), w = el("input"); w.type = "color"; w.value = String(theme[k]).slice(0, 7); w.setAttribute("data-key", k);
+			w.addEventListener("input", function () { THEME[k] = w.value.toUpperCase(); pushPreview(); saveTheme(THEME); });
 			f.appendChild(w); f.appendChild(el("span", "", THEME_LABELS[k] || k)); grid.appendChild(f);
 		});
 		c.appendChild(grid);
@@ -222,7 +233,8 @@ a { color: var(--accent); }
 
 	// ---------------------------------------------------------------- aperçu : l'écran de l'Edge
 	// Carte « Aperçu · XENEON EDGE » : l'accueil de Dot Hub (« DOT HUB », une carte vide « + »).
-	// Toucher le « + » ajoute en dessous la même carte, avec un écran vide (« ● DOT » seulement).
+	// Toucher le « + » ajoute en dessous la même carte, avec un écran vide (« ● DOT »). Toucher « DOT » propose les
+	// modules ; le module choisi tourne en direct dans la carte, avec ses réglages en dessous, au style des maquettes.
 	function previewCard(blank) {
 		var c = el("section", "card preview"), head = el("header");
 		head.appendChild(el("h2", "lbl", "Aperçu · XENEON EDGE"));
@@ -234,27 +246,99 @@ a { color: var(--accent); }
 		var fit = function () { nat.style.transform = "scale(" + (screen.clientWidth / 2560) + ")"; };
 		if (window.ResizeObserver) new ResizeObserver(fit).observe(screen); else window.addEventListener("resize", fit);
 		setTimeout(fit, 0);
-		var f = el("iframe"); f.title = blank ? "Aperçu : écran vide" : "Aperçu de Dot Hub";
-		// la maquette de référence du compagnon remplit le cadre elle-même (pas de compagnon derrière)
-		if (window.__dotPreviewFrame) window.__dotPreviewFrame(f, "", { module: null, name: "" }, { blank: !!blank });
-		else f.src = "/home?preview=1" + (blank ? "&blank=1" : "");
-		f.addEventListener("load", function () { pushPreview(f); });
-		PREVIEW.frames.push(f); slot.appendChild(f);
+		var card = { el: c, slot: slot, frame: null, module: null, settings: {}, panel: null, blank: !!blank };
+		PREVIEW.cards.push(card);
+		frameFor(card);
 		return c;
 	}
-	// couleurs communes : envoyées tout de suite aux aperçus
+	function frameFor(card) {
+		card.slot.innerHTML = "";
+		var f = el("iframe"); f.title = card.module ? "Aperçu du module" : "Aperçu de Dot Hub";
+		var inst = { module: card.module, name: "" };
+		// la maquette de référence du compagnon remplit le cadre elle-même (pas de compagnon derrière)
+		if (window.__dotPreviewFrame) window.__dotPreviewFrame(f, "", inst, { blank: card.blank && !card.module });
+		else f.src = (card.module ? "/m/" + card.module + "/" : "/home") + "?preview=1" + (card.blank && !card.module ? "&blank=1" : "");
+		f.addEventListener("load", function () { pushPreview(card); });
+		card.frame = f; card.slot.appendChild(f);
+	}
+	// réglages et couleurs communes : envoyés tout de suite aux aperçus
 	function pushPreview(only) {
-		PREVIEW.frames.forEach(function (f) {
-			if ((only && f !== only) || !f.contentWindow) return;
-			f.contentWindow.postMessage({ type: "dot-preview", settings: {}, theme: THEME }, "*");
+		PREVIEW.cards.forEach(function (card) {
+			if ((only && card !== only) || !card.frame || !card.frame.contentWindow) return;
+			card.frame.contentWindow.postMessage({ type: "dot-preview", settings: card.settings, theme: THEME }, "*");
 		});
 	}
-	// « + » touché dans un aperçu : une carte de plus, sous la dernière carte d'aperçu
+	// réglages d'un module au style des maquettes de référence : générés depuis ses balises x-icue-property
+	// (2 ou 3 choix : boutons radio ; plus : liste ; interrupteur : case ; texte ; couleur = couleur commune)
+	function panelFor(card) {
+		if (card.panel) card.panel.remove();
+		var box = el("div", "settings"); card.panel = box; card.el.appendChild(box);
+		schema(card.module).then(function (sc) {
+			var keys = [];
+			sc.groups.forEach(function (g) { g.keys.forEach(function (k) { keys.push(k); }); });
+			var val = function (k) { var p = sc.props[k]; if (THEME_KEYS.indexOf(k) >= 0) return THEME[k]; return k in card.settings ? card.settings[k] : p.def; };
+			function draw() {
+				box.innerHTML = "";
+				keys.forEach(function (k) {
+					var p = sc.props[k], v = val(k);
+					// « customX » ne s'affiche que si le choix lié vaut « custom » (ex. customDateFormat ↔ dateFormat)
+					var rel = /^custom[A-Z]/.test(k) ? k.charAt(6).toLowerCase() + k.slice(7) : null;
+					if (rel && sc.props[rel] && val(rel) !== "custom") return;
+					var set = function (nv) {
+						if (THEME_KEYS.indexOf(k) >= 0) { THEME[k] = nv; saveTheme(THEME); syncThemeCard(); }
+						else card.settings[k] = nv;
+						pushPreview(); if (rel === null && sc.props["custom" + k.charAt(0).toUpperCase() + k.slice(1)]) draw();
+					};
+					if (p.type === "combobox" && p.values && p.values.length <= 3) {
+						var g = el("div", "grp"); g.setAttribute("role", "radiogroup"); g.setAttribute("aria-label", p.label);
+						g.appendChild(el("span", "", p.label));
+						var name = "r" + Math.random().toString(36).slice(2);
+						p.values.forEach(function (o) {
+							var l = el("label"), r = el("input"); r.type = "radio"; r.name = name; r.value = o.key; r.checked = String(v) === String(o.key);
+							r.addEventListener("change", function () { if (r.checked) set(o.key); });
+							l.appendChild(r); l.appendChild(document.createTextNode(" " + o.value)); g.appendChild(l);
+						});
+						box.appendChild(g); return;
+					}
+					var lab = el("label"), w;
+					if (p.type === "switch") { w = el("input"); w.type = "checkbox"; w.checked = v === true || v === "true"; w.addEventListener("change", function () { set(w.checked); }); lab.appendChild(w); lab.appendChild(document.createTextNode(" " + p.label)); box.appendChild(lab); return; }
+					lab.appendChild(document.createTextNode(p.label + " "));
+					if (p.type === "color") { w = el("input"); w.type = "color"; w.value = String(v || "#000000").slice(0, 7); w.addEventListener("input", function () { set(w.value.toUpperCase()); }); }
+					else if (p.type === "combobox" && p.values) {
+						w = el("select"); p.values.forEach(function (o) { var op = el("option", "", o.value); op.value = o.key; w.appendChild(op); }); w.value = v;
+						w.addEventListener("change", function () { set(w.value); });
+					} else { w = el("input"); w.type = "text"; w.value = v == null ? "" : v; w.spellcheck = false; w.addEventListener("input", function () { set(w.value); }); }
+					lab.appendChild(w); box.appendChild(lab);
+					// à côté de l'accent : les couleurs proposées dans les maquettes
+					if (k === "dotAccentColor") [["#10B981", "Émeraude"], ["#ED403B", "Rouge A"]].forEach(function (x) {
+						var b = el("button", "preset"), i = el("i"); i.style.background = x[0]; b.type = "button";
+						b.appendChild(i); b.appendChild(document.createTextNode(x[1]));
+						b.addEventListener("click", function () { set(x[0]); draw(); });
+						box.appendChild(b);
+					});
+				});
+			}
+			draw();
+		});
+	}
+	function syncThemeCard() {
+		document.querySelectorAll(".theme-card input[type=color]").forEach(function (w) { var k = w.getAttribute("data-key"); if (k && THEME[k]) w.value = String(THEME[k]).slice(0, 7); });
+	}
 	window.addEventListener("message", function (e) {
 		var d = e.data || {};
-		if (d.type !== "dot-add") return;
-		var cards = document.querySelectorAll(".card.preview"), lastCard = cards[cards.length - 1];
-		if (lastCard) lastCard.insertAdjacentElement("afterend", previewCard(true));
+		// « + » touché dans un aperçu : une carte de plus, sous la dernière carte d'aperçu
+		if (d.type === "dot-add") {
+			var cards = document.querySelectorAll(".card.preview"), lastCard = cards[cards.length - 1];
+			if (lastCard) lastCard.insertAdjacentElement("afterend", previewCard(true));
+		}
+		// module choisi dans un écran vide : il tourne dans la carte, ses réglages s'affichent dessous
+		if (d.type === "dot-pick" && d.module) {
+			PREVIEW.cards.forEach(function (card) {
+				if (!card.frame || card.frame.contentWindow !== e.source) return;
+				card.module = d.module; card.settings = {};
+				frameFor(card); panelFor(card);
+			});
+		}
 	});
 
 	function load() {
@@ -269,7 +353,7 @@ a { color: var(--accent); }
 				THEME = res[2].theme;
 				keys.sort(function (a, b) { return (inst[b].last_seen || 0) - (inst[a].last_seen || 0); });
 				INST = {}; keys.forEach(function (k) { INST[k] = JSON.parse(JSON.stringify(inst[k])); });
-				PREVIEW.frames = [];
+				PREVIEW.cards = [];
 				list.appendChild(previewCard(false));
 				if (!keys.length) {
 					list.appendChild(el("p", "empty", "Aucun Dot Hub pour l'instant. Pose le widget Dot Hub dans iCUE sur l'Edge : il apparaîtra ici."));

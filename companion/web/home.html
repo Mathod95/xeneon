@@ -36,6 +36,8 @@ html, body { width: 100%; height: 100%; overflow: hidden; background: #080808; u
 .tile .pic canvas { display: block; }
 .tile .meta { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; min-width: 0; }
 .tile .name { font-size: 24px; letter-spacing: .12em; text-transform: uppercase; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.head .pickbtn { margin: -18px -14px; padding: 18px 14px; border: 0; border-radius: 12px; background: transparent; cursor: pointer; }
+.head .pickbtn:active, .head .pickbtn[aria-expanded="true"] { color: var(--lit); }
 .tile.add { display: grid; place-items: center; grid-template-rows: 1fr; border-style: dashed; border-color: #2a2a2a; color: var(--label); }
 .tile.add .plus { font-size: 72px; line-height: 1; font-weight: 400; }
 .tile .live { position: absolute; top: 18px; right: 22px; font-size: 18px; letter-spacing: .14em; color: var(--accent); }
@@ -89,7 +91,7 @@ html, body { width: 100%; height: 100%; overflow: hidden; background: #080808; u
 		return "";
 	}
 
-	var modules = [], inst = {};
+	var modules = [], inst = {}, picking = false;
 	function render() {
 		var size = classify(window.innerWidth || 2536, window.innerHeight || 696), dims = SLOTS[size];
 		var W = dims[0], H = dims[1], scale = Math.min(window.innerWidth / W, window.innerHeight / H) || 1;
@@ -100,16 +102,21 @@ html, body { width: 100%; height: 100%; overflow: hidden; background: #080808; u
 
 		var head = el("div", "head");
 		head.appendChild(el("span", "dot"));
-		// aperçu vide (carte ajoutée par le « + ») : « ● DOT » seulement
-		head.appendChild(el("p", "lbl", blank ? "DOT" : "DOT HUB" + (inst.name ? " · " + inst.name : "")));
+		// aperçu vide (carte ajoutée par le « + ») : « ● DOT » seulement ; le toucher affiche les modules à choisir
+		if (blank) {
+			var pick = el("button", "lbl pickbtn", picking ? "DOT ▴" : "DOT ▾"); pick.type = "button";
+			pick.setAttribute("aria-label", "Choose a module"); pick.setAttribute("aria-expanded", picking ? "true" : "false");
+			pick.addEventListener("click", function () { picking = !picking; render(); });
+			head.appendChild(pick);
+		} else head.appendChild(el("p", "lbl", "DOT HUB" + (inst.name ? " · " + inst.name : "")));
 		head.appendChild(el("span", "grow"));
 		if (!preview) head.appendChild(settingsButton()); // dans la page de réglages, SETTINGS ne sert à rien
 		stage.appendChild(head);
-		if (blank) return;
+		if (blank && !picking) return;
 
 		var grid = el("div", "tiles");
 		// aperçu de la page de réglages : pas de module, une carte vide « + » pour en ajouter un (proposition)
-		if (preview) {
+		if (preview && !blank) {
 			var add = el("button", "tile add"); add.type = "button"; add.setAttribute("aria-label", "Add a module");
 			add.appendChild(el("span", "plus", "+"));
 			add.addEventListener("click", function () { if (window.parent !== window) window.parent.postMessage({ type: "dot-add" }, "*"); });
@@ -122,7 +129,11 @@ html, body { width: 100%; height: 100%; overflow: hidden; background: #080808; u
 			var p = el("div", "pic"); p.appendChild(pic(m.id, PITCH[size])); b.appendChild(p);
 			var meta = el("div", "meta"); meta.appendChild(el("span", "name", m.name)); b.appendChild(meta);
 			var lv = live(m.id); if (lv) b.appendChild(el("span", "live", lv));
-			b.addEventListener("click", function () { choose(m.id, b); });
+			b.addEventListener("click", function () {
+				// aperçu vide : le module choisi s'affiche dans la carte de la page de réglages
+				if (blank) { if (window.parent !== window) window.parent.postMessage({ type: "dot-pick", module: m.id }, "*"); return; }
+				choose(m.id, b);
+			});
 			grid.appendChild(b);
 		});
 		stage.appendChild(grid);
