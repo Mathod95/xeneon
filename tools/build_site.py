@@ -10,7 +10,10 @@
 
 Option --fragment FICHIER : écrit seulement la page d'accueil, sans en-tête HTML,
 avec des liens absolus vers le site en ligne (pour l'aperçu en artefact).
-Option --releases-fragment FICHIER : pareil pour Dot Release.
+Option --releases-fragment FICHIER : pareil pour Dot Release ; --companion-fragment FICHIER pour
+la page Dot Companion ; --companion-mockup DOSSIER pour la maquette de Dot Companion et ses fichiers.
+- site/companion/index.html : la page Dot Companion (tools/site/companion.html) ;
+- site/dot-companion/ : la maquette de Dot Companion (companion/mockups/reference.html).
 """
 import argparse
 import base64
@@ -28,6 +31,9 @@ RELEASES_DATA = ROOT / "tools" / "site" / "releases.json"
 # artefacts claude.ai : Dot Page et Dot Release se répondent par leurs boutons
 ARTIFACT_PAGE = "https://claude.ai/artifact/Fvc7r4TmmuaMhB9BPvc1Wo"
 ARTIFACT_RELEASE = "https://claude.ai/artifact/UZKaJbjN2o7HXNDCtsuyBd"
+ARTIFACT_COMPANION = "https://claude.ai/artifact/DAno1HCPU7s9KcxcQxu5eQ"
+ARTIFACT_COMPANION_MOCKUP = "https://claude.ai/artifact/6G1rtfu8abJ7oiv7jDQHPp"
+COMPANION_TEMPLATE = ROOT / "tools" / "site" / "companion.html"
 BLANK = ' target="_blank" rel="noopener"'
 
 
@@ -111,11 +117,43 @@ def previews(slugs):
     return out
 
 
-def releases(home_url, target, title):
+# maquette de Dot Companion : companion/mockups/reference.html (base = racine du dépôt), avec les fichiers qu'elle charge
+COMPANION_MOCKUP = ROOT / "companion" / "mockups" / "reference.html"
+COMPANION_FILES = [
+    "companion/web/settings.html",
+    "widgets/dot-clock/index.html",
+    "widgets/dot-steam/index.html",
+    "widgets/dot-clock/resources/fonts/FiraCode-Regular.woff2",
+    "widgets/dot-clock/resources/fonts/FiraCode-Medium.woff2",
+]
+
+
+def companion_mockup(out):
+    out.mkdir(parents=True, exist_ok=True)
+    html = COMPANION_MOCKUP.read_text(encoding="utf-8")
+    html = html.replace('<base href="../../">\n', "").replace('<base href="../../">', "")
+    (out / "index.html").write_text(html, encoding="utf-8")
+    for f in COMPANION_FILES:
+        dst = out / f
+        dst.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy(ROOT / f, dst)
+
+
+def links(page, urls, target):
+    """Boutons qui relient les pages : sur le site, liens relatifs ; dans les artefacts, adresses des artefacts."""
+    for k, u in urls.items():
+        page = page.replace("__" + k + "_TARGET__", target).replace("__" + k + "__", u)
+    return page
+
+
+def releases(urls, target, title):
     data = json.dumps(json.loads(RELEASES_DATA.read_text(encoding="utf-8")), ensure_ascii=False).replace("</", "<\\/")
     page = RELEASES_TEMPLATE.read_text(encoding="utf-8")
-    return (page.replace("__DATA__", data).replace("__HOME_TARGET__", target)
-            .replace("__HOME__", home_url).replace("__TITLE__", title))
+    return links(page.replace("__DATA__", data).replace("__TITLE__", title), urls, target)
+
+
+def companion(urls, target, title):
+    return links(COMPANION_TEMPLATE.read_text(encoding="utf-8").replace("__TITLE__", title), urls, target)
 
 
 def document(full):
@@ -128,32 +166,41 @@ def document(full):
     )
 
 
-def home(base, title, shots, rel_url="releases/", rel_target=""):
+def home(base, title, shots, urls=None, rel_target=""):
+    urls = urls or {"RELEASES": "releases/", "COMPANION": "companion/"}
     data = json.dumps(widgets(), ensure_ascii=False).replace("</", "<\\/")
     prev = json.dumps(shots).replace("</", "<\\/")
     page = TEMPLATE.read_text(encoding="utf-8")
-    return (page.replace("__DATA__", data).replace("__PREVIEWS__", prev)
-            .replace("__BASE__", base).replace("__TITLE__", title)
-            .replace("__RELEASES_TARGET__", rel_target).replace("__RELEASES__", rel_url))
+    page = (page.replace("__DATA__", data).replace("__PREVIEWS__", prev)
+            .replace("__BASE__", base).replace("__TITLE__", title))
+    return links(page, urls, rel_target)
 
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--fragment")
     ap.add_argument("--releases-fragment")
+    ap.add_argument("--companion-fragment")
+    ap.add_argument("--companion-mockup", help="dossier : la maquette de Dot Companion et ses fichiers, pour l'artefact")
     args = ap.parse_args()
 
+    # artefacts : les boutons mènent aux autres artefacts
+    art = {"HOME": ARTIFACT_PAGE, "RELEASES": ARTIFACT_RELEASE, "COMPANION": ARTIFACT_COMPANION, "MOCKUP": ARTIFACT_COMPANION_MOCKUP}
     if args.releases_fragment:
-        pathlib.Path(args.releases_fragment).write_text(releases(ARTIFACT_PAGE, BLANK, "Dot Release"), encoding="utf-8")
-        if not args.fragment:
-            return
+        pathlib.Path(args.releases_fragment).write_text(releases(art, BLANK, "Dot Release"), encoding="utf-8")
+    if args.companion_fragment:
+        pathlib.Path(args.companion_fragment).write_text(companion(art, BLANK, "Dot Companion"), encoding="utf-8")
+    if args.companion_mockup:
+        companion_mockup(pathlib.Path(args.companion_mockup))
+    if (args.releases_fragment or args.companion_fragment or args.companion_mockup) and not args.fragment:
+        return
 
     slugs = [w["slug"] for w in widgets() if w["mockup"]]
     shots = previews(slugs)
 
     if args.fragment:
         uris = {k: "data:image/jpeg;base64," + base64.b64encode(v).decode() for k, v in shots.items()}
-        pathlib.Path(args.fragment).write_text(home(LIVE, "Dot Page", uris, ARTIFACT_RELEASE, BLANK), encoding="utf-8")
+        pathlib.Path(args.fragment).write_text(home(LIVE, "Dot Page", uris, art, BLANK), encoding="utf-8")
         return
 
     if SITE.exists():
@@ -188,10 +235,15 @@ def main():
             (SITE / slug / "preview.jpg").write_bytes(shots[slug])
         count += 1
 
+    companion_mockup(SITE / "dot-companion")
+    count += 1
     full = home("", "Dot Hub · Mathod", {k: k + "/preview.jpg" for k in shots})
     (SITE / "index.html").write_text(document(full), encoding="utf-8")
+    sub = {"HOME": "../", "RELEASES": "../releases/", "COMPANION": "../companion/", "MOCKUP": "../dot-companion/"}
     (SITE / "releases").mkdir()
-    (SITE / "releases" / "index.html").write_text(document(releases("../", "", "Releases · Dot Hub")), encoding="utf-8")
+    (SITE / "releases" / "index.html").write_text(document(releases(sub, "", "Releases · Dot Hub")), encoding="utf-8")
+    (SITE / "companion").mkdir()
+    (SITE / "companion" / "index.html").write_text(document(companion(sub, "", "Dot Companion · Dot Hub")), encoding="utf-8")
     print(f"{len(widgets())} widget(s), {count} maquette(s) -> {SITE}")
 
 

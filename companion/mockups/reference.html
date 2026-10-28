@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Maquette de référence de Dot Companion. Elle charge les vraies pages du compagnon (companion/web/) et les pages des modules (widgets/dot-xxx/index.html) : la base pointe sur la racine du dépôt. -->
+<base href="../../">
+<style>body { margin: 0; }</style>
+</head>
+<body>
+<title>Companion Mockup</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout : maquette de référence (la vraie page de réglages dans une fenêtre de navigateur, la fenêtre du compagnon, la zone de notification proposée), puis tableau des choix. Un seul thème sombre, fond en points de Dot Page. */
+:root {
+  --page: #080808;
+  --panel: #0a0a0a;
+  --line: #262626;
+  --text: #e6e6e6;
+  --muted: #8c8c8c;
+  --brand: #10b981;
+  --mono: "IBM Plex Mono", "Cascadia Mono", Consolas, monospace;
+  --sans: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { background: var(--page); color: var(--text); }
+/* fond en points, le même que Dot Page */
+body { background-image: radial-gradient(circle, #161616 1.2px, transparent 1.6px); background-size: 22px 22px; }
+body { font-family: var(--sans); font-size: 15px; line-height: 1.55; padding-block: 40px 72px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.wrap { max-width: 1480px; margin: 0 auto; display: grid; gap: 40px; }
+header { display: grid; gap: 10px; }
+.eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); display: flex; align-items: center; gap: 10px; }
+.eyebrow::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--brand); }
+h1 { font-family: var(--mono); font-weight: 500; font-size: clamp(28px, 4vw, 44px); line-height: 1.1; margin: 0; letter-spacing: -.01em; }
+.lede { color: var(--muted); max-width: 76ch; margin: 0; }
+figure { margin: 0; display: grid; gap: 12px; min-width: 0; }
+.tag { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.tag b { color: var(--text); font-weight: 500; font-size: 14px; }
+figcaption { color: var(--muted); font-size: 14px; }
+code { font-family: var(--mono); font-size: 13px; color: var(--text); }
+
+/* onglets des vues */
+.views { display: flex; flex-wrap: wrap; gap: 8px; }
+.view { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; padding: 6px 10px; border-radius: 6px; border: 1px solid var(--line); background: transparent; color: var(--text); cursor: pointer; }
+.view[aria-pressed="true"] { background: var(--text); color: #0a0a0a; border-color: var(--text); }
+.view:focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; }
+
+/* fenêtre de navigateur (Windows) */
+.win { border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: #0b0b0b; box-shadow: 0 30px 60px -30px #000; }
+.bar { display: flex; align-items: center; gap: 12px; height: 40px; padding: 0 12px; background: #161616; border-bottom: 1px solid var(--line); font-family: var(--mono); font-size: 12px; color: var(--muted); }
+.bar .url { flex: 1; min-width: 0; padding: 5px 12px; border-radius: 999px; background: #0b0b0b; border: 1px solid #222; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bar .url::before { content: "●"; color: var(--brand); margin-right: 8px; font-size: 9px; vertical-align: 1px; }
+.bar .ctl { letter-spacing: .4em; color: #5a5a5a; }
+.win iframe { display: block; width: 100%; height: 860px; border: 0; background: #0b0b0b; }
+.toast { min-height: 1.4em; margin: 0; font-family: var(--mono); font-size: 12px; letter-spacing: .08em; color: var(--brand); }
+
+/* fenêtre console du compagnon (aujourd'hui) */
+.console { max-width: 980px; }
+.console pre { margin: 0; padding: 18px 20px 26px; min-height: 360px; font-family: Consolas, "Cascadia Mono", var(--mono); font-size: 15px; line-height: 1.6; color: #cccccc; background: #0c0c0c; white-space: pre-wrap; }
+.console pre .cur { display: inline-block; width: 9px; height: 17px; background: #cccccc; vertical-align: -3px; animation: blink 1s steps(1) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .console pre .cur { animation: none; } }
+
+/* zone de notification (proposition) */
+.tray { position: relative; height: 520px; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: linear-gradient(160deg, #10241d, #0b0f14 60%); }
+.taskbar { position: absolute; left: 0; right: 0; bottom: 0; height: 48px; display: flex; align-items: center; justify-content: flex-end; gap: 14px; padding: 0 16px; background: rgba(20, 20, 20, .92); border-top: 1px solid #2a2a2a; font-family: "Segoe UI", var(--sans); font-size: 12px; color: #ddd; }
+.taskbar .clock { text-align: right; line-height: 1.25; }
+.tray-ico { width: 30px; height: 30px; display: grid; place-items: center; border-radius: 6px; border: 0; background: rgba(255, 255, 255, .08); cursor: pointer; padding: 0; }
+.tray-ico canvas { display: block; }
+.menu { position: absolute; right: 70px; bottom: 58px; width: 300px; padding: 6px; border-radius: 10px; background: #1d1d1d; border: 1px solid #333; box-shadow: 0 20px 40px -10px #000; font-family: "Segoe UI", var(--sans); font-size: 14px; color: #eee; }
+.menu .hd { display: flex; align-items: center; gap: 10px; padding: 10px 12px 12px; border-bottom: 1px solid #2c2c2c; margin-bottom: 4px; }
+.menu .hd b { font-weight: 600; }
+.menu .hd small { display: block; color: #9a9a9a; font-size: 12px; }
+.menu .hd .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--brand); flex: none; }
+.menu button { display: flex; width: 100%; align-items: center; justify-content: space-between; gap: 12px; padding: 9px 12px; border: 0; border-radius: 6px; background: transparent; color: inherit; font: inherit; text-align: left; cursor: pointer; }
+.menu button:hover, .menu button:focus-visible { background: #2a2a2a; outline: none; }
+.menu button small { color: #9a9a9a; }
+.menu .sep { height: 1px; margin: 4px 6px; background: #2c2c2c; }
+.menu .ok { color: var(--brand); }
+
+/* tableau des choix */
+.diff-head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; }
+h2 { font-family: var(--mono); font-weight: 500; font-size: 13px; letter-spacing: .14em; text-transform: uppercase; margin: 0; }
+.hint { color: var(--muted); font-size: 14px; margin: 0; }
+.table-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; }
+table { width: 100%; border-collapse: collapse; min-width: 640px; }
+th, td { text-align: left; padding: 14px 16px; vertical-align: top; border-bottom: 1px solid var(--line); }
+tr:last-child td { border-bottom: 0; }
+thead th { font-family: var(--mono); font-weight: 500; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); background: var(--panel); }
+td:first-child { font-family: var(--mono); color: var(--muted); width: 3.5em; font-variant-numeric: tabular-nums; }
+td:nth-child(2) { font-weight: 500; width: 15em; }
+tr.todo td:nth-child(3) { color: var(--muted); }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Programme Windows · Dot Hub</div>
+    <h1>Dot Companion</h1>
+    <p class="lede">Le programme qui tourne sur le PC et fait marcher Dot Hub : il sert les modules à l'Edge et garde leurs réglages. La vue « Réglages » charge la vraie page du compagnon (<code>companion/web/settings.html</code>) et les vrais réglages des modules (balises <code>x-icue-property</code> de chaque <code>index.html</code>), avec des Dot Hub d'exemple à la place du compagnon.</p>
+  </header>
+
+  <figure>
+    <div class="tag"><b>Maquette de référence</b><span>Version 0.1 · Dot Companion 0.4.0</span></div>
+    <div class="views" role="group" aria-label="Vue">
+      <button type="button" class="view" data-view="settings" aria-pressed="true">Réglages · navigateur</button>
+      <button type="button" class="view" data-view="console" aria-pressed="false">Fenêtre · aujourd'hui</button>
+      <button type="button" class="view" data-view="tray" aria-pressed="false">Zone de notification · proposition</button>
+    </div>
+
+    <div class="win" id="vSettings">
+      <div class="bar"><span class="ctl">●●●</span><span class="url">127.0.0.1:47800/settings</span><span>Dot Hub · Réglages</span></div>
+      <iframe id="settingsFrame" title="Page de réglages de Dot Companion"></iframe>
+    </div>
+
+    <div class="win console" id="vConsole" hidden>
+      <div class="bar"><span class="url">C:\Program Files\Dot Companion\dot-companion.exe</span><span class="ctl">— ▢ ✕</span></div>
+      <pre id="consoleText"></pre>
+    </div>
+
+    <div class="tray" id="vTray" hidden>
+      <div class="menu" id="trayMenu" role="menu" aria-label="Menu de Dot Companion">
+        <div class="hd"><span class="dot"></span><div><b>Dot Companion</b><small>0.4.0 · 2 Dot Hub connectés</small></div></div>
+        <button type="button" role="menuitem" data-act="settings">Ouvrir les réglages <small>127.0.0.1:47800</small></button>
+        <button type="button" role="menuitem" data-act="identify">Identifier les Dot Hub</button>
+        <div class="sep"></div>
+        <button type="button" role="menuitemcheckbox" aria-checked="true" data-act="startup">Démarrer avec Windows <span class="ok" id="startupMark">✓</span></button>
+        <button type="button" role="menuitem" data-act="update">Rechercher une mise à jour <small id="updateNote">à jour</small></button>
+        <div class="sep"></div>
+        <button type="button" role="menuitem" data-act="quit">Quitter</button>
+      </div>
+      <div class="taskbar">
+        <span>FRA</span>
+        <button type="button" class="tray-ico" id="trayIcon" aria-label="Dot Companion" aria-expanded="true"></button>
+        <span class="clock" id="trayClock"></span>
+      </div>
+    </div>
+
+    <p class="toast" id="toast" aria-live="polite"></p>
+    <figcaption id="viewNote"></figcaption>
+  </figure>
+
+  <section style="display:grid;gap:14px">
+    <div class="diff-head">
+      <h2>Choix de design</h2>
+      <p class="hint">Les lignes sans gris sont déjà dans le compagnon 0.4.0 ; les grises sont à valider.</p>
+    </div>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>#</th><th>Élément</th><th>Proposition</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>Rôle</td><td>Seul programme à installer sur le PC. Sert l'accueil de Dot Hub et chaque module (<code>/m/&lt;id&gt;/</code>), garde les réglages de chaque Dot Hub posé dans iCUE (<code>%APPDATA%\Xeneon\config.json</code>) et fait ce qu'un widget ne peut pas faire seul : lire les fichiers de Steam, lancer des jeux, parler aux services.</td></tr>
+          <tr><td>2</td><td>Réseau</td><td>N'écoute que sur <code>127.0.0.1:47800</code> : invisible depuis le réseau local. Les requêtes dont l'en-tête <code>Host</code> n'est pas <code>127.0.0.1:47800</code> ou <code>localhost:47800</code> sont refusées.</td></tr>
+          <tr><td>3</td><td>Réglages</td><td>Dans le navigateur du PC (bouton ⚙ SETTINGS de l'accueil). Une carte par Dot Hub : nom, module, champs du module générés depuis ses balises <code>x-icue-property</code>, enregistrés tout de suite. Carte « Couleurs » commune à tous les modules. « Identifier » affiche le nom sur l'Edge, « Oublier » demande confirmation.</td></tr>
+          <tr><td>4</td><td>Secrets</td><td>Clés d'API et jetons chiffrés sur le PC (DPAPI de Windows), masqués dans la page (<code>••••••••</code>), jamais renvoyés en clair.</td></tr>
+          <tr class="todo"><td>5</td><td>Fenêtre</td><td>Aujourd'hui une fenêtre console : la fermer arrête le compagnon. Proposition : plus de fenêtre, une icône dans la zone de notification (vue « Zone de notification »).</td></tr>
+          <tr class="todo"><td>6</td><td>Menu de l'icône</td><td>Ouvrir les réglages, Identifier les Dot Hub, Démarrer avec Windows (coché par défaut), Rechercher une mise à jour, Quitter. En tête : version et nombre de Dot Hub connectés. Clic gauche sur l'icône : ouvre les réglages.</td></tr>
+          <tr class="todo"><td>7</td><td>Démarrage avec Windows</td><td>Clé <code>HKCU\Software\Microsoft\Windows\CurrentVersion\Run</code>, sans droits administrateur. Activé à la première ouverture, désactivable dans le menu.</td></tr>
+          <tr class="todo"><td>8</td><td>Mises à jour</td><td>Compare sa version à la dernière release GitHub (au démarrage, puis une fois par jour) ; une nouvelle version s'affiche dans le menu et dans la page de réglages, avec un lien de téléchargement. Pas de mise à jour automatique pour l'instant.</td></tr>
+          <tr class="todo"><td>9</td><td>Avertissement Windows</td><td>L'exe n'est pas signé : SmartScreen avertit au premier lancement (« Informations complémentaires » → « Exécuter quand même »). Pistes : Microsoft Store (MSIX, aucun avertissement) ou signature gratuite SignPath pour les projets open source.</td></tr>
+          <tr class="todo"><td>10</td><td>Charte de la page de réglages</td><td>Reprendre le fond en points de Dot Page et le libellé « ● DOT COMPANION » ; garder la police Fira Code et l'accent des Couleurs communes.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  function v(id) { return document.getElementById(id); }
+  var ROOT = document.baseURI;
+
+  // ---------- Dot Hub d'exemple : la place du compagnon
+  var now = Date.now();
+  var STATE = {
+    modules: [{ id: "clock", name: "Dot Clock" }, { id: "steam", name: "Dot Steam" }],
+    instances: {
+      "c0rs41r-edge-a1b2": { name: "Edge · gauche", module: "steam", last_seen: now - 2 * 60000, settings: { launchWith: "hold", coverRender: "fine", steamApiKey: "••••••••" } },
+      "c0rs41r-edge-c3d4": { name: "Edge · droite", module: "clock", last_seen: now - 40000, settings: {} },
+      "c0rs41r-edge-e5f6": { name: "", module: null, last_seen: now - 3 * 86400000, settings: {} }
+    },
+    theme: { dotAccentColor: "#10B981", litDotColor: "#F2F0E9", unlitDotColor: "#1C1C1C", labelColor: "#B8B6B0" },
+    defaults: { dotAccentColor: "#10B981", litDotColor: "#F2F0E9", unlitDotColor: "#1C1C1C", labelColor: "#B8B6B0" }
+  };
+  var PAGES = {}; // pages des modules (schéma des réglages)
+  var toastTimer = null;
+  function toast(t) { v("toast").textContent = t; clearTimeout(toastTimer); toastTimer = setTimeout(function () { v("toast").textContent = ""; }, 3500); }
+
+  // l'API du compagnon, simulée : mêmes routes et mêmes réponses que companion/src/main.rs
+  function api(url, opts) {
+    opts = opts || {};
+    var m = (opts.method || "GET").toUpperCase(), path = String(url).replace(/^https?:\/\/[^/]+/, ""), body = null;
+    try { body = opts.body ? JSON.parse(opts.body) : null; } catch (e) { body = null; }
+    var json = function (o, s) { return Promise.resolve(new Response(JSON.stringify(o), { status: s || 200, headers: { "Content-Type": "application/json" } })); };
+    var mod = /^\/m\/([\w-]+)\/index\.html$/.exec(path);
+    if (mod) return Promise.resolve(new Response(PAGES[mod[1]] || "", { status: PAGES[mod[1]] ? 200 : 404, headers: { "Content-Type": "text/html" } }));
+    if (path === "/api/modules") return json(STATE.modules);
+    if (path === "/api/instances") return json(STATE.instances);
+    if (path === "/api/theme" && m === "GET") return json({ theme: STATE.theme, version: 1, defaults: STATE.defaults });
+    if (path === "/api/theme" && m === "PUT") { Object.assign(STATE.theme, body || {}); toast("Couleurs enregistrées pour tous les modules"); return json({ theme: STATE.theme, version: 2 }); }
+    var inst = /^\/api\/instance\/([^/]+)(\/identify)?$/.exec(path);
+    if (inst) {
+      var uid = decodeURIComponent(inst[1]), it = STATE.instances[uid];
+      if (inst[2]) { toast("L'Edge afficherait « " + ((it && it.name) || uid) + " » sur ce Dot Hub"); return json({ ok: true }); }
+      if (m === "DELETE") { delete STATE.instances[uid]; toast("Dot Hub oublié"); return json({ ok: true }); }
+      if (m === "PUT" && it) {
+        if ("name" in body) it.name = body.name;
+        if ("module" in body) it.module = body.module;
+        if ("settings" in body) it.settings = body.settings;
+        return json(it);
+      }
+      return json(it || {}, it ? 200 : 404);
+    }
+    return json({ error: "not found" }, 404);
+  }
+
+  // ---------- vue « Réglages » : la vraie page, servie dans le cadre avec l'API simulée
+  function loadSettings() {
+    Promise.all([
+      fetch("companion/web/settings.html").then(function (r) { return r.text(); }),
+      fetch("widgets/dot-clock/index.html").then(function (r) { return r.text(); }),
+      fetch("widgets/dot-steam/index.html").then(function (r) { return r.text(); })
+    ]).then(function (res) {
+      PAGES.clock = res[1]; PAGES.steam = res[2];
+      var fonts = new URL("widgets/dot-clock/resources/fonts/", ROOT).href;
+      var html = res[0].replace(/url\("\/m\/clock\/resources\/fonts\//g, 'url("' + fonts)
+        .replace("<head>", "<head><script>window.fetch = function (u, o) { return parent.__dotCompanionApi(u, o); };<\/script>");
+      v("settingsFrame").srcdoc = html;
+    }).catch(function () {
+      v("settingsFrame").srcdoc = "<p style='font:14px monospace;color:#b8b6b0;padding:24px'>La page de réglages n'a pas pu être chargée.</p>";
+    });
+  }
+  window.__dotCompanionApi = api;
+
+  // ---------- vue « Fenêtre » : la console du compagnon 0.4.0 (mêmes lignes que main.rs)
+  v("consoleText").innerHTML = [
+    "Dot Companion 0.4.0 prêt sur http://127.0.0.1:47800/",
+    "Réglages : http://127.0.0.1:47800/settings",
+    "Configuration : C:\\Users\\Mathod\\AppData\\Roaming\\Xeneon\\config.json",
+    "Fermer cette fenêtre arrête le compagnon.",
+    ""
+  ].join("\n") + '<span class="cur"></span>';
+
+  // ---------- vue « Zone de notification » : icône en points 4 × 4 et menu
+  (function () {
+    var cv = document.createElement("canvas"), dpr = 2, p = 5; cv.width = cv.height = 4 * p * dpr; cv.style.width = cv.style.height = 4 * p + "px";
+    var ctx = cv.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    var g = [".##.", "####", "####", ".##."];
+    for (var y = 0; y < 4; y++) for (var x = 0; x < 4; x++) { ctx.fillStyle = g[y][x] === "#" ? "#10b981" : "#2a2a2a"; ctx.beginPath(); ctx.arc(x * p + p / 2, y * p + p / 2, p * .38, 0, Math.PI * 2); ctx.fill(); }
+    v("trayIcon").appendChild(cv);
+  })();
+  function clock() { var d = new Date(); v("trayClock").innerHTML = d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }) + "<br>" + d.toLocaleDateString("fr-FR"); }
+  clock(); setInterval(clock, 30000);
+  v("trayIcon").addEventListener("click", function () { var m = v("trayMenu"); m.hidden = !m.hidden; v("trayIcon").setAttribute("aria-expanded", m.hidden ? "false" : "true"); });
+  v("trayMenu").addEventListener("click", function (e) {
+    var b = e.target.closest("button"); if (!b) return;
+    var a = b.getAttribute("data-act");
+    if (a === "settings") { show("settings"); toast("Le navigateur du PC s'ouvrirait sur 127.0.0.1:47800/settings"); }
+    if (a === "identify") toast("Chaque Edge afficherait le nom de son Dot Hub pendant 3 s");
+    if (a === "startup") { var on = b.getAttribute("aria-checked") !== "true"; b.setAttribute("aria-checked", on ? "true" : "false"); v("startupMark").textContent = on ? "✓" : ""; toast(on ? "Dot Companion démarrera avec Windows" : "Dot Companion ne démarrera plus avec Windows"); }
+    if (a === "update") { v("updateNote").textContent = "0.4.0 · à jour"; toast("Dernière release GitHub : 0.4.0, rien à installer"); }
+    if (a === "quit") toast("Le compagnon s'arrêterait : Dot Hub afficherait « Dot Companion n'est pas lancé »");
+  });
+
+  // ---------- vues
+  var NOTES = {
+    settings: "La vraie page de réglages, avec trois Dot Hub d'exemple : un sur Dot Steam, un sur Dot Clock, un sur l'accueil. Tout marche : changer le module, les réglages, les couleurs, Identifier, Oublier.",
+    console: "Aujourd'hui : une fenêtre console, qui doit rester ouverte. La fermer arrête le compagnon.",
+    tray: "Proposition : plus de fenêtre, une icône en points dans la zone de notification. Un clic sur l'icône ouvre ou ferme le menu."
+  };
+  function show(view) {
+    document.querySelectorAll(".view").forEach(function (b) { b.setAttribute("aria-pressed", b.getAttribute("data-view") === view ? "true" : "false"); });
+    v("vSettings").hidden = view !== "settings"; v("vConsole").hidden = view !== "console"; v("vTray").hidden = view !== "tray";
+    v("viewNote").textContent = NOTES[view];
+  }
+  document.querySelectorAll(".view").forEach(function (b) { b.addEventListener("click", function () { show(b.getAttribute("data-view")); }); });
+  show("settings");
+  loadSettings();
+})();
+</script>
+</body>
+</html>

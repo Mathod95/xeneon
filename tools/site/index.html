@@ -65,6 +65,8 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outlin
 .part h3 { margin: 0; font-size: 18px; font-weight: 700; }
 .part .tag2 { font-family: var(--mono); font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--accent); }
 .part p { margin: 0; color: var(--label); font-size: 15px; }
+.part .more { justify-self: start; font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); text-decoration: none; }
+.part .more:hover { color: var(--lit); }
 .daily { margin: 0; color: var(--label); font-size: 15px; }
 .daily b { color: var(--lit); font-weight: 600; }
 .hub-links { font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; flex-wrap: wrap; }
@@ -155,6 +157,7 @@ footer a { color: var(--label); text-decoration: none; }
         <button type="button" class="chip" data-lang="fr" aria-pressed="false">FR</button>
         <button type="button" class="chip" data-lang="en" aria-pressed="false">EN</button>
       </div>
+      <a class="ext" href="__COMPANION__"__COMPANION_TARGET__>Companion</a>
       <a class="ext" href="__RELEASES__"__RELEASES_TARGET__>Releases</a>
       <a class="ext" href="https://github.com/Mathod95/xeneon" target="_blank" rel="noopener">GitHub ↗</a>
     </div>
@@ -193,7 +196,7 @@ footer a { color: var(--label); text-decoration: none; }
     <p class="hub-k" data-i18n="howK"></p>
     <div class="parts">
       <div class="part"><div class="ph2"><h3 data-i18n="p1t"></h3><span class="tag2" data-i18n="p1k"></span></div><p data-i18n="p1"></p></div>
-      <div class="part"><div class="ph2"><h3 data-i18n="p2t"></h3><span class="tag2" data-i18n="p2k"></span></div><p data-i18n="p2"></p></div>
+      <div class="part"><div class="ph2"><h3 data-i18n="p2t"></h3><span class="tag2" data-i18n="p2k"></span></div><p data-i18n="p2"></p><a class="more" href="__COMPANION__"__COMPANION_TARGET__ data-i18n="more"></a></div>
     </div>
     <p class="daily" data-i18n-html="daily"></p>
     <p class="hub-k" data-i18n="installK"></p>
@@ -255,7 +258,7 @@ footer a { color: var(--label); text-decoration: none; }
       step1: "<b>Lance Dot Companion</b> sur le PC.",
       step2: "<b>Ajoute Dot Hub</b> sur l'Edge dans iCUE.",
       step3: "<b>Choisis un module</b> d'un toucher, règle-le depuis ⚙ SETTINGS.",
-      mockup: "Maquette →", download: "Télécharger ↗", fiche: "Fiche ↗",
+      mockup: "Maquette →", download: "Télécharger ↗", fiche: "Fiche ↗", more: "Tout sur Dot Companion →",
       edgeLabel: "Aperçu sur la Xeneon Edge", onEdge: "Sur la Xeneon Edge", edgeHint: "Touche une tuile de Dot Hub pour ouvrir le module, ou glisse.",
       prev: "Page précédente", next: "Page suivante",
       modules: "Les modules", filter: "Filtrer", fAll: "Tous", fMock: "Avec maquette", fWip: "En cours", none: "Aucun module pour ce filtre.",
@@ -276,7 +279,7 @@ footer a { color: var(--label); text-decoration: none; }
       step1: "<b>Run Dot Companion</b> on your PC.",
       step2: "<b>Add Dot Hub</b> to your Edge in iCUE.",
       step3: "<b>Pick a module</b> with a tap, set it up from ⚙ SETTINGS.",
-      mockup: "Mockup →", download: "Download ↗", fiche: "Details ↗",
+      mockup: "Mockup →", download: "Download ↗", fiche: "Details ↗", more: "All about Dot Companion →",
       edgeLabel: "Preview on the Xeneon Edge", onEdge: "On the Xeneon Edge", edgeHint: "Tap a Dot Hub tile to open the module, or swipe.",
       prev: "Previous page", next: "Next page",
       modules: "The modules", filter: "Filter", fAll: "All", fMock: "With mockup", fWip: "In progress", none: "No module for this filter.",

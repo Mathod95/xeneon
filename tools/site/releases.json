@@ -34,6 +34,14 @@
         {
           "fr": "Dot Release : cette page, avec un bouton Releases sur Dot Page",
           "en": "Dot Release: this page, with a Releases button on Dot Page"
+        },
+        {
+          "fr": "Dot Companion : page de présentation (bouton Companion) et maquette de référence de la page de réglages",
+          "en": "Dot Companion: overview page (Companion button) and reference mockup of the settings page"
+        },
+        {
+          "fr": "Dot Home Assistant : nouvelles cartes à valider (lumières, température et humidité, groupes, automatisations, mises à jour, services)",
+          "en": "Dot Home Assistant: new cards to review (lights, temperature and humidity, groups, automations, updates, services)"
         }
       ],
       "changed": [
@@ -44,6 +52,10 @@
         {
           "fr": "Dot Steam : un jeu sans jaquette verticale prend sa jaquette large, recadrée",
           "en": "Dot Steam: a game without a portrait cover uses its wide cover, cropped"
+        },
+        {
+          "fr": "Toutes les maquettes ont le fond en points de Dot Page",
+          "en": "Every mockup has the Dot Page dot background"
         }
       ],
       "fixed": [

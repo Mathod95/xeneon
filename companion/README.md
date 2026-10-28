@@ -4,7 +4,8 @@ Programme Windows qui sert Dot Hub. Il écoute uniquement sur `127.0.0.1:47800`.
 
 - `src/main.rs` : serveur HTTP, configuration (`%APPDATA%\Xeneon\config.json`), API des instances.
 - `web/` : accueil Dot Home (`home.html`), page de réglages (`settings.html`), script ajouté à chaque module (`hub/module.js`).
-- Modules : le dossier d’un widget est intégré tel quel dans l’exécutable (pour l’instant `widgets/dot-clock`), servi sur `/m/<id>/`.
+- Modules : le dossier d’un widget est intégré tel quel dans l’exécutable (pour l’instant `widgets/dot-clock` et `widgets/dot-steam`), servi sur `/m/<id>/`.
+- `mockups/reference.html` : maquette de référence (la vraie page de réglages avec une API simulée, la fenêtre d’aujourd’hui, l’icône de la zone de notification proposée). Présentation pour les utilisateurs : `tools/site/companion.html` (Dot Page, `/companion/`).
 
 ## Routes
 
