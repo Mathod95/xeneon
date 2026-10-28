@@ -55,13 +55,22 @@ figcaption { color: var(--muted); font-size: 14px; }
 .diff-head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; }
 h2 { font-family: var(--mono); font-weight: 500; font-size: 13px; letter-spacing: .14em; text-transform: uppercase; margin: 0; }
 .hint { color: var(--muted); font-size: 14px; margin: 0; }
-/* cartes à dessiner (lumière, température · humidité) */
-.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); gap: 20px; }
-.card-slot { gap: 10px; }
-.card-empty { position: relative; aspect-ratio: 387 / 240; border: 2px dashed #262626; border-radius: 18px; background: #080808; overflow: hidden; }
-/* contenu en taille réelle XL (387 × 240 px), mis à l'échelle de la carte */
-.card-empty .in { position: absolute; left: 0; top: 0; width: 387px; height: 240px; transform-origin: 0 0; padding: 22px 24px; display: flex; flex-direction: column; justify-content: space-between; font-family: "Fira Code", Consolas, monospace; font-variant-ligatures: none; color: var(--c-lit); }
-.card-empty .in p { margin: 0; }
+/* section Cartes : toutes les cartes en taille réelle XL (387 × 240 px), mises à l'échelle de leur case */
+.cgroup { display: grid; gap: 10px; }
+.cgrid { display: grid; gap: 20px; }
+.cgrid.c3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.cgrid.c2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@media (max-width: 700px) { .cgrid.c3, .cgrid.c2 { grid-template-columns: minmax(0, 1fr); } }
+.cbox { position: relative; aspect-ratio: 387 / 240; }
+.cbox .in { position: absolute; left: 0; top: 0; width: 387px; height: 240px; transform-origin: 0 0; font-family: "Fira Code", Consolas, monospace; font-variant-ligatures: none; color: var(--lit); --accent: #10b981; --lit: #f2f0e9; --label: #b8b6b0; --unlit: #1c1c1c; --c-lit: var(--lit); --c-label: var(--label); --c-accent: var(--accent); }
+.cbox p { margin: 0; }
+.cbox canvas { display: block; }
+.cbox button { font-family: inherit; -webkit-tap-highlight-color: transparent; }
+.cbox .in > .tile { width: 100%; height: 100%; }
+/* nouvelles cartes (lumière, capteur) : même cadre que les tuiles */
+.cbox .in.card { padding: 22px 24px; display: flex; flex-direction: column; justify-content: space-between; border: 2px solid #1d1d1d; border-radius: 18px; cursor: pointer; user-select: none; touch-action: none; }
+.cbox .in.card.ro { cursor: default; }
+.cbox .in.card:active:not(.ro) { border-color: var(--accent); background: #0d0d0d; }
 /* texte calé en haut du pictogramme, pas centré */
 .c-head { display: flex; align-items: flex-start; gap: 22px; min-width: 0; }
 .c-head canvas { flex: none; }
@@ -239,23 +248,25 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
       <button type="button" class="preset" data-accent="#18bcf2"><i style="background:#18bcf2"></i>Bleu Home Assistant</button>
       <button type="button" class="preset" data-accent="#ed403b"><i style="background:#ed403b"></i>Rouge A</button>
     </div>
-    <figcaption><span id="sizeNote">Pièces en onglets, 12 tuiles.</span> La maquette marche : un toucher allume ou éteint, glisser sur la barre d'une lumière règle l'intensité, − et + changent la consigne du thermostat, la serrure demande de garder le doigt 1 s.</figcaption>
+    <figcaption><span id="sizeNote">Pièces en onglets, 12 tuiles.</span> Maquette vidée : on garde le libellé et les onglets des pièces, les cartes se dessinent une par une dans la section « Cartes » ci-dessous.</figcaption>
   </figure>
 
   <section style="display:grid;gap:14px" aria-labelledby="cardsTitle">
     <div class="diff-head">
       <h2 id="cardsTitle">Cartes</h2>
-      <p class="hint">Les deux types d'entités principales. Lumière : à droite, le bouton du haut change de couleur, celui du bas passe en blanc puis va du chaud au froid (2700, 4000, 6500 K).</p>
+      <p class="hint">Toutes les cartes, en taille réelle XL. Lumière : un toucher allume ou éteint, un toucher sur la barre règle l'intensité ; à droite, le bouton du haut change de couleur, celui du bas passe en blanc puis va du chaud au froid (2700, 4000, 6500 K).</p>
     </div>
-    <div class="cards">
-      <figure class="card-slot">
-        <div class="tag"><b>Lumière</b><span>À définir</span></div>
-        <div class="card-empty" data-pic="light" data-on="1" aria-label="Carte lumière, vide pour le moment"><div class="in"></div></div>
-      </figure>
-      <figure class="card-slot">
-        <div class="tag"><b>Température · humidité</b><span>À définir</span></div>
-        <div class="card-empty" data-pic="climate" data-on="0" aria-label="Carte capteur de température et d'humidité, vide pour le moment"><div class="in"></div></div>
-      </figure>
+    <div class="cgroup">
+      <div class="tag"><b>Lumières</b><span>3 par rangée</span></div>
+      <div class="cgrid c3" id="cLights"></div>
+    </div>
+    <div class="cgroup">
+      <div class="tag"><b>Température · humidité</b><span>2 par rangée</span></div>
+      <div class="cgrid c2" id="cSensors"></div>
+    </div>
+    <div class="cgroup">
+      <div class="tag"><b>Autres exemples</b><span>Tuiles de la v0.1, à redessiner</span></div>
+      <div class="cgrid c3" id="cOthers"></div>
     </div>
   </section>
 
@@ -450,10 +461,13 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
   }
 
   // cartes à dessiner : lumière (nom, pièce, barre d'intensité) et capteur (nom, pièce, température et humidité), en taille réelle XL
-  var CARDS = {
-    light: { name: "Ceiling", area: "Living room", on: true, lvl: 0.8, color: 0, kelvin: 0 },
-    climate: { name: "Bedroom sensor", area: "Bedroom", temp: 19.8, hum: 52 }
-  };
+  function roomName(id) { return (ROOMS.filter(function (r) { return r.id === id; })[0] || {}).name || ""; }
+  // état propre à chaque lumière : couleur, blanc
+  E.forEach(function (e, i) { if (e.type === "light") { e.color = i % 6; e.kelvin = i % 3; e.mode = i % 2 ? "white" : "color"; } });
+  var SENSORS = [
+    { name: "Bedroom sensor", room: "bedroom", temp: 19.8, hum: 52 },
+    { name: "Sofa sensor", room: "living", temp: 21.4, hum: 47 }
+  ];
   // exemples : couleurs proposées au toucher du bouton couleur, blancs au toucher du bouton température
   var LIGHT_COLORS = ["#ffb35c", "#ff5a4e", "#ff6fd8", "#8b7bff", "#4fa3ff", "#3fe0a0"];
   var KELVINS = [["2700 K", "#ffb46b"], ["4000 K", "#ffe2bd"], ["6500 K", "#e9efff"]];
@@ -470,39 +484,67 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
     }
     return cv;
   }
-  function drawCards(c) {
-    document.querySelectorAll(".card-empty").forEach(function (box) {
-      var kind = box.getAttribute("data-pic"), d = CARDS[kind], inn = box.querySelector(".in");
-      inn.innerHTML = "";
-      inn.style.setProperty("--c-lit", c.lit); inn.style.setProperty("--c-label", c.label); inn.style.setProperty("--c-accent", c.accent);
-      var head = el("div", "c-head");
-      head.appendChild(pic(kind, kind === "light" ? d.on : false, SIZES.xl.pitch, c));
-      var who = el("div", "c-who"); who.appendChild(el("p", "c-nm", d.name)); who.appendChild(el("p", "c-ar", d.area));
-      head.appendChild(who); inn.appendChild(head);
-      if (kind === "light") {
-        var white = d.mode === "white", btns = el("div", "c-btns");
-        var colorBtn = el("button", "c-btn"), tempBtn = el("button", "c-btn");
-        colorBtn.type = tempBtn.type = "button";
-        colorBtn.setAttribute("aria-label", "Color"); colorBtn.setAttribute("aria-pressed", white ? "false" : "true");
-        tempBtn.setAttribute("aria-label", "White temperature · " + KELVINS[d.kelvin][0]); tempBtn.setAttribute("aria-pressed", white ? "true" : "false");
-        colorBtn.appendChild(cross(LIGHT_COLORS[d.color], white ? 0.4 : 1, SIZES.xl.pitch, c));
-        tempBtn.appendChild(cross(KELVINS[d.kelvin][1], white ? 1 : 0.4, SIZES.xl.pitch, c));
-        colorBtn.addEventListener("click", function () { if (d.mode === "white") d.mode = "color"; else d.color = (d.color + 1) % LIGHT_COLORS.length; render(); });
-        tempBtn.addEventListener("click", function () { if (d.mode !== "white") d.mode = "white"; else d.kelvin = (d.kelvin + 1) % KELVINS.length; render(); });
-        btns.appendChild(colorBtn); btns.appendChild(tempBtn); head.appendChild(btns);
-        inn.appendChild(bar(387 - 48, d.lvl, SIZES.xl.bar, c, d.on));
-      } else {
-        var vals = el("div", "c-vals");
-        [[d.temp.toFixed(1), "°C", "Temperature"], [String(d.hum), "%", "Humidity"]].forEach(function (x) {
-          var v0 = el("div", "c-v"), vp = el("p", "val", x[0]); vp.appendChild(el("small", "", x[1]));
-          v0.appendChild(vp); v0.appendChild(el("p", "k", x[2])); vals.appendChild(v0);
-        });
-        inn.appendChild(vals);
-      }
-      inn.style.transform = "scale(" + box.clientWidth / 387 + ")";
+  function box(grid) {
+    var b = el("div", "cbox"), inn = el("div", "in"); b.appendChild(inn); grid.appendChild(b); return inn;
+  }
+  function colorsOn(inn, c) {
+    inn.style.setProperty("--accent", c.accent); inn.style.setProperty("--lit", c.lit); inn.style.setProperty("--label", c.label);
+  }
+  function head(kind, on, name, area, c) {
+    var h = el("div", "c-head");
+    h.appendChild(pic(kind, on, SIZES.xl.pitch, c));
+    var who = el("div", "c-who"); who.appendChild(el("p", "c-nm", name)); who.appendChild(el("p", "c-ar", area));
+    h.appendChild(who);
+    return h;
+  }
+  function lightCard(inn, d, c) {
+    inn.className = "in card"; inn.setAttribute("role", "button"); inn.setAttribute("aria-label", d.name + (d.on ? " · on" : " · off"));
+    var h = head("light", d.on, d.name, roomName(d.room), c), white = d.mode === "white", btns = el("div", "c-btns");
+    var colorBtn = el("button", "c-btn"), tempBtn = el("button", "c-btn");
+    colorBtn.type = tempBtn.type = "button";
+    colorBtn.setAttribute("aria-label", "Color"); colorBtn.setAttribute("aria-pressed", white ? "false" : "true");
+    tempBtn.setAttribute("aria-label", "White temperature · " + KELVINS[d.kelvin][0]); tempBtn.setAttribute("aria-pressed", white ? "true" : "false");
+    colorBtn.appendChild(cross(LIGHT_COLORS[d.color], white ? 0.4 : 1, SIZES.xl.pitch, c));
+    tempBtn.appendChild(cross(KELVINS[d.kelvin][1], white ? 1 : 0.4, SIZES.xl.pitch, c));
+    colorBtn.addEventListener("click", function (ev) { ev.stopPropagation(); if (d.mode === "white") d.mode = "color"; else d.color = (d.color + 1) % LIGHT_COLORS.length; d.on = true; render(); });
+    tempBtn.addEventListener("click", function (ev) { ev.stopPropagation(); if (d.mode !== "white") d.mode = "white"; else d.kelvin = (d.kelvin + 1) % KELVINS.length; d.on = true; render(); });
+    btns.appendChild(colorBtn); btns.appendChild(tempBtn); h.appendChild(btns); inn.appendChild(h);
+    var b = bar(387 - 48, d.lvl, SIZES.xl.bar, c, d.on); inn.appendChild(b);
+    inn.addEventListener("click", function (ev) {
+      // toucher sur la barre (± 20 px) : intensité ; ailleurs : allumer ou éteindre
+      var r = b.getBoundingClientRect(), pad = 20 * r.height / SIZES.xl.bar;
+      if (ev.clientY >= r.top - pad && ev.clientY <= r.bottom + pad) { d.lvl = Math.max(0.05, Math.min(1, (ev.clientX - r.left) / r.width)); d.on = true; }
+      else d.on = !d.on;
+      render();
     });
   }
-  if (window.ResizeObserver) new ResizeObserver(function () { drawCards(colors()); }).observe(document.querySelector(".cards"));
+  function sensorCard(inn, d, c) {
+    inn.className = "in card ro";
+    inn.appendChild(head("climate", false, d.name, roomName(d.room), c));
+    var vals = el("div", "c-vals");
+    [[d.temp.toFixed(1), "°C", "Temperature"], [String(d.hum), "%", "Humidity"]].forEach(function (x) {
+      var v0 = el("div", "c-v"), vp = el("p", "val", x[0]); vp.appendChild(el("small", "", x[1]));
+      v0.appendChild(vp); v0.appendChild(el("p", "k", x[2])); vals.appendChild(v0);
+    });
+    inn.appendChild(vals);
+  }
+  function drawCards(c) {
+    var gL = v("cLights"), gS = v("cSensors"), gO = v("cOthers");
+    gL.innerHTML = ""; gS.innerHTML = ""; gO.innerHTML = "";
+    E.filter(function (e) { return e.type === "light"; }).forEach(function (e) { var inn = box(gL); colorsOn(inn, c); lightCard(inn, e, c); });
+    SENSORS.forEach(function (d) { var inn = box(gS); colorsOn(inn, c); sensorCard(inn, d, c); });
+    // les autres tuiles de la v0.1 (le capteur de température est remplacé par la carte ci-dessus)
+    E.filter(function (e) { return e.type !== "light" && !(e.type === "sensor" && e.unit === "°"); }).forEach(function (e) {
+      var inn = box(gO); colorsOn(inn, c);
+      var t = build(e, c, SIZES.xl); t.setAttribute("data-id", e.id); inn.appendChild(t);
+    });
+    document.querySelectorAll(".cbox").forEach(function (b) { b.querySelector(".in").style.transform = "scale(" + b.clientWidth / 387 + ")"; });
+    document.querySelectorAll("#cOthers .tile").forEach(function (t) {
+      var e = E.filter(function (x) { return String(x.id) === t.getAttribute("data-id"); })[0];
+      drawBars(t, e, c, SIZES.xl);
+    });
+  }
+  if (window.ResizeObserver) new ResizeObserver(function () { document.querySelectorAll(".cbox").forEach(function (b) { b.querySelector(".in").style.transform = "scale(" + b.clientWidth / 387 + ")"; }); }).observe(v("cLights"));
 
   function render() {
     var c = colors(), Z = SIZES[size], offline = val("sample") === "offline";
@@ -523,13 +565,10 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
     });
     var grid = v("grid"); grid.innerHTML = ""; grid.hidden = offline;
     v("empty").hidden = !offline;
-    if (offline) return;
+    if (offline) { drawCards(c); return; }
     grid.style.top = showTabs ? "" : (size === "s" ? "24px" : "100px");
     grid.style.height = showTabs ? "" : (size === "s" ? "296px" : "548px");
-    var list = E.filter(function (e) { return room === "fav" ? e.fav : e.room === room; }).slice(0, Z.slots);
-    list.forEach(function (e) { var t = build(e, c, Z); t.setAttribute("data-id", e.id); grid.appendChild(t); });
-    // les barres ont besoin de la largeur réelle des tuiles
-    Array.prototype.forEach.call(grid.children, function (t, i) { drawBars(t, list[i], c, Z); });
+    // maquette vidée : les cartes se dessinent dans la section « Cartes »
     drawCards(c);
   }
 
