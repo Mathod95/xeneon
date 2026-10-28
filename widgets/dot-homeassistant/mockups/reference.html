@@ -55,13 +55,12 @@ figcaption { color: var(--muted); font-size: 14px; }
 .diff-head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; }
 h2 { font-family: var(--mono); font-weight: 500; font-size: 13px; letter-spacing: .14em; text-transform: uppercase; margin: 0; }
 .hint { color: var(--muted); font-size: 14px; margin: 0; }
-/* section Cartes : toutes les cartes en taille réelle XL (387 × 240 px), mises à l'échelle de leur case */
+/* section Cartes : les cartes à la même échelle que la maquette (pixels de l'XL × largeur du cadre / 2536) */
 .cgroup { display: grid; gap: 10px; }
-.cgrid { display: grid; gap: 20px; }
-.cgrid.c3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-.cgrid.c2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-@media (max-width: 700px) { .cgrid.c3, .cgrid.c2 { grid-template-columns: minmax(0, 1fr); } }
-.cbox { position: relative; aspect-ratio: 387 / 240; }
+.cgrid { display: grid; gap: calc(20px * var(--k, .5)); justify-content: start; }
+.cgrid.c3 { grid-template-columns: repeat(3, calc(387px * var(--k, .5))); }
+.cgrid.c2 { grid-template-columns: repeat(2, calc(387px * var(--k, .5))); }
+.cbox { position: relative; }
 .cbox .in { position: absolute; left: 0; top: 0; width: 387px; height: 240px; transform-origin: 0 0; font-family: "Fira Code", Consolas, monospace; font-variant-ligatures: none; color: var(--lit); --accent: #10b981; --lit: #f2f0e9; --label: #b8b6b0; --unlit: #1c1c1c; --c-lit: var(--lit); --c-label: var(--label); --c-accent: var(--accent); }
 .cbox p { margin: 0; }
 .cbox canvas { display: block; }
@@ -254,7 +253,7 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
   <section style="display:grid;gap:14px" aria-labelledby="cardsTitle">
     <div class="diff-head">
       <h2 id="cardsTitle">Cartes</h2>
-      <p class="hint">Toutes les cartes, en taille réelle XL. Lumière : un toucher allume ou éteint, un toucher sur la barre règle l'intensité ; à droite, le bouton du haut change de couleur, celui du bas passe en blanc puis va du chaud au froid (2700, 4000, 6500 K).</p>
+      <p class="hint">Toutes les cartes, à la même échelle que la maquette de référence. Lumière : un toucher allume ou éteint, un toucher sur la barre règle l'intensité ; à droite, le bouton du haut change de couleur, celui du bas passe en blanc puis va du chaud au froid (2700, 4000, 6500 K).</p>
     </div>
     <div class="cgroup">
       <div class="tag"><b>Lumières</b><span>387 × 153 px · 3 empilées en XL, 18 au total</span></div>
@@ -488,7 +487,7 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
   var CARD_W = 387, CARD_H = 240, LIGHT_H = (500 - 2 * 20) / 3;
   function box(grid, h) {
     var b = el("div", "cbox"), inn = el("div", "in");
-    h = h || CARD_H; b.style.aspectRatio = CARD_W + " / " + h; inn.style.height = h + "px";
+    h = h || CARD_H; b.style.height = "calc(" + h + "px * var(--k, .5))"; inn.style.height = h + "px";
     b.appendChild(inn); grid.appendChild(b); return inn;
   }
   function colorsOn(inn, c) {
@@ -542,13 +541,19 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
       var inn = box(gO); colorsOn(inn, c);
       var t = build(e, c, SIZES.xl); t.setAttribute("data-id", e.id); inn.appendChild(t);
     });
-    document.querySelectorAll(".cbox").forEach(function (b) { b.querySelector(".in").style.transform = "scale(" + b.clientWidth / 387 + ")"; });
+    scaleCards();
     document.querySelectorAll("#cOthers .tile").forEach(function (t) {
       var e = E.filter(function (x) { return String(x.id) === t.getAttribute("data-id"); })[0];
       drawBars(t, e, c, SIZES.xl);
     });
   }
-  if (window.ResizeObserver) new ResizeObserver(function () { document.querySelectorAll(".cbox").forEach(function (b) { b.querySelector(".in").style.transform = "scale(" + b.clientWidth / 387 + ")"; }); }).observe(v("cLights"));
+  // même échelle que la maquette : largeur du cadre / largeur réelle de l'XL
+  function scaleCards() {
+    var k = frame.clientWidth / SIZES[size].w || 0.5;
+    document.querySelector("[aria-labelledby=cardsTitle]").style.setProperty("--k", k);
+    document.querySelectorAll(".cbox .in").forEach(function (inn) { inn.style.transform = "scale(" + k + ")"; });
+  }
+  if (window.ResizeObserver) new ResizeObserver(scaleCards).observe(frame);
 
   function render() {
     var c = colors(), Z = SIZES[size], offline = val("sample") === "offline";
