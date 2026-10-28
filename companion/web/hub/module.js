@@ -5,12 +5,19 @@
  * - suit les changements faits dans la page de réglages (sondage toutes les 2 s) ;
  * - appui long (1 s) n'importe où, ou toucher un élément data-hub-home : retour à l'accueil Dot Home ;
  * - « Identify » depuis la page de réglages : affiche le nom de l'instance ;
- * - pont clavier : un champ de saisie du module demande le clavier à la coquille iCUE.
+ * - pont clavier : un champ de saisie du module demande le clavier à la coquille iCUE ;
+ * - aperçu (?preview=1, page de réglages) : rien ne se déclenche au toucher, pas de retour à l'accueil,
+ *   et les réglages arrivent tout de suite par postMessage ({ type: "dot-preview", settings, theme }).
  */
 (function () {
 	"use strict";
-	var uid = new URLSearchParams(location.search).get("uid") || "";
-	var moduleId = location.pathname.split("/")[2] || "";
+	// paramètres : dans l'adresse (?uid=…&preview=1), ou posés par la maquette de référence du compagnon
+	var Q = window.__dotHubParams || {};
+	new URLSearchParams(location.search).forEach(function (v, k) { if (!(k in Q)) Q[k] = v; });
+	var uid = Q.uid || "";
+	var moduleId = Q.module || location.pathname.split("/")[2] || "";
+	var preview = Q.preview === "1" || Q.preview === true;
+	window.__dotPreview = preview;
 	var api = "/api/instance/" + encodeURIComponent(uid);
 	var version = "", identifySeen = 0, first = true;
 
@@ -43,8 +50,9 @@
 			.then(function (r) { return r.ok ? r.json() : null; })
 			.then(function (inst) {
 				if (!inst) return;
-				if (inst.module && inst.module !== moduleId) { location.href = "/i/" + encodeURIComponent(uid); return; }
-				if (!inst.module) { location.href = "/home?uid=" + encodeURIComponent(uid); return; }
+				// aperçu : c'est la page de réglages qui recharge l'aperçu quand le module change
+				if (!preview && inst.module && inst.module !== moduleId) { location.href = "/i/" + encodeURIComponent(uid); return; }
+				if (!preview && !inst.module) { location.href = "/home?uid=" + encodeURIComponent(uid); return; }
 				var v = inst.version + "/" + inst.theme_version;
 				if (v !== version) { version = v; apply(inst.settings, inst.theme); }
 				if (inst.identify && inst.identify !== identifySeen) {
@@ -63,10 +71,17 @@
 		setTimeout(function () { d.remove(); }, 3000);
 	}
 
+	// aperçu dans la page de réglages : les réglages arrivent tout de suite, sans attendre le sondage
+	window.addEventListener("message", function (e) {
+		var d = e.data || {};
+		if (preview && d.type === "dot-preview") apply(d.settings || {}, d.theme || null);
+	});
+
 	// ---------------------------------------------------------------- appui long : accueil
 	var pressTimer = null, x0 = 0, y0 = 0;
 	function cancel() { clearTimeout(pressTimer); pressTimer = null; }
 	document.addEventListener("pointerdown", function (e) {
+		if (preview) return;
 		x0 = e.clientX; y0 = e.clientY; cancel();
 		pressTimer = setTimeout(function () { location.href = "/home?uid=" + encodeURIComponent(uid); }, 1000);
 	});
@@ -81,7 +96,7 @@
 	homeZone.type = "button";
 	homeZone.setAttribute("aria-label", "Dot Home");
 	homeZone.style.cssText = "position:fixed;z-index:9999;display:none;padding:0;margin:0;border:0;background:transparent;cursor:pointer;-webkit-tap-highlight-color:transparent";
-	homeZone.addEventListener("click", function () { location.href = "/home?uid=" + encodeURIComponent(uid); });
+	homeZone.addEventListener("click", function () { if (!preview) location.href = "/home?uid=" + encodeURIComponent(uid); });
 	document.body.appendChild(homeZone);
 	function placeHomeZone() {
 		var els = Array.prototype.filter.call(document.querySelectorAll("[data-hub-home]"), function (e) { return !e.hidden && e.getClientRects().length; });

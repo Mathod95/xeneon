@@ -121,10 +121,16 @@ def previews(slugs):
 COMPANION_MOCKUP = ROOT / "companion" / "mockups" / "reference.html"
 COMPANION_FILES = [
     "companion/web/settings.html",
+    "companion/web/home.html",
+    "companion/web/hub/module.js",
     "widgets/dot-clock/index.html",
+    "widgets/dot-clock/styles",
+    "widgets/dot-clock/scripts",
+    "widgets/dot-clock/resources",
     "widgets/dot-steam/index.html",
-    "widgets/dot-clock/resources/fonts/FiraCode-Regular.woff2",
-    "widgets/dot-clock/resources/fonts/FiraCode-Medium.woff2",
+    "widgets/dot-steam/styles",
+    "widgets/dot-steam/scripts",
+    "widgets/dot-steam/resources",
 ]
 
 
@@ -136,7 +142,10 @@ def companion_mockup(out):
     for f in COMPANION_FILES:
         dst = out / f
         dst.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy(ROOT / f, dst)
+        if (ROOT / f).is_dir():
+            shutil.copytree(ROOT / f, dst, dirs_exist_ok=True)
+        else:
+            shutil.copy(ROOT / f, dst)
 
 
 def links(page, urls, target):

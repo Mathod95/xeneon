@@ -7,13 +7,14 @@
  */
 (function () {
 	"use strict";
-	var uid = new URLSearchParams(location.search).get("uid") || "";
+	var uid = (window.__dotHubParams || {}).uid || new URLSearchParams(location.search).get("uid") || "";
 
 	function get(name, def) {
 		try { var v = window[name]; return v === undefined || v === null ? def : v; } catch (e) { return def; }
 	}
 
-	function post(url) { fetch(url, { method: "POST" }).catch(function () {}); }
+	// aperçu dans la page de réglages du compagnon (window.__dotPreview, posé par hub/module.js) : rien ne se lance
+	function post(url) { if (window.__dotPreview) return; fetch(url, { method: "POST" }).catch(function () {}); }
 
 	var stage = document.getElementById("stage"), scale = 1, state = null;
 	var steam = DotSteam.mount(stage, {

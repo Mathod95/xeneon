@@ -210,7 +210,7 @@ tr.todo td:nth-child(3) { color: var(--muted); }
           <tr class="todo"><td>8</td><td>Mises à jour</td><td>Compare sa version à la dernière release GitHub (au démarrage, puis une fois par jour) ; une nouvelle version s'affiche dans le menu et dans la page de réglages, avec un lien de téléchargement. Pas de mise à jour automatique pour l'instant.</td></tr>
           <tr class="todo"><td>9</td><td>Avertissement Windows</td><td>L'exe n'est pas signé : SmartScreen avertit au premier lancement (« Informations complémentaires » → « Exécuter quand même »). Pistes : Microsoft Store (MSIX, aucun avertissement) ou signature gratuite SignPath pour les projets open source.</td></tr>
           <tr class="todo"><td>10</td><td>Charte de la page de réglages</td><td>Fond en points de Dot Page : fait (page <code>#080808</code>, trame de points 22 px). Reste : le libellé « ● DOT COMPANION » ; garder la police Fira Code et l'accent des Couleurs communes.</td></tr>
-          <tr class="todo"><td>11</td><td>Réglages avec l'Edge en direct</td><td>Voir « Proposition · réglages avec l'Edge en direct » au-dessus : l'écran de l'Edge en haut avec le Dot Hub choisi qui tourne en direct, ses réglages au style des maquettes en dessous, mode aperçu, taille envoyée par chaque Dot Hub. D'abord dans cette maquette, puis dans le compagnon.</td></tr>
+          <tr class="todo"><td>11</td><td>Réglages avec l'Edge en direct</td><td>Commencé : carte « Aperçu · XENEON EDGE » entre les Couleurs et les Dot Hub, le Dot Hub choisi y tourne en direct (vrai module, réglages et couleurs envoyés tout de suite), taille S à XL au choix, mode aperçu. Voir « Proposition · réglages avec l'Edge en direct » au-dessus : l'écran de l'Edge en haut avec le Dot Hub choisi qui tourne en direct, ses réglages au style des maquettes en dessous, mode aperçu, taille envoyée par chaque Dot Hub. D'abord dans cette maquette, puis dans le compagnon.</td></tr>
         </tbody>
       </table>
     </div>
@@ -232,17 +232,28 @@ tr.todo td:nth-child(3) { color: var(--muted); }
       "c0rs41r-edge-c3d4": { name: "Edge · droite", module: "clock", last_seen: now - 40000, settings: {} },
       "c0rs41r-edge-e5f6": { name: "", module: null, last_seen: now - 3 * 86400000, settings: {} }
     },
-    theme: { dotAccentColor: "#10B981", litDotColor: "#F2F0E9", unlitDotColor: "#1C1C1C", labelColor: "#B8B6B0" },
+    theme: { dotAccentColor: "#10B981", litDotColor: "#F2F0E9", unlitDotColor: "#1C1C1C", labelColor: "#B8B6B0" }, themeVersion: 1,
     defaults: { dotAccentColor: "#10B981", litDotColor: "#F2F0E9", unlitDotColor: "#1C1C1C", labelColor: "#B8B6B0" }
   };
-  var PAGES = {}; // pages des modules (schéma des réglages)
+  var PAGES = {}; // pages des modules (schéma des réglages, et aperçu)
+  // état Steam d'exemple pour l'aperçu de Dot Steam (jeux fictifs ; les jaquettes ne sont pas servies dans la maquette)
+  function steamState() {
+    var t = Date.now() / 1000, names = ["Neon Courier", "Starfall Drift", "Hollow Pines", "Ironveil", "Tidebound", "Ember Rally", "Glass Atlas", "Rook & Rust"];
+    return {
+      steam: { found: true, running: true }, playing: null, hero: 1,
+      games: names.map(function (n, i) { return { appid: i + 1, name: n, lastPlayed: t - (i + 1) * 7200 * (i + 1), playtime: 3000 - i * 300 }; }),
+      downloads: [{ appid: 5, name: "Tidebound", progress: 0.62, total: 6.2e9, speed: 38e6, eta: 240, status: "downloading" }],
+      friends: { enabled: true, error: null, list: [{ name: "Nova", game: "Starfall Drift", online: true }, { name: "Kiro", game: "Ember Rally", online: true }, { name: "Atlas", game: null, online: true }] },
+      profile: { name: "Mathod", avatar: false, status: "online" }
+    };
+  }
   var toastTimer = null;
   function toast(t) { v("toast").textContent = t; clearTimeout(toastTimer); toastTimer = setTimeout(function () { v("toast").textContent = ""; }, 3500); }
 
   // l'API du compagnon, simulée : mêmes routes et mêmes réponses que companion/src/main.rs
   function api(url, opts) {
     opts = opts || {};
-    var m = (opts.method || "GET").toUpperCase(), path = String(url).replace(/^https?:\/\/[^/]+/, ""), body = null;
+    var m = (opts.method || "GET").toUpperCase(), path = String(url).replace(/^https?:\/\/[^/]+/, "").split("?")[0], body = null;
     try { body = opts.body ? JSON.parse(opts.body) : null; } catch (e) { body = null; }
     var json = function (o, s) { return Promise.resolve(new Response(JSON.stringify(o), { status: s || 200, headers: { "Content-Type": "application/json" } })); };
     var mod = /^\/m\/([\w-]+)\/index\.html$/.exec(path);
@@ -250,7 +261,9 @@ tr.todo td:nth-child(3) { color: var(--muted); }
     if (path === "/api/modules") return json(STATE.modules);
     if (path === "/api/instances") return json(STATE.instances);
     if (path === "/api/theme" && m === "GET") return json({ theme: STATE.theme, version: 1, defaults: STATE.defaults });
-    if (path === "/api/theme" && m === "PUT") { Object.assign(STATE.theme, body || {}); toast("Couleurs enregistrées pour tous les modules"); return json({ theme: STATE.theme, version: 2 }); }
+    if (path === "/api/steam/state") return json(steamState());
+    if (path === "/api/open-settings") { toast("Le compagnon ouvrirait cette page dans le navigateur du PC"); return json({ ok: true }); }
+    if (path === "/api/theme" && m === "PUT") { Object.assign(STATE.theme, body || {}); STATE.themeVersion++; toast("Couleurs enregistrées pour tous les modules"); return json({ theme: STATE.theme, version: 2 }); }
     var inst = /^\/api\/instance\/([^/]+)(\/identify)?$/.exec(path);
     if (inst) {
       var uid = decodeURIComponent(inst[1]), it = STATE.instances[uid];
@@ -260,9 +273,11 @@ tr.todo td:nth-child(3) { color: var(--muted); }
         if ("name" in body) it.name = body.name;
         if ("module" in body) it.module = body.module;
         if ("settings" in body) it.settings = body.settings;
+        it.version = (it.version || 1) + 1;
         return json(it);
       }
-      return json(it || {}, it ? 200 : 404);
+      // comme main.rs : l'instance, avec les couleurs communes et leur version
+      return it ? json(Object.assign({ version: 1, identify: 0 }, it, { theme: STATE.theme, theme_version: STATE.themeVersion })) : json({}, 404);
     }
     return json({ error: "not found" }, 404);
   }
@@ -272,18 +287,33 @@ tr.todo td:nth-child(3) { color: var(--muted); }
     Promise.all([
       fetch("companion/web/settings.html").then(function (r) { return r.text(); }),
       fetch("widgets/dot-clock/index.html").then(function (r) { return r.text(); }),
-      fetch("widgets/dot-steam/index.html").then(function (r) { return r.text(); })
+      fetch("widgets/dot-steam/index.html").then(function (r) { return r.text(); }),
+      fetch("companion/web/home.html").then(function (r) { return r.text(); })
     ]).then(function (res) {
-      PAGES.clock = res[1]; PAGES.steam = res[2];
+      PAGES.clock = res[1]; PAGES.steam = res[2]; PAGES.home = res[3];
       var fonts = new URL("widgets/dot-clock/resources/fonts/", ROOT).href;
       var html = res[0].replace(/url\("\/m\/clock\/resources\/fonts\//g, 'url("' + fonts)
-        .replace("<head>", "<head><script>window.fetch = function (u, o) { return parent.__dotCompanionApi(u, o); };<\/script>");
+        .replace("<head>", "<head><script>window.fetch = function (u, o) { return parent.__dotCompanionApi(u, o); }; window.__dotPreviewFrame = function (f, uid, inst) { parent.__dotCompanionPreview(f, uid, inst); };<\/script>");
       v("settingsFrame").srcdoc = html;
     }).catch(function () {
       v("settingsFrame").srcdoc = "<p style='font:14px monospace;color:#b8b6b0;padding:24px'>La page de réglages n'a pas pu être chargée.</p>";
     });
   }
   window.__dotCompanionApi = api;
+
+  // aperçu de la page de réglages : la vraie page du module (ou l'accueil), avec le vrai hub/module.js,
+  // servie dans le cadre de l'aperçu ; ses requêtes passent par la page de réglages, donc par l'API simulée
+  window.__dotCompanionPreview = function (f, uid, inst) {
+    var home = !inst.module, dir = home ? "companion/web/" : "widgets/dot-" + inst.module + "/";
+    var html = home ? PAGES.home : PAGES[inst.module];
+    if (!html) { f.srcdoc = ""; return; }
+    var fonts = new URL("widgets/dot-clock/resources/fonts/", ROOT).href;
+    var params = JSON.stringify({ uid: uid, module: inst.module || "", preview: "1" });
+    html = html.replace(/url\("\/m\/clock\/resources\/fonts\//g, 'url("' + fonts)
+      .replace(/<head>/i, '<head><base href="' + new URL(dir, ROOT).href + '"><script>window.__dotHubParams = ' + params + '; window.fetch = function (u, o) { return parent.fetch(u, o); };<\/script>');
+    if (!home) html = html.replace("</body>", '<script src="' + new URL("companion/web/hub/module.js", ROOT).href + '"><\/script>\n</body>');
+    f.srcdoc = html;
+  };
 
   // ---------- vue « Fenêtre » : la console du compagnon 0.4.0 (mêmes lignes que main.rs)
   v("consoleText").innerHTML = [
