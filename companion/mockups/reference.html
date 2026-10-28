@@ -194,7 +194,7 @@ tr.todo td:nth-child(3) { color: var(--muted); }
   <section style="display:grid;gap:14px">
     <div class="diff-head">
       <h2>Choix de design</h2>
-      <p class="hint">Les lignes sans gris sont déjà dans le compagnon 0.4.0 ; les grises sont à valider.</p>
+      <p class="hint">Les lignes sans gris sont validées (déjà dans le compagnon 0.4.0, ou à coder quand c'est indiqué) ; les grises sont à valider.</p>
     </div>
     <div class="table-scroll">
       <table>
@@ -204,7 +204,7 @@ tr.todo td:nth-child(3) { color: var(--muted); }
           <tr><td>2</td><td>Réseau</td><td>N'écoute que sur <code>127.0.0.1:47800</code> : invisible depuis le réseau local. Les requêtes dont l'en-tête <code>Host</code> n'est pas <code>127.0.0.1:47800</code> ou <code>localhost:47800</code> sont refusées.</td></tr>
           <tr><td>3</td><td>Réglages</td><td>Dans le navigateur du PC (bouton ⚙ SETTINGS de l'accueil). Une carte par Dot Hub : nom, module, champs du module générés depuis ses balises <code>x-icue-property</code>, enregistrés tout de suite. Carte « Couleurs » commune à tous les modules. « Identifier » affiche le nom sur l'Edge, « Oublier » demande confirmation.</td></tr>
           <tr><td>4</td><td>Secrets</td><td>Clés d'API et jetons chiffrés sur le PC (DPAPI de Windows), masqués dans la page (<code>••••••••</code>), jamais renvoyés en clair.</td></tr>
-          <tr class="todo"><td>5</td><td>Fenêtre</td><td>Aujourd'hui une fenêtre console : la fermer arrête le compagnon. Proposition : plus de fenêtre, une icône dans la zone de notification (vue « Zone de notification »).</td></tr>
+          <tr><td>5</td><td>Fenêtre</td><td><b>Validé (28 octobre 2026)</b> : plus de fenêtre console, le compagnon tourne en arrière-plan avec une icône dans la zone de notification (vue « Zone de notification »). Aujourd'hui (0.4.0), c'est encore une fenêtre console qui doit rester ouverte : à coder.</td></tr>
           <tr class="todo"><td>6</td><td>Menu de l'icône</td><td>Ouvrir les réglages, Identifier les Dot Hub, Démarrer avec Windows (coché par défaut), Rechercher une mise à jour, Quitter. En tête : version et nombre de Dot Hub connectés. Clic gauche sur l'icône : ouvre les réglages.</td></tr>
           <tr class="todo"><td>7</td><td>Démarrage avec Windows</td><td>Clé <code>HKCU\Software\Microsoft\Windows\CurrentVersion\Run</code>, sans droits administrateur. Activé à la première ouverture, désactivable dans le menu.</td></tr>
           <tr class="todo"><td>8</td><td>Mises à jour</td><td>Compare sa version à la dernière release GitHub (au démarrage, puis une fois par jour) ; une nouvelle version s'affiche dans le menu et dans la page de réglages, avec un lien de téléchargement. Pas de mise à jour automatique pour l'instant.</td></tr>
