@@ -7,10 +7,12 @@
 <style>
 @font-face { font-family: "Fira Code"; src: url("/m/clock/resources/fonts/FiraCode-Regular.woff2") format("woff2"); font-weight: 400; }
 @font-face { font-family: "Fira Code"; src: url("/m/clock/resources/fonts/FiraCode-Medium.woff2") format("woff2"); font-weight: 500; }
-:root { --bg: #0b0b0b; --panel: #121212; --line: #232323; --lit: #f2f0e9; --label: #b8b6b0; --muted: #7d7b76; --accent: #10b981; --red: #ed403b;
+:root { --bg: #080808; --panel: #121212; --line: #232323; --lit: #f2f0e9; --label: #b8b6b0; --muted: #7d7b76; --accent: #10b981; --red: #ed403b;
   --mono: "Fira Code", Consolas, monospace; --brand: "Segoe UI", Selawik, system-ui, sans-serif; color-scheme: dark; }
 * { box-sizing: border-box; }
-body { margin: 0; background: var(--bg); color: var(--lit); font: 15px/1.5 var(--brand); padding: 28px max(16px, 4vw) 64px; }
+html { background: var(--bg); }
+/* fond en points, le même que Dot Page et les maquettes */
+body { margin: 0; background: var(--bg) radial-gradient(circle, #161616 1.2px, transparent 1.6px) 0 0 / 22px 22px; color: var(--lit); font: 15px/1.5 var(--brand); padding: 28px max(16px, 4vw) 64px; }
 .wrap { max-width: 1100px; margin: 0 auto; display: grid; gap: 28px; }
 .top { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
 .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; letter-spacing: .22em; }
