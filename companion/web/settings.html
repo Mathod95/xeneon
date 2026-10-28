@@ -67,7 +67,7 @@ a { color: var(--accent); }
 	"use strict";
 	var MODULES = [], SCHEMAS = {}, saveTimers = {}, THEME_KEYS = [];
 	// aperçu : Dot Hub affiché, sa taille dans l'aperçu, son cadre ; état de chaque Dot Hub et couleurs communes
-	var INST = {}, THEME = null, PREVIEW = { size: "xl", slot: null, frame: null };
+	var INST = {}, THEME = null, PREVIEW = { size: "xl", frames: [] };
 	var SLOTS = { xl: [2536, 696], l: [1688, 696], m: [840, 696], s: [840, 344] };
 	var THEME_LABELS = { dotAccentColor: "Accent color", litDotColor: "Lit dot color", unlitDotColor: "Unlit dot color", labelColor: "Label color" };
 	function lit(v) { try { return Function("return (" + v + ")")(); } catch (e) { return v; } }
@@ -221,37 +221,41 @@ a { color: var(--accent); }
 	}
 
 	// ---------------------------------------------------------------- aperçu : l'écran de l'Edge
-	function previewCard() {
-		var c = el("section", "card"), head = el("header");
+	// Carte « Aperçu · XENEON EDGE » : l'accueil de Dot Hub (« DOT HUB », une carte vide « + »).
+	// Toucher le « + » ajoute en dessous la même carte, avec un écran vide (« ● DOT » seulement).
+	function previewCard(blank) {
+		var c = el("section", "card preview"), head = el("header");
 		head.appendChild(el("h2", "lbl", "Aperçu · XENEON EDGE"));
-		// XL seulement pour l'instant (PREVIEW.size) : les autres tailles viendront plus tard
 		c.appendChild(head);
-		var edge = el("div", "edge"), screen = el("div", "screen"), nat = el("div", "native");
-		PREVIEW.slot = el("div", "slot"); nat.appendChild(PREVIEW.slot); screen.appendChild(nat); edge.appendChild(screen); c.appendChild(edge);
+		var edge = el("div", "edge"), screen = el("div", "screen"), nat = el("div", "native"), slot = el("div", "slot");
+		var dims = SLOTS[PREVIEW.size]; // XL seulement pour l'instant
+		slot.style.width = dims[0] + "px"; slot.style.height = dims[1] + "px";
+		nat.appendChild(slot); screen.appendChild(nat); edge.appendChild(screen); c.appendChild(edge);
 		var fit = function () { nat.style.transform = "scale(" + (screen.clientWidth / 2560) + ")"; };
 		if (window.ResizeObserver) new ResizeObserver(fit).observe(screen); else window.addEventListener("resize", fit);
 		setTimeout(fit, 0);
-		loadPreview();
+		var f = el("iframe"); f.title = blank ? "Aperçu : écran vide" : "Aperçu de Dot Hub";
+		// la maquette de référence du compagnon remplit le cadre elle-même (pas de compagnon derrière)
+		if (window.__dotPreviewFrame) window.__dotPreviewFrame(f, "", { module: null, name: "" }, { blank: !!blank });
+		else f.src = "/home?preview=1" + (blank ? "&blank=1" : "");
+		f.addEventListener("load", function () { pushPreview(f); });
+		PREVIEW.frames.push(f); slot.appendChild(f);
 		return c;
 	}
-	function loadPreview() {
-		if (!PREVIEW.slot) return;
-		// pour l'instant l'aperçu montre l'accueil de Dot Hub (« DOT HUB », une carte vide « + »)
-		var dims = SLOTS[PREVIEW.size];
-		PREVIEW.slot.style.width = dims[0] + "px"; PREVIEW.slot.style.height = dims[1] + "px";
-		PREVIEW.slot.innerHTML = "";
-		var f = el("iframe"); f.title = "Aperçu de Dot Hub";
-		// la maquette de référence du compagnon remplit le cadre elle-même (pas de compagnon derrière)
-		if (window.__dotPreviewFrame) window.__dotPreviewFrame(f, "", { module: null, name: "" });
-		else f.src = "/home?preview=1";
-		f.addEventListener("load", function () { pushPreview(); });
-		PREVIEW.frame = f; PREVIEW.slot.appendChild(f);
+	// couleurs communes : envoyées tout de suite aux aperçus
+	function pushPreview(only) {
+		PREVIEW.frames.forEach(function (f) {
+			if ((only && f !== only) || !f.contentWindow) return;
+			f.contentWindow.postMessage({ type: "dot-preview", settings: {}, theme: THEME }, "*");
+		});
 	}
-	// couleurs communes : envoyées tout de suite à l'aperçu
-	function pushPreview() {
-		if (!PREVIEW.frame || !PREVIEW.frame.contentWindow) return;
-		PREVIEW.frame.contentWindow.postMessage({ type: "dot-preview", settings: {}, theme: THEME }, "*");
-	}
+	// « + » touché dans un aperçu : une carte de plus, sous la dernière carte d'aperçu
+	window.addEventListener("message", function (e) {
+		var d = e.data || {};
+		if (d.type !== "dot-add") return;
+		var cards = document.querySelectorAll(".card.preview"), lastCard = cards[cards.length - 1];
+		if (lastCard) lastCard.insertAdjacentElement("afterend", previewCard(true));
+	});
 
 	function load() {
 		Promise.all([fetch("/api/modules").then(function (r) { return r.json(); }), fetch("/api/instances").then(function (r) { return r.json(); }), fetch("/api/theme").then(function (r) { return r.json(); })])
@@ -265,7 +269,8 @@ a { color: var(--accent); }
 				THEME = res[2].theme;
 				keys.sort(function (a, b) { return (inst[b].last_seen || 0) - (inst[a].last_seen || 0); });
 				INST = {}; keys.forEach(function (k) { INST[k] = JSON.parse(JSON.stringify(inst[k])); });
-				list.appendChild(previewCard());
+				PREVIEW.frames = [];
+				list.appendChild(previewCard(false));
 				if (!keys.length) {
 					list.appendChild(el("p", "empty", "Aucun Dot Hub pour l'instant. Pose le widget Dot Hub dans iCUE sur l'Edge : il apparaîtra ici."));
 					return;

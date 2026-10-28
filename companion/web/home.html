@@ -55,7 +55,7 @@ html, body { width: 100%; height: 100%; overflow: hidden; background: #080808; u
 	// paramètres : dans l'adresse (?uid=…&preview=1), ou posés par la maquette de référence du compagnon
 	var Q = window.__dotHubParams || {};
 	new URLSearchParams(location.search).forEach(function (v, k) { if (!(k in Q)) Q[k] = v; });
-	var uid = Q.uid || "", preview = Q.preview === "1" || Q.preview === true;
+	var uid = Q.uid || "", preview = Q.preview === "1" || Q.preview === true, blank = Q.blank === "1" || Q.blank === true;
 	var stage = document.getElementById("stage");
 	var SLOTS = { s: [840, 344], m: [840, 696], l: [1688, 696], xl: [2536, 696] };
 	var PITCH = { xl: 19, l: 13, m: 9, s: 12 };
@@ -100,16 +100,19 @@ html, body { width: 100%; height: 100%; overflow: hidden; background: #080808; u
 
 		var head = el("div", "head");
 		head.appendChild(el("span", "dot"));
-		head.appendChild(el("p", "lbl", "DOT HUB" + (inst.name ? " · " + inst.name : "")));
+		// aperçu vide (carte ajoutée par le « + ») : « ● DOT » seulement
+		head.appendChild(el("p", "lbl", blank ? "DOT" : "DOT HUB" + (inst.name ? " · " + inst.name : "")));
 		head.appendChild(el("span", "grow"));
-		head.appendChild(settingsButton());
+		if (!preview) head.appendChild(settingsButton()); // dans la page de réglages, SETTINGS ne sert à rien
 		stage.appendChild(head);
+		if (blank) return;
 
 		var grid = el("div", "tiles");
 		// aperçu de la page de réglages : pas de module, une carte vide « + » pour en ajouter un (proposition)
 		if (preview) {
 			var add = el("button", "tile add"); add.type = "button"; add.setAttribute("aria-label", "Add a module");
 			add.appendChild(el("span", "plus", "+"));
+			add.addEventListener("click", function () { if (window.parent !== window) window.parent.postMessage({ type: "dot-add" }, "*"); });
 			grid.appendChild(add); stage.appendChild(grid);
 			return;
 		}
