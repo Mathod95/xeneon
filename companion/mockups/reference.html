@@ -95,6 +95,16 @@ thead th { font-family: var(--mono); font-weight: 500; font-size: 12px; letter-s
 td:first-child { font-family: var(--mono); color: var(--muted); width: 3.5em; font-variant-numeric: tabular-nums; }
 td:nth-child(2) { font-weight: 500; width: 15em; }
 tr.todo td:nth-child(3) { color: var(--muted); }
+
+/* proposition : réglages avec l'Edge en direct */
+.idea { display: grid; gap: 16px; }
+.idea-lead { margin: 0; font-size: 17px; color: var(--text); }
+.idea-cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); gap: 14px; }
+.idea-box { padding: 18px 20px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); }
+.idea-box h3 { margin: 0 0 10px; font-family: var(--mono); font-weight: 500; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--brand); }
+.idea-box ul { margin: 0; padding-left: 18px; display: grid; gap: 8px; color: var(--muted); font-size: 14px; }
+.idea-box b, .idea-steps b { color: var(--text); font-weight: 500; }
+.idea-steps { margin: 0; padding-left: 22px; display: grid; gap: 6px; color: var(--muted); font-size: 14px; }
 </style>
 
 <div class="wrap">
@@ -144,6 +154,43 @@ tr.todo td:nth-child(3) { color: var(--muted); }
     <figcaption id="viewNote"></figcaption>
   </figure>
 
+  <section class="idea" aria-labelledby="ideaTitle">
+    <div class="diff-head">
+      <h2 id="ideaTitle">Proposition · réglages avec l'Edge en direct</h2>
+      <p class="hint">Idée de Mathias, 28 octobre 2026. À faire d'abord dans cette maquette, puis dans le compagnon une fois validée.</p>
+    </div>
+    <p class="idea-lead">À la place de la page de réglages actuelle : l'écran de la CORSAIR XENEON EDGE en haut, avec chaque Dot Hub qui tourne en direct, et en dessous ses réglages présentés comme dans les maquettes de référence. Chaque changement se voit tout de suite sur l'écran.</p>
+    <div class="idea-cols">
+      <div class="idea-box">
+        <h3>Pourquoi c'est faisable</h3>
+        <ul>
+          <li><b>Le rendu des modules existe déjà</b> : le compagnon sert les vraies pages des modules (Dot Clock, Dot Steam), et c'est le même rendu dans les maquettes et sur l'Edge. Il suffit de les afficher dans un cadre d'Edge, comme sur Dot Page.</li>
+          <li><b>Le direct existe presque</b> : un module relit ses réglages toutes les 2 s ; la page de réglages peut en plus envoyer chaque changement à l'aperçu (<code>postMessage</code>) pour qu'il soit instantané.</li>
+          <li><b>Les vraies données</b> : sur le PC, l'aperçu montre les vrais jeux Steam, la vraie heure, etc., puisque c'est le compagnon qui les fournit.</li>
+        </ul>
+      </div>
+      <div class="idea-box">
+        <h3>À quoi ça ressemblerait</h3>
+        <ul>
+          <li><b>En haut</b> : l'écran de l'Edge, et la liste des Dot Hub (leur nom) à côté pour choisir celui qu'on règle.</li>
+          <li><b>En dessous</b> : les réglages au style des maquettes (boutons de choix, interrupteurs, pastilles de couleur) au lieu de listes déroulantes. Toujours générés depuis les balises <code>x-icue-property</code> de chaque module : rien à refaire module par module.</li>
+          <li><b>Mode aperçu</b> : toucher l'aperçu ne déclenche rien (pas de jeu lancé, pas de lumière allumée).</li>
+        </ul>
+      </div>
+      <div class="idea-box">
+        <h3>Limites</h3>
+        <ul>
+          <li><b>La place sur l'Edge</b> : iCUE ne dit pas au compagnon où chaque widget est posé ni sur quelle page. Sa taille (S, M, L, XL) peut être envoyée par le module au compagnon (petit ajout), pas sa position. Chaque Dot Hub s'affiche donc à sa vraie taille, sans reproduire exactement la disposition ; option : le placer soi-même dans l'aperçu, pour l'affichage seulement.</li>
+          <li><b>Les modules pas encore codés</b> : seuls Dot Clock et Dot Steam tournent en direct aujourd'hui ; les autres arriveront au fur et à mesure qu'ils seront codés.</li>
+        </ul>
+      </div>
+    </div>
+    <ol class="idea-steps">
+      <li><b>Maquette</b> : l'Edge en direct avec les Dot Hub d'exemple et les vrais Dot Clock et Dot Steam, réglages au style des maquettes.</li>
+      <li><b>Compagnon</b> : la même page dans <code>companion/web/settings.html</code>, taille envoyée par chaque Dot Hub, mode aperçu dans les modules.</li>
+    </ol>
+  </section>
+
   <section style="display:grid;gap:14px">
     <div class="diff-head">
       <h2>Choix de design</h2>
@@ -163,6 +210,7 @@ tr.todo td:nth-child(3) { color: var(--muted); }
           <tr class="todo"><td>8</td><td>Mises à jour</td><td>Compare sa version à la dernière release GitHub (au démarrage, puis une fois par jour) ; une nouvelle version s'affiche dans le menu et dans la page de réglages, avec un lien de téléchargement. Pas de mise à jour automatique pour l'instant.</td></tr>
           <tr class="todo"><td>9</td><td>Avertissement Windows</td><td>L'exe n'est pas signé : SmartScreen avertit au premier lancement (« Informations complémentaires » → « Exécuter quand même »). Pistes : Microsoft Store (MSIX, aucun avertissement) ou signature gratuite SignPath pour les projets open source.</td></tr>
           <tr class="todo"><td>10</td><td>Charte de la page de réglages</td><td>Reprendre le fond en points de Dot Page et le libellé « ● DOT COMPANION » ; garder la police Fira Code et l'accent des Couleurs communes.</td></tr>
+          <tr class="todo"><td>11</td><td>Réglages avec l'Edge en direct</td><td>Voir « Proposition · réglages avec l'Edge en direct » au-dessus : l'écran de l'Edge en haut avec le Dot Hub choisi qui tourne en direct, ses réglages au style des maquettes en dessous, mode aperçu, taille envoyée par chaque Dot Hub. D'abord dans cette maquette, puis dans le compagnon.</td></tr>
         </tbody>
       </table>
     </div>
