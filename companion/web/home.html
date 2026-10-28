@@ -91,7 +91,24 @@ html, body { width: 100%; height: 100%; overflow: hidden; background: #080808; u
 		return "";
 	}
 
+	// pages : les modules ajoutés avec « + » (une tuile chacun), communes à tous les Dot Hub ; [{ id, module }]
 	var modules = [], inst = {}, picking = false, pages = [];
+	function moduleOf(id) { return modules.filter(function (x) { return x.id === id; })[0] || { id: id, name: id }; }
+	function tile(m, label, onTap) {
+		var b = el("button", "tile"); b.type = "button"; b.setAttribute("aria-label", label);
+		var p = el("div", "pic"); p.appendChild(pic(m.id, PITCH[stage.className.split(" ")[1]])); b.appendChild(p);
+		var meta = el("div", "meta"); meta.appendChild(el("span", "name", m.name)); b.appendChild(meta);
+		var lv = live(m.id); if (lv) b.appendChild(el("span", "live", lv));
+		b.addEventListener("click", function () { onTap(b); });
+		return b;
+	}
+	function dashed(text, label, onTap) {
+		var b = el("button", "tile add"); b.type = "button"; b.setAttribute("aria-label", label);
+		b.appendChild(el("span", "plus", text));
+		b.addEventListener("click", onTap);
+		return b;
+	}
+	function toParent(msg) { if (window.parent !== window) window.parent.postMessage(msg, "*"); }
 	function render() {
 		var size = classify(window.innerWidth || 2536, window.innerHeight || 696), dims = SLOTS[size];
 		var W = dims[0], H = dims[1], scale = Math.min(window.innerWidth / W, window.innerHeight / H) || 1;
@@ -102,51 +119,43 @@ html, body { width: 100%; height: 100%; overflow: hidden; background: #080808; u
 
 		var head = el("div", "head");
 		head.appendChild(el("span", "dot"));
-		// aperçu vide (carte ajoutée par le « + ») : « ● DOT » seulement ; le toucher affiche les modules à choisir
+		// page vide de la page de réglages (ajoutée par « + ») : « ● DOT » seulement ; le toucher affiche les modules à choisir
 		if (blank) {
 			var pick = el("button", "lbl pickbtn", picking ? "DOT ▴" : "DOT ▾"); pick.type = "button";
 			pick.setAttribute("aria-label", "Choose a module"); pick.setAttribute("aria-expanded", picking ? "true" : "false");
 			pick.addEventListener("click", function () { picking = !picking; render(); });
 			head.appendChild(pick);
-		} else head.appendChild(el("p", "lbl", "DOT HUB" + (inst.name ? " · " + inst.name : "")));
+		} else head.appendChild(el("p", "lbl", "DOT HUB" + (inst.name ? " · " + inst.name : "") + (picking ? " · ADD A MODULE" : "")));
 		head.appendChild(el("span", "grow"));
 		if (!preview) head.appendChild(settingsButton()); // dans la page de réglages, SETTINGS ne sert à rien
 		stage.appendChild(head);
 		if (blank && !picking) return;
 
 		var grid = el("div", "tiles");
-		// aperçu de la page de réglages : pas de module, une carte vide « + » pour en ajouter un (proposition)
-		// carte DOT HUB de la page de réglages : une tuile par module ajouté (pages), puis une carte vide « + »
-		if (preview && !blank) {
-			pages.forEach(function (id, i) {
-				var m = modules.filter(function (x) { return x.id === id; })[0] || { id: id, name: id };
-				var t = el("button", "tile"); t.type = "button"; t.setAttribute("aria-label", "Show " + m.name);
-				var tp = el("div", "pic"); tp.appendChild(pic(m.id, PITCH[size])); t.appendChild(tp);
-				var tm = el("div", "meta"); tm.appendChild(el("span", "name", m.name)); t.appendChild(tm);
-				var tl = live(m.id); if (tl) t.appendChild(el("span", "live", tl));
-				t.addEventListener("click", function () { if (window.parent !== window) window.parent.postMessage({ type: "dot-goto", page: i }, "*"); });
-				grid.appendChild(t);
+		stage.appendChild(grid);
+		// choisir un module : page vide de la page de réglages, ou « + » touché sur l'Edge
+		if (picking) {
+			modules.forEach(function (m) {
+				grid.appendChild(tile(m, "Add " + m.name, function (b) {
+					if (blank) toParent({ type: "dot-pick", module: m.id });
+					else addPage(m.id, b);
+				}));
 			});
-			var add = el("button", "tile add"); add.type = "button"; add.setAttribute("aria-label", "Add a module");
-			add.appendChild(el("span", "plus", "+"));
-			add.addEventListener("click", function () { if (window.parent !== window) window.parent.postMessage({ type: "dot-add" }, "*"); });
-			grid.appendChild(add); stage.appendChild(grid);
+			if (!blank) grid.appendChild(dashed("←", "Back", function () { picking = false; render(); }));
 			return;
 		}
-		modules.forEach(function (m) {
-			var b = el("button", "tile"); b.type = "button";
-			b.setAttribute("aria-label", "Open " + m.name);
-			var p = el("div", "pic"); p.appendChild(pic(m.id, PITCH[size])); b.appendChild(p);
-			var meta = el("div", "meta"); meta.appendChild(el("span", "name", m.name)); b.appendChild(meta);
-			var lv = live(m.id); if (lv) b.appendChild(el("span", "live", lv));
-			b.addEventListener("click", function () {
-				// aperçu vide : le module choisi s'affiche dans la carte de la page de réglages
-				if (blank) { if (window.parent !== window) window.parent.postMessage({ type: "dot-pick", module: m.id }, "*"); return; }
-				choose(m.id, b);
-			});
-			grid.appendChild(b);
+		// accueil : une tuile par page, puis une carte vide « + »
+		pages.forEach(function (pg) {
+			var m = moduleOf(pg.module);
+			grid.appendChild(tile(m, "Open " + m.name, function (b) {
+				if (preview) toParent({ type: "dot-goto", page: pg.id }); // page de réglages : on descend à la page
+				else openPage(pg.id, b);
+			}));
 		});
-		stage.appendChild(grid);
+		grid.appendChild(dashed("+", "Add a module", function () {
+			if (preview) toParent({ type: "dot-add" }); // page de réglages : une page vide de plus
+			else { picking = true; render(); }
+		}));
 	}
 	// SETTINGS : le compagnon ouvre http://127.0.0.1:47800/settings dans le navigateur du PC
 	var GEAR = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1"/></svg>';
@@ -164,17 +173,37 @@ html, body { width: 100%; height: 100%; overflow: hidden; background: #080808; u
 		});
 		return b;
 	}
-	function choose(id, b) {
-		if (preview) return; // aperçu dans la page de réglages : le module se choisit dans la carte du Dot Hub
+	// sur l'Edge : ce Dot Hub affiche la page touchée
+	function openPage(id, b) {
 		b.classList.add("going");
 		fetch("/api/instance/" + encodeURIComponent(uid), {
-			method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ module: id })
+			method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ page: id })
 		}).then(function () { location.href = "/i/" + encodeURIComponent(uid); });
+	}
+	// sur l'Edge : « + », puis un module → une page de plus (dernière tuile), affichée tout de suite
+	function addPage(module, b) {
+		b.classList.add("going");
+		fetch("/api/pages", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ module: module }) })
+			.then(function (r) { return r.json(); })
+			.then(function (pg) { if (pg && pg.id) openPage(pg.id, b); else { picking = false; render(); } })
+			.catch(function () { picking = false; render(); });
+	}
+	function getPages() {
+		return fetch("/api/pages", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : []; }).catch(function () { return pages; });
 	}
 	Promise.all([
 		fetch("/api/modules").then(function (r) { return r.json(); }),
-		fetch("/api/instance/" + encodeURIComponent(uid)).then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; })
-	]).then(function (res) { modules = res[0]; inst = res[1] || {}; applyTheme(inst.theme); render(); });
+		uid ? fetch("/api/instance/" + encodeURIComponent(uid)).then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; }) : Promise.resolve({}),
+		preview ? Promise.resolve(pages) : getPages()
+	]).then(function (res) { modules = res[0]; inst = res[1] || {}; if (!preview) pages = res[2] || []; applyTheme(inst.theme); render(); });
+	// pages ajoutées ou retirées depuis la page de réglages : l'accueil suit
+	if (!preview) setInterval(function () {
+		if (picking) return;
+		getPages().then(function (list) {
+			var a = (list || []).map(function (x) { return x.id + ":" + x.module; }).join(), b = pages.map(function (x) { return x.id + ":" + x.module; }).join();
+			if (a !== b) { pages = list || []; render(); }
+		});
+	}, 5000);
 	// signe de vie toutes les 20 s : le compagnon compte ce Dot Hub comme connecté (menu de l'icône)
 	if (uid && !preview) setInterval(function () { fetch("/api/instance/" + encodeURIComponent(uid), { cache: "no-store" }).catch(function () {}); }, 20000);
 	// couleurs communes réglées dans la carte « Paramètres globaux » de la page de réglages

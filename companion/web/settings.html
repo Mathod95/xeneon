@@ -25,22 +25,15 @@ h1 { margin: 0; font: 500 28px var(--mono); letter-spacing: .04em; }
 .card header { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; }
 .card header .grow { flex: 1; }
 input[type=text], select { font: 14px var(--mono); color: var(--lit); background: #0b0b0b; border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; min-width: 0; }
-input[type=text].name { font-size: 16px; width: min(320px, 100%); }
 input[type=color] { width: 44px; height: 32px; border: 1px solid var(--line); border-radius: 8px; background: none; padding: 0; }
 input[type=checkbox] { width: 20px; height: 20px; accent-color: var(--accent); }
 button { font: 12px var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--label); background: #0b0b0b; border: 1px solid var(--line); border-radius: 999px; padding: 9px 16px; cursor: pointer; }
 button:hover { color: var(--lit); border-color: #3a3a3a; }
 button.danger:hover { color: var(--red); border-color: var(--red); }
-.form { display: grid; gap: 26px; justify-items: start; }
-.form fieldset { width: 100%; }
-fieldset { border: 0; margin: 0; padding: 0; display: grid; gap: 12px; }
-legend { padding: 0; margin-bottom: 4px; }
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); gap: 12px 24px; }
 .field { display: grid; gap: 6px; min-width: 0; }
 .field.inline { display: flex; align-items: center; gap: 12px; }
 .field span { color: var(--label); font-size: 14px; }
-.meta { font: 12px var(--mono); color: var(--muted); word-break: break-all; }
-.empty { color: var(--label); }
 .lbl.sub { color: var(--muted); margin: 0; }
 .update { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 18px; color: var(--label); font-size: 14px; }
 button.primary { color: var(--bg); background: var(--accent); border-color: var(--accent); }
@@ -57,15 +50,13 @@ a { color: var(--accent); }
 .settings .preset { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 6px; font-size: 11px; letter-spacing: .1em; }
 .settings .preset i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
 .settings .grp > span { font: 12px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--lit); }
-/* aperçu : l'écran de la XENEON EDGE avec le Dot Hub choisi, en direct */
-.chips { display: flex; flex-wrap: wrap; gap: 8px; }
-.chips button[aria-pressed="true"] { background: var(--lit); border-color: var(--lit); color: var(--bg); }
+/* l'écran de la XENEON EDGE, en direct : la carte DOT HUB et chaque page */
+.pagebar { display: flex; flex-wrap: wrap; gap: 12px; }
 .edge { padding: clamp(6px, 1.2%, 18px); border-radius: clamp(10px, 1.6vw, 24px); background: linear-gradient(180deg, #161616, #0b0b0b); border: 1px solid #2a2a2a; box-shadow: 0 40px 80px -40px #000, inset 0 1px 0 #262626; }
 .screen { position: relative; aspect-ratio: 2560 / 720; overflow: hidden; border-radius: clamp(3px, .5vw, 8px); background: #000; }
 .native { position: absolute; left: 0; top: 0; width: 2560px; height: 720px; transform-origin: 0 0; }
 .slot { position: absolute; left: 12px; top: 12px; border-radius: 12px; overflow: hidden; background: #080808; }
 .slot iframe { display: block; width: 100%; height: 100%; border: 0; background: #080808; }
-.slot .none { position: absolute; inset: 0; display: grid; place-items: center; font: 24px var(--mono); letter-spacing: .2em; text-transform: uppercase; color: var(--muted); }
 </style>
 </head>
 <body>
@@ -73,7 +64,7 @@ a { color: var(--accent); }
   <div class="top"><span class="brand">MATHOD</span><span class="status" id="saved"></span></div>
   <div style="display:grid;gap:8px">
     <h1>Dot Hub · Réglages</h1>
-    <p class="hint">Dot Hub, puis une page par module : touche « + » pour ajouter un module, choisis-le d'un toucher sur « DOT », règle-le en le voyant en direct.</p>
+    <p class="hint">Dot Hub, puis une page par module : touche « + » pour ajouter une page, choisis son module d'un toucher sur « DOT », règle-le en le voyant en direct. Les pages sont les tuiles de l'accueil sur l'Edge.</p>
   </div>
   <div id="list" style="display:grid;gap:16px"></div>
 </div>
@@ -81,8 +72,9 @@ a { color: var(--accent); }
 (function () {
 	"use strict";
 	var MODULES = [], SCHEMAS = {}, saveTimers = {}, THEME_KEYS = [];
-	// aperçu : Dot Hub affiché, sa taille dans l'aperçu, son cadre ; état de chaque Dot Hub et couleurs communes
-	var INST = {}, THEME = null, PREVIEW = { size: "xl", cards: [] };
+	// écrans : la carte DOT HUB puis une carte par page (XL) ; couleurs communes
+	var THEME = null, PREVIEW = { size: "xl", cards: [] };
+	var MASK = "••••••••", SECRET = /apikey|secret|token|password/i;
 	var SLOTS = { xl: [2536, 696], l: [1688, 696], m: [840, 696], s: [840, 344] };
 	var THEME_LABELS = { dotAccentColor: "Accent color", litDotColor: "Lit dot color", unlitDotColor: "Unlit dot color", labelColor: "Label color" };
 	function lit(v) { try { return Function("return (" + v + ")")(); } catch (e) { return v; } }
@@ -111,101 +103,6 @@ a { color: var(--accent); }
 			if (rest.length) groups.push({ title: "Other", keys: rest });
 			return (SCHEMAS[id] = { props: props, groups: groups });
 		});
-	}
-
-	function save(uid, patch) {
-		// l'aperçu suit tout de suite, l'enregistrement part 250 ms plus tard
-		var it = INST[uid] || (INST[uid] = {});
-		if ("name" in patch) it.name = patch.name;
-		if ("module" in patch) it.module = patch.module;
-		if ("settings" in patch) it.settings = patch.settings;
-		clearTimeout(saveTimers[uid]);
-		saveTimers[uid] = setTimeout(function () {
-			fetch("/api/instance/" + encodeURIComponent(uid), { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(patch) })
-				.then(function (r) { flash(r.ok ? "Enregistré" : "Erreur"); });
-		}, 250);
-	}
-
-	function input(p, value, onChange) {
-		var w;
-		if (p.type === "switch") {
-			w = el("input"); w.type = "checkbox"; w.checked = value === true || value === "true";
-			w.addEventListener("change", function () { onChange(w.checked); });
-		} else if (p.type === "color") {
-			w = el("input"); w.type = "color"; w.value = String(value || "#000000").slice(0, 7);
-			w.addEventListener("input", function () { onChange(w.value); });
-		} else if (p.type === "combobox" && p.values) {
-			w = el("select");
-			p.values.forEach(function (v) { var o = el("option", "", v.value); o.value = v.key; w.appendChild(o); });
-			w.value = value;
-			w.addEventListener("change", function () { onChange(w.value); });
-		} else {
-			w = el("input"); w.type = "text"; w.value = value == null ? "" : value;
-			// secret (clé d'API…) : masqué, jamais renvoyé en clair par le compagnon ; un clic l'efface pour en saisir un nouveau
-			if (/apikey|secret|token|password/i.test(p.key)) {
-				w.type = "password"; w.autocomplete = "off";
-				w.addEventListener("focus", function () { if (w.value === "••••••••") w.value = ""; });
-				w.addEventListener("blur", function () { if (w.value === "" && value === "••••••••") w.value = value; });
-			}
-			w.addEventListener("input", function () { onChange(w.value); });
-		}
-		return w;
-	}
-
-	function card(uid, inst) {
-		var c = el("section", "card"), head = el("header");
-		var name = el("input", "name"); name.type = "text"; name.placeholder = "Nom de cette instance"; name.value = inst.name || "";
-		name.addEventListener("input", function () { save(uid, { name: name.value }); });
-		head.appendChild(name);
-		var sel = el("select");
-		var home = el("option", "", "Dot Home (accueil)"); home.value = ""; sel.appendChild(home);
-		MODULES.forEach(function (m) { var o = el("option", "", m.name); o.value = m.id; sel.appendChild(o); });
-		sel.value = inst.module || "";
-		head.appendChild(sel);
-		head.appendChild(el("span", "grow"));
-		var id = el("button", "", "Identifier");
-		id.addEventListener("click", function () { fetch("/api/instance/" + encodeURIComponent(uid) + "/identify", { method: "POST" }); flash("Nom affiché sur l'Edge"); });
-		head.appendChild(id);
-		var del = el("button", "danger", "Oublier");
-		del.addEventListener("click", function () {
-			if (!del.dataset.sure) { del.dataset.sure = "1"; del.textContent = "Confirmer ?"; return; }
-			fetch("/api/instance/" + encodeURIComponent(uid), { method: "DELETE" }).then(load);
-		});
-		head.appendChild(del);
-		c.appendChild(head);
-		var seen = inst.last_seen ? new Date(inst.last_seen).toLocaleString() : "jamais";
-		c.appendChild(el("p", "meta", "uniqueId " + uid + " · vu " + seen));
-		var body = el("div", "form"); c.appendChild(body);
-		var settings = Object.assign({}, inst.settings || {});
-
-		function renderForm(moduleId) {
-			body.innerHTML = "";
-			if (!moduleId) { body.appendChild(el("p", "empty", "Cette instance affiche l'accueil Dot Home : choisis un module ci-dessus ou directement sur l'Edge.")); return; }
-			schema(moduleId).then(function (sc) {
-				sc.groups.forEach(function (g) {
-					// les couleurs communes sont réglées dans la carte « Paramètres globaux », pas par instance
-					var keys = g.keys.filter(function (k) { return THEME_KEYS.indexOf(k) < 0; });
-					if (!keys.length) return;
-					var fs = el("fieldset"); fs.appendChild(el("legend", "lbl", g.title));
-					var grid = el("div", "grid");
-					keys.forEach(function (k) {
-						var p = sc.props[k], v = Object.prototype.hasOwnProperty.call(settings, k) ? settings[k] : p.def;
-						var f = el("label", "field" + (p.type === "switch" || p.type === "color" ? " inline" : ""));
-						var w = input(p, v, function (nv) { settings[k] = nv; save(uid, { settings: settings }); });
-						if (f.className.indexOf("inline") >= 0) { f.appendChild(w); f.appendChild(el("span", "", p.label)); }
-						else { f.appendChild(el("span", "", p.label)); f.appendChild(w); }
-						grid.appendChild(f);
-					});
-					fs.appendChild(grid); body.appendChild(fs);
-				});
-				var reset = el("button", "", "Valeurs par défaut");
-				reset.addEventListener("click", function () { settings = {}; save(uid, { settings: settings }); renderForm(moduleId); });
-				body.appendChild(reset);
-			});
-		}
-		sel.addEventListener("change", function () { save(uid, { module: sel.value || null }); renderForm(sel.value); });
-		renderForm(inst.module);
-		return c;
 	}
 
 	// carte « Paramètres globaux » : communes à tous les modules et à toutes les instances
@@ -282,14 +179,13 @@ a { color: var(--accent); }
 		}, 250);
 	}
 
-	// ---------------------------------------------------------------- aperçu : l'écran de l'Edge
-	// Carte « Aperçu · XENEON EDGE » : l'accueil de Dot Hub (« DOT HUB », une carte vide « + »).
-	// Toucher le « + » ajoute en dessous la même carte, avec un écran vide (« ● DOT »). Toucher « DOT » propose les
-	// modules ; le module choisi tourne en direct dans la carte, avec ses réglages en dessous, au style des maquettes.
-	function previewCard(blank) {
-		// la carte DOT HUB (toujours là) porte un titre ; les pages ajoutées par « + » n'ont que l'écran et les réglages
-		var c = el("section", "card preview" + (blank ? " page" : " hub"));
-		if (!blank) { var head = el("header"); head.appendChild(el("h2", "lbl", "Dot Hub")); c.appendChild(head); }
+	// ---------------------------------------------------------------- l'écran de l'Edge, en direct
+	// Carte DOT HUB (toujours là) : l'accueil de Dot Hub, une tuile par page, puis une carte vide « + ».
+	// Toucher « + » ajoute en dessous une page vide (« ● DOT ») ; toucher « DOT » propose les modules ; le module choisi
+	// est enregistré comme page (POST /api/pages), tourne en direct, avec ses réglages dessous au style des maquettes.
+	// Les pages sont communes à tous les Dot Hub : sur l'Edge, l'accueil montre les mêmes tuiles.
+	function screenCard(cls) {
+		var c = el("section", "card preview " + cls);
 		var edge = el("div", "edge"), screen = el("div", "screen"), nat = el("div", "native"), slot = el("div", "slot");
 		var dims = SLOTS[PREVIEW.size]; // XL seulement pour l'instant
 		slot.style.width = dims[0] + "px"; slot.style.height = dims[1] + "px";
@@ -297,26 +193,40 @@ a { color: var(--accent); }
 		var fit = function () { nat.style.transform = "scale(" + (screen.clientWidth / 2560) + ")"; };
 		if (window.ResizeObserver) new ResizeObserver(fit).observe(screen); else window.addEventListener("resize", fit);
 		setTimeout(fit, 0);
-		var card = { el: c, slot: slot, frame: null, module: null, settings: {}, panel: null, blank: !!blank };
-		PREVIEW.cards.push(card);
-		frameFor(card);
-		return c;
+		return { el: c, slot: slot, frame: null, id: null, module: null, settings: {}, panel: null, bar: null, hub: false };
+	}
+	function hubCard() {
+		var card = screenCard("hub"), head = el("header");
+		head.appendChild(el("h2", "lbl", "Dot Hub"));
+		card.el.insertBefore(head, card.el.firstChild);
+		card.hub = true;
+		PREVIEW.cards.push(card); frameFor(card);
+		return card.el;
+	}
+	// une page (sans titre) : enregistrée (pg = { id, module, settings }) ou vide (pg = null, en attente d'un module)
+	function pageCard(pg) {
+		var card = screenCard("page");
+		if (pg) { card.id = pg.id; card.module = pg.module; card.settings = Object.assign({}, pg.settings || {}); }
+		PREVIEW.cards.push(card); frameFor(card);
+		if (card.module) panelFor(card);
+		barFor(card);
+		return card;
 	}
 	function frameFor(card) {
 		card.slot.innerHTML = "";
-		var f = el("iframe"); f.title = card.module ? "Aperçu du module" : "Aperçu de Dot Hub";
-		var inst = { module: card.module, name: "" };
+		var f = el("iframe"), empty = !card.hub && !card.module;
+		f.title = card.module ? "Aperçu du module" : "Aperçu de Dot Hub";
 		// la maquette de référence du compagnon remplit le cadre elle-même (pas de compagnon derrière)
-		if (window.__dotPreviewFrame) window.__dotPreviewFrame(f, "", inst, { blank: card.blank && !card.module });
-		else f.src = (card.module ? "/m/" + card.module + "/" : "/home") + "?preview=1" + (card.blank && !card.module ? "&blank=1" : "");
-		f.addEventListener("load", function () { pushPreview(card); if (!card.blank) pushPages(); });
+		if (window.__dotPreviewFrame) window.__dotPreviewFrame(f, "", { module: card.module, name: "" }, { blank: empty, page: card.id || "" });
+		else f.src = (card.module ? "/m/" + card.module + "/?preview=1&page=" + encodeURIComponent(card.id) : "/home?preview=1" + (empty ? "&blank=1" : ""));
+		f.addEventListener("load", function () { pushPreview(card); if (card.hub) pushPages(); });
 		card.frame = f; card.slot.appendChild(f);
 	}
-	// modules ajoutés (pages) : une tuile chacun sur l'accueil de la carte DOT HUB
+	// pages enregistrées : une tuile chacune sur l'accueil de la carte DOT HUB
 	function pushPages() {
-		var hub = PREVIEW.cards[0];
+		var hub = PREVIEW.cards.filter(function (c) { return c.hub; })[0];
 		if (!hub || !hub.frame || !hub.frame.contentWindow) return;
-		var pages = PREVIEW.cards.slice(1).filter(function (c) { return c.module; }).map(function (c) { return c.module; });
+		var pages = PREVIEW.cards.filter(function (c) { return c.id; }).map(function (c) { return { id: c.id, module: c.module }; });
 		hub.frame.contentWindow.postMessage({ type: "dot-pages", pages: pages }, "*");
 	}
 	// réglages et couleurs communes : envoyés tout de suite aux aperçus
@@ -326,11 +236,21 @@ a { color: var(--accent); }
 			card.frame.contentWindow.postMessage({ type: "dot-preview", settings: card.settings, theme: THEME }, "*");
 		});
 	}
+	// réglages d'une page : l'aperçu suit tout de suite, l'enregistrement part 250 ms plus tard
+	function savePage(card) {
+		if (!card.id) return;
+		clearTimeout(saveTimers[card.id]);
+		saveTimers[card.id] = setTimeout(function () {
+			fetch("/api/page/" + encodeURIComponent(card.id), { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ settings: card.settings }) })
+				.then(function (r) { flash(r.ok ? "Enregistré" : "Erreur"); }).catch(function () { flash("Erreur"); });
+		}, 250);
+	}
 	// réglages d'un module au style des maquettes de référence : générés depuis ses balises x-icue-property
 	// (2 ou 3 choix : boutons radio ; plus : liste ; interrupteur : case ; texte ; couleur = couleur commune)
 	function panelFor(card) {
 		if (card.panel) card.panel.remove();
-		var box = el("div", "settings"); card.panel = box; card.el.appendChild(box);
+		var box = el("div", "settings"); card.panel = box;
+		card.el.insertBefore(box, card.bar || null);
 		schema(card.module).then(function (sc) {
 			var keys = [];
 			sc.groups.forEach(function (g) { g.keys.forEach(function (k) { keys.push(k); }); });
@@ -344,7 +264,7 @@ a { color: var(--accent); }
 					if (rel && sc.props[rel] && val(rel) !== "custom") return;
 					var set = function (nv) {
 						if (THEME_KEYS.indexOf(k) >= 0) { THEME[k] = nv; saveTheme(THEME); syncThemeCard(); }
-						else card.settings[k] = nv;
+						else { card.settings[k] = nv; savePage(card); }
 						pushPreview(); if (rel === null && sc.props["custom" + k.charAt(0).toUpperCase() + k.slice(1)]) draw();
 					};
 					if (p.type === "combobox" && p.values && p.values.length <= 3) {
@@ -366,8 +286,13 @@ a { color: var(--accent); }
 						w = el("select"); p.values.forEach(function (o) { var op = el("option", "", o.value); op.value = o.key; w.appendChild(op); }); w.value = v;
 						w.addEventListener("change", function () { set(w.value); });
 					} else {
-						w = el("input"); w.type = /apikey|secret|token|password/i.test(k) ? "password" : "text"; // secret : masqué
-						w.value = v == null ? "" : v; w.spellcheck = false; w.autocomplete = "off";
+						w = el("input"); w.value = v == null ? "" : v; w.spellcheck = false; w.autocomplete = "off";
+						if (SECRET.test(k)) {
+							// secret (clé d'API…) : masqué, jamais renvoyé en clair par le compagnon ; le toucher l'efface pour en saisir un nouveau
+							w.type = "password";
+							w.addEventListener("focus", function () { if (w.value === MASK) w.value = ""; });
+							w.addEventListener("blur", function () { if (w.value === "" && v === MASK) { w.value = MASK; set(MASK); } });
+						} else w.type = "text";
 						w.addEventListener("input", function () { set(w.value); });
 					}
 					lab.appendChild(w); box.appendChild(lab);
@@ -383,52 +308,106 @@ a { color: var(--accent); }
 			draw();
 		});
 	}
+	// sous les réglages : valeurs par défaut du module, retirer la page (deux touchers)
+	function barFor(card) {
+		if (card.bar) card.bar.remove();
+		var bar = el("div", "pagebar"); card.bar = bar; card.el.appendChild(bar);
+		if (card.module) {
+			var reset = el("button", "", "Valeurs par défaut"); reset.type = "button";
+			reset.addEventListener("click", function () {
+				// un secret enregistré est gardé (masque renvoyé tel quel)
+				var keep = {}; Object.keys(card.settings).forEach(function (k) { if (SECRET.test(k) && card.settings[k] === MASK) keep[k] = MASK; });
+				card.settings = keep; savePage(card); panelFor(card); pushPreview(card);
+			});
+			bar.appendChild(reset);
+		}
+		var del = el("button", "danger", "Retirer la page"); del.type = "button";
+		del.addEventListener("click", function () {
+			if (!del.dataset.sure) { del.dataset.sure = "1"; del.textContent = "Confirmer ?"; setTimeout(function () { delete del.dataset.sure; del.textContent = "Retirer la page"; }, 4000); return; }
+			removeCard(card);
+			if (card.id) fetch("/api/page/" + encodeURIComponent(card.id), { method: "DELETE" }).then(function (r) { flash(r.ok ? "Page retirée" : "Erreur"); }).catch(function () { flash("Erreur"); });
+		});
+		bar.appendChild(del);
+	}
+	function removeCard(card) {
+		card.el.remove();
+		PREVIEW.cards = PREVIEW.cards.filter(function (c) { return c !== card; });
+		pushPages();
+	}
+	function lastScreen() { var cards = document.querySelectorAll(".card.preview"); return cards[cards.length - 1]; }
 	function syncThemeCard() {
 		document.querySelectorAll(".theme-card input[type=color]").forEach(function (w) { var k = w.getAttribute("data-key"); if (k && THEME[k]) w.value = String(THEME[k]).slice(0, 7); });
 	}
 	window.addEventListener("message", function (e) {
 		var d = e.data || {};
-		// « + » touché dans un aperçu : une carte de plus, sous la dernière carte d'aperçu
+		// « + » touché sur l'accueil : une page vide de plus, sous la dernière
 		if (d.type === "dot-add") {
-			var cards = document.querySelectorAll(".card.preview"), lastCard = cards[cards.length - 1];
-			if (lastCard) lastCard.insertAdjacentElement("afterend", previewCard(true));
+			var c = pageCard(null), last = lastScreen();
+			last.insertAdjacentElement("afterend", c.el);
+			c.el.scrollIntoView({ behavior: "smooth", block: "start" });
 		}
-		// module choisi dans un écran vide : il tourne dans la carte, ses réglages s'affichent dessous
+		// module choisi dans une page vide : enregistré comme page, il tourne dans la carte, ses réglages dessous
 		if (d.type === "dot-pick" && d.module) {
 			PREVIEW.cards.forEach(function (card) {
-				if (!card.frame || card.frame.contentWindow !== e.source) return;
-				card.module = d.module; card.settings = {};
-				frameFor(card); panelFor(card);
+				if (card.id || !card.frame || card.frame.contentWindow !== e.source) return;
+				pending++;
+				fetch("/api/pages", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ module: d.module }) })
+					.then(function (r) { return r.ok ? r.json() : null; })
+					.then(function (pg) {
+						pending--;
+						if (!pg || !pg.id) { flash("Erreur"); return; }
+						card.id = pg.id; card.module = pg.module; card.settings = Object.assign({}, pg.settings || {});
+						frameFor(card); panelFor(card); barFor(card); pushPages();
+						flash("Page ajoutée");
+					})
+					.catch(function () { pending--; flash("Erreur"); });
 			});
-			pushPages();
 		}
-		// tuile d'un module touchée sur l'accueil : on descend à sa page
+		// tuile d'une page touchée sur l'accueil : on descend à cette page
 		if (d.type === "dot-goto") {
-			var pagesWith = PREVIEW.cards.slice(1).filter(function (c) { return c.module; });
-			var target = pagesWith[d.page];
+			var target = PREVIEW.cards.filter(function (c) { return c.id && c.id === d.page; })[0];
 			if (target) target.el.scrollIntoView({ behavior: "smooth", block: "start" });
 		}
 	});
+	// pages ajoutées ou retirées ailleurs (sur l'Edge, ou dans un autre onglet) : la page suit
+	var pending = 0;
+	function sync() {
+		if (pending) return;
+		fetch("/api/pages", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).then(function (list) {
+			if (!list || pending) return;
+			var ids = list.map(function (p) { return p.id; }), changed = false;
+			PREVIEW.cards.slice().forEach(function (c) { if (c.id && ids.indexOf(c.id) < 0) { removeCard(c); changed = true; } });
+			list.forEach(function (pg) {
+				if (PREVIEW.cards.some(function (c) { return c.id === pg.id; })) return;
+				// nouvelle page : après la dernière page enregistrée (les pages vides restent en dessous)
+				var saved = PREVIEW.cards.filter(function (c) { return c.id || c.hub; }), after = saved[saved.length - 1];
+				var c = pageCard(pg);
+				after.el.insertAdjacentElement("afterend", c.el);
+				// même ordre que les tuiles : la nouvelle carte suit la dernière enregistrée
+				PREVIEW.cards.splice(PREVIEW.cards.indexOf(c), 1);
+				PREVIEW.cards.splice(PREVIEW.cards.indexOf(after) + 1, 0, c);
+				changed = true;
+			});
+			if (changed) pushPages();
+		}).catch(function () {});
+	}
 
 	function load() {
-		Promise.all([fetch("/api/modules").then(function (r) { return r.json(); }), fetch("/api/instances").then(function (r) { return r.json(); }), fetch("/api/theme").then(function (r) { return r.json(); })])
+		Promise.all([fetch("/api/modules").then(function (r) { return r.json(); }), fetch("/api/pages").then(function (r) { return r.json(); }), fetch("/api/theme").then(function (r) { return r.json(); })])
 			.then(function (res) {
 				MODULES = res[0];
 				THEME_KEYS = ["dotAccentColor", "litDotColor", "unlitDotColor", "labelColor"].filter(function (k) { return k in res[2].defaults; });
-				var list = document.getElementById("list"), inst = res[1] || {}, keys = Object.keys(inst);
+				THEME = res[2].theme;
+				var list = document.getElementById("list");
 				list.innerHTML = "";
 				list.appendChild(themeCard(res[2]));
-				// aperçu : par défaut le Dot Hub vu le plus récemment
-				THEME = res[2].theme;
-				keys.sort(function (a, b) { return (inst[b].last_seen || 0) - (inst[a].last_seen || 0); });
-				INST = {}; keys.forEach(function (k) { INST[k] = JSON.parse(JSON.stringify(inst[k])); });
 				PREVIEW.cards = [];
-				list.appendChild(previewCard(false));
-				// les cartes par Dot Hub (nom, module, réglages en listes) sont remplacées par les pages ajoutées avec « + »
-				// (proposition en cours dans la maquette de référence : pas encore enregistrées ni reliées à un Dot Hub)
+				list.appendChild(hubCard());
+				(res[1] || []).forEach(function (pg) { list.appendChild(pageCard(pg).el); });
 			});
 	}
 	load();
+	setInterval(sync, 3000);
 })();
 </script>
 </body>

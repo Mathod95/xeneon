@@ -1,8 +1,9 @@
 /*
  * Dot Hub : script ajouté par le compagnon à la page de chaque module.
- * - lit les réglages de l'instance dans le compagnon et les expose comme le ferait iCUE
+ * - lit les réglages de la page affichée par ce Dot Hub (?page=<id>) dans le compagnon et les expose comme le ferait iCUE
  *   (une variable globale par x-icue-property, puis icueEvents.onDataUpdated) ;
  * - suit les changements faits dans la page de réglages (sondage toutes les 2 s) ;
+ * - la page retirée ou changée depuis la page de réglages : retour à l'accueil, ou à la nouvelle page ;
  * - appui long (1 s) n'importe où, ou toucher un élément data-hub-home : retour à l'accueil Dot Home ;
  * - « Identify » depuis la page de réglages : affiche le nom de l'instance ;
  * - pont clavier : un champ de saisie du module demande le clavier à la coquille iCUE ;
@@ -16,6 +17,7 @@
 	new URLSearchParams(location.search).forEach(function (v, k) { if (!(k in Q)) Q[k] = v; });
 	var uid = Q.uid || "";
 	var moduleId = Q.module || location.pathname.split("/")[2] || "";
+	var pageId = Q.page || "";
 	var preview = Q.preview === "1" || Q.preview === true;
 	window.__dotPreview = preview;
 	var api = "/api/instance/" + encodeURIComponent(uid);
@@ -30,7 +32,7 @@
 		if (key) DEFAULTS[key] = lit(m.getAttribute("data-default") || "''");
 	});
 
-	// couleurs communes (carte « Couleurs » des réglages) > réglages de l'instance > valeurs par défaut du module
+	// couleurs communes (carte « Paramètres globaux » des réglages) > réglages de l'instance > valeurs par défaut du module
 	function apply(settings, theme) {
 		Object.keys(DEFAULTS).forEach(function (k) {
 			if (theme && Object.prototype.hasOwnProperty.call(theme, k)) window[k] = theme[k];
@@ -51,8 +53,8 @@
 			.then(function (inst) {
 				if (!inst) return;
 				// aperçu : c'est la page de réglages qui recharge l'aperçu quand le module change
-				if (!preview && inst.module && inst.module !== moduleId) { location.href = "/i/" + encodeURIComponent(uid); return; }
-				if (!preview && !inst.module) { location.href = "/home?uid=" + encodeURIComponent(uid); return; }
+				if (!preview && !inst.page) { location.href = "/home?uid=" + encodeURIComponent(uid); return; }
+				if (!preview && (inst.page !== pageId || inst.module !== moduleId)) { location.href = "/i/" + encodeURIComponent(uid); return; }
 				var v = inst.version + "/" + inst.theme_version;
 				if (v !== version) { version = v; apply(inst.settings, inst.theme); }
 				if (inst.identify && inst.identify !== identifySeen) {
@@ -78,12 +80,14 @@
 	});
 
 	// ---------------------------------------------------------------- appui long : accueil
+	// le Dot Hub garde sa page : au prochain lancement d'iCUE, il la rouvre (comme avant 0.5.0)
+	function goHome() { location.href = "/home?uid=" + encodeURIComponent(uid); }
 	var pressTimer = null, x0 = 0, y0 = 0;
 	function cancel() { clearTimeout(pressTimer); pressTimer = null; }
 	document.addEventListener("pointerdown", function (e) {
 		if (preview) return;
 		x0 = e.clientX; y0 = e.clientY; cancel();
-		pressTimer = setTimeout(function () { location.href = "/home?uid=" + encodeURIComponent(uid); }, 1000);
+		pressTimer = setTimeout(goHome, 1000);
 	});
 	document.addEventListener("pointermove", function (e) { if (Math.abs(e.clientX - x0) + Math.abs(e.clientY - y0) > 24) cancel(); });
 	document.addEventListener("pointerup", cancel);
@@ -96,7 +100,7 @@
 	homeZone.type = "button";
 	homeZone.setAttribute("aria-label", "Dot Home");
 	homeZone.style.cssText = "position:fixed;z-index:9999;display:none;padding:0;margin:0;border:0;background:transparent;cursor:pointer;-webkit-tap-highlight-color:transparent";
-	homeZone.addEventListener("click", function () { if (!preview) location.href = "/home?uid=" + encodeURIComponent(uid); });
+	homeZone.addEventListener("click", function () { if (!preview) goHome(); });
 	document.body.appendChild(homeZone);
 	function placeHomeZone() {
 		var els = Array.prototype.filter.call(document.querySelectorAll("[data-hub-home]"), function (e) { return !e.hidden && e.getClientRects().length; });

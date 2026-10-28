@@ -202,7 +202,7 @@ tr.todo td:nth-child(3) { color: var(--muted); }
         <tbody>
           <tr><td>1</td><td>Rôle</td><td>Seul programme à installer sur le PC. Sert l'accueil de Dot Hub et chaque module (<code>/m/&lt;id&gt;/</code>), garde les réglages de chaque Dot Hub posé dans iCUE (<code>%APPDATA%\Xeneon\config.json</code>) et fait ce qu'un widget ne peut pas faire seul : lire les fichiers de Steam, lancer des jeux, parler aux services.</td></tr>
           <tr><td>2</td><td>Réseau</td><td>N'écoute que sur <code>127.0.0.1:47800</code> : invisible depuis le réseau local. Les requêtes dont l'en-tête <code>Host</code> n'est pas <code>127.0.0.1:47800</code> ou <code>localhost:47800</code> sont refusées.</td></tr>
-          <tr><td>3</td><td>Réglages</td><td>Dans le navigateur du PC (bouton ⚙ SETTINGS de l'accueil). Une carte par Dot Hub : nom, module, champs du module générés depuis ses balises <code>x-icue-property</code>, enregistrés tout de suite. Carte « Couleurs » commune à tous les modules. « Identifier » affiche le nom sur l'Edge, « Oublier » demande confirmation.</td></tr>
+          <tr><td>3</td><td>Réglages</td><td>Dans le navigateur du PC (bouton ⚙ SETTINGS de l'accueil, ou l'icône de la zone de notification). Carte « Paramètres globaux » (couleurs communes à tous les modules, démarrage avec Windows, mise à jour), carte DOT HUB, puis une carte par page (ligne 11). Réglages des modules générés depuis leurs balises <code>x-icue-property</code>, enregistrés tout de suite.</td></tr>
           <tr><td>4</td><td>Secrets</td><td>Clés d'API et jetons chiffrés sur le PC (DPAPI de Windows), masqués dans la page (<code>••••••••</code>), jamais renvoyés en clair.</td></tr>
           <tr><td>5</td><td>Fenêtre</td><td><b>Validé et codé (0.5.0)</b> : plus de fenêtre console, le compagnon tourne en arrière-plan avec une icône dans la zone de notification (vue « Zone de notification »). Jusqu'à 0.4.0, c'était une fenêtre console qui devait rester ouverte. Si le port est pris, un message Windows le dit.</td></tr>
           <tr><td>6</td><td>Menu de l'icône</td><td><b>Validé et codé (0.5.0)</b> : Ouvrir les réglages, Identifier les Dot Hub, Démarrer avec Windows (coché par défaut), Rechercher une mise à jour, Quitter. En tête : version et nombre de Dot Hub connectés. Clic gauche sur l'icône : ouvre les réglages. L'infobulle de l'icône signale une mise à jour disponible.</td></tr>
@@ -210,7 +210,7 @@ tr.todo td:nth-child(3) { color: var(--muted); }
           <tr><td>8</td><td>Mises à jour</td><td><b>Validé et codé (0.5.0)</b> : mise à jour depuis l'app, sans repasser par GitHub. Le compagnon compare sa version à la dernière release GitHub (au démarrage, puis une fois par jour) ; une nouvelle version s'affiche dans le menu de l'icône et dans la page de réglages avec un bouton « Mettre à jour ». Il télécharge le nouvel exe, vérifie son empreinte SHA-256 publiée avec la release, se remplace (l'exe en cours est renommé, Windows ne laisse pas l'écraser), redémarre sur la nouvelle version et supprime l'ancienne au lancement suivant. Dans la page de réglages : ligne « Mise à jour » de la carte « Paramètres globaux » (<code>GET /api/update</code>, <code>POST /api/update/check</code>, <code>POST /api/update/install</code>). Seulement avec des releases taguées (<code>v*</code>), pas avec les exe de GitHub Actions. Dot Hub (le widget iCUE) reste installé par iCUE, mais change rarement : les modules sont dans le compagnon. Tant que l'exe n'est pas signé (ligne 9), un antivirus peut se méfier d'un programme qui se remplace.</td></tr>
           <tr class="todo"><td>9</td><td>Avertissement Windows</td><td>L'exe n'est pas signé : SmartScreen avertit au premier lancement (« Informations complémentaires » → « Exécuter quand même »). Pistes : Microsoft Store (MSIX, aucun avertissement) ou signature gratuite SignPath pour les projets open source.</td></tr>
           <tr class="todo"><td>10</td><td>Charte de la page de réglages</td><td>Fond en points de Dot Page : fait (page <code>#080808</code>, trame de points 22 px). Reste : le libellé « ● DOT COMPANION » ; garder la police Fira Code et l'accent des Couleurs communes.</td></tr>
-          <tr class="todo"><td>11</td><td>Réglages avec l'Edge en direct</td><td>Commencé. Carte <b>DOT HUB</b>, toujours présente : l'accueil en direct (XL), une tuile par module ajouté, puis une carte vide « + ». Toucher « + » ajoute une <b>page</b> (sans titre) : l'écran en direct et, après avoir touché « ● DOT » et choisi un module, ses réglages au style des maquettes (générés depuis ses balises, couleurs = couleurs communes). Toucher la tuile d'un module sur l'accueil descend à sa page. Les pages remplacent les anciennes cartes par Dot Hub (nom, module, listes). Pas de bouton SETTINGS dans les aperçus. Pas encore enregistré ni relié aux Dot Hub posés dans iCUE.</td></tr>
+          <tr class="todo"><td>11</td><td>Réglages avec l'Edge en direct</td><td><b>Codé (0.5.0), à valider</b>. Carte <b>DOT HUB</b>, toujours présente : l'accueil en direct (XL), une tuile par module ajouté, puis une carte vide « + ». Toucher « + » ajoute une <b>page</b> (sans titre) : l'écran en direct et, après avoir touché « ● DOT » et choisi un module, ses réglages au style des maquettes (générés depuis ses balises, couleurs = couleurs communes). Toucher la tuile d'un module sur l'accueil descend à sa page. Les pages remplacent les anciennes cartes par Dot Hub (nom, module, listes). Pas de bouton SETTINGS dans les aperçus. Chaque page est enregistrée dans le compagnon (<code>/api/pages</code>) ; sous ses réglages : « Valeurs par défaut » et « Retirer la page » (deux touchers). Les pages sont communes à tous les Dot Hub : sur l'Edge, l'accueil montre les mêmes tuiles, toucher une tuile ouvre la page, toucher « + » propose les modules et en ajoute une. Une page ajoutée ou retirée sur l'Edge apparaît ou disparaît ici, et inversement. Les Dot Hub d'avant 0.5.0 sont repris en pages.</td></tr>
         </tbody>
       </table>
     </div>
@@ -227,11 +227,9 @@ tr.todo td:nth-child(3) { color: var(--muted); }
   var now = Date.now();
   var STATE = {
     modules: [{ id: "clock", name: "Dot Clock" }, { id: "steam", name: "Dot Steam" }],
-    instances: {
-      "c0rs41r-edge-a1b2": { name: "Edge · gauche", module: "steam", last_seen: now - 2 * 60000, settings: { launchWith: "hold", coverRender: "fine", steamApiKey: "••••••••" } },
-      "c0rs41r-edge-c3d4": { name: "Edge · droite", module: "clock", last_seen: now - 40000, settings: {} },
-      "c0rs41r-edge-e5f6": { name: "", module: null, last_seen: now - 3 * 86400000, settings: {} }
-    },
+    // un Dot Hub posé dans iCUE, sur l'accueil ; pas encore de page (la carte DOT HUB n'a que « + »)
+    instances: { "c0rs41r-edge-a1b2": { name: "", page: null, last_seen: now - 40000, version: 1, identify: 0 } },
+    pages: [], nextPage: 1,
     theme: { dotAccentColor: "#10B981", litDotColor: "#F2F0E9", unlitDotColor: "#1C1C1C", labelColor: "#B8B6B0" }, themeVersion: 1, startup: true, update: { checked: false },
     defaults: { dotAccentColor: "#10B981", litDotColor: "#F2F0E9", unlitDotColor: "#1C1C1C", labelColor: "#B8B6B0" }
   };
@@ -250,6 +248,11 @@ tr.todo td:nth-child(3) { color: var(--muted); }
   var toastTimer = null;
   function toast(t) { v("toast").textContent = t; clearTimeout(toastTimer); toastTimer = setTimeout(function () { v("toast").textContent = ""; }, 3500); }
 
+  // comme instance_json de main.rs : la page affichée par ce Dot Hub (module, réglages, version)
+  function instanceJson(uid) {
+    var it = STATE.instances[uid], pg = STATE.pages.filter(function (x) { return x.id === it.page; })[0];
+    return { name: it.name, page: pg ? pg.id : null, module: pg ? pg.module : null, settings: pg ? pg.settings : {}, version: it.version + (pg ? pg.version : 0), identify: it.identify, last_seen: it.last_seen, connected: true };
+  }
   // l'API du compagnon, simulée : mêmes routes et mêmes réponses que companion/src/main.rs
   function api(url, opts) {
     opts = opts || {};
@@ -259,7 +262,27 @@ tr.todo td:nth-child(3) { color: var(--muted); }
     var mod = /^\/m\/([\w-]+)\/index\.html$/.exec(path);
     if (mod) return Promise.resolve(new Response(PAGES[mod[1]] || "", { status: PAGES[mod[1]] ? 200 : 404, headers: { "Content-Type": "text/html" } }));
     if (path === "/api/modules") return json(STATE.modules);
-    if (path === "/api/instances") return json(STATE.instances);
+    if (path === "/api/instances") { var all = {}; Object.keys(STATE.instances).forEach(function (k) { all[k] = instanceJson(k); }); return json(all); }
+    if (path === "/api/pages" && m === "GET") return json(STATE.pages);
+    if (path === "/api/pages" && m === "POST") {
+      var mm = STATE.modules.filter(function (x) { return body && x.id === body.module; })[0];
+      if (!mm) return json({ error: "expected {\"module\": \"<module id>\"}" }, 400);
+      var pg = { id: "p" + (STATE.nextPage++), module: mm.id, name: mm.name, settings: {}, version: 1 };
+      STATE.pages.push(pg); toast(mm.name + " ajouté : sur l'Edge, l'accueil de Dot Hub aurait la même tuile");
+      return json(pg);
+    }
+    var pgm = /^\/api\/page\/([^/]+)$/.exec(path);
+    if (pgm) {
+      var pid = decodeURIComponent(pgm[1]), page = STATE.pages.filter(function (x) { return x.id === pid; })[0];
+      if (!page) return json({ error: "unknown page" }, 404);
+      if (m === "DELETE") {
+        STATE.pages = STATE.pages.filter(function (x) { return x !== page; });
+        Object.keys(STATE.instances).forEach(function (k) { if (STATE.instances[k].page === pid) STATE.instances[k].page = null; });
+        toast("Page retirée : les Dot Hub qui l'affichaient reviendraient à l'accueil"); return json({ ok: true });
+      }
+      if (m === "PUT") { if (body && body.settings) page.settings = body.settings; page.version++; }
+      return json(page);
+    }
     if (path === "/api/theme" && m === "GET") return json({ theme: STATE.theme, version: 1, defaults: STATE.defaults });
     if (path === "/api/steam/state") return json(steamState());
     if (path === "/api/startup" && m === "GET") return json({ supported: true, enabled: STATE.startup });
@@ -272,17 +295,16 @@ tr.todo td:nth-child(3) { color: var(--muted); }
     var inst = /^\/api\/instance\/([^/]+)(\/identify)?$/.exec(path);
     if (inst) {
       var uid = decodeURIComponent(inst[1]), it = STATE.instances[uid];
-      if (inst[2]) { toast("L'Edge afficherait « " + ((it && it.name) || uid) + " » sur ce Dot Hub"); return json({ ok: true }); }
-      if (m === "DELETE") { delete STATE.instances[uid]; toast("Dot Hub oublié"); return json({ ok: true }); }
+      if (inst[2]) { toast("L'Edge afficherait « " + ((it && it.name) || "DOT HUB") + " » sur ce Dot Hub"); return json({ ok: true }); }
+      if (m === "DELETE") { delete STATE.instances[uid]; return json({ ok: true }); }
       if (m === "PUT" && it) {
-        if ("name" in body) it.name = body.name;
-        if ("module" in body) it.module = body.module;
-        if ("settings" in body) it.settings = body.settings;
-        it.version = (it.version || 1) + 1;
-        return json(it);
+        if (body && "page" in body) it.page = body.page;
+        if (body && "name" in body) it.name = body.name;
+        it.version++;
+        return json(instanceJson(uid));
       }
-      // comme main.rs : l'instance, avec les couleurs communes et leur version
-      return it ? json(Object.assign({ version: 1, identify: 0 }, it, { theme: STATE.theme, theme_version: STATE.themeVersion })) : json({}, 404);
+      // comme main.rs : le Dot Hub (sa page affichée), avec les couleurs communes et leur version
+      return it ? json(Object.assign(instanceJson(uid), { theme: STATE.theme, theme_version: STATE.themeVersion })) : json({}, 404);
     }
     return json({ error: "not found" }, 404);
   }
@@ -313,7 +335,7 @@ tr.todo td:nth-child(3) { color: var(--muted); }
     var html = home ? PAGES.home : PAGES[inst.module];
     if (!html) { f.srcdoc = ""; return; }
     var fonts = new URL("widgets/dot-clock/resources/fonts/", ROOT).href;
-    var params = JSON.stringify({ uid: uid, module: inst.module || "", preview: "1", blank: opts && opts.blank ? "1" : "" });
+    var params = JSON.stringify({ uid: uid, module: inst.module || "", page: (opts && opts.page) || "", preview: "1", blank: opts && opts.blank ? "1" : "" });
     html = html.replace(/url\("\/m\/clock\/resources\/fonts\//g, 'url("' + fonts)
       .replace(/<head>/i, '<head><base href="' + new URL(dir, ROOT).href + '"><script>window.__dotHubParams = ' + params + '; window.fetch = function (u, o) { return parent.fetch(u, o); };<\/script>');
     if (!home) html = html.replace("</body>", '<script src="' + new URL("companion/web/hub/module.js", ROOT).href + '"><\/script>\n</body>');

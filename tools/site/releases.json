@@ -58,9 +58,17 @@
         {
           "fr": "Dot Companion : page de réglages refaite, carte DOT HUB en direct et une page par module ajouté, carte Paramètres globaux",
           "en": "Dot Companion: settings page redone, live DOT HUB card and one page per added module, Global settings card"
+        },
+        {
+          "fr": "Dot Hub : pages, un module ajouté avec « + » (sur l'Edge ou dans les réglages) devient une tuile de l'accueil, avec ses propres réglages ; on peut ajouter le même module deux fois",
+          "en": "Dot Hub: pages, a module added with « + » (on the Edge or in the settings) becomes a home screen tile, with its own settings; the same module can be added twice"
         }
       ],
       "changed": [
+        {
+          "fr": "Dot Companion : au premier démarrage de 0.5.0, chaque Dot Hub (un module et ses réglages) devient une page, qu'il continue d'afficher",
+          "en": "Dot Companion: on first start of 0.5.0, each Dot Hub (a module and its settings) becomes a page, which it keeps showing"
+        },
         {
           "fr": "Dot Steam : progression et débit des téléchargements à jour pendant le téléchargement (taille de `steamapps/downloading`)",
           "en": "Dot Steam: download progress and speed stay current while downloading (size of `steamapps/downloading`)"

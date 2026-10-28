@@ -7,7 +7,9 @@
  */
 (function () {
 	"use strict";
-	var uid = (window.__dotHubParams || {}).uid || new URLSearchParams(location.search).get("uid") || "";
+	// Dot Hub (uid), et la page de Dot Hub dont on lit les réglages (page ; aperçu de la page de réglages)
+	var P = window.__dotHubParams || {}, Q = new URLSearchParams(location.search);
+	var uid = P.uid || Q.get("uid") || "", page = P.page || Q.get("page") || "";
 
 	function get(name, def) {
 		try { var v = window[name]; return v === undefined || v === null ? def : v; } catch (e) { return def; }
@@ -39,7 +41,7 @@
 	}
 
 	function poll() {
-		fetch("/api/steam/state?uid=" + encodeURIComponent(uid), { cache: "no-store" })
+		fetch("/api/steam/state?uid=" + encodeURIComponent(uid) + "&page=" + encodeURIComponent(page), { cache: "no-store" })
 			.then(function (r) { return r.json(); })
 			.then(function (j) { state = j; draw(); })
 			.catch(function () {});

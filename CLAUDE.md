@@ -90,7 +90,7 @@ Le compagnon sert l’interface et la configuration de Dot Hub (voir « Architec
 | Module | Widgets | Rôle |
 |---|---|---|
 | audio | Dot Audio | volume, mixeur par app, mute de tous les micros, périphériques par défaut (API audio Windows) ; égaliseur via Equalizer APO |
-| hub | Dot Hub | sert l’interface web de Dot Hub et de ses modules, la configuration (fichier + page de réglages sur le PC) et l’état de chaque instance (`uniqueId` → module affiché, réglages) |
+| hub | Dot Hub | sert l’interface web de Dot Hub et de ses modules, la configuration (fichier + page de réglages sur le PC) et les pages (un module ajouté avec « + » et ses réglages, communes à tous les Dot Hub) et la page affichée par chaque instance (`uniqueId` → page) |
 | apps | Dot Apps | lancer des programmes |
 | bambulab | Dot Bambu Lab | MQTT TLS en réseau local (IP + code d’accès) |
 | discord | Dot Discord | RPC local (accès réservé aux apps approuvées) ; repli : raccourcis clavier |

@@ -7,7 +7,8 @@
 //! - ouvre la page de réglages dans le navigateur du PC quand on touche SETTINGS sur l'Edge ;
 //! - module Steam (Dot Steam) : jeux, téléchargements, jeu en cours, amis, lancement (voir `steam.rs`) ;
 //! - garde les secrets des modules (clés d'API) chiffrés avec DPAPI sous Windows ;
-//! - garde la configuration de chaque instance de Dot Hub (clé = `uniqueId` iCUE)
+//! - garde les pages de Dot Hub (un module ajouté avec « + » et ses réglages, communes à tous les Dot Hub),
+//!   la page affichée par chaque Dot Hub (clé = `uniqueId` iCUE) et les couleurs communes
 //!   dans `%APPDATA%\Xeneon\config.json`.
 
 // sous Windows : pas de console (l'icône de la zone de notification la remplace) ; la console reste en debug
@@ -56,6 +57,9 @@ fn modules() -> Vec<Module> {
 struct Config {
     #[serde(default)]
     instances: BTreeMap<String, Instance>,
+    /// pages de Dot Hub, dans l'ordre des tuiles de l'accueil (communes à tous les Dot Hub)
+    #[serde(default)]
+    pages: Vec<Page>,
     /// couleurs communes à tous les modules (page de réglages, carte « Paramètres globaux »)
     #[serde(default)]
     theme: Map<String, Value>,
@@ -130,13 +134,30 @@ fn theme_full(cfg: &Config) -> Map<String, Value> {
     t
 }
 
+/// Page de Dot Hub : un module ajouté avec « + » (carte DOT HUB de la page de réglages, ou accueil sur l'Edge),
+/// avec ses réglages. Les pages sont communes à tous les Dot Hub ; chaque Dot Hub affiche l'une d'elles, ou l'accueil.
+#[derive(Serialize, Deserialize, Default, Clone)]
+struct Page {
+    id: String,
+    module: String,
+    #[serde(default)]
+    settings: Map<String, Value>,
+    #[serde(default)]
+    version: u64,
+}
+
+/// Un Dot Hub posé dans iCUE (clé = `uniqueId`) : la page qu'il affiche.
 #[derive(Serialize, Deserialize, Default, Clone)]
 struct Instance {
     #[serde(default)]
     name: String,
-    #[serde(default)]
+    /// page affichée ; aucune : l'accueil
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    page: Option<String>,
+    /// jusqu'à 0.4.0 : module et réglages propres à chaque Dot Hub, repris en pages au démarrage (voir `migrate`)
+    #[serde(default, skip_serializing)]
     module: Option<String>,
-    #[serde(default)]
+    #[serde(default, skip_serializing)]
     settings: Map<String, Value>,
     #[serde(default)]
     version: u64,
@@ -178,6 +199,50 @@ fn save_config(cfg: &Config) {
         }
         Err(e) => eprintln!("configuration non sérialisable : {e}"),
     }
+}
+
+/// Configuration d'avant 0.5.0 : chaque Dot Hub avait son module et ses réglages. Chacun devient une page
+/// (une seule par module et réglages identiques), que le Dot Hub continue d'afficher.
+fn migrate(cfg: &mut Config) -> bool {
+    let mut changed = false;
+    let uids: Vec<String> = cfg.instances.keys().cloned().collect();
+    for uid in uids {
+        let (module, settings) = {
+            let inst = &cfg.instances[&uid];
+            (inst.module.clone(), inst.settings.clone())
+        };
+        let Some(module) = module else { continue };
+        changed = true;
+        let id = match cfg.pages.iter().find(|p| p.module == module && p.settings == settings) {
+            Some(p) => p.id.clone(),
+            None => new_page(cfg, &module, settings),
+        };
+        let inst = cfg.instances.get_mut(&uid).expect("instance");
+        if inst.page.is_none() {
+            inst.page = Some(id);
+        }
+        inst.module = None;
+        inst.settings = Map::new();
+    }
+    changed
+}
+
+/// Ajoute une page en fin de liste (dernière tuile de l'accueil) et renvoie son identifiant.
+fn new_page(cfg: &mut Config, module: &str, settings: Map<String, Value>) -> String {
+    let mut n = now_ms();
+    let id = loop {
+        let id = format!("p{n:x}");
+        if !cfg.pages.iter().any(|p| p.id == id) {
+            break id;
+        }
+        n += 1;
+    };
+    cfg.pages.push(Page { id: id.clone(), module: module.to_string(), settings, version: 1 });
+    id
+}
+
+fn module_ok(id: &str) -> bool {
+    modules().iter().any(|m| m.id == id)
 }
 
 fn now_ms() -> u64 {
@@ -307,7 +372,7 @@ fn handle(mut req: Request, cfg: &mut Config) {
         (Method::Get, "home") => serve_file(req, &WEB, "home.html", false),
         (Method::Get, "hub") => serve_file(req, &WEB, &format!("hub/{}", segs[1..].join("/")), false),
 
-        // point d'entrée de la coquille : /i/<uniqueId> → le module de l'instance, ou l'accueil
+        // point d'entrée de la coquille : /i/<uniqueId> → la page affichée par ce Dot Hub, ou l'accueil
         (Method::Get, "i") => {
             let uid = seg(1).to_string();
             if uid.is_empty() {
@@ -316,11 +381,12 @@ fn handle(mut req: Request, cfg: &mut Config) {
             seen(&uid);
             let inst = cfg.instances.entry(uid.clone()).or_default();
             inst.last_seen = now_ms();
-            let module = inst.module.clone().filter(|m| modules().iter().any(|x| x.id == m));
+            let page = inst.page.clone();
+            let target = page.and_then(|id| cfg.pages.iter().find(|p| p.id == id && module_ok(&p.module)).map(|p| (p.module.clone(), p.id.clone())));
             save_config(cfg);
             let q = format!("uid={}", url_encode(&uid));
-            match module {
-                Some(m) => redirect(req, &format!("/m/{m}/?{q}")),
+            match target {
+                Some((m, id)) => redirect(req, &format!("/m/{m}/?{q}&page={}", url_encode(&id))),
                 None => redirect(req, &format!("/home?{q}")),
             }
         }
@@ -341,13 +407,22 @@ fn handle(mut req: Request, cfg: &mut Config) {
                 send_json(req, 200, &Value::Array(list))
             }
             "instances" => {
-                let m: Map<String, Value> = cfg.instances.iter().map(|(k, i)| (k.clone(), masked(i))).collect();
+                let m: Map<String, Value> = cfg.instances.iter().map(|(k, i)| (k.clone(), instance_json(cfg, k, i))).collect();
                 send_json(req, 200, &Value::Object(m))
             }
-            // Dot Steam : état de Steam pour une instance (ses réglages : jeux choisis, clé d'API des amis)
+            "pages" => send_json(req, 200, &Value::Array(cfg.pages.iter().map(page_json).collect())),
+            "page" => match cfg.pages.iter().find(|p| p.id == seg(2)) {
+                Some(p) => send_json(req, 200, &page_json(p)),
+                None => send_json(req, 404, &json!({ "error": "unknown page" })),
+            },
+            // Dot Steam : état de Steam pour une page (ses réglages : jeux choisis, clé d'API des amis) ;
+            // ?page=<id> (aperçu de la page de réglages), sinon la page affichée par le Dot Hub ?uid=<uniqueId>
             "steam" if seg(2) == "state" => {
-                let uid = query(&url, "uid");
-                let settings = cfg.instances.get(&uid).map(|i| i.settings.clone()).unwrap_or_default();
+                let mut page = query(&url, "page");
+                if page.is_empty() {
+                    page = cfg.instances.get(&query(&url, "uid")).and_then(|i| i.page.clone()).unwrap_or_default();
+                }
+                let settings = cfg.pages.iter().find(|p| p.id == page).map(|p| p.settings.clone()).unwrap_or_default();
                 let key = settings.get("steamApiKey").and_then(Value::as_str).and_then(unseal);
                 send_json(req, 200, &steam::state(&settings, key))
             }
@@ -379,7 +454,7 @@ fn handle(mut req: Request, cfg: &mut Config) {
             "instance" => match cfg.instances.get(seg(2)) {
                 Some(inst) => {
                     seen(seg(2));
-                    let mut v = masked(inst);
+                    let mut v = instance_json(cfg, seg(2), inst);
                     v["theme"] = Value::Object(theme_full(cfg));
                     v["theme_version"] = json!(cfg.theme_version);
                     send_json(req, 200, &v)
@@ -431,41 +506,94 @@ fn handle(mut req: Request, cfg: &mut Config) {
             }
         }
 
+        // la page affichée par un Dot Hub : { "page": "<id>" | null } (tuile touchée sur l'accueil de l'Edge)
         (Method::Put, "api") if seg(1) == "instance" => {
             let uid = seg(2).to_string();
-            let mut body = String::new();
-            let _ = req.as_reader().take(1 << 20).read_to_string(&mut body);
-            let patch: Value = match serde_json::from_str(&body) {
-                Ok(v) => v,
-                Err(_) => return send_json(req, 400, &json!({ "error": "invalid JSON" })),
+            let patch = match read_json(&mut req, 1 << 16) {
+                Some(v) => v,
+                None => return send_json(req, 400, &json!({ "error": "invalid JSON" })),
             };
-            let inst = cfg.instances.entry(uid).or_default();
-            if let Some(m) = patch.get("module") {
-                inst.module = m.as_str().map(str::to_string);
+            let mut page = cfg.instances.get(&uid).and_then(|i| i.page.clone());
+            match patch.get("page") {
+                Some(Value::Null) => page = None,
+                Some(Value::String(id)) => {
+                    if !cfg.pages.iter().any(|p| &p.id == id) {
+                        return send_json(req, 404, &json!({ "error": "unknown page" }));
+                    }
+                    page = Some(id.clone());
+                }
+                _ => {}
             }
+            // jusqu'à 0.4.0 : { "module": "<id>" } ; la première page de ce module, créée au besoin
+            if let Some(m) = patch.get("module") {
+                page = match m.as_str().filter(|m| module_ok(m)) {
+                    Some(m) => Some(match cfg.pages.iter().find(|p| p.module == m) {
+                        Some(p) => p.id.clone(),
+                        None => new_page(cfg, m, Map::new()),
+                    }),
+                    None => None,
+                };
+            }
+            let inst = cfg.instances.entry(uid.clone()).or_default();
             if let Some(n) = patch.get("name").and_then(Value::as_str) {
                 inst.name = n.chars().take(40).collect();
             }
-            if let Some(Value::Object(s)) = patch.get("settings") {
-                let mut next = s.clone();
-                for k in SECRET_KEYS {
-                    match next.get(k).and_then(Value::as_str) {
-                        // masque renvoyé tel quel par la page de réglages : on garde le secret déjà enregistré
-                        Some(MASK) => match inst.settings.get(k) {
-                            Some(old) => { next.insert(k.to_string(), old.clone()); }
-                            None => { next.remove(k); }
-                        },
-                        Some("") | None => {}
-                        Some(plain) if plain.starts_with("dpapi:") || plain.starts_with("plain:") => {}
-                        Some(plain) => { next.insert(k.to_string(), Value::String(seal(plain.trim()))); }
-                    }
-                }
-                inst.settings = next;
-            }
+            inst.page = page;
             inst.version += 1;
-            let out = masked(inst);
+            let out = instance_json(cfg, &uid, &cfg.instances[&uid]);
             save_config(cfg);
             send_json(req, 200, &out)
+        }
+
+        // ajouter une page : { "module": "<id>" } ; elle devient la dernière tuile de l'accueil
+        (Method::Post, "api") if seg(1) == "pages" => {
+            let module = read_json(&mut req, 1 << 12).and_then(|v| v.get("module").and_then(Value::as_str).map(str::to_string));
+            match module.filter(|m| module_ok(m)) {
+                Some(m) => {
+                    let id = new_page(cfg, &m, Map::new());
+                    save_config(cfg);
+                    let p = cfg.pages.iter().find(|p| p.id == id).expect("page ajoutée");
+                    send_json(req, 200, &page_json(p))
+                }
+                None => send_json(req, 400, &json!({ "error": "expected {\"module\": \"<module id>\"}" })),
+            }
+        }
+
+        // réglages d'une page : { "settings": { … } } (secrets : voir `merge_settings`)
+        (Method::Put, "api") if seg(1) == "page" => {
+            let id = seg(2).to_string();
+            let patch = match read_json(&mut req, 1 << 20) {
+                Some(v) => v,
+                None => return send_json(req, 400, &json!({ "error": "invalid JSON" })),
+            };
+            let Some(p) = cfg.pages.iter_mut().find(|p| p.id == id) else {
+                return send_json(req, 404, &json!({ "error": "unknown page" }));
+            };
+            if let Some(Value::Object(s)) = patch.get("settings") {
+                p.settings = merge_settings(&p.settings, s.clone());
+            }
+            p.version += 1;
+            let out = page_json(p);
+            save_config(cfg);
+            send_json(req, 200, &out)
+        }
+
+        // retirer une page : les Dot Hub qui l'affichaient reviennent à l'accueil
+        (Method::Delete, "api") if seg(1) == "page" => {
+            let id = seg(2).to_string();
+            let before = cfg.pages.len();
+            cfg.pages.retain(|p| p.id != id);
+            if cfg.pages.len() == before {
+                return send_json(req, 404, &json!({ "error": "unknown page" }));
+            }
+            for inst in cfg.instances.values_mut() {
+                if inst.page.as_deref() == Some(id.as_str()) {
+                    inst.page = None;
+                    inst.version += 1;
+                }
+            }
+            save_config(cfg);
+            send_json(req, 200, &json!({ "ok": true }))
         }
 
         (Method::Post, "api") if seg(1) == "instance" && seg(3) == "identify" => match cfg.instances.get_mut(seg(2)) {
@@ -535,6 +663,12 @@ static SEEN: Mutex<Option<HashMap<String, u64>>> = Mutex::new(None);
 fn seen(uid: &str) {
     let mut g = SEEN.lock().unwrap_or_else(|e| e.into_inner());
     g.get_or_insert_with(HashMap::new).insert(uid.to_string(), now_ms());
+}
+
+fn connected(uid: &str) -> bool {
+    let now = now_ms();
+    let g = SEEN.lock().unwrap_or_else(|e| e.into_inner());
+    g.as_ref().and_then(|m| m.get(uid)).map(|t| now.saturating_sub(*t) < 60_000).unwrap_or(false)
 }
 
 #[cfg_attr(not(any(windows, feature = "check-win")), allow(dead_code))] // menu de l'icône (Windows)
@@ -689,19 +823,65 @@ fn unseal(stored: &str) -> Option<String> {
     None
 }
 
-/// Copie d'une instance pour l'extérieur : secrets remplacés par un masque.
-fn masked(inst: &Instance) -> Value {
-    let mut v = serde_json::to_value(inst).unwrap_or(Value::Null);
-    if let Some(Value::Object(s)) = v.get_mut("settings") {
-        for k in SECRET_KEYS {
-            if let Some(x) = s.get_mut(k) {
-                if x.as_str().map(|t| !t.is_empty()).unwrap_or(false) {
-                    *x = Value::String(MASK.to_string());
-                }
+/// Réglages pour l'extérieur : secrets remplacés par un masque.
+fn masked(settings: &Map<String, Value>) -> Map<String, Value> {
+    let mut s = settings.clone();
+    for k in SECRET_KEYS {
+        if let Some(x) = s.get_mut(k) {
+            if x.as_str().map(|t| !t.is_empty()).unwrap_or(false) {
+                *x = Value::String(MASK.to_string());
             }
         }
     }
-    v
+    s
+}
+
+/// Nouveaux réglages d'une page : un secret renvoyé masqué garde l'ancien, un secret saisi est chiffré.
+fn merge_settings(old: &Map<String, Value>, mut next: Map<String, Value>) -> Map<String, Value> {
+    for k in SECRET_KEYS {
+        match next.get(k).and_then(Value::as_str) {
+            Some(MASK) => match old.get(k) {
+                Some(o) => { next.insert(k.to_string(), o.clone()); }
+                None => { next.remove(k); }
+            },
+            Some("") | None => {}
+            // déjà chiffré : seul le compagnon écrit ces valeurs, on ne les accepte pas de l'extérieur
+            Some(plain) if plain.starts_with("dpapi:") || plain.starts_with("plain:") => {
+                match old.get(k) {
+                    Some(o) => { next.insert(k.to_string(), o.clone()); }
+                    None => { next.remove(k); }
+                }
+            }
+            Some(plain) => { next.insert(k.to_string(), Value::String(seal(plain.trim()))); }
+        }
+    }
+    next
+}
+
+fn page_json(p: &Page) -> Value {
+    let name = modules().into_iter().find(|m| m.id == p.module).map(|m| m.name).unwrap_or("");
+    json!({ "id": p.id, "module": p.module, "name": name, "settings": masked(&p.settings), "version": p.version })
+}
+
+/// Un Dot Hub pour l'extérieur : la page affichée (module, réglages masqués, version), son nom, « Identifier ».
+fn instance_json(cfg: &Config, uid: &str, inst: &Instance) -> Value {
+    let page = inst.page.as_ref().and_then(|id| cfg.pages.iter().find(|p| &p.id == id));
+    json!({
+        "name": inst.name,
+        "page": page.map(|p| p.id.clone()),
+        "module": page.map(|p| p.module.clone()),
+        "settings": page.map(|p| masked(&p.settings)).unwrap_or_default(),
+        "version": inst.version + page.map(|p| p.version).unwrap_or(0),
+        "identify": inst.identify,
+        "last_seen": inst.last_seen,
+        "connected": connected(uid),
+    })
+}
+
+fn read_json(req: &mut Request, limit: u64) -> Option<Value> {
+    let mut body = String::new();
+    req.as_reader().take(limit).read_to_string(&mut body).ok()?;
+    serde_json::from_str(&body).ok()
 }
 
 fn query(url: &str, key: &str) -> String {
@@ -750,6 +930,9 @@ fn main() {
         }
     };
     let mut c = load_config();
+    if migrate(&mut c) {
+        save_config(&c);
+    }
     // première ouverture : Dot Companion démarrera avec Windows (désactivable dans les réglages et le menu de l'icône)
     if !c.startup_done && startup::supported() {
         startup::set(true);
@@ -787,4 +970,38 @@ fn pause() {
     println!("Appuie sur Entrée pour fermer.");
     let mut s = String::new();
     let _ = std::io::stdin().read_line(&mut s);
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn reprise_avant_0_5() {
+        let old = r#"{"instances":{"a":{"name":"gauche","module":"clock","settings":{"x":1}},"b":{"module":"clock","settings":{"x":1}},"c":{"module":"steam"},"d":{}}}"#;
+        let mut c: Config = serde_json::from_str(old).unwrap();
+        assert!(migrate(&mut c));
+        assert_eq!(c.pages.len(), 2, "même module et mêmes réglages : une seule page");
+        assert_eq!(c.instances["a"].page, c.instances["b"].page);
+        assert_eq!(c.pages.iter().find(|p| Some(&p.id) == c.instances["c"].page.as_ref()).unwrap().module, "steam");
+        assert!(c.instances["d"].page.is_none());
+        assert!(!migrate(&mut c), "une seule fois");
+        let v = serde_json::to_value(&c).unwrap();
+        assert!(v["instances"]["a"].get("module").is_none() && v["instances"]["a"].get("settings").is_none(), "anciens champs plus écrits");
+    }
+
+    #[test]
+    fn secrets() {
+        let mut old = Map::new();
+        old.insert("steamApiKey".into(), Value::String(seal("cle")));
+        let mut next = Map::new();
+        next.insert("steamApiKey".into(), Value::String(MASK.into()));
+        assert_eq!(merge_settings(&old, next.clone()), old, "masque : on garde l'ancien");
+        next.insert("steamApiKey".into(), Value::String("plain:Zm9v".into()));
+        assert_eq!(merge_settings(&old, next.clone()), old, "valeur chiffrée venue de l'extérieur : refusée");
+        next.insert("steamApiKey".into(), Value::String(" neuve ".into()));
+        let m = merge_settings(&old, next);
+        assert_eq!(unseal(m["steamApiKey"].as_str().unwrap()).as_deref(), Some("neuve"));
+        assert_eq!(masked(&m)["steamApiKey"], MASK);
+    }
 }
