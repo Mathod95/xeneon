@@ -257,7 +257,7 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
       <p class="hint">Toutes les cartes, en taille réelle XL. Lumière : un toucher allume ou éteint, un toucher sur la barre règle l'intensité ; à droite, le bouton du haut change de couleur, celui du bas passe en blanc puis va du chaud au froid (2700, 4000, 6500 K).</p>
     </div>
     <div class="cgroup">
-      <div class="tag"><b>Lumières</b><span>3 par rangée</span></div>
+      <div class="tag"><b>Lumières</b><span>387 × 153 px · 3 empilées en XL, 18 au total</span></div>
       <div class="cgrid c3" id="cLights"></div>
     </div>
     <div class="cgroup">
@@ -484,8 +484,12 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
     }
     return cv;
   }
-  function box(grid) {
-    var b = el("div", "cbox"), inn = el("div", "in"); b.appendChild(inn); grid.appendChild(b); return inn;
+  // hauteur d'une carte en XL : tuile 240 px (2 rangées) ; lumière 153 px, pour en empiler 3 dans les 500 px de la grille ((500 − 2 × 20) / 3)
+  var CARD_W = 387, CARD_H = 240, LIGHT_H = (500 - 2 * 20) / 3;
+  function box(grid, h) {
+    var b = el("div", "cbox"), inn = el("div", "in");
+    h = h || CARD_H; b.style.aspectRatio = CARD_W + " / " + h; inn.style.height = h + "px";
+    b.appendChild(inn); grid.appendChild(b); return inn;
   }
   function colorsOn(inn, c) {
     inn.style.setProperty("--accent", c.accent); inn.style.setProperty("--lit", c.lit); inn.style.setProperty("--label", c.label);
@@ -531,7 +535,7 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
   function drawCards(c) {
     var gL = v("cLights"), gS = v("cSensors"), gO = v("cOthers");
     gL.innerHTML = ""; gS.innerHTML = ""; gO.innerHTML = "";
-    E.filter(function (e) { return e.type === "light"; }).forEach(function (e) { var inn = box(gL); colorsOn(inn, c); lightCard(inn, e, c); });
+    E.filter(function (e) { return e.type === "light"; }).forEach(function (e) { var inn = box(gL, LIGHT_H); colorsOn(inn, c); lightCard(inn, e, c); });
     SENSORS.forEach(function (d) { var inn = box(gS); colorsOn(inn, c); sensorCard(inn, d, c); });
     // les autres tuiles de la v0.1 (le capteur de température est remplacé par la carte ci-dessus)
     E.filter(function (e) { return e.type !== "light" && !(e.type === "sensor" && e.unit === "°"); }).forEach(function (e) {
