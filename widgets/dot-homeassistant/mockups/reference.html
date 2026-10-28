@@ -83,6 +83,20 @@ h2 { font-family: var(--mono); font-weight: 500; font-size: 13px; letter-spacing
 /* valeurs du capteur : un seul bloc centré dans la largeur de la carte */
 .c-vals { display: flex; justify-content: center; gap: 56px; }
 .c-v { text-align: center; } /* chaque valeur centrée sur son libellé */
+/* listes (mises à jour, services) : une ligne par élément, sous l'en-tête */
+.c-list { flex: 1; display: flex; flex-direction: column; gap: 6px; margin-top: 22px; min-height: 0; overflow: hidden; }
+.c-li { position: relative; display: flex; align-items: center; gap: 14px; height: 36px; padding: 0 2px; font-size: 18px; line-height: 24px; letter-spacing: .06em; color: var(--c-lit); border-radius: 8px; }
+.c-li .n { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.c-li .r { flex: none; white-space: nowrap; font-size: 16px; letter-spacing: .1em; text-transform: uppercase; color: var(--c-label); font-variant-numeric: tabular-nums; }
+.c-li .r.up { color: var(--c-accent); }
+.c-li i { flex: none; width: 12px; height: 12px; border-radius: 50%; background: var(--c-label); opacity: .5; }
+.c-li i.ok { background: var(--c-accent); opacity: 1; }
+.c-li i.err { background: #ed403b; opacity: 1; }
+.c-li .r.err { color: #ed403b; }
+.c-li.hold { cursor: pointer; touch-action: none; }
+.c-li .fill { position: absolute; left: 0; bottom: -2px; }
+.c-more { margin-top: auto; font-size: 16px; letter-spacing: .14em; text-transform: uppercase; color: var(--c-label); }
+.c-ar.go { color: var(--c-accent); }
 /* lumière : deux boutons en points (3 × 3, croix allumée, angles éteints) à droite du pictogramme,
    l'un au-dessus de l'autre avec une rangée de points vide entre les deux : 3 + 1 + 3 = 7 rangées, la hauteur du pictogramme */
 .c-head .c-who { flex: 1; }
@@ -269,6 +283,18 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
       <div class="cgrid c2" id="cSensors"></div>
     </div>
     <div class="cgroup">
+      <div class="tag"><b>Groupes de lumières</b><span>387 × 153 px, comme une lumière</span></div>
+      <div class="cgrid c3" id="cGroups"></div>
+    </div>
+    <div class="cgroup">
+      <div class="tag"><b>Automatisations</b><span>387 × 153 px · un toucher la lance</span></div>
+      <div class="cgrid c3" id="cAutos"></div>
+    </div>
+    <div class="cgroup">
+      <div class="tag"><b>Mises à jour · services</b><span>387 × 500 px · une colonne entière</span></div>
+      <div class="cgrid c2" id="cLists"></div>
+    </div>
+    <div class="cgroup">
       <div class="tag"><b>Autres exemples</b><span>Tuiles de la v0.1, à redessiner</span></div>
       <div class="cgrid c3" id="cOthers"></div>
     </div>
@@ -293,6 +319,10 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
           <tr class="todo"><td>8</td><td>Hors ligne</td><td>« HOME ASSISTANT OFFLINE » et « CHECK URL AND TOKEN IN DOT COMPANION », point du libellé en rouge. Jamais d'état inventé.</td></tr>
           <tr class="todo"><td>9</td><td>Plus de tuiles que de places</td><td>Les premières de la pièce s'affichent ; à étudier : pages avec des points de page en bas à droite.</td></tr>
           <tr class="todo"><td>10</td><td>Tailles</td><td><b>XL</b> : pièces en onglets, 6 × 2 tuiles.<br><b>L</b> : pièces en onglets, 4 × 2 tuiles.<br><b>M</b> : pièces en onglets, 2 × 3 tuiles en ligne (pictogramme à gauche).<br><b>S</b> : 4 tuiles favorites, sans libellés ni onglets.</td></tr>
+          <tr class="todo"><td>11</td><td>Groupes de lumières</td><td>Une carte comme celle d'une lumière, pour plusieurs lumières : nom du groupe, « 1 / 2 ON » sous le nom, barre = intensité moyenne. Un toucher allume ou éteint tout le groupe, la barre et les deux boutons règlent toutes les lumières. Groupes de Home Assistant (entité <code>light</code> qui contient d'autres lumières), ou groupes faits dans les réglages du compagnon.</td></tr>
+          <tr class="todo"><td>12</td><td>Automatisations</td><td>Entités <code>automation.*</code> : un toucher la lance (<code>automation.trigger</code>), « RUNNING… » en accent puis l'heure du dernier lancement (<code>last_triggered</code>). Une automatisation désactivée est grisée. Les scripts (<code>script.*</code>) et les scènes pourront utiliser la même carte.</td></tr>
+          <tr class="todo"><td>13</td><td>Mises à jour</td><td>Entités <code>update.*</code> : Home Assistant Core, OS, modules complémentaires, HACS, firmwares des appareils. Une ligne par mise à jour : nom, version disponible. Garder le doigt 1 s sur une ligne l'installe (<code>update.install</code>), la barre se remplit pendant l'appui. Rien à installer : « UP TO DATE ».</td></tr>
+          <tr class="todo"><td>14</td><td>Services</td><td>Modules complémentaires (API Supervisor : démarré, arrêté) et intégrations (<code>config_entries</code> : chargée, erreur). Point en accent = en marche, rouge = erreur, gris = arrêté. Les modules complémentaires n'existent qu'avec Home Assistant OS ou Supervised.</td></tr>
         </tbody>
       </table>
     </div>
@@ -326,7 +356,11 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
     lock: ["..###..", ".#...#.", ".#...#.", "#######", "###.###", "###.###", "#######"],
     sensor: [".......", "#......", "##...#.", "#.#.#.#", "#..#...", "#......", "#######"],
     power: ["....##.", "...##..", "..##...", ".#####.", "...##..", "..##...", ".##...."],
-    scene: ["...#...", "...#...", "#######", ".#####.", "..###..", ".##.##.", "#.....#"]
+    scene: ["...#...", "...#...", "#######", ".#####.", "..###..", ".##.##.", "#.....#"],
+    group: [".......", ".#...#.", "#.#.#.#", "#.#.#.#", ".#...#.", ".#...#.", "......."],
+    auto: ["..#....", "..##...", "..###..", "..####.", "..###..", "..##...", "..#...."],
+    update: ["...#...", "...#...", ".#.#.#.", "..###..", "...#...", "#.....#", "#######"],
+    services: ["#######", "#.....#", "#######", ".......", "#######", "#.....#", "#######"]
   };
   var ROOMS = [
     { id: "fav", name: "Favorites" }, { id: "living", name: "Living room" }, { id: "kitchen", name: "Kitchen" },
@@ -468,6 +502,28 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
   function roomName(id) { return (ROOMS.filter(function (r) { return r.id === id; })[0] || {}).name || ""; }
   // état propre à chaque lumière : couleur, blanc
   E.forEach(function (e, i) { if (e.type === "light") { e.color = i % 6; e.kelvin = i % 3; e.mode = i % 2 ? "white" : "color"; } });
+  var GROUPS = [
+    { name: "Living room", rooms: ["living"] },
+    { name: "All lights", rooms: null }
+  ];
+  var AUTOS = [
+    { name: "Good night", last: "22:40" },
+    { name: "Movie mode", last: "yesterday" },
+    { name: "Leave home", last: "08:12", off: true }
+  ];
+  var UPDATES = [
+    { name: "Home Assistant Core", ver: "2026.11.0" },
+    { name: "Home Assistant OS", ver: "17.1" },
+    { name: "Zigbee2MQTT", ver: "2.4.0" },
+    { name: "ESPHome", ver: "2026.10.3" },
+    { name: "HACS", ver: "2.1.0" },
+    { name: "Hue bridge firmware", ver: "1972004020" }
+  ];
+  var SERVICES = [
+    { name: "Mosquitto broker", st: "ok" }, { name: "Zigbee2MQTT", st: "ok" }, { name: "Node-RED", st: "ok" },
+    { name: "ESPHome", st: "ok" }, { name: "Frigate", st: "err" }, { name: "Music Assistant", st: "stop" },
+    { name: "Philips Hue", st: "ok" }, { name: "Spotify", st: "ok" }
+  ];
   var SENSORS = [
     { name: "Bedroom sensor", room: "bedroom", fav: 1, temp: 19.8, hum: 52 },
     { name: "Sofa sensor", room: "living", fav: 1, temp: 21.4, hum: 47 }
@@ -507,15 +563,16 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
   }
   function lightCard(inn, d, c) {
     inn.className = "in card"; inn.setAttribute("role", "button"); inn.setAttribute("aria-label", d.name + (d.on ? " · on" : " · off"));
-    var h = head("light", d.on, d.name, roomName(d.room), c), white = d.mode === "white", btns = el("div", "c-btns");
+    var h = head(d.members ? "group" : "light", d.on, d.name, d.area || roomName(d.room), c), white = d.mode === "white", btns = el("div", "c-btns");
     var colorBtn = el("button", "c-btn"), tempBtn = el("button", "c-btn");
     colorBtn.type = tempBtn.type = "button";
     colorBtn.setAttribute("aria-label", "Color"); colorBtn.setAttribute("aria-pressed", white ? "false" : "true");
     tempBtn.setAttribute("aria-label", "White temperature · " + KELVINS[d.kelvin][0]); tempBtn.setAttribute("aria-pressed", white ? "true" : "false");
     colorBtn.appendChild(cross(LIGHT_COLORS[d.color], white ? 0.4 : 1, SIZES.xl.pitch, c));
     tempBtn.appendChild(cross(KELVINS[d.kelvin][1], white ? 1 : 0.4, SIZES.xl.pitch, c));
-    colorBtn.addEventListener("click", function (ev) { ev.stopPropagation(); if (d.mode === "white") d.mode = "color"; else d.color = (d.color + 1) % LIGHT_COLORS.length; d.on = true; render(); });
-    tempBtn.addEventListener("click", function (ev) { ev.stopPropagation(); if (d.mode !== "white") d.mode = "white"; else d.kelvin = (d.kelvin + 1) % KELVINS.length; d.on = true; render(); });
+    var done = function () { if (d.apply) d.apply(); render(); };
+    colorBtn.addEventListener("click", function (ev) { ev.stopPropagation(); if (d.mode === "white") d.mode = "color"; else d.color = (d.color + 1) % LIGHT_COLORS.length; d.on = true; done(); });
+    tempBtn.addEventListener("click", function (ev) { ev.stopPropagation(); if (d.mode !== "white") d.mode = "white"; else d.kelvin = (d.kelvin + 1) % KELVINS.length; d.on = true; done(); });
     btns.appendChild(colorBtn); btns.appendChild(tempBtn); h.appendChild(btns); inn.appendChild(h);
     var b = bar(387 - 48, d.lvl, SIZES.xl.bar, c, d.on); inn.appendChild(b);
     inn.addEventListener("click", function (ev) {
@@ -523,8 +580,68 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
       var r = b.getBoundingClientRect(), pad = 20 * r.height / SIZES.xl.bar;
       if (ev.clientY >= r.top - pad && ev.clientY <= r.bottom + pad) { d.lvl = Math.max(0.05, Math.min(1, (ev.clientX - r.left) / r.width)); d.on = true; }
       else d.on = !d.on;
-      render();
+      done();
     });
+  }
+  // groupe : vu comme une seule lumière (allumé si une lumière l'est, intensité moyenne) ; chaque réglage s'applique à toutes
+  function groupOf(g) {
+    var m = E.filter(function (e) { return e.type === "light" && (!g.rooms || g.rooms.indexOf(e.room) >= 0); });
+    var lit = m.filter(function (e) { return e.on; }), first = lit[0] || m[0];
+    var d = { name: g.name, members: m, on: lit.length > 0, color: first.color, kelvin: first.kelvin, mode: first.mode,
+      lvl: (lit.length ? lit : m).reduce(function (a, e) { return a + e.lvl; }, 0) / (lit.length || m.length),
+      area: lit.length + " / " + m.length + " on" };
+    d.apply = function () { m.forEach(function (e) { e.on = d.on; e.lvl = d.lvl; e.color = d.color; e.kelvin = d.kelvin; e.mode = d.mode; }); };
+    return d;
+  }
+  function autoCard(inn, a, c) {
+    inn.className = "in card" + (a.off ? " ro" : ""); inn.setAttribute("role", "button"); inn.setAttribute("aria-label", "Run " + a.name);
+    var running = a.running && Date.now() - a.running < 1500;
+    var h = head("auto", running, a.name, a.off ? "Disabled" : running ? "Running…" : "Ran · " + a.last, c);
+    if (running) h.querySelector(".c-ar").classList.add("go");
+    if (a.off) h.style.opacity = .45;
+    inn.appendChild(h);
+    if (!a.off) inn.addEventListener("click", function () {
+      a.running = Date.now(); render();
+      setTimeout(function () { a.last = "now"; render(); }, 1600);
+    });
+  }
+  function listCard(inn, kind, c) {
+    inn.className = "in card ro"; inn.style.justifyContent = "flex-start";
+    var ups = UPDATES.filter(function (u) { return !u.done; });
+    var bad = SERVICES.filter(function (x) { return x.st !== "ok"; }).length;
+    inn.appendChild(head(kind, kind === "update" ? ups.length > 0 : bad === 0, kind === "update" ? "Updates" : "Services",
+      kind === "update" ? (ups.length ? ups.length + " available" : "Up to date") : (SERVICES.length - bad) + " / " + SERVICES.length + " running", c));
+    var list = el("div", "c-list"), max = 8;
+    if (kind === "update") {
+      ups.slice(0, max).forEach(function (u) {
+        var li = el("div", "c-li hold"); li.setAttribute("role", "button"); li.setAttribute("aria-label", "Hold to install " + u.name);
+        li.appendChild(el("span", "n", u.name)); li.appendChild(el("span", "r up", u.installing ? "Installing…" : u.ver));
+        // garder le doigt 1 s : installer
+        var raf = null, t0 = 0, fill = el("div", "fill"); li.appendChild(fill);
+        var stop = function () { if (raf) cancelAnimationFrame(raf); raf = null; fill.innerHTML = ""; };
+        li.addEventListener("pointerdown", function (ev) {
+          ev.preventDefault(); t0 = performance.now();
+          (function step(now) {
+            var p = Math.min(1, (now - t0) / 1000); fill.innerHTML = ""; fill.appendChild(bar(387 - 48, p, 6, c, true));
+            if (p >= 1) { raf = null; u.installing = true; render(); setTimeout(function () { u.done = true; render(); }, 2500); return; }
+            raf = requestAnimationFrame(step);
+          })(t0);
+        });
+        ["pointerup", "pointerleave", "pointercancel"].forEach(function (n) { li.addEventListener(n, stop); });
+        list.appendChild(li);
+      });
+      if (!ups.length) list.appendChild(el("p", "c-more", "Nothing to install"));
+      else if (ups.length > max) list.appendChild(el("p", "c-more", "+ " + (ups.length - max) + " more"));
+      else list.appendChild(el("p", "c-more", "Hold a line 1 s to install"));
+    } else {
+      SERVICES.slice(0, max).forEach(function (x) {
+        var li = el("div", "c-li"); li.appendChild(el("i", x.st === "ok" ? "ok" : x.st === "err" ? "err" : ""));
+        li.appendChild(el("span", "n", x.name));
+        li.appendChild(el("span", "r" + (x.st === "err" ? " err" : ""), x.st === "ok" ? "Running" : x.st === "err" ? "Error" : "Stopped"));
+        list.appendChild(li);
+      });
+    }
+    inn.appendChild(list);
   }
   function sensorCard(inn, d, c) {
     inn.className = "in card ro";
@@ -537,8 +654,11 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
     inn.appendChild(vals);
   }
   function drawCards(c) {
-    var gL = v("cLights"), gS = v("cSensors"), gO = v("cOthers");
-    gL.innerHTML = ""; gS.innerHTML = ""; gO.innerHTML = "";
+    var gL = v("cLights"), gS = v("cSensors"), gO = v("cOthers"), gG = v("cGroups"), gA = v("cAutos"), gT = v("cLists");
+    gL.innerHTML = ""; gS.innerHTML = ""; gO.innerHTML = ""; gG.innerHTML = ""; gA.innerHTML = ""; gT.innerHTML = "";
+    GROUPS.forEach(function (g) { var inn = box(gG, LIGHT_H); colorsOn(inn, c); lightCard(inn, groupOf(g), c); });
+    AUTOS.forEach(function (a) { var inn = box(gA, LIGHT_H); colorsOn(inn, c); autoCard(inn, a, c); });
+    ["update", "services"].forEach(function (k) { var inn = box(gT, 500); colorsOn(inn, c); listCard(inn, k, c); });
     E.filter(function (e) { return e.type === "light"; }).forEach(function (e) { var inn = box(gL, LIGHT_H); colorsOn(inn, c); lightCard(inn, e, c); });
     SENSORS.forEach(function (d) { var inn = box(gS); colorsOn(inn, c); sensorCard(inn, d, c); });
     // les autres tuiles de la v0.1 (le capteur de température est remplacé par la carte ci-dessus)
