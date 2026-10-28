@@ -55,6 +55,10 @@ figcaption { color: var(--muted); font-size: 14px; }
 .diff-head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; }
 h2 { font-family: var(--mono); font-weight: 500; font-size: 13px; letter-spacing: .14em; text-transform: uppercase; margin: 0; }
 .hint { color: var(--muted); font-size: 14px; margin: 0; }
+/* cartes à dessiner (lumière, température · humidité) */
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); gap: 20px; }
+.card-slot { gap: 10px; }
+.card-empty { aspect-ratio: 380 / 236; border: 2px dashed #262626; border-radius: 18px; background: #080808; }
 .table-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; }
 table { width: 100%; border-collapse: collapse; min-width: 640px; }
 th, td { text-align: left; padding: 14px 16px; vertical-align: top; border-bottom: 1px solid var(--line); }
@@ -215,6 +219,23 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
     </div>
     <figcaption><span id="sizeNote">Pièces en onglets, 12 tuiles.</span> La maquette marche : un toucher allume ou éteint, glisser sur la barre d'une lumière règle l'intensité, − et + changent la consigne du thermostat, la serrure demande de garder le doigt 1 s.</figcaption>
   </figure>
+
+  <section style="display:grid;gap:14px" aria-labelledby="cardsTitle">
+    <div class="diff-head">
+      <h2 id="cardsTitle">Cartes</h2>
+      <p class="hint">Les deux types d'entités principales : à dessiner.</p>
+    </div>
+    <div class="cards">
+      <figure class="card-slot">
+        <div class="tag"><b>Lumière</b><span>À définir</span></div>
+        <div class="card-empty" aria-label="Carte lumière, vide pour le moment"></div>
+      </figure>
+      <figure class="card-slot">
+        <div class="tag"><b>Température · humidité</b><span>À définir</span></div>
+        <div class="card-empty" aria-label="Carte capteur de température et d'humidité, vide pour le moment"></div>
+      </figure>
+    </div>
+  </section>
 
   <section style="display:grid;gap:14px">
     <div class="diff-head">
