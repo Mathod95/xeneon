@@ -68,7 +68,15 @@ h2 { font-family: var(--mono); font-weight: 500; font-size: 13px; letter-spacing
 .c-who { min-width: 0; margin-top: -4px; } /* Fira Code 24 px : haut des lettres hautes (l, d) au niveau du haut des points */
 .c-nm { font-size: 24px; line-height: 30px; letter-spacing: .06em; color: var(--c-lit); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .c-ar { margin-top: 4px; font-size: 18px; line-height: 24px; letter-spacing: .12em; text-transform: uppercase; color: var(--c-label); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.c-vals { display: flex; gap: 40px; }
+/* valeurs du capteur : chacune centrée dans sa moitié de la carte */
+.c-vals { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; text-align: center; }
+/* lumière : barre d'intensité, puis bouton couleur et bouton température (blanc chaud ↔ froid) */
+.c-row { display: flex; align-items: center; gap: 16px; }
+.c-row canvas { flex: 1; min-width: 0; }
+.c-btn { flex: none; display: grid; place-items: center; width: 56px; height: 56px; padding: 0; border-radius: 50%; border: 2px solid #2a2a2a; background: transparent; cursor: pointer; }
+.c-btn:active { border-color: var(--c-accent); }
+.c-btn:focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; }
+.c-btn i { width: 24px; height: 24px; border-radius: 50%; }
 .c-v .val { font-size: 48px; line-height: 56px; color: var(--c-lit); white-space: nowrap; font-variant-numeric: tabular-nums; }
 .c-v .val small { font-size: 22px; color: var(--c-label); margin-left: 6px; letter-spacing: .06em; }
 .c-v .k { font-size: 18px; line-height: 24px; letter-spacing: .12em; text-transform: uppercase; color: var(--c-label); }
@@ -236,7 +244,7 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
   <section style="display:grid;gap:14px" aria-labelledby="cardsTitle">
     <div class="diff-head">
       <h2 id="cardsTitle">Cartes</h2>
-      <p class="hint">Les deux types d'entités principales : à dessiner.</p>
+      <p class="hint">Les deux types d'entités principales. Lumière : le bouton couleur change de couleur, le bouton température passe en blanc puis va du chaud au froid (2700, 4000, 6500 K).</p>
     </div>
     <div class="cards">
       <figure class="card-slot">
@@ -442,20 +450,34 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
 
   // cartes à dessiner : lumière (nom, pièce, barre d'intensité) et capteur (nom, pièce, température et humidité), en taille réelle XL
   var CARDS = {
-    light: { name: "Ceiling", area: "Living room", on: true, lvl: 0.8 },
+    light: { name: "Ceiling", area: "Living room", on: true, lvl: 0.8, color: 0, kelvin: 0 },
     climate: { name: "Bedroom sensor", area: "Bedroom", temp: 19.8, hum: 52 }
   };
+  // exemples : couleurs proposées au toucher du bouton couleur, blancs au toucher du bouton température
+  var LIGHT_COLORS = ["#ffb35c", "#ff5a4e", "#ff6fd8", "#8b7bff", "#4fa3ff", "#3fe0a0"];
+  var KELVINS = [["2700 K", "#ffb46b"], ["4000 K", "#ffe2bd"], ["6500 K", "#e9efff"]];
   function drawCards(c) {
     document.querySelectorAll(".card-empty").forEach(function (box) {
       var kind = box.getAttribute("data-pic"), d = CARDS[kind], inn = box.querySelector(".in");
       inn.innerHTML = "";
-      inn.style.setProperty("--c-lit", c.lit); inn.style.setProperty("--c-label", c.label);
+      inn.style.setProperty("--c-lit", c.lit); inn.style.setProperty("--c-label", c.label); inn.style.setProperty("--c-accent", c.accent);
       var head = el("div", "c-head");
       head.appendChild(pic(kind, kind === "light" ? d.on : false, SIZES.xl.pitch, c));
       var who = el("div", "c-who"); who.appendChild(el("p", "c-nm", d.name)); who.appendChild(el("p", "c-ar", d.area));
       head.appendChild(who); inn.appendChild(head);
       if (kind === "light") {
-        inn.appendChild(bar(387 - 48, d.lvl, SIZES.xl.bar, c, d.on));
+        var row = el("div", "c-row"), white = d.mode === "white";
+        var colorBtn = el("button", "c-btn"), tempBtn = el("button", "c-btn");
+        colorBtn.type = tempBtn.type = "button";
+        colorBtn.setAttribute("aria-label", "Color");
+        tempBtn.setAttribute("aria-label", "White temperature · " + KELVINS[d.kelvin][0]);
+        var sw = el("i"); sw.style.background = LIGHT_COLORS[d.color]; sw.style.opacity = white ? .35 : 1; colorBtn.appendChild(sw);
+        var tw = el("i"); tw.style.background = "linear-gradient(90deg, #ffb46b 50%, #e9efff 50%)"; tw.style.opacity = white ? 1 : .35; tempBtn.appendChild(tw);
+        colorBtn.addEventListener("click", function () { if (d.mode === "white") d.mode = "color"; else d.color = (d.color + 1) % LIGHT_COLORS.length; render(); });
+        tempBtn.addEventListener("click", function () { if (d.mode !== "white") d.mode = "white"; else d.kelvin = (d.kelvin + 1) % KELVINS.length; render(); });
+        row.appendChild(bar(387 - 48 - 2 * 56 - 2 * 16, d.lvl, SIZES.xl.bar, c, d.on));
+        row.appendChild(colorBtn); row.appendChild(tempBtn);
+        inn.appendChild(row);
       } else {
         var vals = el("div", "c-vals");
         [[d.temp.toFixed(1), "°C", "Temperature"], [String(d.hum), "%", "Humidity"]].forEach(function (x) {
