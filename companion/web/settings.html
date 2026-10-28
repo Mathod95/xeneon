@@ -224,14 +224,7 @@ a { color: var(--accent); }
 	function previewCard() {
 		var c = el("section", "card"), head = el("header");
 		head.appendChild(el("h2", "lbl", "Aperçu · XENEON EDGE"));
-		head.appendChild(el("span", "grow"));
-		var sizes = el("div", "chips");
-		[["s", "S"], ["m", "M"], ["l", "L"], ["xl", "XL"]].forEach(function (x) {
-			var b = el("button", "", x[1]); b.type = "button"; b.setAttribute("aria-pressed", x[0] === PREVIEW.size ? "true" : "false");
-			b.addEventListener("click", function () { PREVIEW.size = x[0]; sizes.querySelectorAll("button").forEach(function (o) { o.setAttribute("aria-pressed", o === b ? "true" : "false"); }); loadPreview(); });
-			sizes.appendChild(b);
-		});
-		head.appendChild(sizes);
+		// XL seulement pour l'instant (PREVIEW.size) : les autres tailles viendront plus tard
 		c.appendChild(head);
 		PREVIEW.chips = el("div", "chips"); c.appendChild(PREVIEW.chips); chipNames();
 		var edge = el("div", "edge"), screen = el("div", "screen"), nat = el("div", "native");
@@ -239,7 +232,7 @@ a { color: var(--accent); }
 		var fit = function () { nat.style.transform = "scale(" + (screen.clientWidth / 2560) + ")"; };
 		if (window.ResizeObserver) new ResizeObserver(fit).observe(screen); else window.addEventListener("resize", fit);
 		setTimeout(fit, 0);
-		c.appendChild(el("p", "hint", "Le Dot Hub choisi, en direct : chaque réglage s'y voit tout de suite. Toucher l'aperçu ne déclenche rien. La taille se choisit ici : iCUE ne dit pas au compagnon où ni à quelle taille chaque Dot Hub est posé."));
+		c.appendChild(el("p", "hint", "Le Dot Hub choisi, en direct : chaque réglage s'y voit tout de suite. Toucher l'aperçu ne déclenche rien. Affiché en XL."));
 		loadPreview();
 		return c;
 	}
