@@ -68,15 +68,16 @@ h2 { font-family: var(--mono); font-weight: 500; font-size: 13px; letter-spacing
 .c-who { min-width: 0; margin-top: -4px; } /* Fira Code 24 px : haut des lettres hautes (l, d) au niveau du haut des points */
 .c-nm { font-size: 24px; line-height: 30px; letter-spacing: .06em; color: var(--c-lit); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .c-ar { margin-top: 4px; font-size: 18px; line-height: 24px; letter-spacing: .12em; text-transform: uppercase; color: var(--c-label); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-/* valeurs du capteur : chacune centrée dans sa moitié de la carte */
-.c-vals { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; text-align: center; }
-/* lumière : barre d'intensité, puis bouton couleur et bouton température (blanc chaud ↔ froid) */
-.c-row { display: flex; align-items: center; gap: 16px; }
-.c-row canvas { flex: 1; min-width: 0; }
-.c-btn { flex: none; display: grid; place-items: center; width: 56px; height: 56px; padding: 0; border-radius: 50%; border: 2px solid #2a2a2a; background: transparent; cursor: pointer; }
-.c-btn:active { border-color: var(--c-accent); }
-.c-btn:focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; }
-.c-btn i { width: 24px; height: 24px; border-radius: 50%; }
+/* valeurs du capteur : un seul bloc centré dans la largeur de la carte */
+.c-vals { display: flex; justify-content: center; gap: 56px; }
+/* lumière : deux boutons en points (3 × 3, croix allumée, angles éteints) à droite du pictogramme,
+   l'un au-dessus de l'autre avec une rangée de points vide entre les deux : 3 + 1 + 3 = 7 rangées, la hauteur du pictogramme */
+.c-head .c-who { flex: 1; }
+.c-btns { flex: none; display: flex; flex-direction: column; gap: 12px; }
+.c-btn { display: block; padding: 6px; margin: -6px; border: 0; border-radius: 10px; background: transparent; cursor: pointer; }
+.c-btn canvas { display: block; }
+.c-btn:active canvas { filter: brightness(1.3); }
+.c-btn:focus-visible { outline: 2px solid var(--brand); outline-offset: -2px; }
 .c-v .val { font-size: 48px; line-height: 56px; color: var(--c-lit); white-space: nowrap; font-variant-numeric: tabular-nums; }
 .c-v .val small { font-size: 22px; color: var(--c-label); margin-left: 6px; letter-spacing: .06em; }
 .c-v .k { font-size: 18px; line-height: 24px; letter-spacing: .12em; text-transform: uppercase; color: var(--c-label); }
@@ -244,7 +245,7 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
   <section style="display:grid;gap:14px" aria-labelledby="cardsTitle">
     <div class="diff-head">
       <h2 id="cardsTitle">Cartes</h2>
-      <p class="hint">Les deux types d'entités principales. Lumière : le bouton couleur change de couleur, le bouton température passe en blanc puis va du chaud au froid (2700, 4000, 6500 K).</p>
+      <p class="hint">Les deux types d'entités principales. Lumière : à droite, le bouton du haut change de couleur, celui du bas passe en blanc puis va du chaud au froid (2700, 4000, 6500 K).</p>
     </div>
     <div class="cards">
       <figure class="card-slot">
@@ -456,6 +457,19 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
   // exemples : couleurs proposées au toucher du bouton couleur, blancs au toucher du bouton température
   var LIGHT_COLORS = ["#ffb35c", "#ff5a4e", "#ff6fd8", "#8b7bff", "#4fa3ff", "#3fe0a0"];
   var KELVINS = [["2700 K", "#ffb46b"], ["4000 K", "#ffe2bd"], ["6500 K", "#e9efff"]];
+  // bouton en points 3 × 3 : croix allumée (5 points), angles éteints
+  function cross(color, alpha, pitch, c) {
+    var cv = document.createElement("canvas"), dpr = 2, w = 3 * pitch;
+    cv.width = w * dpr; cv.height = w * dpr; cv.style.width = w + "px"; cv.style.height = w + "px";
+    var ctx = cv.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    for (var y = 0; y < 3; y++) for (var x = 0; x < 3; x++) {
+      var lit = x === 1 || y === 1, col = lit ? color : c.unlit;
+      if (!col) continue;
+      ctx.globalAlpha = lit ? alpha : 1; ctx.fillStyle = col;
+      ctx.beginPath(); ctx.arc(x * pitch + pitch / 2, y * pitch + pitch / 2, pitch * 0.38, 0, Math.PI * 2); ctx.fill();
+    }
+    return cv;
+  }
   function drawCards(c) {
     document.querySelectorAll(".card-empty").forEach(function (box) {
       var kind = box.getAttribute("data-pic"), d = CARDS[kind], inn = box.querySelector(".in");
@@ -466,18 +480,17 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
       var who = el("div", "c-who"); who.appendChild(el("p", "c-nm", d.name)); who.appendChild(el("p", "c-ar", d.area));
       head.appendChild(who); inn.appendChild(head);
       if (kind === "light") {
-        var row = el("div", "c-row"), white = d.mode === "white";
+        var white = d.mode === "white", btns = el("div", "c-btns");
         var colorBtn = el("button", "c-btn"), tempBtn = el("button", "c-btn");
         colorBtn.type = tempBtn.type = "button";
-        colorBtn.setAttribute("aria-label", "Color");
-        tempBtn.setAttribute("aria-label", "White temperature · " + KELVINS[d.kelvin][0]);
-        var sw = el("i"); sw.style.background = LIGHT_COLORS[d.color]; sw.style.opacity = white ? .35 : 1; colorBtn.appendChild(sw);
-        var tw = el("i"); tw.style.background = "linear-gradient(90deg, #ffb46b 50%, #e9efff 50%)"; tw.style.opacity = white ? 1 : .35; tempBtn.appendChild(tw);
+        colorBtn.setAttribute("aria-label", "Color"); colorBtn.setAttribute("aria-pressed", white ? "false" : "true");
+        tempBtn.setAttribute("aria-label", "White temperature · " + KELVINS[d.kelvin][0]); tempBtn.setAttribute("aria-pressed", white ? "true" : "false");
+        colorBtn.appendChild(cross(LIGHT_COLORS[d.color], white ? 0.4 : 1, SIZES.xl.pitch, c));
+        tempBtn.appendChild(cross(KELVINS[d.kelvin][1], white ? 1 : 0.4, SIZES.xl.pitch, c));
         colorBtn.addEventListener("click", function () { if (d.mode === "white") d.mode = "color"; else d.color = (d.color + 1) % LIGHT_COLORS.length; render(); });
         tempBtn.addEventListener("click", function () { if (d.mode !== "white") d.mode = "white"; else d.kelvin = (d.kelvin + 1) % KELVINS.length; render(); });
-        row.appendChild(bar(387 - 48 - 2 * 56 - 2 * 16, d.lvl, SIZES.xl.bar, c, d.on));
-        row.appendChild(colorBtn); row.appendChild(tempBtn);
-        inn.appendChild(row);
+        btns.appendChild(colorBtn); btns.appendChild(tempBtn); head.appendChild(btns);
+        inn.appendChild(bar(387 - 48, d.lvl, SIZES.xl.bar, c, d.on));
       } else {
         var vals = el("div", "c-vals");
         [[d.temp.toFixed(1), "°C", "Temperature"], [String(d.hum), "%", "Humidity"]].forEach(function (x) {
