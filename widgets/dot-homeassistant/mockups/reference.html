@@ -58,8 +58,7 @@ h2 { font-family: var(--mono); font-weight: 500; font-size: 13px; letter-spacing
 /* section Cartes : les cartes à la même échelle que la maquette (pixels de l'XL × largeur du cadre / 2536) */
 .cgroup { display: grid; gap: 10px; }
 .cgrid { display: grid; gap: calc(20px * var(--k, .5)); justify-content: start; }
-.cgrid.c3 { grid-template-columns: repeat(3, calc(387px * var(--k, .5))); }
-.cgrid.c2 { grid-template-columns: repeat(2, calc(387px * var(--k, .5))); }
+.cgrid.c3, .cgrid.c2 { grid-template-columns: repeat(auto-fill, calc(387px * var(--k, .5))); }
 .cbox { position: relative; }
 .cbox .in { position: absolute; left: 0; top: 0; width: 387px; height: 240px; transform-origin: 0 0; font-family: "Fira Code", Consolas, monospace; font-variant-ligatures: none; color: var(--lit); --accent: #10b981; --lit: #f2f0e9; --label: #b8b6b0; --unlit: #1c1c1c; --c-lit: var(--lit); --c-label: var(--label); --c-accent: var(--accent); }
 .cbox p { margin: 0; }
@@ -280,11 +279,11 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
       <p class="hint">Toutes les cartes, à la même échelle que la maquette de référence. Lumière : un toucher allume ou éteint, un toucher sur la barre règle l'intensité ; à droite, le bouton du haut change de couleur, celui du bas passe en blanc puis va du chaud au froid (2700, 4000, 6500 K).</p>
     </div>
     <div class="cgroup">
-      <div class="tag"><b>Lumières</b><span>387 × 153 px · 3 empilées en XL, 18 au total</span></div>
+      <div class="tag"><b>Lumières</b><span>387 × 153 px · 3 empilées en XL</span></div>
       <div class="cgrid c3" id="cLights"></div>
     </div>
     <div class="cgroup">
-      <div class="tag"><b>Température · humidité</b><span>2 par rangée</span></div>
+      <div class="tag"><b>Température · humidité</b><span>387 × 240 px</span></div>
       <div class="cgrid c2" id="cSensors"></div>
     </div>
     <div class="cgroup">
@@ -292,7 +291,7 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
       <div class="cgrid c3" id="cGroups"></div>
     </div>
     <div class="cgroup">
-      <div class="tag"><b>Automatisations</b><span>387 × 153 px · un toucher la lance</span></div>
+      <div class="tag"><b>Automatisations</b><span>387 × 240 px · un toucher la lance</span></div>
       <div class="cgrid c3" id="cAutos"></div>
     </div>
     <div class="cgroup">
@@ -300,9 +299,8 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
       <div class="cgrid c2" id="cLists"></div>
     </div>
     <div class="cgroup">
-      <div class="tag"><b>Autres entités</b><span>Au format des cartes : 153 px (prise, volet, serrure, scène) ou 240 px (valeurs)</span></div>
+      <div class="tag"><b>Autres entités</b><span>387 × 240 px</span></div>
       <div class="cgrid c3" id="cOthers"></div>
-      <div class="cgrid c3" id="cOthersTall"></div>
     </div>
   </section>
 
@@ -725,7 +723,7 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
     var gL = v("cLights"), gS = v("cSensors"), gO = v("cOthers"), gG = v("cGroups"), gA = v("cAutos"), gT = v("cLists");
     gL.innerHTML = ""; gS.innerHTML = ""; gO.innerHTML = ""; gG.innerHTML = ""; gA.innerHTML = ""; gT.innerHTML = "";
     GROUPS.forEach(function (g) { var inn = box(gG, LIGHT_H); colorsOn(inn, c); lightCard(inn, groupOf(g), c); });
-    AUTOS.forEach(function (a) { var inn = box(gA, LIGHT_H); colorsOn(inn, c); autoCard(inn, a, c); });
+    AUTOS.forEach(function (a) { var inn = box(gA, CARD_H); colorsOn(inn, c); autoCard(inn, a, c); });
     ["update", "services"].forEach(function (k) { var inn = box(gT, 500); colorsOn(inn, c); listCard(inn, k, c); });
     E.filter(function (e) { return e.type === "light"; }).forEach(function (e) { var inn = box(gL, LIGHT_H); colorsOn(inn, c); lightCard(inn, e, c); });
     SENSORS.forEach(function (d) { var inn = box(gS); colorsOn(inn, c); sensorCard(inn, d, c); });
@@ -733,8 +731,7 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
     // les autres entités, au format des cartes : d'abord les cartes basses (153 px), puis les hautes (240 px)
     var others = E.filter(function (e) { return e.type !== "light" && !(e.type === "sensor" && e.unit === "°"); });
     var tall = function (e) { return e.type === "climate" || e.type === "sensor" || e.type === "power"; };
-    var gOT = v("cOthersTall"); gOT.innerHTML = "";
-    others.forEach(function (e) { var inn = box(tall(e) ? gOT : gO, tall(e) ? CARD_H : LIGHT_H); colorsOn(inn, c); otherCard(inn, e, c); });
+    others.forEach(function (e) { var inn = box(gO, CARD_H); colorsOn(inn, c); otherCard(inn, e, c); });
     scaleCards();
   }
   // même échelle que la maquette : largeur du cadre / largeur réelle de l'XL
