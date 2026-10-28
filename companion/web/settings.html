@@ -67,7 +67,7 @@ a { color: var(--accent); }
 	"use strict";
 	var MODULES = [], SCHEMAS = {}, saveTimers = {}, THEME_KEYS = [];
 	// aperçu : Dot Hub affiché, sa taille dans l'aperçu, son cadre ; état de chaque Dot Hub et couleurs communes
-	var INST = {}, THEME = null, PREVIEW = { uid: null, size: "xl", slot: null, frame: null, chips: null };
+	var INST = {}, THEME = null, PREVIEW = { size: "xl", slot: null, frame: null };
 	var SLOTS = { xl: [2536, 696], l: [1688, 696], m: [840, 696], s: [840, 344] };
 	var THEME_LABELS = { dotAccentColor: "Accent color", litDotColor: "Lit dot color", unlitDotColor: "Unlit dot color", labelColor: "Label color" };
 	function lit(v) { try { return Function("return (" + v + ")")(); } catch (e) { return v; } }
@@ -101,9 +101,9 @@ a { color: var(--accent); }
 	function save(uid, patch) {
 		// l'aperçu suit tout de suite, l'enregistrement part 250 ms plus tard
 		var it = INST[uid] || (INST[uid] = {});
-		if ("name" in patch) { it.name = patch.name; chipNames(); }
-		if ("module" in patch) { it.module = patch.module; if (uid === PREVIEW.uid) loadPreview(); }
-		if ("settings" in patch) { it.settings = patch.settings; pushPreview(uid); }
+		if ("name" in patch) it.name = patch.name;
+		if ("module" in patch) it.module = patch.module;
+		if ("settings" in patch) it.settings = patch.settings;
 		clearTimeout(saveTimers[uid]);
 		saveTimers[uid] = setTimeout(function () {
 			fetch("/api/instance/" + encodeURIComponent(uid), { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(patch) })
@@ -201,7 +201,7 @@ a { color: var(--accent); }
 		var theme = Object.assign({}, t.theme), grid = el("div", "grid");
 		THEME_KEYS.forEach(function (k) {
 			var f = el("label", "field inline"), w = el("input"); w.type = "color"; w.value = String(theme[k]).slice(0, 7);
-			w.addEventListener("input", function () { theme[k] = w.value.toUpperCase(); THEME = theme; pushPreview(PREVIEW.uid); saveTheme(theme); });
+			w.addEventListener("input", function () { theme[k] = w.value.toUpperCase(); THEME = theme; pushPreview(); saveTheme(theme); });
 			f.appendChild(w); f.appendChild(el("span", "", THEME_LABELS[k] || k)); grid.appendChild(f);
 		});
 		c.appendChild(grid);
@@ -226,42 +226,31 @@ a { color: var(--accent); }
 		head.appendChild(el("h2", "lbl", "Aperçu · XENEON EDGE"));
 		// XL seulement pour l'instant (PREVIEW.size) : les autres tailles viendront plus tard
 		c.appendChild(head);
-		PREVIEW.chips = el("div", "chips"); c.appendChild(PREVIEW.chips); chipNames();
 		var edge = el("div", "edge"), screen = el("div", "screen"), nat = el("div", "native");
 		PREVIEW.slot = el("div", "slot"); nat.appendChild(PREVIEW.slot); screen.appendChild(nat); edge.appendChild(screen); c.appendChild(edge);
 		var fit = function () { nat.style.transform = "scale(" + (screen.clientWidth / 2560) + ")"; };
 		if (window.ResizeObserver) new ResizeObserver(fit).observe(screen); else window.addEventListener("resize", fit);
 		setTimeout(fit, 0);
-		c.appendChild(el("p", "hint", "Le Dot Hub choisi, en direct : chaque réglage s'y voit tout de suite. Toucher l'aperçu ne déclenche rien. Affiché en XL."));
 		loadPreview();
 		return c;
 	}
-	function chipNames() {
-		if (!PREVIEW.chips) return;
-		PREVIEW.chips.innerHTML = "";
-		Object.keys(INST).forEach(function (uid, i) {
-			var b = el("button", "", INST[uid].name || "Dot Hub " + (i + 1)); b.type = "button";
-			b.setAttribute("aria-pressed", uid === PREVIEW.uid ? "true" : "false");
-			b.addEventListener("click", function () { PREVIEW.uid = uid; chipNames(); loadPreview(); });
-			PREVIEW.chips.appendChild(b);
-		});
-	}
 	function loadPreview() {
 		if (!PREVIEW.slot) return;
-		var dims = SLOTS[PREVIEW.size], uid = PREVIEW.uid, inst = INST[uid];
+		// pour l'instant l'aperçu montre l'accueil de Dot Hub (« DOT HUB », une carte vide « + »)
+		var dims = SLOTS[PREVIEW.size];
 		PREVIEW.slot.style.width = dims[0] + "px"; PREVIEW.slot.style.height = dims[1] + "px";
 		PREVIEW.slot.innerHTML = "";
-		if (!inst) { PREVIEW.frame = null; PREVIEW.slot.appendChild(el("p", "none", "Aucun Dot Hub")); return; }
-		var f = el("iframe"); f.title = "Aperçu de " + (inst.name || "ce Dot Hub");
+		var f = el("iframe"); f.title = "Aperçu de Dot Hub";
 		// la maquette de référence du compagnon remplit le cadre elle-même (pas de compagnon derrière)
-		if (window.__dotPreviewFrame) window.__dotPreviewFrame(f, uid, inst);
-		else f.src = (inst.module ? "/m/" + inst.module + "/" : "/home") + "?uid=" + encodeURIComponent(uid) + "&preview=1";
-		f.addEventListener("load", function () { pushPreview(uid); });
+		if (window.__dotPreviewFrame) window.__dotPreviewFrame(f, "", { module: null, name: "" });
+		else f.src = "/home?preview=1";
+		f.addEventListener("load", function () { pushPreview(); });
 		PREVIEW.frame = f; PREVIEW.slot.appendChild(f);
 	}
-	function pushPreview(uid) {
-		if (!uid || uid !== PREVIEW.uid || !PREVIEW.frame || !PREVIEW.frame.contentWindow) return;
-		PREVIEW.frame.contentWindow.postMessage({ type: "dot-preview", settings: (INST[uid] || {}).settings || {}, theme: THEME }, "*");
+	// couleurs communes : envoyées tout de suite à l'aperçu
+	function pushPreview() {
+		if (!PREVIEW.frame || !PREVIEW.frame.contentWindow) return;
+		PREVIEW.frame.contentWindow.postMessage({ type: "dot-preview", settings: {}, theme: THEME }, "*");
 	}
 
 	function load() {
@@ -276,7 +265,6 @@ a { color: var(--accent); }
 				THEME = res[2].theme;
 				keys.sort(function (a, b) { return (inst[b].last_seen || 0) - (inst[a].last_seen || 0); });
 				INST = {}; keys.forEach(function (k) { INST[k] = JSON.parse(JSON.stringify(inst[k])); });
-				if (!INST[PREVIEW.uid]) PREVIEW.uid = keys[0] || null;
 				list.appendChild(previewCard());
 				if (!keys.length) {
 					list.appendChild(el("p", "empty", "Aucun Dot Hub pour l'instant. Pose le widget Dot Hub dans iCUE sur l'Edge : il apparaîtra ici."));
