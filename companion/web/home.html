@@ -91,7 +91,7 @@ html, body { width: 100%; height: 100%; overflow: hidden; background: #080808; u
 		return "";
 	}
 
-	var modules = [], inst = {}, picking = false;
+	var modules = [], inst = {}, picking = false, pages = [];
 	function render() {
 		var size = classify(window.innerWidth || 2536, window.innerHeight || 696), dims = SLOTS[size];
 		var W = dims[0], H = dims[1], scale = Math.min(window.innerWidth / W, window.innerHeight / H) || 1;
@@ -116,7 +116,17 @@ html, body { width: 100%; height: 100%; overflow: hidden; background: #080808; u
 
 		var grid = el("div", "tiles");
 		// aperçu de la page de réglages : pas de module, une carte vide « + » pour en ajouter un (proposition)
+		// carte DOT HUB de la page de réglages : une tuile par module ajouté (pages), puis une carte vide « + »
 		if (preview && !blank) {
+			pages.forEach(function (id, i) {
+				var m = modules.filter(function (x) { return x.id === id; })[0] || { id: id, name: id };
+				var t = el("button", "tile"); t.type = "button"; t.setAttribute("aria-label", "Show " + m.name);
+				var tp = el("div", "pic"); tp.appendChild(pic(m.id, PITCH[size])); t.appendChild(tp);
+				var tm = el("div", "meta"); tm.appendChild(el("span", "name", m.name)); t.appendChild(tm);
+				var tl = live(m.id); if (tl) t.appendChild(el("span", "live", tl));
+				t.addEventListener("click", function () { if (window.parent !== window) window.parent.postMessage({ type: "dot-goto", page: i }, "*"); });
+				grid.appendChild(t);
+			});
 			var add = el("button", "tile add"); add.type = "button"; add.setAttribute("aria-label", "Add a module");
 			add.appendChild(el("span", "plus", "+"));
 			add.addEventListener("click", function () { if (window.parent !== window) window.parent.postMessage({ type: "dot-add" }, "*"); });
@@ -174,7 +184,13 @@ html, body { width: 100%; height: 100%; overflow: hidden; background: #080808; u
 		LIT = t.litDotColor || LIT; UNLIT = t.unlitDotColor || UNLIT;
 	}
 	// aperçu : couleurs reçues tout de suite de la page de réglages
-	window.addEventListener("message", function (e) { var d = e.data || {}; if (preview && d.type === "dot-preview" && d.theme) { applyTheme(d.theme); render(); } });
+	window.addEventListener("message", function (e) {
+		var d = e.data || {};
+		if (!preview) return;
+		if (d.type === "dot-preview" && d.theme) { applyTheme(d.theme); render(); }
+		// modules ajoutés dans la page de réglages : une tuile chacun sur l'accueil
+		if (d.type === "dot-pages") { pages = d.pages || []; render(); }
+	});
 	window.addEventListener("resize", render);
 	setInterval(render, 30000);
 	if (document.fonts && document.fonts.ready) document.fonts.ready.then(render);

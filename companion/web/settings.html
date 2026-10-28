@@ -47,8 +47,8 @@ a { color: var(--accent); }
 .settings label { display: inline-flex; align-items: center; gap: 10px; font: 12px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); cursor: pointer; }
 .settings input[type=color] { width: 36px; height: 28px; }
 .settings input[type=checkbox], .settings input[type=radio] { width: 18px; height: 18px; accent-color: var(--accent); cursor: pointer; }
-.settings select, .settings input[type=text] { font-size: 13px; padding: 6px 8px; background: #141414; }
-.settings input[type=text] { width: 16em; max-width: 100%; letter-spacing: .06em; }
+.settings select, .settings input[type=text], .settings input[type=password] { font-size: 13px; padding: 6px 8px; background: #141414; }
+.settings input[type=text], .settings input[type=password] { width: 16em; max-width: 100%; letter-spacing: .06em; }
 .settings .grp { display: inline-flex; align-items: center; gap: 14px; flex-wrap: wrap; }
 .settings .preset { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 6px; font-size: 11px; letter-spacing: .1em; }
 .settings .preset i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
@@ -69,7 +69,7 @@ a { color: var(--accent); }
   <div class="top"><span class="brand">MATHOD</span><span class="status" id="saved"></span></div>
   <div style="display:grid;gap:8px">
     <h1>Dot Hub · Réglages</h1>
-    <p class="hint">Une carte par Dot Hub posé dans iCUE. Les changements s'appliquent tout de suite sur l'Edge. Sur l'Edge, un appui long sur un module ramène à l'accueil.</p>
+    <p class="hint">Dot Hub, puis une page par module : touche « + » pour ajouter un module, choisis-le d'un toucher sur « DOT », règle-le en le voyant en direct.</p>
   </div>
   <div id="list" style="display:grid;gap:16px"></div>
 </div>
@@ -236,9 +236,9 @@ a { color: var(--accent); }
 	// Toucher le « + » ajoute en dessous la même carte, avec un écran vide (« ● DOT »). Toucher « DOT » propose les
 	// modules ; le module choisi tourne en direct dans la carte, avec ses réglages en dessous, au style des maquettes.
 	function previewCard(blank) {
-		var c = el("section", "card preview"), head = el("header");
-		head.appendChild(el("h2", "lbl", "Aperçu · XENEON EDGE"));
-		c.appendChild(head);
+		// la carte DOT HUB (toujours là) porte un titre ; les pages ajoutées par « + » n'ont que l'écran et les réglages
+		var c = el("section", "card preview" + (blank ? " page" : " hub"));
+		if (!blank) { var head = el("header"); head.appendChild(el("h2", "lbl", "Dot Hub")); c.appendChild(head); }
 		var edge = el("div", "edge"), screen = el("div", "screen"), nat = el("div", "native"), slot = el("div", "slot");
 		var dims = SLOTS[PREVIEW.size]; // XL seulement pour l'instant
 		slot.style.width = dims[0] + "px"; slot.style.height = dims[1] + "px";
@@ -258,8 +258,15 @@ a { color: var(--accent); }
 		// la maquette de référence du compagnon remplit le cadre elle-même (pas de compagnon derrière)
 		if (window.__dotPreviewFrame) window.__dotPreviewFrame(f, "", inst, { blank: card.blank && !card.module });
 		else f.src = (card.module ? "/m/" + card.module + "/" : "/home") + "?preview=1" + (card.blank && !card.module ? "&blank=1" : "");
-		f.addEventListener("load", function () { pushPreview(card); });
+		f.addEventListener("load", function () { pushPreview(card); if (!card.blank) pushPages(); });
 		card.frame = f; card.slot.appendChild(f);
+	}
+	// modules ajoutés (pages) : une tuile chacun sur l'accueil de la carte DOT HUB
+	function pushPages() {
+		var hub = PREVIEW.cards[0];
+		if (!hub || !hub.frame || !hub.frame.contentWindow) return;
+		var pages = PREVIEW.cards.slice(1).filter(function (c) { return c.module; }).map(function (c) { return c.module; });
+		hub.frame.contentWindow.postMessage({ type: "dot-pages", pages: pages }, "*");
 	}
 	// réglages et couleurs communes : envoyés tout de suite aux aperçus
 	function pushPreview(only) {
@@ -307,7 +314,11 @@ a { color: var(--accent); }
 					else if (p.type === "combobox" && p.values) {
 						w = el("select"); p.values.forEach(function (o) { var op = el("option", "", o.value); op.value = o.key; w.appendChild(op); }); w.value = v;
 						w.addEventListener("change", function () { set(w.value); });
-					} else { w = el("input"); w.type = "text"; w.value = v == null ? "" : v; w.spellcheck = false; w.addEventListener("input", function () { set(w.value); }); }
+					} else {
+						w = el("input"); w.type = /apikey|secret|token|password/i.test(k) ? "password" : "text"; // secret : masqué
+						w.value = v == null ? "" : v; w.spellcheck = false; w.autocomplete = "off";
+						w.addEventListener("input", function () { set(w.value); });
+					}
 					lab.appendChild(w); box.appendChild(lab);
 					// à côté de l'accent : les couleurs proposées dans les maquettes
 					if (k === "dotAccentColor") [["#10B981", "Émeraude"], ["#ED403B", "Rouge A"]].forEach(function (x) {
@@ -338,6 +349,13 @@ a { color: var(--accent); }
 				card.module = d.module; card.settings = {};
 				frameFor(card); panelFor(card);
 			});
+			pushPages();
+		}
+		// tuile d'un module touchée sur l'accueil : on descend à sa page
+		if (d.type === "dot-goto") {
+			var pagesWith = PREVIEW.cards.slice(1).filter(function (c) { return c.module; });
+			var target = pagesWith[d.page];
+			if (target) target.el.scrollIntoView({ behavior: "smooth", block: "start" });
 		}
 	});
 
@@ -355,12 +373,8 @@ a { color: var(--accent); }
 				INST = {}; keys.forEach(function (k) { INST[k] = JSON.parse(JSON.stringify(inst[k])); });
 				PREVIEW.cards = [];
 				list.appendChild(previewCard(false));
-				if (!keys.length) {
-					list.appendChild(el("p", "empty", "Aucun Dot Hub pour l'instant. Pose le widget Dot Hub dans iCUE sur l'Edge : il apparaîtra ici."));
-					return;
-				}
-				keys.sort(function (a, b) { return (inst[b].last_seen || 0) - (inst[a].last_seen || 0); })
-					.forEach(function (uid) { list.appendChild(card(uid, inst[uid])); });
+				// les cartes par Dot Hub (nom, module, réglages en listes) sont remplacées par les pages ajoutées avec « + »
+				// (proposition en cours dans la maquette de référence : pas encore enregistrées ni reliées à un Dot Hub)
 			});
 	}
 	load();
