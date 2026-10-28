@@ -58,7 +58,9 @@ h2 { font-family: var(--mono); font-weight: 500; font-size: 13px; letter-spacing
 /* cartes à dessiner (lumière, température · humidité) */
 .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); gap: 20px; }
 .card-slot { gap: 10px; }
-.card-empty { aspect-ratio: 380 / 236; border: 2px dashed #262626; border-radius: 18px; background: #080808; }
+.card-empty { position: relative; aspect-ratio: 387 / 240; border: 2px dashed #262626; border-radius: 18px; background: #080808; overflow: hidden; }
+/* contenu en taille réelle XL (387 × 240 px), mis à l'échelle de la carte */
+.card-empty .in { position: absolute; left: 0; top: 0; width: 387px; height: 240px; transform-origin: 0 0; padding: 22px 24px; }
 .table-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; }
 table { width: 100%; border-collapse: collapse; min-width: 640px; }
 th, td { text-align: left; padding: 14px 16px; vertical-align: top; border-bottom: 1px solid var(--line); }
@@ -228,11 +230,11 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
     <div class="cards">
       <figure class="card-slot">
         <div class="tag"><b>Lumière</b><span>À définir</span></div>
-        <div class="card-empty" aria-label="Carte lumière, vide pour le moment"></div>
+        <div class="card-empty" data-pic="light" data-on="1" aria-label="Carte lumière, vide pour le moment"><div class="in"></div></div>
       </figure>
       <figure class="card-slot">
         <div class="tag"><b>Température · humidité</b><span>À définir</span></div>
-        <div class="card-empty" aria-label="Carte capteur de température et d'humidité, vide pour le moment"></div>
+        <div class="card-empty" data-pic="climate" data-on="0" aria-label="Carte capteur de température et d'humidité, vide pour le moment"><div class="in"></div></div>
       </figure>
     </div>
   </section>
@@ -427,6 +429,17 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
     }
   }
 
+  // cartes à dessiner : pour l'instant, seulement le pictogramme (lumière, thermomètre), en taille réelle XL
+  function drawCards(c) {
+    document.querySelectorAll(".card-empty").forEach(function (box) {
+      var inn = box.querySelector(".in");
+      inn.innerHTML = "";
+      inn.appendChild(pic(box.getAttribute("data-pic"), box.getAttribute("data-on") === "1", SIZES.xl.pitch, c));
+      inn.style.transform = "scale(" + box.clientWidth / 387 + ")";
+    });
+  }
+  if (window.ResizeObserver) new ResizeObserver(function () { drawCards(colors()); }).observe(document.querySelector(".cards"));
+
   function render() {
     var c = colors(), Z = SIZES[size], offline = val("sample") === "offline";
     stage.style.setProperty("--accent", c.accent);
@@ -453,6 +466,7 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
     list.forEach(function (e) { var t = build(e, c, Z); t.setAttribute("data-id", e.id); grid.appendChild(t); });
     // les barres ont besoin de la largeur réelle des tuiles
     Array.prototype.forEach.call(grid.children, function (t, i) { drawBars(t, list[i], c, Z); });
+    drawCards(c);
   }
 
   document.querySelectorAll(".settings input").forEach(function (i) { i.addEventListener("input", render); i.addEventListener("change", render); });
