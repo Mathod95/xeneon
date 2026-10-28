@@ -20,7 +20,7 @@
 <style>
 /* Layout : maquette de référence en taille réelle (choix S, M, L, XL) avec ses réglages, puis tableau des choix. Même univers que Dot Clock, un seul thème sombre. */
 :root {
-  --page: #111111;
+  --page: #080808;
   --panel: #0a0a0a;
   --line: #262626;
   --text: #e6e6e6;
@@ -33,6 +33,8 @@
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
 html, body { background: var(--page); color: var(--text); }
+/* fond en points, le même que Dot Page */
+body { background-image: radial-gradient(circle, #161616 1.2px, transparent 1.6px); background-size: 22px 22px; }
 body {
   font-family: var(--sans);
   font-size: 15px;
