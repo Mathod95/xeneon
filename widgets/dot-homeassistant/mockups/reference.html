@@ -96,7 +96,12 @@ h2 { font-family: var(--mono); font-weight: 500; font-size: 13px; letter-spacing
 .c-li.hold { cursor: pointer; touch-action: none; }
 .c-li .fill { position: absolute; left: 0; bottom: -2px; }
 .c-more { margin-top: auto; font-size: 16px; letter-spacing: .14em; text-transform: uppercase; color: var(--c-label); }
-.c-ar.go { color: var(--c-accent); }
+.c-ar.go, .c-v .k.go { color: var(--c-accent); }
+/* thermostat : deux valeurs, un peu plus serrées pour tenir dans 339 px */
+.c-vals.tight { gap: 28px; }
+.c-vals.tight .val { font-size: 42px; }
+.c-st { font-size: 20px; line-height: 24px; letter-spacing: .12em; text-transform: uppercase; color: var(--c-label); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.c-st.go { color: var(--c-accent); }
 /* lumière : deux boutons en points (3 × 3, croix allumée, angles éteints) à droite du pictogramme,
    l'un au-dessus de l'autre avec une rangée de points vide entre les deux : 3 + 1 + 3 = 7 rangées, la hauteur du pictogramme */
 .c-head .c-who { flex: 1; }
@@ -295,8 +300,9 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
       <div class="cgrid c2" id="cLists"></div>
     </div>
     <div class="cgroup">
-      <div class="tag"><b>Autres exemples</b><span>Tuiles de la v0.1, à redessiner</span></div>
+      <div class="tag"><b>Autres entités</b><span>Au format des cartes : 153 px (prise, volet, serrure, scène) ou 240 px (valeurs)</span></div>
       <div class="cgrid c3" id="cOthers"></div>
+      <div class="cgrid c3" id="cOthersTall"></div>
     </div>
   </section>
 
@@ -532,12 +538,13 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
   var LIGHT_COLORS = ["#ffb35c", "#ff5a4e", "#ff6fd8", "#8b7bff", "#4fa3ff", "#3fe0a0"];
   var KELVINS = [["2700 K", "#ffb46b"], ["4000 K", "#ffe2bd"], ["6500 K", "#e9efff"]];
   // bouton en points 3 × 3 : croix allumée (5 points), angles éteints
-  function cross(color, alpha, pitch, c) {
+  function cross(color, alpha, pitch, c, g) {
+    g = g || [".#.", "###", ".#."];
     var cv = document.createElement("canvas"), dpr = 2, w = 3 * pitch;
     cv.width = w * dpr; cv.height = w * dpr; cv.style.width = w + "px"; cv.style.height = w + "px";
     var ctx = cv.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     for (var y = 0; y < 3; y++) for (var x = 0; x < 3; x++) {
-      var lit = x === 1 || y === 1, col = lit ? color : c.unlit;
+      var lit = g[y][x] === "#", col = lit ? color : c.unlit;
       if (!col) continue;
       ctx.globalAlpha = lit ? alpha : 1; ctx.fillStyle = col;
       ctx.beginPath(); ctx.arc(x * pitch + pitch / 2, y * pitch + pitch / 2, pitch * 0.38, 0, Math.PI * 2); ctx.fill();
@@ -643,6 +650,67 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
     }
     inn.appendChild(list);
   }
+  // autres entités : pictogramme, nom, pièce · état ; dessous, ce qui sert (barre, valeurs) sur toute la largeur
+  function otherCard(inn, e, c) {
+    var on = isOn(e);
+    var ro = e.type === "sensor" || e.type === "power";
+    inn.className = "in card" + (ro ? " ro" : ""); if (!ro) inn.setAttribute("role", "button"); inn.setAttribute("aria-label", e.name);
+    var h = head(e.type, on || !!e.flash, e.name, roomName(e.room), c);
+    inn.appendChild(h);
+    // état en bas de la carte, sur toute la largeur (prise, scène, serrure)
+    var stateRow = function (text, hot) { var p0 = el("p", "c-st" + (hot ? " go" : ""), text); inn.appendChild(p0); return p0; };
+    if (e.type === "climate") {
+      // + au-dessus, − en dessous : boutons 3 × 3 comme ceux des lumières
+      var btns = el("div", "c-btns"), plus = el("button", "c-btn"), minus = el("button", "c-btn");
+      plus.type = minus.type = "button"; plus.setAttribute("aria-label", "Raise target"); minus.setAttribute("aria-label", "Lower target");
+      plus.appendChild(cross(c.lit, 1, SIZES.xl.pitch, c)); minus.appendChild(cross(c.lit, 1, SIZES.xl.pitch, c, ["...", "###", "..."]));
+      plus.addEventListener("click", function (ev) { ev.stopPropagation(); e.target = Math.min(30, e.target + 0.5); render(); });
+      minus.addEventListener("click", function (ev) { ev.stopPropagation(); e.target = Math.max(7, e.target - 0.5); render(); });
+      btns.appendChild(plus); btns.appendChild(minus); h.appendChild(btns);
+    }
+    if (e.type === "climate" || e.type === "sensor" || e.type === "power") {
+      var vals = el("div", "c-vals" + (e.type === "climate" ? " tight" : "")), items = e.type === "climate"
+        ? [[e.cur.toFixed(1), "°C", "Current"], [e.target.toFixed(1), "°C", "Target"]]
+        : [[String(e.value), e.unit, e.type === "power" ? "Power" : e.name]];
+      items.forEach(function (x, i) {
+        var v0 = el("div", "c-v"), vp = el("p", "val", x[0]); vp.appendChild(el("small", "", x[1]));
+        var k = el("p", "k", x[2]);
+        if (e.type === "climate" && i === 1 && on) k.classList.add("go");
+        v0.appendChild(vp); v0.appendChild(k); vals.appendChild(v0);
+      });
+      inn.appendChild(vals);
+    }
+    if (e.type === "cover") {
+      var b = bar(387 - 48, e.lvl, SIZES.xl.bar, c, true); inn.appendChild(b);
+      inn.addEventListener("click", function (ev) {
+        var r = b.getBoundingClientRect(), pad = 20 * r.height / SIZES.xl.bar;
+        if (ev.clientY >= r.top - pad && ev.clientY <= r.bottom + pad) e.lvl = Math.round(Math.max(0, Math.min(1, (ev.clientX - r.left) / r.width)) * 10) / 10;
+        else e.lvl = e.lvl > 0 ? 0 : 1;
+        render();
+      });
+    }
+    if (e.type === "lock") {
+      // garder le doigt 1 s : la barre se remplit, puis verrouille ou déverrouille
+      var lb = el("div"), lt = stateRow(e.on ? "Locked · hold 1 s" : "Unlocked · hold 1 s", e.on);
+      inn.insertBefore(lb, lt); lb.style.display = "none";
+      var raf = null, t0 = 0;
+      var stop = function () { if (raf) cancelAnimationFrame(raf); raf = null; if (e.holding) { e.holding = false; e.hold = 0; render(); } };
+      inn.addEventListener("pointerdown", function (ev) {
+        ev.preventDefault(); t0 = performance.now(); e.holding = true;
+        (function step(now) {
+          e.hold = Math.min(1, (now - t0) / 1000);
+          lt.style.display = "none"; lb.style.display = "";
+          lb.innerHTML = ""; lb.appendChild(bar(387 - 48, e.hold, SIZES.xl.bar, c, true));
+          if (e.hold >= 1) { raf = null; e.holding = false; e.hold = 0; e.on = !e.on; render(); return; }
+          raf = requestAnimationFrame(step);
+        })(t0);
+      });
+      ["pointerup", "pointerleave", "pointercancel"].forEach(function (n) { inn.addEventListener(n, stop); });
+    }
+    if (e.type === "plug") { stateRow(e.on ? "On" : "Off", e.on); inn.addEventListener("click", function () { e.on = !e.on; render(); }); }
+    if (e.type === "scene") stateRow(e.flash ? "Activated" : "Tap to run", !!e.flash);
+    if (e.type === "scene") inn.addEventListener("click", function () { e.flash = true; render(); setTimeout(function () { e.flash = false; render(); }, 1500); });
+  }
   function sensorCard(inn, d, c) {
     inn.className = "in card ro";
     inn.appendChild(head("climate", false, d.name, roomName(d.room), c));
@@ -662,15 +730,12 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
     E.filter(function (e) { return e.type === "light"; }).forEach(function (e) { var inn = box(gL, LIGHT_H); colorsOn(inn, c); lightCard(inn, e, c); });
     SENSORS.forEach(function (d) { var inn = box(gS); colorsOn(inn, c); sensorCard(inn, d, c); });
     // les autres tuiles de la v0.1 (le capteur de température est remplacé par la carte ci-dessus)
-    E.filter(function (e) { return e.type !== "light" && !(e.type === "sensor" && e.unit === "°"); }).forEach(function (e) {
-      var inn = box(gO); colorsOn(inn, c);
-      var t = build(e, c, SIZES.xl); t.setAttribute("data-id", e.id); inn.appendChild(t);
-    });
+    // les autres entités, au format des cartes : d'abord les cartes basses (153 px), puis les hautes (240 px)
+    var others = E.filter(function (e) { return e.type !== "light" && !(e.type === "sensor" && e.unit === "°"); });
+    var tall = function (e) { return e.type === "climate" || e.type === "sensor" || e.type === "power"; };
+    var gOT = v("cOthersTall"); gOT.innerHTML = "";
+    others.forEach(function (e) { var inn = box(tall(e) ? gOT : gO, tall(e) ? CARD_H : LIGHT_H); colorsOn(inn, c); otherCard(inn, e, c); });
     scaleCards();
-    document.querySelectorAll("#cOthers .tile").forEach(function (t) {
-      var e = E.filter(function (x) { return String(x.id) === t.getAttribute("data-id"); })[0];
-      drawBars(t, e, c, SIZES.xl);
-    });
   }
   // même échelle que la maquette : largeur du cadre / largeur réelle de l'XL
   function scaleCards() {
