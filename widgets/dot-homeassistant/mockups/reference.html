@@ -66,6 +66,10 @@ h2 { font-family: var(--mono); font-weight: 500; font-size: 13px; letter-spacing
 .cbox canvas { display: block; }
 .cbox button { font-family: inherit; -webkit-tap-highlight-color: transparent; }
 .cbox .in > .tile { width: 100%; height: 100%; }
+/* maquette : une colonne par type de carte (3 lumières empilées, 2 capteurs empilés) */
+.stage .ccol { grid-row: 1 / -1; display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+.stage .ccol .cbox { width: 100%; flex: none; }
+.stage .ccol .cbox .in { position: static; width: 100%; }
 /* nouvelles cartes (lumière, capteur) : même cadre que les tuiles */
 .cbox .in.card { padding: 22px 24px; display: flex; flex-direction: column; justify-content: space-between; border: 2px solid #1d1d1d; border-radius: 18px; cursor: pointer; user-select: none; touch-action: none; }
 .cbox .in.card.ro { cursor: default; }
@@ -247,7 +251,7 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
       <button type="button" class="preset" data-accent="#18bcf2"><i style="background:#18bcf2"></i>Bleu Home Assistant</button>
       <button type="button" class="preset" data-accent="#ed403b"><i style="background:#ed403b"></i>Rouge A</button>
     </div>
-    <figcaption><span id="sizeNote">Pièces en onglets, 12 tuiles.</span> Maquette vidée : on garde le libellé et les onglets des pièces, les cartes se dessinent une par une dans la section « Cartes » ci-dessous.</figcaption>
+    <figcaption><span id="sizeNote">Pièces en onglets, 12 tuiles.</span> Pour l'instant, une colonne par type de carte : 3 lumières empilées, 2 capteurs de température et d'humidité. Les onglets filtrent par pièce. Les cartes se dessinent une par une dans la section « Cartes » ci-dessous.</figcaption>
   </figure>
 
   <section style="display:grid;gap:14px" aria-labelledby="cardsTitle">
@@ -464,8 +468,8 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
   // état propre à chaque lumière : couleur, blanc
   E.forEach(function (e, i) { if (e.type === "light") { e.color = i % 6; e.kelvin = i % 3; e.mode = i % 2 ? "white" : "color"; } });
   var SENSORS = [
-    { name: "Bedroom sensor", room: "bedroom", temp: 19.8, hum: 52 },
-    { name: "Sofa sensor", room: "living", temp: 21.4, hum: 47 }
+    { name: "Bedroom sensor", room: "bedroom", fav: 1, temp: 19.8, hum: 52 },
+    { name: "Sofa sensor", room: "living", fav: 1, temp: 21.4, hum: 47 }
   ];
   // exemples : couleurs proposées au toucher du bouton couleur, blancs au toucher du bouton température
   var LIGHT_COLORS = ["#ffb35c", "#ff5a4e", "#ff6fd8", "#8b7bff", "#4fa3ff", "#3fe0a0"];
@@ -551,7 +555,7 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
   function scaleCards() {
     var k = frame.clientWidth / SIZES[size].w || 0.5;
     document.querySelector("[aria-labelledby=cardsTitle]").style.setProperty("--k", k);
-    document.querySelectorAll(".cbox .in").forEach(function (inn) { inn.style.transform = "scale(" + k + ")"; });
+    document.querySelectorAll("[aria-labelledby=cardsTitle] .cbox .in").forEach(function (inn) { inn.style.transform = "scale(" + k + ")"; });
   }
   if (window.ResizeObserver) new ResizeObserver(scaleCards).observe(frame);
 
@@ -577,7 +581,21 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
     if (offline) { drawCards(c); return; }
     grid.style.top = showTabs ? "" : (size === "s" ? "24px" : "100px");
     grid.style.height = showTabs ? "" : (size === "s" ? "296px" : "548px");
-    // maquette vidée : les cartes se dessinent dans la section « Cartes »
+    // maquette : une colonne de lumières (3 empilées) et une colonne de capteurs (2 empilés), en XL et L
+    if (size === "xl" || size === "l") {
+      var inRoom = function (x) { return room === "fav" ? x.fav : x.room === room; };
+      var colL = el("div", "ccol"), colS = el("div", "ccol");
+      E.filter(function (e) { return e.type === "light" && inRoom(e); }).slice(0, 3).forEach(function (e) {
+        var b = el("div", "cbox"), inn = el("div", "in"); b.style.height = inn.style.height = LIGHT_H + "px";
+        b.appendChild(inn); colL.appendChild(b); colorsOn(inn, c); lightCard(inn, e, c);
+      });
+      SENSORS.filter(inRoom).slice(0, 2).forEach(function (d) {
+        var b = el("div", "cbox"), inn = el("div", "in"); b.style.height = inn.style.height = CARD_H + "px";
+        b.appendChild(inn); colS.appendChild(b); colorsOn(inn, c); sensorCard(inn, d, c);
+      });
+      if (colL.children.length) grid.appendChild(colL);
+      if (colS.children.length) grid.appendChild(colS);
+    }
     drawCards(c);
   }
 
