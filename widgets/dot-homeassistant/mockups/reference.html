@@ -62,9 +62,10 @@ h2 { font-family: var(--mono); font-weight: 500; font-size: 13px; letter-spacing
 /* contenu en taille réelle XL (387 × 240 px), mis à l'échelle de la carte */
 .card-empty .in { position: absolute; left: 0; top: 0; width: 387px; height: 240px; transform-origin: 0 0; padding: 22px 24px; display: flex; flex-direction: column; justify-content: space-between; font-family: "Fira Code", Consolas, monospace; font-variant-ligatures: none; color: var(--c-lit); }
 .card-empty .in p { margin: 0; }
-.c-head { display: flex; align-items: center; gap: 22px; min-width: 0; }
+/* texte calé en haut du pictogramme, pas centré */
+.c-head { display: flex; align-items: flex-start; gap: 22px; min-width: 0; }
 .c-head canvas { flex: none; }
-.c-who { min-width: 0; }
+.c-who { min-width: 0; margin-top: -6px; }
 .c-nm { font-size: 24px; line-height: 30px; letter-spacing: .06em; color: var(--c-lit); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .c-ar { margin-top: 4px; font-size: 18px; line-height: 24px; letter-spacing: .12em; text-transform: uppercase; color: var(--c-label); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .c-vals { display: flex; gap: 40px; }
