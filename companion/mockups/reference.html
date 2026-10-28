@@ -115,11 +115,11 @@ tr.todo td:nth-child(3) { color: var(--muted); }
   </header>
 
   <figure>
-    <div class="tag"><b>Maquette de référence</b><span>Version 0.1 · Dot Companion 0.4.0</span></div>
+    <div class="tag"><b>Maquette de référence</b><span>Version 0.2 · Dot Companion 0.5.0</span></div>
     <div class="views" role="group" aria-label="Vue">
       <button type="button" class="view" data-view="settings" aria-pressed="true">Réglages · navigateur</button>
-      <button type="button" class="view" data-view="console" aria-pressed="false">Fenêtre · aujourd'hui</button>
-      <button type="button" class="view" data-view="tray" aria-pressed="false">Zone de notification · proposition</button>
+      <button type="button" class="view" data-view="console" aria-pressed="false">Fenêtre · jusqu'à 0.4.0</button>
+      <button type="button" class="view" data-view="tray" aria-pressed="false">Zone de notification · 0.5.0</button>
     </div>
 
     <div class="win" id="vSettings">
@@ -134,7 +134,7 @@ tr.todo td:nth-child(3) { color: var(--muted); }
 
     <div class="tray" id="vTray" hidden>
       <div class="menu" id="trayMenu" role="menu" aria-label="Menu de Dot Companion">
-        <div class="hd"><span class="dot"></span><div><b>Dot Companion</b><small>0.4.0 · 2 Dot Hub connectés</small></div></div>
+        <div class="hd"><span class="dot"></span><div><b>Dot Companion</b><small>0.5.0 · 2 Dot Hub connectés</small></div></div>
         <button type="button" role="menuitem" data-act="settings">Ouvrir les réglages <small>127.0.0.1:47800</small></button>
         <button type="button" role="menuitem" data-act="identify">Identifier les Dot Hub</button>
         <div class="sep"></div>
@@ -194,7 +194,7 @@ tr.todo td:nth-child(3) { color: var(--muted); }
   <section style="display:grid;gap:14px">
     <div class="diff-head">
       <h2>Choix de design</h2>
-      <p class="hint">Les lignes sans gris sont validées (déjà dans le compagnon 0.4.0, ou à coder quand c'est indiqué) ; les grises sont à valider.</p>
+      <p class="hint">Les lignes sans gris sont validées (codées dans le compagnon 0.5.0, ou à coder quand c'est indiqué) ; les grises sont à valider.</p>
     </div>
     <div class="table-scroll">
       <table>
@@ -204,10 +204,10 @@ tr.todo td:nth-child(3) { color: var(--muted); }
           <tr><td>2</td><td>Réseau</td><td>N'écoute que sur <code>127.0.0.1:47800</code> : invisible depuis le réseau local. Les requêtes dont l'en-tête <code>Host</code> n'est pas <code>127.0.0.1:47800</code> ou <code>localhost:47800</code> sont refusées.</td></tr>
           <tr><td>3</td><td>Réglages</td><td>Dans le navigateur du PC (bouton ⚙ SETTINGS de l'accueil). Une carte par Dot Hub : nom, module, champs du module générés depuis ses balises <code>x-icue-property</code>, enregistrés tout de suite. Carte « Couleurs » commune à tous les modules. « Identifier » affiche le nom sur l'Edge, « Oublier » demande confirmation.</td></tr>
           <tr><td>4</td><td>Secrets</td><td>Clés d'API et jetons chiffrés sur le PC (DPAPI de Windows), masqués dans la page (<code>••••••••</code>), jamais renvoyés en clair.</td></tr>
-          <tr><td>5</td><td>Fenêtre</td><td><b>Validé (28 octobre 2026)</b> : plus de fenêtre console, le compagnon tourne en arrière-plan avec une icône dans la zone de notification (vue « Zone de notification »). Aujourd'hui (0.4.0), c'est encore une fenêtre console qui doit rester ouverte : à coder.</td></tr>
-          <tr><td>6</td><td>Menu de l'icône</td><td><b>Validé (28 octobre 2026), à coder</b> : Ouvrir les réglages, Identifier les Dot Hub, Démarrer avec Windows (coché par défaut), Rechercher une mise à jour, Quitter. En tête : version et nombre de Dot Hub connectés. Clic gauche sur l'icône : ouvre les réglages.</td></tr>
-          <tr><td>7</td><td>Démarrage avec Windows</td><td><b>Validé et codé (28 octobre 2026)</b> : case « Lancer Dot Companion au démarrage de Windows » dans la carte « Paramètres globaux » de la page de réglages (<code>GET</code> / <code>PUT /api/startup</code>). Clé <code>HKCU\Software\Microsoft\Windows\CurrentVersion\Run</code>, sans droits administrateur. Activé à la première ouverture, désactivable ensuite (aussi dans le menu de l'icône, quand elle sera codée).</td></tr>
-          <tr><td>8</td><td>Mises à jour</td><td><b>Validé (28 octobre 2026), à coder</b> : mise à jour depuis l'app, sans repasser par GitHub. Le compagnon compare sa version à la dernière release GitHub (au démarrage, puis une fois par jour) ; une nouvelle version s'affiche dans le menu de l'icône et dans la page de réglages avec un bouton « Mettre à jour ». Il télécharge le nouvel exe, vérifie son empreinte SHA-256 publiée avec la release, se remplace (l'exe en cours est renommé, Windows ne laisse pas l'écraser), redémarre sur la nouvelle version et supprime l'ancienne au lancement suivant. Seulement avec des releases taguées (<code>v*</code>), pas avec les exe de GitHub Actions. Dot Hub (le widget iCUE) reste installé par iCUE, mais change rarement : les modules sont dans le compagnon. Tant que l'exe n'est pas signé (ligne 9), un antivirus peut se méfier d'un programme qui se remplace.</td></tr>
+          <tr><td>5</td><td>Fenêtre</td><td><b>Validé et codé (0.5.0)</b> : plus de fenêtre console, le compagnon tourne en arrière-plan avec une icône dans la zone de notification (vue « Zone de notification »). Jusqu'à 0.4.0, c'était une fenêtre console qui devait rester ouverte. Si le port est pris, un message Windows le dit.</td></tr>
+          <tr><td>6</td><td>Menu de l'icône</td><td><b>Validé et codé (0.5.0)</b> : Ouvrir les réglages, Identifier les Dot Hub, Démarrer avec Windows (coché par défaut), Rechercher une mise à jour, Quitter. En tête : version et nombre de Dot Hub connectés. Clic gauche sur l'icône : ouvre les réglages. L'infobulle de l'icône signale une mise à jour disponible.</td></tr>
+          <tr><td>7</td><td>Démarrage avec Windows</td><td><b>Validé et codé (28 octobre 2026)</b> : case « Lancer Dot Companion au démarrage de Windows » dans la carte « Paramètres globaux » de la page de réglages (<code>GET</code> / <code>PUT /api/startup</code>). Clé <code>HKCU\Software\Microsoft\Windows\CurrentVersion\Run</code>, sans droits administrateur. Activé à la première ouverture, désactivable ensuite (aussi dans le menu de l'icône).</td></tr>
+          <tr><td>8</td><td>Mises à jour</td><td><b>Validé et codé (0.5.0)</b> : mise à jour depuis l'app, sans repasser par GitHub. Le compagnon compare sa version à la dernière release GitHub (au démarrage, puis une fois par jour) ; une nouvelle version s'affiche dans le menu de l'icône et dans la page de réglages avec un bouton « Mettre à jour ». Il télécharge le nouvel exe, vérifie son empreinte SHA-256 publiée avec la release, se remplace (l'exe en cours est renommé, Windows ne laisse pas l'écraser), redémarre sur la nouvelle version et supprime l'ancienne au lancement suivant. Dans la page de réglages : ligne « Mise à jour » de la carte « Paramètres globaux » (<code>GET /api/update</code>, <code>POST /api/update/check</code>, <code>POST /api/update/install</code>). Seulement avec des releases taguées (<code>v*</code>), pas avec les exe de GitHub Actions. Dot Hub (le widget iCUE) reste installé par iCUE, mais change rarement : les modules sont dans le compagnon. Tant que l'exe n'est pas signé (ligne 9), un antivirus peut se méfier d'un programme qui se remplace.</td></tr>
           <tr class="todo"><td>9</td><td>Avertissement Windows</td><td>L'exe n'est pas signé : SmartScreen avertit au premier lancement (« Informations complémentaires » → « Exécuter quand même »). Pistes : Microsoft Store (MSIX, aucun avertissement) ou signature gratuite SignPath pour les projets open source.</td></tr>
           <tr class="todo"><td>10</td><td>Charte de la page de réglages</td><td>Fond en points de Dot Page : fait (page <code>#080808</code>, trame de points 22 px). Reste : le libellé « ● DOT COMPANION » ; garder la police Fira Code et l'accent des Couleurs communes.</td></tr>
           <tr class="todo"><td>11</td><td>Réglages avec l'Edge en direct</td><td>Commencé. Carte <b>DOT HUB</b>, toujours présente : l'accueil en direct (XL), une tuile par module ajouté, puis une carte vide « + ». Toucher « + » ajoute une <b>page</b> (sans titre) : l'écran en direct et, après avoir touché « ● DOT » et choisi un module, ses réglages au style des maquettes (générés depuis ses balises, couleurs = couleurs communes). Toucher la tuile d'un module sur l'accueil descend à sa page. Les pages remplacent les anciennes cartes par Dot Hub (nom, module, listes). Pas de bouton SETTINGS dans les aperçus. Pas encore enregistré ni relié aux Dot Hub posés dans iCUE.</td></tr>
@@ -232,7 +232,7 @@ tr.todo td:nth-child(3) { color: var(--muted); }
       "c0rs41r-edge-c3d4": { name: "Edge · droite", module: "clock", last_seen: now - 40000, settings: {} },
       "c0rs41r-edge-e5f6": { name: "", module: null, last_seen: now - 3 * 86400000, settings: {} }
     },
-    theme: { dotAccentColor: "#10B981", litDotColor: "#F2F0E9", unlitDotColor: "#1C1C1C", labelColor: "#B8B6B0" }, themeVersion: 1, startup: true,
+    theme: { dotAccentColor: "#10B981", litDotColor: "#F2F0E9", unlitDotColor: "#1C1C1C", labelColor: "#B8B6B0" }, themeVersion: 1, startup: true, update: { checked: false },
     defaults: { dotAccentColor: "#10B981", litDotColor: "#F2F0E9", unlitDotColor: "#1C1C1C", labelColor: "#B8B6B0" }
   };
   var PAGES = {}; // pages des modules (schéma des réglages, et aperçu)
@@ -264,6 +264,9 @@ tr.todo td:nth-child(3) { color: var(--muted); }
     if (path === "/api/steam/state") return json(steamState());
     if (path === "/api/startup" && m === "GET") return json({ supported: true, enabled: STATE.startup });
     if (path === "/api/startup" && m === "PUT") { STATE.startup = !!(body && body.enabled); toast(STATE.startup ? "Dot Companion démarrera avec Windows" : "Dot Companion ne démarrera plus avec Windows"); return json({ ok: true, supported: true, enabled: STATE.startup }); }
+    if (path === "/api/health") return json({ ok: true, version: "0.5.0" });
+    if (path === "/api/update" || path === "/api/update/check") { if (path === "/api/update/check") STATE.update.checked = true; return json(Object.assign({ current: "0.5.0" }, STATE.update.checked ? { latest: "0.6.0", available: true } : { latest: null, available: false }, { checking: false, installing: false, error: null })); }
+    if (path === "/api/update/install") { toast("Dot Companion 0.6.0 serait téléchargé, vérifié (SHA-256) et installé, puis le compagnon redémarrerait"); return json({ current: "0.5.0", latest: "0.6.0", available: true, checking: false, installing: true, error: null }); }
     if (path === "/api/open-settings") { toast("Le compagnon ouvrirait cette page dans le navigateur du PC"); return json({ ok: true }); }
     if (path === "/api/theme" && m === "PUT") { Object.assign(STATE.theme, body || {}); STATE.themeVersion++; toast("Couleurs enregistrées pour tous les modules"); return json({ theme: STATE.theme, version: 2 }); }
     var inst = /^\/api\/instance\/([^/]+)(\/identify)?$/.exec(path);
@@ -345,9 +348,9 @@ tr.todo td:nth-child(3) { color: var(--muted); }
     if (a === "startup") { var on = b.getAttribute("aria-checked") !== "true"; b.setAttribute("aria-checked", on ? "true" : "false"); v("startupMark").textContent = on ? "✓" : ""; toast(on ? "Dot Companion démarrera avec Windows" : "Dot Companion ne démarrera plus avec Windows"); }
     if (a === "update") {
       // exemple : une nouvelle release est disponible ; un deuxième toucher l'installe
-      if (b.dataset.found) { v("updateNote").textContent = "installée"; toast("Dot Companion 0.5.0 téléchargé, vérifié (SHA-256), installé : le compagnon redémarre"); delete b.dataset.found; return; }
-      b.dataset.found = "1"; b.firstChild.textContent = "Mettre à jour vers 0.5.0 "; v("updateNote").textContent = "0.4.0 → 0.5.0";
-      toast("Dernière release GitHub : 0.5.0. Touche « Mettre à jour » pour l'installer");
+      if (b.dataset.found) { v("updateNote").textContent = "installée"; toast("Dot Companion 0.6.0 téléchargé, vérifié (SHA-256), installé : le compagnon redémarre"); delete b.dataset.found; return; }
+      b.dataset.found = "1"; b.firstChild.textContent = "Mettre à jour vers 0.6.0 "; v("updateNote").textContent = "0.5.0 → 0.6.0";
+      toast("Dernière release GitHub : 0.6.0. Touche « Mettre à jour » pour l'installer");
     }
     if (a === "quit") toast("Le compagnon s'arrêterait : Dot Hub afficherait « Dot Companion n'est pas lancé »");
   });
@@ -355,8 +358,8 @@ tr.todo td:nth-child(3) { color: var(--muted); }
   // ---------- vues
   var NOTES = {
     settings: "La vraie page de réglages : la carte DOT HUB (toujours là) montre l'accueil en direct, avec une tuile par module ajouté et une carte « + ». Toucher « + » ajoute une page : toucher « DOT », choisir un module, il tourne en direct avec ses réglages dessous. Les couleurs communes s'appliquent partout.",
-    console: "Aujourd'hui : une fenêtre console, qui doit rester ouverte. La fermer arrête le compagnon.",
-    tray: "Proposition : plus de fenêtre, une icône en points dans la zone de notification. Un clic sur l'icône ouvre ou ferme le menu."
+    console: "Jusqu'à 0.4.0 : une fenêtre console, qui devait rester ouverte. La fermer arrêtait le compagnon.",
+    tray: "Depuis 0.5.0 : plus de fenêtre, une icône en points dans la zone de notification. Ici, un clic sur l'icône ouvre ou ferme le menu ; sur le PC, clic gauche ouvre les réglages, clic droit le menu."
   };
   function show(view) {
     document.querySelectorAll(".view").forEach(function (b) { b.setAttribute("aria-pressed", b.getAttribute("data-view") === view ? "true" : "false"); });

@@ -10,7 +10,7 @@
       },
       "components": [
         "Dot Hub 0.4.0",
-        "Dot Companion 0.4.0+",
+        "Dot Companion 0.5.0",
         "Dot Clock 0.1.3",
         "Dot Steam 0.2.0"
       ],
@@ -42,6 +42,22 @@
         {
           "fr": "Dot Home Assistant : nouvelles cartes à valider (lumières, température et humidité, groupes, automatisations, mises à jour, services)",
           "en": "Dot Home Assistant: new cards to review (lights, temperature and humidity, groups, automations, updates, services)"
+        },
+        {
+          "fr": "Dot Companion 0.5.0 : plus de fenêtre console, une icône en points dans la zone de notification (clic gauche : réglages ; clic droit : menu)",
+          "en": "Dot Companion 0.5.0: no more console window, a dot icon in the notification area (left click: settings; right click: menu)"
+        },
+        {
+          "fr": "Dot Companion : mise à jour depuis l'app (menu de l'icône et page de réglages), exe vérifié par SHA-256",
+          "en": "Dot Companion: update from the app (icon menu and settings page), exe checked with SHA-256"
+        },
+        {
+          "fr": "Dot Companion : démarrage avec Windows, activé à la première ouverture, désactivable",
+          "en": "Dot Companion: starts with Windows, on at first launch, can be turned off"
+        },
+        {
+          "fr": "Dot Companion : page de réglages refaite, carte DOT HUB en direct et une page par module ajouté, carte Paramètres globaux",
+          "en": "Dot Companion: settings page redone, live DOT HUB card and one page per added module, Global settings card"
         }
       ],
       "changed": [

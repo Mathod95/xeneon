@@ -42,6 +42,9 @@ legend { padding: 0; margin-bottom: 4px; }
 .meta { font: 12px var(--mono); color: var(--muted); word-break: break-all; }
 .empty { color: var(--label); }
 .lbl.sub { color: var(--muted); margin: 0; }
+.update { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 18px; color: var(--label); font-size: 14px; }
+button.primary { color: var(--bg); background: var(--accent); border-color: var(--accent); }
+button.primary:hover { color: var(--bg); filter: brightness(1.1); }
 a { color: var(--accent); }
 /* réglages d'un module dans la carte d'aperçu : au style des maquettes de référence */
 .settings { display: flex; flex-wrap: wrap; gap: 12px 28px; align-items: center; padding: 14px 16px; border: 1px solid var(--line); border-radius: 10px; background: #0a0a0a; }
@@ -237,6 +240,37 @@ a { color: var(--accent); }
 				.then(function (j) { cb.checked = !!j.enabled; flash(j.ok ? (j.enabled ? "Démarrera avec Windows" : "Ne démarrera plus avec Windows") : "Erreur"); })
 				.catch(function () { flash("Erreur"); });
 		});
+		// mise à jour depuis l'app : version, dernière release GitHub, bouton pour installer
+		var up = el("div", "update"), upText = el("span", "", "Dot Companion"), upBtn = el("button", "", "Rechercher une mise à jour");
+		up.appendChild(upText); up.appendChild(upBtn); c.appendChild(up);
+		var upState = null;
+		function showUpdate(j) {
+			upState = j;
+			var when = j.checked ? " · vérifié à " + new Date(j.checked).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "";
+			if (j.installing) { upText.textContent = "Installation de la version " + j.latest + "… le compagnon redémarre"; upBtn.hidden = true; return; }
+			upBtn.hidden = false;
+			if (j.available) { upText.textContent = "Dot Companion " + j.current + " · version " + j.latest + " disponible"; upBtn.textContent = "Mettre à jour vers " + j.latest; upBtn.className = "primary"; }
+			else { upText.textContent = "Dot Companion " + j.current + (j.checking ? " · vérification…" : j.error ? " · " + j.error : " · à jour" + when); upBtn.textContent = "Rechercher une mise à jour"; upBtn.className = ""; }
+		}
+		function pollUpdate() { fetch("/api/update").then(function (r) { return r.json(); }).then(function (j) { showUpdate(j); if (j.checking) setTimeout(pollUpdate, 1500); }).catch(function () {}); }
+		upBtn.addEventListener("click", function () {
+			var install = upState && upState.available;
+			fetch("/api/update/" + (install ? "install" : "check"), { method: "POST" }).then(function (r) { return r.json(); }).then(function (j) {
+				showUpdate(j);
+				if (install) waitRestart(upState && upState.current); else setTimeout(pollUpdate, 1500);
+			}).catch(function () {});
+		});
+		// après « Mettre à jour » : on attend que le compagnon redémarre sur la nouvelle version, puis on recharge la page
+		function waitRestart(from) {
+			var tries = 0;
+			(function again() {
+				fetch("/api/health", { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (h) {
+					if (h.version && h.version !== from) location.reload();
+					else if (++tries < 80) setTimeout(again, 1500);
+				}).catch(function () { if (++tries < 80) setTimeout(again, 1500); });
+			})();
+		}
+		pollUpdate();
 		return c;
 	}
 	var themeTimer = null;

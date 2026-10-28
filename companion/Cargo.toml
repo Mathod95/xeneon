@@ -1,6 +1,6 @@
 [package]
 name = "dot-companion"
-version = "0.4.0"
+version = "0.5.0"
 edition = "2021"
 description = "Compagnon Windows de Dot Hub : sert l'interface des modules et leur configuration, sur 127.0.0.1 uniquement."
 license = "MIT"
@@ -11,6 +11,10 @@ tiny_http = "0.12"
 include_dir = "0.7"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
+
+[features]
+# sous Linux : `cargo check --features check-win` vérifie le code de l'icône Windows (src/tray.rs) sans le lier
+check-win = []
 
 [profile.release]
 opt-level = "z"

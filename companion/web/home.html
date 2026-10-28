@@ -175,6 +175,8 @@ html, body { width: 100%; height: 100%; overflow: hidden; background: #080808; u
 		fetch("/api/modules").then(function (r) { return r.json(); }),
 		fetch("/api/instance/" + encodeURIComponent(uid)).then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; })
 	]).then(function (res) { modules = res[0]; inst = res[1] || {}; applyTheme(inst.theme); render(); });
+	// signe de vie toutes les 20 s : le compagnon compte ce Dot Hub comme connecté (menu de l'icône)
+	if (uid && !preview) setInterval(function () { fetch("/api/instance/" + encodeURIComponent(uid), { cache: "no-store" }).catch(function () {}); }, 20000);
 	// couleurs communes réglées dans la carte « Paramètres globaux » de la page de réglages
 	function applyTheme(t) {
 		if (!t) return;

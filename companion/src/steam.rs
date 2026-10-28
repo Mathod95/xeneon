@@ -572,10 +572,16 @@ fn hash(s: &str) -> u64 {
 /// Requête HTTPS avec curl (fourni avec Windows 10 et 11) ; l'adresse passe par l'entrée standard,
 /// pour que la clé d'API n'apparaisse pas dans la liste des processus.
 fn curl(url: &str, out: Option<&Path>) -> Option<Vec<u8>> {
+    curl_timeout(url, out, 10)
+}
+
+/// Comme `curl`, avec un délai au choix (téléchargement d'une mise à jour du compagnon).
+pub(crate) fn curl_timeout(url: &str, out: Option<&Path>, secs: u32) -> Option<Vec<u8>> {
     use std::io::Write;
     use std::process::{Command, Stdio};
     let mut cmd = Command::new("curl");
-    cmd.args(["-s", "-f", "-L", "-m", "10", "-K", "-"]);
+    let secs = secs.to_string();
+    cmd.args(["-s", "-f", "-L", "-m", &secs, "-K", "-"]);
     if let Some(p) = out {
         cmd.arg("-o").arg(p);
     }

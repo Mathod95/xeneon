@@ -5,7 +5,7 @@ Programme Windows qui sert Dot Hub. Il écoute uniquement sur `127.0.0.1:47800`.
 - `src/main.rs` : serveur HTTP, configuration (`%APPDATA%\Xeneon\config.json`), API des instances.
 - `web/` : accueil Dot Home (`home.html`), page de réglages (`settings.html`), script ajouté à chaque module (`hub/module.js`).
 - Modules : le dossier d’un widget est intégré tel quel dans l’exécutable (pour l’instant `widgets/dot-clock` et `widgets/dot-steam`), servi sur `/m/<id>/`.
-- `mockups/reference.html` : maquette de référence (la vraie page de réglages avec une API simulée, la fenêtre d’aujourd’hui, l’icône de la zone de notification proposée). Présentation pour les utilisateurs : `tools/site/companion.html` (Dot Page, `/companion/`).
+- `mockups/reference.html` : maquette de référence (la vraie page de réglages avec une API simulée, la fenêtre jusqu’à 0.4.0, l’icône de la zone de notification de 0.5.0). Présentation pour les utilisateurs : `tools/site/companion.html` (Dot Page, `/companion/`).
 
 ## Routes
 
@@ -25,6 +25,7 @@ Programme Windows qui sert Dot Hub. Il écoute uniquement sur `127.0.0.1:47800`.
 | `POST /api/steam/status/<online\|away\|invisible\|offline>` | Dot Steam : change le statut (`steam://friends/status/…`) |
 | `POST /api/open-settings` | ouvre la page de réglages dans le navigateur par défaut du PC (bouton « SETTINGS » de l’accueil ; un appel toutes les 3 s au plus) |
 | `GET` / `PUT /api/startup` | démarrage avec Windows (`{ supported, enabled }` ; `PUT { "enabled": true\|false }`) : valeur « Dot Companion » de `HKCU\Software\Microsoft\Windows\CurrentVersion\Run`, activée à la première ouverture |
+| `GET /api/update` · `POST /api/update/check` · `POST /api/update/install` | mise à jour depuis l’app : `{ current, latest, available, checked, checking, installing, error }` ; l’installation télécharge l’exe de la dernière release GitHub, vérifie son SHA-256, se remplace et redémarre |
 | `GET` / `PUT /api/theme` | couleurs communes à tous les modules (`dotAccentColor`, `litDotColor`, `unlitDotColor`, `labelColor`) ; elles passent avant les réglages de chaque instance |
 
 Les requêtes dont l’en-tête `Host` n’est pas `127.0.0.1:47800` ou `localhost:47800` sont refusées.
@@ -34,4 +35,8 @@ Les requêtes dont l’en-tête `Host` n’est pas `127.0.0.1:47800` ou `localho
 - GitHub Actions (`.github/workflows/companion.yml`) compile `dot-companion.exe` sous Windows à chaque push qui touche le compagnon ou Dot Clock ; l’exe est dans les artefacts du workflow, et joint aux releases `v*`.
 - En local : `cargo build --release --manifest-path companion/Cargo.toml`.
 
-Pour l’instant c’est une fenêtre console : la fermer arrête le compagnon. L’icône dans la zone de notification et le démarrage avec Windows viendront ensuite.
+Depuis 0.5.0, plus de fenêtre console : le compagnon tourne en arrière-plan avec une icône en points dans la zone de notification (clic gauche : réglages ; clic droit : menu avec Identifier les Dot Hub, Démarrer avec Windows, mise à jour, Quitter). Il démarre avec Windows (activé à la première ouverture) et cherche une nouvelle release au démarrage puis une fois par jour.
+
+Mise à jour : la release `v*` doit contenir `dot-companion.exe` et `dot-companion.exe.sha256` (le workflow les joint). L’exe en cours est renommé `dot-companion.old.exe`, le nouveau lancé avec `--updated` (il attend que le port se libère), l’ancien supprimé au démarrage suivant. `DOT_UPDATE_URL` remplace l’URL de l’API GitHub pour tester.
+
+Le code Win32 de l’icône (`src/tray.rs`) se vérifie hors Windows : `cargo check --features check-win --manifest-path companion/Cargo.toml`.

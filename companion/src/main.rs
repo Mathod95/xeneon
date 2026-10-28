@@ -1,5 +1,7 @@
 //! Dot Companion : programme Windows qui sert Dot Hub.
 //!
+//! - sous Windows : pas de fenêtre, une icône dans la zone de notification (voir `tray.rs`) ;
+//! - mise à jour depuis l'app, à partir des releases GitHub (voir `update.rs`) ;
 //! - écoute uniquement sur 127.0.0.1 (port 47800) ;
 //! - sert l'accueil Dot Hub, la page de réglages et les modules (pour l'instant : Clock) ;
 //! - ouvre la page de réglages dans le navigateur du PC quand on touche SETTINGS sur l'Edge ;
@@ -8,18 +10,25 @@
 //! - garde la configuration de chaque instance de Dot Hub (clé = `uniqueId` iCUE)
 //!   dans `%APPDATA%\Xeneon\config.json`.
 
+// sous Windows : pas de console (l'icône de la zone de notification la remplace) ; la console reste en debug
+#![cfg_attr(all(windows, not(debug_assertions)), windows_subsystem = "windows")]
+
 use include_dir::{include_dir, Dir};
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Map, Value};
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, HashMap};
 use std::fs;
 use std::io::Read;
 use std::path::PathBuf;
 use std::sync::atomic::{AtomicU64, Ordering};
+use std::sync::{Mutex, MutexGuard, OnceLock};
 use std::time::{SystemTime, UNIX_EPOCH};
 use tiny_http::{Header, Method, Request, Response, Server, StatusCode};
 
 mod steam;
+#[cfg(any(windows, feature = "check-win"))]
+mod tray;
+mod update;
 
 const PORT: u16 = 47800;
 const VERSION: &str = env!("CARGO_PKG_VERSION");
@@ -304,6 +313,7 @@ fn handle(mut req: Request, cfg: &mut Config) {
             if uid.is_empty() {
                 return not_found(req);
             }
+            seen(&uid);
             let inst = cfg.instances.entry(uid.clone()).or_default();
             inst.last_seen = now_ms();
             let module = inst.module.clone().filter(|m| modules().iter().any(|x| x.id == m));
@@ -363,10 +373,12 @@ fn handle(mut req: Request, cfg: &mut Config) {
                     None => not_found(req),
                 }
             }
+            "update" => send_json(req, 200, &update::status_json()),
             "startup" => send_json(req, 200, &json!({ "supported": startup::supported(), "enabled": startup::enabled() })),
             "theme" => send_json(req, 200, &json!({ "theme": theme_full(cfg), "version": cfg.theme_version, "defaults": THEME_DEFAULTS.iter().map(|(k, v)| (k.to_string(), Value::String(v.to_string()))).collect::<Map<String, Value>>() })),
             "instance" => match cfg.instances.get(seg(2)) {
                 Some(inst) => {
+                    seen(seg(2));
                     let mut v = masked(inst);
                     v["theme"] = Value::Object(theme_full(cfg));
                     v["theme_version"] = json!(cfg.theme_version);
@@ -376,6 +388,16 @@ fn handle(mut req: Request, cfg: &mut Config) {
             },
             _ => not_found(req),
         },
+
+        // mise à jour depuis l'app : vérifier maintenant, installer la version disponible (le compagnon redémarre)
+        (Method::Post, "api") if seg(1) == "update" => {
+            match seg(2) {
+                "check" => update::check_async(),
+                "install" => update::install_async(),
+                _ => return not_found(req),
+            }
+            send_json(req, 200, &update::status_json())
+        }
 
         // démarrage avec Windows (carte « Paramètres globaux » de la page de réglages)
         (Method::Put, "api") if seg(1) == "startup" => {
@@ -496,6 +518,46 @@ fn open_settings() -> bool {
     }
     LAST_OPEN.store(now, Ordering::Relaxed);
     open_url(&format!("http://127.0.0.1:{PORT}/settings"))
+}
+
+// ---------------------------------------------------------------- état partagé (serveur et icône)
+
+/// Configuration, partagée entre le serveur HTTP et l'icône de la zone de notification.
+static CFG: OnceLock<Mutex<Config>> = OnceLock::new();
+
+fn cfg() -> MutexGuard<'static, Config> {
+    CFG.get_or_init(|| Mutex::new(Config::default())).lock().unwrap_or_else(|e| e.into_inner())
+}
+
+/// Dernier contact de chaque Dot Hub (en mémoire) : un Dot Hub est « connecté » s'il a parlé au compagnon depuis 60 s.
+static SEEN: Mutex<Option<HashMap<String, u64>>> = Mutex::new(None);
+
+fn seen(uid: &str) {
+    let mut g = SEEN.lock().unwrap_or_else(|e| e.into_inner());
+    g.get_or_insert_with(HashMap::new).insert(uid.to_string(), now_ms());
+}
+
+#[cfg_attr(not(any(windows, feature = "check-win")), allow(dead_code))] // menu de l'icône (Windows)
+fn connected_count() -> usize {
+    let now = now_ms();
+    let g = SEEN.lock().unwrap_or_else(|e| e.into_inner());
+    g.as_ref().map(|m| m.values().filter(|t| now.saturating_sub(**t) < 60_000).count()).unwrap_or(0)
+}
+
+/// « Identifier les Dot Hub » (menu de l'icône) : chaque Dot Hub affiche son nom pendant 3 s.
+#[cfg_attr(not(any(windows, feature = "check-win")), allow(dead_code))] // menu de l'icône (Windows)
+fn identify_all() {
+    let now = now_ms();
+    for inst in cfg().instances.values_mut() {
+        inst.identify = now;
+    }
+}
+
+/// Quitte le compagnon (menu de l'icône, ou redémarrage après une mise à jour).
+fn quit() -> ! {
+    #[cfg(any(windows, feature = "check-win"))]
+    tray::remove();
+    std::process::exit(0)
 }
 
 /// Ouvre une adresse avec le programme associé du PC (navigateur, Steam pour `steam://`…).
@@ -666,31 +728,61 @@ fn url_encode(s: &str) -> String {
 
 fn main() {
     let addr = format!("127.0.0.1:{PORT}");
-    let server = match Server::http(&addr) {
-        Ok(s) => s,
-        Err(e) => {
-            eprintln!("Impossible d'écouter sur {addr} : {e}");
-            eprintln!("Le port {PORT} est peut-être déjà utilisé (Dot Companion déjà lancé ?).");
-            pause();
-            return;
+    // après une mise à jour, l'ancien compagnon libère le port un instant plus tard : on réessaie
+    let updated = std::env::args().any(|a| a == "--updated");
+    let mut tries = if updated { 30 } else { 4 };
+    let server = loop {
+        match Server::http(&addr) {
+            Ok(s) => break s,
+            Err(e) if tries == 0 => {
+                let text = format!("Impossible d'écouter sur {addr} : {e}\nLe port {PORT} est peut-être déjà utilisé (Dot Companion déjà lancé ?).");
+                eprintln!("{text}");
+                #[cfg(any(windows, feature = "check-win"))]
+                tray::message_box(&text);
+                #[cfg(not(any(windows, feature = "check-win")))]
+                pause();
+                return;
+            }
+            Err(_) => {
+                tries -= 1;
+                std::thread::sleep(std::time::Duration::from_millis(500));
+            }
         }
     };
-    let mut cfg = load_config();
-    // première ouverture : Dot Companion démarrera avec Windows (désactivable dans la page de réglages)
-    if !cfg.startup_done && startup::supported() {
+    let mut c = load_config();
+    // première ouverture : Dot Companion démarrera avec Windows (désactivable dans les réglages et le menu de l'icône)
+    if !c.startup_done && startup::supported() {
         startup::set(true);
-        cfg.startup_done = true;
-        save_config(&cfg);
+        c.startup_done = true;
+        save_config(&c);
     }
+    let _ = CFG.set(Mutex::new(c));
+    update::cleanup_old();
+    update::start_background();
     println!("Dot Companion {VERSION} prêt sur http://{addr}/");
     println!("Réglages : http://{addr}/settings");
     println!("Configuration : {}", config_path().display());
-    println!("Fermer cette fenêtre arrête le compagnon.");
-    for req in server.incoming_requests() {
-        handle(req, &mut cfg);
+
+    let serve = move || {
+        for req in server.incoming_requests() {
+            let mut g = cfg();
+            handle(req, &mut g);
+        }
+    };
+    // Windows : le serveur tourne à côté, l'icône de la zone de notification garde le fil principal
+    #[cfg(any(windows, feature = "check-win"))]
+    {
+        std::thread::spawn(serve);
+        tray::run();
+    }
+    #[cfg(not(any(windows, feature = "check-win")))]
+    {
+        println!("Ctrl+C arrête le compagnon.");
+        serve();
     }
 }
 
+#[cfg(not(any(windows, feature = "check-win")))]
 fn pause() {
     println!("Appuie sur Entrée pour fermer.");
     let mut s = String::new();
