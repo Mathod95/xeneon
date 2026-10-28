@@ -24,6 +24,7 @@ Programme Windows qui sert Dot Hub. Il écoute uniquement sur `127.0.0.1:47800`.
 | `POST /api/steam/open/<downloads\|library\|friends>` | Dot Steam : ouvre cette page de Steam (`steam://open/…`) |
 | `POST /api/steam/status/<online\|away\|invisible\|offline>` | Dot Steam : change le statut (`steam://friends/status/…`) |
 | `POST /api/open-settings` | ouvre la page de réglages dans le navigateur par défaut du PC (bouton « SETTINGS » de l’accueil ; un appel toutes les 3 s au plus) |
+| `GET` / `PUT /api/startup` | démarrage avec Windows (`{ supported, enabled }` ; `PUT { "enabled": true\|false }`) : valeur « Dot Companion » de `HKCU\Software\Microsoft\Windows\CurrentVersion\Run`, activée à la première ouverture |
 | `GET` / `PUT /api/theme` | couleurs communes à tous les modules (`dotAccentColor`, `litDotColor`, `unlitDotColor`, `labelColor`) ; elles passent avant les réglages de chaque instance |
 
 Les requêtes dont l’en-tête `Host` n’est pas `127.0.0.1:47800` ou `localhost:47800` sont refusées.

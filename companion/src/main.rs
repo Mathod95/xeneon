@@ -47,11 +47,61 @@ fn modules() -> Vec<Module> {
 struct Config {
     #[serde(default)]
     instances: BTreeMap<String, Instance>,
-    /// couleurs communes à tous les modules (page de réglages, carte « Couleurs »)
+    /// couleurs communes à tous les modules (page de réglages, carte « Paramètres globaux »)
     #[serde(default)]
     theme: Map<String, Value>,
     #[serde(default)]
     theme_version: u64,
+    /// démarrage avec Windows déjà réglé une fois (activé à la première ouverture, puis au choix de l'utilisateur)
+    #[serde(default)]
+    startup_done: bool,
+}
+
+/// Démarrage avec Windows : valeur « Dot Companion » de la clé Run de l'utilisateur (sans droits administrateur).
+mod startup {
+    #[cfg(windows)]
+    const KEY: &str = r"HKCU\Software\Microsoft\Windows\CurrentVersion\Run";
+    #[cfg(windows)]
+    const NAME: &str = "Dot Companion";
+
+    #[cfg(windows)]
+    fn reg(args: &[&str]) -> bool {
+        use std::os::windows::process::CommandExt;
+        std::process::Command::new("reg")
+            .args(args)
+            .creation_flags(0x0800_0000)
+            .output()
+            .map(|o| o.status.success())
+            .unwrap_or(false)
+    }
+
+    pub fn supported() -> bool {
+        cfg!(windows)
+    }
+
+    #[cfg(windows)]
+    pub fn enabled() -> bool {
+        reg(&["query", KEY, "/v", NAME])
+    }
+    #[cfg(not(windows))]
+    pub fn enabled() -> bool {
+        false
+    }
+
+    #[cfg(windows)]
+    pub fn set(on: bool) -> bool {
+        if on {
+            let Ok(exe) = std::env::current_exe() else { return false };
+            let value = format!("\"{}\"", exe.display());
+            reg(&["add", KEY, "/v", NAME, "/t", "REG_SZ", "/d", &value, "/f"])
+        } else {
+            !enabled() || reg(&["delete", KEY, "/v", NAME, "/f"])
+        }
+    }
+    #[cfg(not(windows))]
+    pub fn set(_on: bool) -> bool {
+        false
+    }
 }
 
 /// Réglages de couleur communs : mêmes noms que les x-icue-property des modules.
@@ -313,6 +363,7 @@ fn handle(mut req: Request, cfg: &mut Config) {
                     None => not_found(req),
                 }
             }
+            "startup" => send_json(req, 200, &json!({ "supported": startup::supported(), "enabled": startup::enabled() })),
             "theme" => send_json(req, 200, &json!({ "theme": theme_full(cfg), "version": cfg.theme_version, "defaults": THEME_DEFAULTS.iter().map(|(k, v)| (k.to_string(), Value::String(v.to_string()))).collect::<Map<String, Value>>() })),
             "instance" => match cfg.instances.get(seg(2)) {
                 Some(inst) => {
@@ -325,6 +376,21 @@ fn handle(mut req: Request, cfg: &mut Config) {
             },
             _ => not_found(req),
         },
+
+        // démarrage avec Windows (carte « Paramètres globaux » de la page de réglages)
+        (Method::Put, "api") if seg(1) == "startup" => {
+            let mut body = String::new();
+            let _ = req.as_reader().take(1 << 12).read_to_string(&mut body);
+            match serde_json::from_str::<Value>(&body).ok().and_then(|v| v.get("enabled").and_then(Value::as_bool)) {
+                Some(on) => {
+                    let ok = startup::set(on);
+                    cfg.startup_done = true;
+                    save_config(cfg);
+                    send_json(req, if ok { 200 } else { 500 }, &json!({ "ok": ok, "supported": startup::supported(), "enabled": startup::enabled() }))
+                }
+                None => send_json(req, 400, &json!({ "error": "expected {\"enabled\": true|false}" })),
+            }
+        }
 
         (Method::Put, "api") if seg(1) == "theme" => {
             let mut body = String::new();
@@ -610,6 +676,12 @@ fn main() {
         }
     };
     let mut cfg = load_config();
+    // première ouverture : Dot Companion démarrera avec Windows (désactivable dans la page de réglages)
+    if !cfg.startup_done && startup::supported() {
+        startup::set(true);
+        cfg.startup_done = true;
+        save_config(&cfg);
+    }
     println!("Dot Companion {VERSION} prêt sur http://{addr}/");
     println!("Réglages : http://{addr}/settings");
     println!("Configuration : {}", config_path().display());

@@ -9,7 +9,7 @@ Le widget unique qui regroupe les modules Dot. C’est une coquille iCUE : l’i
 - Au démarrage, la coquille vérifie que Dot Companion répond sur `127.0.0.1:47800`. Sinon : « COMPANION NOT RUNNING », avec une nouvelle tentative toutes les 4 secondes.
 - Chaque Dot Hub posé dans iCUE est une instance, reconnue par son `uniqueId`. Le compagnon retient le module qu’elle affiche et ses réglages.
 - Sans module choisi : l’accueil Dot Home. Toucher une tuile choisit le module. Un appui long (1 s) sur un module ramène à l’accueil.
-- Réglages sur le PC : `http://127.0.0.1:47800/settings`. Le bouton « ⚙ SETTINGS » de l’accueil, sur l’Edge, demande au compagnon de l’ouvrir dans le navigateur du PC. En haut, la carte « Couleurs » (accent, points allumés, points éteints, libellés) vaut pour tous les modules et toutes les instances. Puis une carte par instance : nom, module, réglages du module (sans les couleurs), bouton « Identifier ». Les changements s’appliquent tout de suite sur l’Edge.
+- Réglages sur le PC : `http://127.0.0.1:47800/settings`. Le bouton « ⚙ SETTINGS » de l’accueil, sur l’Edge, demande au compagnon de l’ouvrir dans le navigateur du PC. En haut, la carte « Paramètres globaux » (accent, points allumés, points éteints, libellés) vaut pour tous les modules et toutes les instances. Puis une carte par instance : nom, module, réglages du module (sans les couleurs), bouton « Identifier ». Les changements s’appliquent tout de suite sur l’Edge.
 - Pont clavier : quand un champ de saisie d’un module prend le focus, la coquille garde le clavier dans un champ invisible et lui renvoie le texte (iCUE ne fait pas entrer le clavier dans une iframe).
 - Réglage iCUE : « Accent color » (écran d’erreur). Il sert aussi à ce qu’iCUE donne le clavier au widget.
 

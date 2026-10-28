@@ -189,7 +189,7 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
       <label>Unlit dot color <input type="color" id="unlitColor" value="#1c1c1c"></label>
       <label>Label color <input type="color" id="labelColor" value="#b8b6b0"></label>
     </div>
-    <figcaption><span id="sizeNote">Le parcours sur l'Edge.</span> La maquette marche comme l'Edge : toucher la tuile Clock ouvre le module, toucher « ● DOT CLOCK » ou garder le doigt 1 s sur le module ramène à Dot Home. Les couleurs sont celles de la carte « Couleurs » de la page de réglages du compagnon.</figcaption>
+    <figcaption><span id="sizeNote">Le parcours sur l'Edge.</span> La maquette marche comme l'Edge : toucher la tuile Clock ouvre le module, toucher « ● DOT CLOCK » ou garder le doigt 1 s sur le module ramène à Dot Home. Les couleurs sont celles de la carte « Paramètres globaux » de la page de réglages du compagnon.</figcaption>
   </figure>
 
   <section style="display:grid;gap:14px">
@@ -206,7 +206,7 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
           <tr><td>3</td><td>Dot Home</td><td>Accueil quand aucun module n'est choisi : « DOT HUB » et le nom de l'instance, bouton « ⚙ SETTINGS » à droite (le compagnon ouvre la page de réglages dans le navigateur du PC), une tuile par module (pictogramme 7 × 7 points, nom, heure en direct pour Clock). 10 tuiles en XL, 8 en L, 6 en M, 4 en S. Codé.</td></tr>
           <tr class="todo"><td>4</td><td>Plus de modules que de cases</td><td>Avec tous les modules prévus (21), la grille déborde : pages à prévoir (points de page, glisser). À décider.</td></tr>
           <tr><td>5</td><td>Retour à Dot Home</td><td>Toucher le libellé « ● DOT … » d'un module (zone tactile d'au moins 60 px) ou garder le doigt 1 s n'importe où sur le module. Codé.</td></tr>
-          <tr><td>6</td><td>Réglages sur le PC</td><td><code>http://127.0.0.1:47800/settings</code> : carte « Couleurs » pour tous les modules, puis une carte par instance (nom, module, réglages du module, « Identifier », supprimer). Changements appliqués en 2 s sur l'Edge. Codé.</td></tr>
+          <tr><td>6</td><td>Réglages sur le PC</td><td><code>http://127.0.0.1:47800/settings</code> : carte « Paramètres globaux » pour tous les modules, puis une carte par instance (nom, module, réglages du module, « Identifier », supprimer). Changements appliqués en 2 s sur l'Edge. Codé.</td></tr>
           <tr class="todo"><td>7</td><td>Identifier</td><td>Le bouton « Identifier » de la page de réglages affiche le nom de l'instance en grand pendant 3 s sur l'Edge concerné. Codé, mais la couleur est fixe (<code>#10B981</code>) : à faire suivre la couleur d'accent commune.</td></tr>
           <tr><td>8</td><td>Compagnon arrêté</td><td>« CONNECTING… » au démarrage, puis « COMPANION NOT RUNNING » en rouge et « START DOT COMPANION ON THIS PC · RETRYING » après deux échecs. Le module revient seul quand le compagnon répond. Codé.</td></tr>
           <tr><td>9</td><td>Clavier</td><td>iCUE ne fait pas entrer le clavier dans une iframe : la coquille garde le focus dans un champ invisible et renvoie le texte au champ du module (pont clavier). Codé.</td></tr>

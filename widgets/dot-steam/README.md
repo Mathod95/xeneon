@@ -21,7 +21,7 @@ La référence visuelle est [`mockups/reference.html`](mockups/reference.html) :
 - **Show game names** et **Long names** : nom trop long coupé et qui défile au survol ou à l’appui (par défaut), ou qui défile en continu.
 - **Bottom panel** : Downloads (par défaut ; un toucher ouvre la page des téléchargements de Steam) ou My profile and status (avatar, pseudo, boutons Online, Away, Invisible, Offline).
 - **Show friends** et **Steam Web API key** : la clé (créée sur steamcommunity.com/dev/apikey) est gardée chiffrée sur le PC (DPAPI) et n’est jamais renvoyée en clair.
-- Couleurs : celles de la carte « Couleurs », communes à tout Dot Hub.
+- Couleurs : celles de la carte « Paramètres globaux », communes à tout Dot Hub.
 
 ## Données (Dot Companion, `companion/src/steam.rs`)
 

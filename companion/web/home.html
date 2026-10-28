@@ -175,7 +175,7 @@ html, body { width: 100%; height: 100%; overflow: hidden; background: #080808; u
 		fetch("/api/modules").then(function (r) { return r.json(); }),
 		fetch("/api/instance/" + encodeURIComponent(uid)).then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; })
 	]).then(function (res) { modules = res[0]; inst = res[1] || {}; applyTheme(inst.theme); render(); });
-	// couleurs communes réglées dans la carte « Couleurs » de la page de réglages
+	// couleurs communes réglées dans la carte « Paramètres globaux » de la page de réglages
 	function applyTheme(t) {
 		if (!t) return;
 		if (t.dotAccentColor) stage.style.setProperty("--accent", t.dotAccentColor);

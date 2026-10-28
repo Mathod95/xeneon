@@ -41,6 +41,7 @@ legend { padding: 0; margin-bottom: 4px; }
 .field span { color: var(--label); font-size: 14px; }
 .meta { font: 12px var(--mono); color: var(--muted); word-break: break-all; }
 .empty { color: var(--label); }
+.lbl.sub { color: var(--muted); margin: 0; }
 a { color: var(--accent); }
 /* réglages d'un module dans la carte d'aperçu : au style des maquettes de référence */
 .settings { display: flex; flex-wrap: wrap; gap: 12px 28px; align-items: center; padding: 14px 16px; border: 1px solid var(--line); border-radius: 10px; background: #0a0a0a; }
@@ -179,7 +180,7 @@ a { color: var(--accent); }
 			if (!moduleId) { body.appendChild(el("p", "empty", "Cette instance affiche l'accueil Dot Home : choisis un module ci-dessus ou directement sur l'Edge.")); return; }
 			schema(moduleId).then(function (sc) {
 				sc.groups.forEach(function (g) {
-					// les couleurs communes sont réglées dans la carte « Couleurs », pas par instance
+					// les couleurs communes sont réglées dans la carte « Paramètres globaux », pas par instance
 					var keys = g.keys.filter(function (k) { return THEME_KEYS.indexOf(k) < 0; });
 					if (!keys.length) return;
 					var fs = el("fieldset"); fs.appendChild(el("legend", "lbl", g.title));
@@ -204,11 +205,12 @@ a { color: var(--accent); }
 		return c;
 	}
 
-	// carte « Couleurs » : communes à tous les modules et à toutes les instances
+	// carte « Paramètres globaux » : communes à tous les modules et à toutes les instances
 	function themeCard(t) {
 		var c = el("section", "card theme-card"), head = el("header");
-		head.appendChild(el("h2", "lbl", "Couleurs · tous les modules"));
+		head.appendChild(el("h2", "lbl", "Paramètres globaux"));
 		c.appendChild(head);
+		c.appendChild(el("p", "lbl sub", "Couleurs · tous les modules"));
 		var theme = Object.assign({}, t.theme), grid = el("div", "grid");
 		THEME_KEYS.forEach(function (k) {
 			var f = el("label", "field inline"), w = el("input"); w.type = "color"; w.value = String(theme[k]).slice(0, 7); w.setAttribute("data-key", k);
@@ -220,6 +222,21 @@ a { color: var(--accent); }
 		reset.style.justifySelf = "start";
 		reset.addEventListener("click", function () { saveTheme(Object.assign({}, t.defaults), true); });
 		c.appendChild(reset);
+		// démarrage avec Windows (clé Run de l'utilisateur, réglée par le compagnon)
+		c.appendChild(el("p", "lbl sub", "Dot Companion"));
+		var st = el("label", "field inline"), cb = el("input"); cb.type = "checkbox"; cb.disabled = true;
+		var stText = el("span", "", "Lancer Dot Companion au démarrage de Windows");
+		st.appendChild(cb); st.appendChild(stText); c.appendChild(st);
+		fetch("/api/startup").then(function (r) { return r.json(); }).then(function (j) {
+			cb.checked = !!j.enabled; cb.disabled = !j.supported;
+			if (!j.supported) stText.textContent += " (seulement sous Windows)";
+		}).catch(function () {});
+		cb.addEventListener("change", function () {
+			fetch("/api/startup", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ enabled: cb.checked }) })
+				.then(function (r) { return r.json(); })
+				.then(function (j) { cb.checked = !!j.enabled; flash(j.ok ? (j.enabled ? "Démarrera avec Windows" : "Ne démarrera plus avec Windows") : "Erreur"); })
+				.catch(function () { flash("Erreur"); });
+		});
 		return c;
 	}
 	var themeTimer = null;

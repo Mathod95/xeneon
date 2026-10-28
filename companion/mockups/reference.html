@@ -206,7 +206,7 @@ tr.todo td:nth-child(3) { color: var(--muted); }
           <tr><td>4</td><td>Secrets</td><td>Clés d'API et jetons chiffrés sur le PC (DPAPI de Windows), masqués dans la page (<code>••••••••</code>), jamais renvoyés en clair.</td></tr>
           <tr><td>5</td><td>Fenêtre</td><td><b>Validé (28 octobre 2026)</b> : plus de fenêtre console, le compagnon tourne en arrière-plan avec une icône dans la zone de notification (vue « Zone de notification »). Aujourd'hui (0.4.0), c'est encore une fenêtre console qui doit rester ouverte : à coder.</td></tr>
           <tr class="todo"><td>6</td><td>Menu de l'icône</td><td>Ouvrir les réglages, Identifier les Dot Hub, Démarrer avec Windows (coché par défaut), Rechercher une mise à jour, Quitter. En tête : version et nombre de Dot Hub connectés. Clic gauche sur l'icône : ouvre les réglages.</td></tr>
-          <tr class="todo"><td>7</td><td>Démarrage avec Windows</td><td>Clé <code>HKCU\Software\Microsoft\Windows\CurrentVersion\Run</code>, sans droits administrateur. Activé à la première ouverture, désactivable dans le menu.</td></tr>
+          <tr><td>7</td><td>Démarrage avec Windows</td><td><b>Validé et codé (28 octobre 2026)</b> : case « Lancer Dot Companion au démarrage de Windows » dans la carte « Paramètres globaux » de la page de réglages (<code>GET</code> / <code>PUT /api/startup</code>). Clé <code>HKCU\Software\Microsoft\Windows\CurrentVersion\Run</code>, sans droits administrateur. Activé à la première ouverture, désactivable ensuite (aussi dans le menu de l'icône, quand elle sera codée).</td></tr>
           <tr class="todo"><td>8</td><td>Mises à jour</td><td>Compare sa version à la dernière release GitHub (au démarrage, puis une fois par jour) ; une nouvelle version s'affiche dans le menu et dans la page de réglages, avec un lien de téléchargement. Pas de mise à jour automatique pour l'instant.</td></tr>
           <tr class="todo"><td>9</td><td>Avertissement Windows</td><td>L'exe n'est pas signé : SmartScreen avertit au premier lancement (« Informations complémentaires » → « Exécuter quand même »). Pistes : Microsoft Store (MSIX, aucun avertissement) ou signature gratuite SignPath pour les projets open source.</td></tr>
           <tr class="todo"><td>10</td><td>Charte de la page de réglages</td><td>Fond en points de Dot Page : fait (page <code>#080808</code>, trame de points 22 px). Reste : le libellé « ● DOT COMPANION » ; garder la police Fira Code et l'accent des Couleurs communes.</td></tr>
@@ -232,7 +232,7 @@ tr.todo td:nth-child(3) { color: var(--muted); }
       "c0rs41r-edge-c3d4": { name: "Edge · droite", module: "clock", last_seen: now - 40000, settings: {} },
       "c0rs41r-edge-e5f6": { name: "", module: null, last_seen: now - 3 * 86400000, settings: {} }
     },
-    theme: { dotAccentColor: "#10B981", litDotColor: "#F2F0E9", unlitDotColor: "#1C1C1C", labelColor: "#B8B6B0" }, themeVersion: 1,
+    theme: { dotAccentColor: "#10B981", litDotColor: "#F2F0E9", unlitDotColor: "#1C1C1C", labelColor: "#B8B6B0" }, themeVersion: 1, startup: true,
     defaults: { dotAccentColor: "#10B981", litDotColor: "#F2F0E9", unlitDotColor: "#1C1C1C", labelColor: "#B8B6B0" }
   };
   var PAGES = {}; // pages des modules (schéma des réglages, et aperçu)
@@ -262,6 +262,8 @@ tr.todo td:nth-child(3) { color: var(--muted); }
     if (path === "/api/instances") return json(STATE.instances);
     if (path === "/api/theme" && m === "GET") return json({ theme: STATE.theme, version: 1, defaults: STATE.defaults });
     if (path === "/api/steam/state") return json(steamState());
+    if (path === "/api/startup" && m === "GET") return json({ supported: true, enabled: STATE.startup });
+    if (path === "/api/startup" && m === "PUT") { STATE.startup = !!(body && body.enabled); toast(STATE.startup ? "Dot Companion démarrera avec Windows" : "Dot Companion ne démarrera plus avec Windows"); return json({ ok: true, supported: true, enabled: STATE.startup }); }
     if (path === "/api/open-settings") { toast("Le compagnon ouvrirait cette page dans le navigateur du PC"); return json({ ok: true }); }
     if (path === "/api/theme" && m === "PUT") { Object.assign(STATE.theme, body || {}); STATE.themeVersion++; toast("Couleurs enregistrées pour tous les modules"); return json({ theme: STATE.theme, version: 2 }); }
     var inst = /^\/api\/instance\/([^/]+)(\/identify)?$/.exec(path);
