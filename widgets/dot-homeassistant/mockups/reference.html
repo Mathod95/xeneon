@@ -60,7 +60,17 @@ h2 { font-family: var(--mono); font-weight: 500; font-size: 13px; letter-spacing
 .card-slot { gap: 10px; }
 .card-empty { position: relative; aspect-ratio: 387 / 240; border: 2px dashed #262626; border-radius: 18px; background: #080808; overflow: hidden; }
 /* contenu en taille réelle XL (387 × 240 px), mis à l'échelle de la carte */
-.card-empty .in { position: absolute; left: 0; top: 0; width: 387px; height: 240px; transform-origin: 0 0; padding: 22px 24px; }
+.card-empty .in { position: absolute; left: 0; top: 0; width: 387px; height: 240px; transform-origin: 0 0; padding: 22px 24px; display: flex; flex-direction: column; justify-content: space-between; font-family: "Fira Code", Consolas, monospace; font-variant-ligatures: none; color: var(--c-lit); }
+.card-empty .in p { margin: 0; }
+.c-head { display: flex; align-items: center; gap: 22px; min-width: 0; }
+.c-head canvas { flex: none; }
+.c-who { min-width: 0; }
+.c-nm { font-size: 24px; line-height: 30px; letter-spacing: .06em; color: var(--c-lit); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.c-ar { margin-top: 4px; font-size: 18px; line-height: 24px; letter-spacing: .12em; text-transform: uppercase; color: var(--c-label); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.c-vals { display: flex; gap: 40px; }
+.c-v .val { font-size: 48px; line-height: 56px; color: var(--c-lit); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.c-v .val small { font-size: 22px; color: var(--c-label); margin-left: 6px; letter-spacing: .06em; }
+.c-v .k { font-size: 18px; line-height: 24px; letter-spacing: .12em; text-transform: uppercase; color: var(--c-label); }
 .table-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; }
 table { width: 100%; border-collapse: collapse; min-width: 640px; }
 th, td { text-align: left; padding: 14px 16px; vertical-align: top; border-bottom: 1px solid var(--line); }
@@ -429,12 +439,30 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
     }
   }
 
-  // cartes à dessiner : pour l'instant, seulement le pictogramme (lumière, thermomètre), en taille réelle XL
+  // cartes à dessiner : lumière (nom, pièce, barre d'intensité) et capteur (nom, pièce, température et humidité), en taille réelle XL
+  var CARDS = {
+    light: { name: "Ceiling", area: "Living room", on: true, lvl: 0.8 },
+    climate: { name: "Bedroom sensor", area: "Bedroom", temp: 19.8, hum: 52 }
+  };
   function drawCards(c) {
     document.querySelectorAll(".card-empty").forEach(function (box) {
-      var inn = box.querySelector(".in");
+      var kind = box.getAttribute("data-pic"), d = CARDS[kind], inn = box.querySelector(".in");
       inn.innerHTML = "";
-      inn.appendChild(pic(box.getAttribute("data-pic"), box.getAttribute("data-on") === "1", SIZES.xl.pitch, c));
+      inn.style.setProperty("--c-lit", c.lit); inn.style.setProperty("--c-label", c.label);
+      var head = el("div", "c-head");
+      head.appendChild(pic(kind, kind === "light" ? d.on : false, SIZES.xl.pitch, c));
+      var who = el("div", "c-who"); who.appendChild(el("p", "c-nm", d.name)); who.appendChild(el("p", "c-ar", d.area));
+      head.appendChild(who); inn.appendChild(head);
+      if (kind === "light") {
+        inn.appendChild(bar(387 - 48, d.lvl, SIZES.xl.bar, c, d.on));
+      } else {
+        var vals = el("div", "c-vals");
+        [[d.temp.toFixed(1), "°C", "Temperature"], [String(d.hum), "%", "Humidity"]].forEach(function (x) {
+          var v0 = el("div", "c-v"), vp = el("p", "val", x[0]); vp.appendChild(el("small", "", x[1]));
+          v0.appendChild(vp); v0.appendChild(el("p", "k", x[2])); vals.appendChild(v0);
+        });
+        inn.appendChild(vals);
+      }
       inn.style.transform = "scale(" + box.clientWidth / 387 + ")";
     });
   }
