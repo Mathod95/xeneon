@@ -1,0 +1,296 @@
+<title>__TITLE__</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap">
+<style>
+/* Layout : même en-tête que Dot Page, titre RELEASES en points, puis les versions au centre et la liste des versions à droite (fixe au défilement). Un seul thème sombre. */
+:root {
+  --bg: #080808;
+  --panel: #0e0e0e;
+  --line: #1f1f1f;
+  --lit: #f2f0e9;
+  --label: #b8b6b0;
+  --muted: #7d7b76;
+  --accent: #10b981;
+  --new: #10b981;
+  --changed: #5aa9e6;
+  --fixed: #f5b942;
+  --mono: "Fira Code", "Cascadia Mono", Consolas, monospace;
+  --brand: "Segoe UI", Selawik, system-ui, sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { background: var(--bg); scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  margin: 0; background: var(--bg); color: var(--lit);
+  font-family: var(--brand); font-size: 16px; line-height: 1.55;
+  background-image: radial-gradient(circle, #161616 1.2px, transparent 1.6px);
+  background-size: 22px 22px;
+  padding-block: 28px 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 1240px; margin: 0 auto; display: grid; gap: 48px; }
+a { color: inherit; }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+/* en-tête (identique à Dot Page) */
+.top { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 700; letter-spacing: .22em; font-size: 15px; text-decoration: none; }
+.brand::before { content: ""; width: 12px; height: 12px; border-radius: 50%; background: var(--accent); }
+.topr { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.ext { font-family: var(--mono); font-size: 13px; letter-spacing: .16em; text-transform: uppercase; color: var(--label); text-decoration: none; padding: 10px 16px; border: 1px solid var(--line); border-radius: 999px; background: var(--bg); }
+.ext:hover { color: var(--lit); border-color: #333; }
+.ext[aria-current="page"] { color: var(--bg); background: var(--lit); border-color: var(--lit); }
+.lang { display: flex; gap: 4px; padding: 4px; border: 1px solid var(--line); border-radius: 999px; background: var(--bg); }
+.chip { font-family: var(--mono); font-size: 12px; letter-spacing: .16em; text-transform: uppercase; padding: 6px 12px; border-radius: 999px; border: 0; background: var(--bg); color: var(--label); cursor: pointer; }
+.chip[aria-pressed="true"] { background: var(--lit); color: var(--bg); }
+
+/* titre */
+.hero { display: grid; gap: 18px; }
+.hero canvas { display: block; width: 100%; max-width: 620px; height: auto; justify-self: center; }
+.lede { margin: 0; font-family: var(--mono); font-size: clamp(15px, 1.8vw, 19px); color: var(--lit); text-wrap: balance; }
+.lede i { font-style: normal; color: var(--accent); padding: 0 .5em; }
+
+/* versions au centre, liste à droite */
+.layout { display: grid; grid-template-columns: minmax(0, 1fr) 240px; gap: 40px; align-items: start; }
+.feed { display: grid; gap: 18px; min-width: 0; }
+.rel { display: grid; gap: 16px; padding: clamp(20px, 3vw, 30px); border: 1px solid var(--line); border-radius: 20px; background: var(--panel); scroll-margin-top: 24px; min-width: 0; }
+.rel.latest { border-color: #262626; }
+.rel-head { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; font-family: var(--mono); font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: var(--label); }
+.ver { padding: 5px 12px; border-radius: 999px; border: 1px solid #2a2a2a; color: var(--lit); font-size: 13px; letter-spacing: .1em; text-transform: none; }
+.rel.latest .ver { border-color: var(--accent); color: var(--accent); }
+.badge { display: inline-flex; align-items: center; gap: 8px; color: var(--accent); }
+.badge::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+.badge.next { color: var(--fixed); }
+.rel h2 { margin: 0; font-size: clamp(22px, 2.6vw, 28px); font-weight: 700; letter-spacing: .01em; text-wrap: balance; }
+.comps { display: flex; flex-wrap: wrap; gap: 6px 8px; margin: 0; padding: 0; list-style: none; }
+.comps li { font-family: var(--mono); font-size: 12px; letter-spacing: .08em; color: var(--label); padding: 4px 10px; border-radius: 8px; background: var(--bg); border: 1px solid var(--line); }
+.sec { display: grid; gap: 8px; }
+.sec h3 { margin: 0; display: flex; align-items: center; gap: 10px; font-family: var(--mono); font-weight: 500; font-size: 12px; letter-spacing: .2em; text-transform: uppercase; color: var(--c); }
+.sec h3::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--c); }
+.sec ul { margin: 0; padding: 0 0 0 18px; display: grid; gap: 6px; color: var(--label); font-size: 15px; }
+.sec li { padding-left: 4px; }
+.sec li::marker { color: #3a3a3a; }
+code { font-family: var(--mono); font-size: .88em; color: var(--lit); background: #161616; border: 1px solid var(--line); border-radius: 6px; padding: 1px 6px; overflow-wrap: anywhere; }
+.rel-foot { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 10px 18px; padding-top: 14px; border-top: 1px solid var(--line); font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; }
+.rel-foot a { color: var(--accent); text-decoration: none; }
+.rel-foot a:hover { color: var(--lit); }
+
+.side { position: sticky; top: 24px; display: grid; gap: 12px; }
+.side h2 { margin: 0; font-family: var(--mono); font-weight: 500; font-size: 12px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); }
+.toc { margin: 0; padding: 0; list-style: none; display: grid; gap: 2px; border-left: 1px solid var(--line); }
+.toc a { display: grid; grid-template-columns: auto 1fr; gap: 2px 12px; align-items: center; padding: 8px 12px; margin-left: -1px; border-left: 2px solid transparent; text-decoration: none; color: var(--label); }
+.toc a::before { content: ""; grid-row: span 2; width: 8px; height: 8px; border-radius: 50%; background: #2a2a2a; }
+.toc .v { font-family: var(--mono); font-size: 14px; letter-spacing: .06em; color: var(--lit); }
+.toc .d { font-size: 12px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.toc a:hover .v { color: var(--accent); }
+.toc a[aria-current="true"] { border-left-color: var(--accent); }
+.toc a[aria-current="true"]::before { background: var(--accent); }
+.toc a[aria-current="true"] .v { color: var(--accent); }
+
+@media (max-width: 900px) {
+  .layout { grid-template-columns: minmax(0, 1fr); }
+  .side { position: static; order: -1; }
+  .toc { display: flex; gap: 8px; overflow-x: auto; border-left: 0; padding-bottom: 4px; }
+  .toc a { flex: none; margin: 0; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); }
+  .toc a[aria-current="true"] { border-color: var(--accent); }
+  .toc a::before { grid-row: auto; }
+  .toc .v { white-space: nowrap; }
+  .toc .d { display: none; }
+}
+
+footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px 24px; font-family: var(--mono); font-size: 13px; letter-spacing: .24em; text-transform: uppercase; }
+footer .red { color: var(--accent); }
+footer a { color: var(--label); text-decoration: none; }
+</style>
+
+<div class="wrap">
+  <div class="top">
+    <a class="brand" href="__HOME__"__HOME_TARGET__>MATHOD</a>
+    <div class="topr">
+      <div class="lang" role="group" aria-label="Language">
+        <button type="button" class="chip" data-lang="fr" aria-pressed="false">FR</button>
+        <button type="button" class="chip" data-lang="en" aria-pressed="false">EN</button>
+      </div>
+      <a class="ext" href="__HOME__"__HOME_TARGET__ data-i18n="back"></a>
+      <a class="ext" href="#" aria-current="page">Releases</a>
+      <a class="ext" href="https://github.com/Mathod95/xeneon" target="_blank" rel="noopener">GitHub ↗</a>
+    </div>
+  </div>
+
+  <section class="hero" aria-labelledby="title">
+    <h1 id="title" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Releases</h1>
+    <canvas id="titleDots" width="1800" height="260" aria-hidden="true"></canvas>
+    <p class="lede" data-i18n-html="lede"></p>
+  </section>
+
+  <div class="layout">
+    <main class="feed" id="feed"></main>
+    <aside class="side" data-i18n-label="versions">
+      <h2 data-i18n="versions"></h2>
+      <ul class="toc" id="toc"></ul>
+    </aside>
+  </div>
+
+  <footer>
+    <span class="red">For Xeneon Edge · Touch · Dot-matrix</span>
+    <a href="https://github.com/Mathod95/xeneon" target="_blank" rel="noopener">Mathod95/xeneon</a>
+  </footer>
+</div>
+
+<script id="data" type="application/json">__DATA__</script>
+<script>
+(function () {
+  "use strict";
+  var GH = "https://github.com/Mathod95/xeneon";
+  var DATA = JSON.parse(document.getElementById("data").textContent).releases;
+
+  var STR = {
+    fr: {
+      lede: "Ce qui a changé dans Dot Hub, Dot Companion et les modules<i>●</i>de la plus récente à la plus ancienne.",
+      back: "← Dot Page", versions: "Versions", latest: "Dernière version", next: "Prochaine version",
+      nextV: "Sur main", nextD: "pas encore publiée",
+      new: "Nouveau", changed: "Changé", fixed: "Corrigé",
+      dl: "Télécharger ↗", actions: "Exe dans GitHub Actions ↗", diff: "Changements ↗",
+      months: ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"]
+    },
+    en: {
+      lede: "What changed in Dot Hub, Dot Companion and the modules<i>●</i>newest first.",
+      back: "← Dot Page", versions: "Versions", latest: "Latest release", next: "Next release",
+      nextV: "On main", nextD: "not released yet",
+      new: "New", changed: "Changed", fixed: "Fixed",
+      dl: "Download ↗", actions: "Exe in GitHub Actions ↗", diff: "Changes ↗",
+      months: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+    }
+  };
+  var lang = "fr";
+  try {
+    var q = new URLSearchParams(location.search).get("lang");
+    lang = q === "en" || q === "fr" ? q : localStorage.getItem("dotpage-lang") || ((navigator.language || "fr").slice(0, 2) === "fr" ? "fr" : "en");
+  } catch (e) { lang = (navigator.language || "fr").slice(0, 2) === "fr" ? "fr" : "en"; }
+  if (!STR[lang]) lang = "fr";
+  function t(k) { return STR[lang][k]; }
+  function tr(o) { return o && (o[lang] || o.fr) || ""; }
+  function date(s) {
+    var p = s.split("-"), d = parseInt(p[2], 10), m = t("months")[parseInt(p[1], 10) - 1];
+    return lang === "fr" ? d + " " + m + " " + p[0] : m + " " + d + ", " + p[0];
+  }
+  function esc(s) { return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+  function inline(s) { return esc(s).replace(/`([^`]+)`/g, "<code>$1</code>"); }
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; }
+  function link(href, text) { var a = el("a", "", text); a.href = href; a.target = "_blank"; a.rel = "noopener"; return a; }
+  function id(r) { return r.version === "next" ? "next" : r.version; }
+
+  // titre RELEASES en points (police 5 × 7 de Dot Page)
+  var F = {
+    R: ["####.", "#...#", "#...#", "####.", "#.#..", "#..#.", "#...#"],
+    E: ["#####", "#....", "#....", "####.", "#....", "#....", "#####"],
+    L: ["#....", "#....", "#....", "#....", "#....", "#....", "#####"],
+    A: [".###.", "#...#", "#...#", "#####", "#...#", "#...#", "#...#"],
+    S: [".####", "#....", "#....", ".###.", "....#", "....#", "####."]
+  };
+  function drawTitle(text) {
+    var cv = document.getElementById("titleDots"), ctx = cv.getContext("2d"), cols = [];
+    text.split("").forEach(function (ch, i) {
+      var g = F[ch];
+      for (var c = 0; c < g[0].length; c++) cols.push(g.map(function (r) { return r[c] === "#"; }));
+      if (i < text.length - 1) cols.push([false, false, false, false, false, false, false]);
+    });
+    var pad = 1, total = cols.length + pad * 2, rows = 7 + pad * 2, pitch = cv.width / total, r = pitch * 0.36;
+    cv.height = Math.round(rows * pitch);
+    ctx.clearRect(0, 0, cv.width, cv.height);
+    for (var x = 0; x < total; x++) for (var y = 0; y < rows; y++) {
+      var col = cols[x - pad], on = col && y >= pad && y < 7 + pad && col[y - pad];
+      ctx.beginPath(); ctx.fillStyle = on ? "#f2f0e9" : "#171717";
+      ctx.arc(x * pitch + pitch / 2, y * pitch + pitch / 2, on ? r : r * 0.8, 0, Math.PI * 2); ctx.fill();
+    }
+  }
+
+  function render() {
+    document.documentElement.lang = lang;
+    document.querySelectorAll("[data-i18n]").forEach(function (e) { e.textContent = t(e.getAttribute("data-i18n")); });
+    document.querySelectorAll("[data-i18n-html]").forEach(function (e) { e.innerHTML = t(e.getAttribute("data-i18n-html")); });
+    document.querySelectorAll("[data-i18n-label]").forEach(function (e) { e.setAttribute("aria-label", t(e.getAttribute("data-i18n-label"))); });
+    document.querySelectorAll(".lang .chip").forEach(function (b) { b.setAttribute("aria-pressed", b.getAttribute("data-lang") === lang ? "true" : "false"); });
+
+    var feed = document.getElementById("feed"), toc = document.getElementById("toc");
+    feed.innerHTML = ""; toc.innerHTML = "";
+    var firstTag = DATA.filter(function (r) { return r.version !== "next"; })[0];
+    DATA.forEach(function (r, i) {
+      var next = r.version === "next", latest = r === firstTag;
+      var art = el("article", "rel" + (latest ? " latest" : "")); art.id = id(r);
+      var head = el("div", "rel-head");
+      head.appendChild(el("span", "ver", next ? t("nextV") : r.version));
+      head.appendChild(el("time", "", next ? t("nextD") : date(r.date))).setAttribute("datetime", r.date);
+      if (latest) head.appendChild(el("span", "badge", t("latest")));
+      if (next) head.appendChild(el("span", "badge next", t("next")));
+      art.appendChild(head);
+      art.appendChild(el("h2", "", tr(r.title)));
+      if (r.components && r.components.length) {
+        var comps = el("ul", "comps"); comps.setAttribute("aria-label", "Versions");
+        r.components.forEach(function (c) { comps.appendChild(el("li", "", c)); });
+        art.appendChild(comps);
+      }
+      [["new", "--new"], ["changed", "--changed"], ["fixed", "--fixed"]].forEach(function (k) {
+        var items = r[k[0]] || [];
+        if (!items.length) return;
+        var sec = el("section", "sec"); sec.style.setProperty("--c", "var(" + k[1] + ")");
+        sec.appendChild(el("h3", "", t(k[0])));
+        var ul = el("ul");
+        items.forEach(function (it) { var li = el("li"); li.innerHTML = inline(tr(it)); ul.appendChild(li); });
+        sec.appendChild(ul); art.appendChild(sec);
+      });
+      var foot = el("div", "rel-foot");
+      if (next) {
+        foot.appendChild(link(GH + "/actions/workflows/companion.yml", t("actions")));
+        if (firstTag) foot.appendChild(link(GH + "/compare/" + firstTag.version + "...main", t("diff")));
+      } else {
+        var prev = DATA.slice(i + 1).filter(function (x) { return x.version !== "next"; })[0];
+        if (prev) foot.appendChild(link(GH + "/compare/" + prev.version + "..." + r.version, t("diff")));
+        foot.appendChild(link(GH + "/releases/tag/" + r.version, t("dl")));
+      }
+      art.appendChild(foot);
+      feed.appendChild(art);
+
+      var li = el("li"), a = el("a"); a.href = "#" + id(r); a.setAttribute("data-id", id(r));
+      a.appendChild(el("span", "v", next ? t("nextV") : r.version));
+      a.appendChild(el("span", "d", next ? t("nextD") : date(r.date) + " · " + tr(r.title)));
+      li.appendChild(a); toc.appendChild(li);
+    });
+    spy();
+  }
+
+  // version visible : surlignée dans la liste de droite
+  var observer = null;
+  function mark(v) { document.querySelectorAll(".toc a").forEach(function (a) { a.setAttribute("aria-current", a.getAttribute("data-id") === v ? "true" : "false"); }); }
+  function spy() {
+    if (observer) observer.disconnect();
+    var arts = Array.prototype.slice.call(document.querySelectorAll(".rel"));
+    if (arts.length) mark(arts[0].id);
+    if (!window.IntersectionObserver) return;
+    var seen = {};
+    observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) { seen[e.target.id] = e.isIntersecting; });
+      var top = arts.filter(function (a) { return seen[a.id]; })[0];
+      if (top) mark(top.id);
+    }, { rootMargin: "-10% 0px -60% 0px" });
+    arts.forEach(function (a) { observer.observe(a); });
+  }
+  document.getElementById("toc").addEventListener("click", function (e) {
+    var a = e.target.closest("a"); if (!a) return;
+    e.preventDefault();
+    var target = document.getElementById(a.getAttribute("data-id"));
+    if (target) target.scrollIntoView({ block: "start" });
+    mark(a.getAttribute("data-id"));
+  });
+  document.querySelectorAll(".lang .chip").forEach(function (b) {
+    b.addEventListener("click", function () { lang = b.getAttribute("data-lang"); try { localStorage.setItem("dotpage-lang", lang); } catch (e) {} render(); });
+  });
+
+  drawTitle("RELEASES");
+  render();
+})();
+</script>

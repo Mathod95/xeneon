@@ -43,7 +43,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outlin
 .brand::before { content: ""; width: 12px; height: 12px; border-radius: 50%; background: var(--accent); }
 .ext { font-family: var(--mono); font-size: 13px; letter-spacing: .16em; text-transform: uppercase; color: var(--label); text-decoration: none; padding: 10px 16px; border: 1px solid var(--line); border-radius: 999px; background: var(--bg); }
 .ext:hover { color: var(--lit); border-color: #333; }
-.topr { display: flex; align-items: center; gap: 12px; }
+.topr { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; justify-content: flex-end; }
 .lang { display: flex; gap: 4px; padding: 4px; border: 1px solid var(--line); border-radius: 999px; background: var(--bg); }
 .lang .chip { padding: 6px 12px; border: 0; }
 
@@ -155,6 +155,7 @@ footer a { color: var(--label); text-decoration: none; }
         <button type="button" class="chip" data-lang="fr" aria-pressed="false">FR</button>
         <button type="button" class="chip" data-lang="en" aria-pressed="false">EN</button>
       </div>
+      <a class="ext" href="__RELEASES__"__RELEASES_TARGET__>Releases</a>
       <a class="ext" href="https://github.com/Mathod95/xeneon" target="_blank" rel="noopener">GitHub ↗</a>
     </div>
   </div>

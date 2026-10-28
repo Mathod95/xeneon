@@ -5,8 +5,12 @@
   des widgets du README, leur statut et la présence d'une maquette ;
 - site/<slug>/index.html : copie de widgets/<slug>/mockups/reference.html.
 
+- site/releases/index.html : Dot Release, les versions (tools/site/releases.html,
+  données dans tools/site/releases.json).
+
 Option --fragment FICHIER : écrit seulement la page d'accueil, sans en-tête HTML,
 avec des liens absolus vers le site en ligne (pour l'aperçu en artefact).
+Option --releases-fragment FICHIER : pareil pour Dot Release.
 """
 import argparse
 import base64
@@ -19,6 +23,12 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 SITE = ROOT / "site"
 TEMPLATE = ROOT / "tools" / "site" / "index.html"
 LIVE = "https://mathod95.github.io/xeneon/"
+RELEASES_TEMPLATE = ROOT / "tools" / "site" / "releases.html"
+RELEASES_DATA = ROOT / "tools" / "site" / "releases.json"
+# artefacts claude.ai : Dot Page et Dot Release se répondent par leurs boutons
+ARTIFACT_PAGE = "https://claude.ai/artifact/Fvc7r4TmmuaMhB9BPvc1Wo"
+ARTIFACT_RELEASE = "https://claude.ai/artifact/UZKaJbjN2o7HXNDCtsuyBd"
+BLANK = ' target="_blank" rel="noopener"'
 
 
 def status_of(slug):
@@ -101,25 +111,49 @@ def previews(slugs):
     return out
 
 
-def home(base, title, shots):
+def releases(home_url, target, title):
+    data = json.dumps(json.loads(RELEASES_DATA.read_text(encoding="utf-8")), ensure_ascii=False).replace("</", "<\\/")
+    page = RELEASES_TEMPLATE.read_text(encoding="utf-8")
+    return (page.replace("__DATA__", data).replace("__HOME_TARGET__", target)
+            .replace("__HOME__", home_url).replace("__TITLE__", title))
+
+
+def document(full):
+    """Page complète à partir d'un fragment (le style va dans <head>)."""
+    cut = full.index('<div class="wrap">')
+    return (
+        "<!DOCTYPE html>\n<html lang=\"fr\">\n<head>\n<meta charset=\"utf-8\">\n"
+        "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1, viewport-fit=cover\">\n"
+        + full[:cut] + "</head>\n<body>\n" + full[cut:] + "\n</body>\n</html>\n"
+    )
+
+
+def home(base, title, shots, rel_url="releases/", rel_target=""):
     data = json.dumps(widgets(), ensure_ascii=False).replace("</", "<\\/")
     prev = json.dumps(shots).replace("</", "<\\/")
     page = TEMPLATE.read_text(encoding="utf-8")
     return (page.replace("__DATA__", data).replace("__PREVIEWS__", prev)
-            .replace("__BASE__", base).replace("__TITLE__", title))
+            .replace("__BASE__", base).replace("__TITLE__", title)
+            .replace("__RELEASES_TARGET__", rel_target).replace("__RELEASES__", rel_url))
 
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--fragment")
+    ap.add_argument("--releases-fragment")
     args = ap.parse_args()
+
+    if args.releases_fragment:
+        pathlib.Path(args.releases_fragment).write_text(releases(ARTIFACT_PAGE, BLANK, "Dot Release"), encoding="utf-8")
+        if not args.fragment:
+            return
 
     slugs = [w["slug"] for w in widgets() if w["mockup"]]
     shots = previews(slugs)
 
     if args.fragment:
         uris = {k: "data:image/jpeg;base64," + base64.b64encode(v).decode() for k, v in shots.items()}
-        pathlib.Path(args.fragment).write_text(home(LIVE, "Dot Page", uris), encoding="utf-8")
+        pathlib.Path(args.fragment).write_text(home(LIVE, "Dot Page", uris, ARTIFACT_RELEASE, BLANK), encoding="utf-8")
         return
 
     if SITE.exists():
@@ -155,13 +189,9 @@ def main():
         count += 1
 
     full = home("", "Dot Hub · Mathod", {k: k + "/preview.jpg" for k in shots})
-    cut = full.index('<div class="wrap">')
-    page = (
-        "<!DOCTYPE html>\n<html lang=\"fr\">\n<head>\n<meta charset=\"utf-8\">\n"
-        "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1, viewport-fit=cover\">\n"
-        + full[:cut] + "</head>\n<body>\n" + full[cut:] + "\n</body>\n</html>\n"
-    )
-    (SITE / "index.html").write_text(page, encoding="utf-8")
+    (SITE / "index.html").write_text(document(full), encoding="utf-8")
+    (SITE / "releases").mkdir()
+    (SITE / "releases" / "index.html").write_text(document(releases("../", "", "Releases · Dot Hub")), encoding="utf-8")
     print(f"{len(widgets())} widget(s), {count} maquette(s) -> {SITE}")
 
 

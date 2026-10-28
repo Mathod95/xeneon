@@ -1,0 +1,205 @@
+{
+  "_note": "Source de Dot Release (site /releases/ et artefact). Une entrée par version, de la plus récente à la plus ancienne. « next » = ce qui est sur main sans tag. Chaque ligne en français (fr) et en anglais (en). `code` entre accents graves.",
+  "releases": [
+    {
+      "version": "next",
+      "date": "2026-10-28",
+      "title": {
+        "fr": "Dot Steam 0.2",
+        "en": "Dot Steam 0.2"
+      },
+      "components": [
+        "Dot Hub 0.4.0",
+        "Dot Companion 0.4.0+",
+        "Dot Clock 0.1.3",
+        "Dot Steam 0.2.0"
+      ],
+      "new": [
+        {
+          "fr": "Dot Steam : réglage Cover render, quatre rendus des jaquettes (Dots, Solid dots, Fine dots, image derrière une grille de points à l'opacité réglable)",
+          "en": "Dot Steam: Cover render setting, four cover renders (Dots, Solid dots, Fine dots, image behind a dot grid with adjustable opacity)"
+        },
+        {
+          "fr": "Dot Steam : panneau du bas au choix, téléchargements ou ton profil (avatar, pseudo, statut Online, Away, Invisible, Offline)",
+          "en": "Dot Steam: bottom panel of your choice, downloads or your profile (avatar, name, Online, Away, Invisible, Offline status)"
+        },
+        {
+          "fr": "Dot Steam : toucher DOWNLOADS ouvre la page des téléchargements de Steam",
+          "en": "Dot Steam: tapping DOWNLOADS opens the Steam downloads page"
+        },
+        {
+          "fr": "Dot Steam : réglages Show game names et Long names",
+          "en": "Dot Steam: Show game names and Long names settings"
+        },
+        {
+          "fr": "Dot Release : cette page, avec un bouton Releases sur Dot Page",
+          "en": "Dot Release: this page, with a Releases button on Dot Page"
+        }
+      ],
+      "changed": [
+        {
+          "fr": "Dot Steam : progression et débit des téléchargements à jour pendant le téléchargement (taille de `steamapps/downloading`)",
+          "en": "Dot Steam: download progress and speed stay current while downloading (size of `steamapps/downloading`)"
+        },
+        {
+          "fr": "Dot Steam : un jeu sans jaquette verticale prend sa jaquette large, recadrée",
+          "en": "Dot Steam: a game without a portrait cover uses its wide cover, cropped"
+        }
+      ],
+      "fixed": [
+        {
+          "fr": "Dot Steam : les noms longs débordaient sur les jaquettes voisines",
+          "en": "Dot Steam: long names overflowed onto the next covers"
+        },
+        {
+          "fr": "Dot Steam : états des téléchargements mal lus (en cours, en pause, en attente)",
+          "en": "Dot Steam: download states were misread (downloading, paused, queued)"
+        },
+        {
+          "fr": "Le compagnon est recompilé aussi quand seul Dot Steam change",
+          "en": "The companion is also rebuilt when only Dot Steam changes"
+        },
+        {
+          "fr": "Dot Page : la carte Dot Steam débordait",
+          "en": "Dot Page: the Dot Steam card overflowed"
+        }
+      ]
+    },
+    {
+      "version": "v0.4.0",
+      "date": "2026-10-26",
+      "title": {
+        "fr": "Dot Steam",
+        "en": "Dot Steam"
+      },
+      "components": [
+        "Dot Hub 0.4.0",
+        "Dot Companion 0.4.0",
+        "Dot Clock 0.1.3",
+        "Dot Steam 0.1.0"
+      ],
+      "new": [
+        {
+          "fr": "Module Dot Steam (XL) : les 8 derniers jeux joués ou ceux que tu choisis, lancés par appui long, toucher ou double toucher",
+          "en": "Dot Steam module (XL): your 8 last played games or the ones you pick, launched by hold, tap or double tap"
+        },
+        {
+          "fr": "Dot Steam : dernier jeu joué mis en avant, jeu en cours, téléchargements et amis en jeu",
+          "en": "Dot Steam: last played game in the spotlight, game in progress, downloads and friends in game"
+        },
+        {
+          "fr": "Jaquettes lues dans le cache de Steam, sinon les images publiques du magasin, téléchargées en arrière-plan",
+          "en": "Covers read from the Steam cache, otherwise the public store images, downloaded in the background"
+        },
+        {
+          "fr": "Secrets des modules (clé d'API Steam) chiffrés sur le PC (DPAPI), jamais renvoyés en clair",
+          "en": "Module secrets (Steam API key) encrypted on the PC (DPAPI), never sent back in clear"
+        }
+      ],
+      "changed": [
+        {
+          "fr": "Accueil de Dot Hub : la tuile DOT STEAM rejoint DOT CLOCK",
+          "en": "Dot Hub home: the DOT STEAM tile joins DOT CLOCK"
+        },
+        {
+          "fr": "Réglages du compagnon : les champs secrets sont masqués",
+          "en": "Companion settings: secret fields are masked"
+        }
+      ],
+      "fixed": []
+    },
+    {
+      "version": "v0.3.0",
+      "date": "2026-10-26",
+      "title": {
+        "fr": "Bouton Settings",
+        "en": "Settings button"
+      },
+      "components": [
+        "Dot Hub 0.3.0",
+        "Dot Companion 0.3.0",
+        "Dot Clock 0.1.3"
+      ],
+      "new": [
+        {
+          "fr": "Dot Hub : bouton ⚙ SETTINGS qui ouvre les réglages du compagnon dans le navigateur du PC",
+          "en": "Dot Hub: ⚙ SETTINGS button that opens the companion settings in the PC browser"
+        }
+      ],
+      "changed": [
+        {
+          "fr": "Dot Hub est le seul widget iCUE : chaque Dot est un module servi par le compagnon",
+          "en": "Dot Hub is the only iCUE widget: every Dot is a module served by the companion"
+        },
+        {
+          "fr": "Accueil de Dot Hub : libellé « DOT HUB »",
+          "en": "Dot Hub home: \"DOT HUB\" label"
+        }
+      ],
+      "fixed": []
+    },
+    {
+      "version": "v0.2.0",
+      "date": "2026-10-26",
+      "title": {
+        "fr": "Couleurs communes",
+        "en": "Shared colors"
+      },
+      "components": [
+        "Dot Hub 0.2.0",
+        "Dot Companion 0.2.0",
+        "Dot Clock 0.1.3"
+      ],
+      "new": [
+        {
+          "fr": "Compagnon : carte « Couleurs » dans les réglages, couleurs communes à tous les modules",
+          "en": "Companion: \"Colors\" card in the settings, colors shared by every module"
+        }
+      ],
+      "changed": [
+        {
+          "fr": "Dot Clock 0.1.3 : texte du bas « MADE BY MATHOD & CLAUDE », toucher « ● DOT CLOCK » ramène à l'accueil",
+          "en": "Dot Clock 0.1.3: \"MADE BY MATHOD & CLAUDE\" footer, tapping \"● DOT CLOCK\" goes back home"
+        },
+        {
+          "fr": "Accueil de Dot Hub : tuiles en cartes, comme dans la maquette",
+          "en": "Dot Hub home: tiles as cards, as in the mockup"
+        },
+        {
+          "fr": "Libellé « ● DOT … » à la même place et à la même taille dans tous les modules",
+          "en": "\"● DOT …\" label at the same place and size in every module"
+        }
+      ],
+      "fixed": []
+    },
+    {
+      "version": "v0.1.0",
+      "date": "2026-10-26",
+      "title": {
+        "fr": "Première version",
+        "en": "First release"
+      },
+      "components": [
+        "Dot Hub 0.1.0",
+        "Dot Companion 0.1.0",
+        "Dot Clock 0.1.2"
+      ],
+      "new": [
+        {
+          "fr": "Dot Hub, le widget iCUE, et Dot Companion, le programme qui tourne sur le PC",
+          "en": "Dot Hub, the iCUE widget, and Dot Companion, the app running on the PC"
+        },
+        {
+          "fr": "Premier module : Dot Clock",
+          "en": "First module: Dot Clock"
+        },
+        {
+          "fr": "Réglages des modules sur le PC, dans le navigateur",
+          "en": "Module settings on the PC, in the browser"
+        }
+      ],
+      "changed": [],
+      "fixed": []
+    }
+  ]
+}
