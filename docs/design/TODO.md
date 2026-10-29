@@ -1,6 +1,6 @@
 # TODO de la charte
 
-Écarts et chantiers relevés dans les pages du site, rangés par zone. Les sections reprennent les noms des zones des quatre gabarits (`homePage.html`, `subPage.html`, `modulePage.html`, `releasePage.html`), avec entre parenthèses les types de pages concernés. Une zone sans entrée n'a rien en attente.
+Suivi des chantiers de la charte: ce qui reste à faire (`- [ ]`) et ce qui est fait (`- [x]`, avec la date), rangé par zone. Les sections reprennent les noms des zones des quatre gabarits (`homePage.html`, `subPage.html`, `modulePage.html`, `releasePage.html`), avec entre parenthèses les types de pages concernés. Une zone sans entrée n'a rien en attente. La règle qui en sort va dans `README.md`, la référence pour créer une page.
 
 ## `.top` · En-tête (homePage, subPage, releasePage)
 
@@ -74,4 +74,5 @@ Même rendu sur les trois pages (marque « ● MATHOD », sélecteur FR / EN, bo
 
 ## Socle commun (toutes les pages)
 
+- [x] Barre de défilement (30 octobre 2026): une page longue (avec barre) était décalée de 15 px par rapport à une page courte (sans barre), la mise en page bougeait en passant d'une page à l'autre. Corrigé avec `html { scrollbar-gutter: stable; }` sur les 3 pages du site, les 4 gabarits (`anatomy.css`), les 18 maquettes de module et la maquette du compagnon, vérifié dans Chromium sur les 26 pages. Règle ajoutée dans `README.md` et dans le socle commun des gabarits.
 - [ ] Les maquettes de module (modulePage) ont leur propre socle: IBM Plex Mono et IBM Plex Sans, contenu de 1480 px au plus, 40 px entre les zones, alors que les autres pages sont en Fira Code et Segoe UI, sur 1240 px avec 48 px d'écart. Décider si les maquettes rejoignent le socle du site. Le gabarit `modulePage` reprend pour l'instant leurs valeurs telles quelles.

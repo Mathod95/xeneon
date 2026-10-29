@@ -78,7 +78,7 @@ widgets/<slug>/          un module de Dot Hub (index.html servi par le compagnon
   README.md              fiche : statut, contenu, données, tailles, notes, mocks
   mockups/               maquette de référence (reference.html) et mocks (exclus du paquet)
 templates/widget/        modèle de départ d’un module, avec détection des 4 tailles (scripts/sizes.js)
-docs/design/             charte graphique, DA (référence unique, en cours ; index : README.md, types de pages du site)
+docs/design/             charte graphique, DA (README.md = référence pour créer une page, règles validées ; TODO.md = suivi, à faire et fait ; gabarits des 4 types de pages)
 docs/SPEC-TEMPLATE.md    fiche type d’un module
 tools/build_site.py      génère le site GitHub Pages (`site/`) et les fichiers des artefacts
 tools/site/              pages du site : index.html (Dot Page), companion.html, releases.html + releases.json, modules.en.json

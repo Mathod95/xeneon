@@ -10,6 +10,8 @@ Mémoire de travail de Claude sur ce projet : ce que `CLAUDE.md` ne dit pas (pr�
 - Veut **voir avant de pousser** : il dit « push » ou « push simple sans tag » explicitement.
 - Passe sur **VS Code** à partir du 29 octobre 2026 pour suivre les modifications : tout doit vivre dans le dépôt (voir « Artefacts = production » dans `CLAUDE.md`).
 - Aime : le style dot partout, la cohérence entre maquette, site et Edge (« maquette = widget »), les maquettes à l’échelle réelle, les décisions notées dans les pages (tableau des choix).
+- Charte (`docs/design/`, 30 octobre 2026): `README.md` = la base pour créer plus tard des pages parfaites (règles validées), `TODO.md` = le suivi de ce qu’on a fait et de ce qui reste, rangé par zone des gabarits. Toute correction de page se note **dans les deux**.
+- Pendant les retouches: site local (http://127.0.0.1:8000/), artefacts republiés seulement quand il dit « publie ».
 - Dit « tu as fait de l’excellent travail » quand c’est bien ; s’énerve quand on fait plus ou autre chose que demandé.
 
 ## Leçons apprises (à ne pas refaire)
