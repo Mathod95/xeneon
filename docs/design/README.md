@@ -14,6 +14,19 @@ Référence unique pour le style de Dot Hub : les modules sur l’Edge, la page 
 | `composants.md` | en-tête, cartes, boutons, puces, tableaux, fond en points, écran de l’Edge simulé |
 | `nouvelle-page.md` | créer une nouvelle page web ou une nouvelle maquette, pas à pas |
 
+## Types de pages du site
+
+Pages web du site (GitHub Pages et artefacts). Les écrans de l’Edge et la page de réglages du compagnon seront traités à part.
+
+| Type | Rôle | Pages actuelles |
+|---|---|---|
+| `homePage` | page d’accueil du site, une seule | Dot Page |
+| `subPage` | page générique sous l’accueil : présentation, guide, FAQ… (tout ce qui n’est pas un des autres types) | Dot Companion |
+| `modulePage` | maquette de référence : l’Edge simulée, les réglages simulés, le tableau des choix | une par module (`/<slug>/`), et Companion Mockup |
+| `releasePage` | les versions : contenu au centre, liste des versions à droite | Dot Release |
+
+`subPage` reste volontairement générale : une nouvelle page qui n’est ni l’accueil, ni une maquette, ni les versions en est une.
+
 ## Principes actés
 
 - **Dot style partout** : chiffres, titres et pictogrammes en points (grille 5 × 7 pour les caractères, 7 × 7 pour les pictogrammes) ; points éteints visibles en gris très sombre.
