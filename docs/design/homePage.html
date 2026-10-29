@@ -1,0 +1,458 @@
+<title>Gabarit homePage</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap">
+<style>
+/* Layout : anatomie d'une homePage. En haut la bascule Vraie vue / Squelette, au centre la page générique réduite
+   (même CSS que tools/site/index.html), étiquettes numérotées à gauche et à droite reliées à leur zone, puis la liste des zones. */
+:root {
+  --bg: #080808;
+  --panel: #0e0e0e;
+  --line: #1f1f1f;
+  --lit: #f2f0e9;
+  --label: #b8b6b0;
+  --muted: #7d7b76;
+  --unlit: #1c1c1c;
+  --accent: #10b981;
+  --wip: #f5b942;
+  --spec: #a78bfa;
+  --design: #5aa9e6;
+  --mono: "Fira Code", "Cascadia Mono", Consolas, monospace;
+  --brand: "Segoe UI", Selawik, system-ui, sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { background: var(--bg); }
+body {
+  margin: 0; background: var(--bg); color: var(--lit);
+  font-family: var(--brand); font-size: 16px; line-height: 1.55;
+  background-image: radial-gradient(circle, #161616 1.2px, transparent 1.6px);
+  background-size: 22px 22px;
+  padding-block: 28px 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 1320px; margin: 0 auto; display: grid; gap: 28px; }
+a { color: inherit; }
+button:focus-visible, .a-item:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+/* en-tête de la page d'anatomie */
+.a-top { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.a-brand { display: flex; align-items: center; gap: 10px; font-weight: 700; letter-spacing: .22em; font-size: 15px; }
+.a-brand::before { content: ""; width: 12px; height: 12px; border-radius: 50%; background: var(--accent); }
+.a-crumb { font-family: var(--mono); font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: var(--label); padding: 10px 16px; border: 1px solid var(--line); border-radius: 999px; background: var(--bg); }
+.a-head { display: grid; gap: 10px; }
+.a-head h1 { margin: 0; font-family: var(--mono); font-weight: 500; font-size: clamp(22px, 2.6vw, 30px); letter-spacing: .14em; text-transform: uppercase; text-wrap: balance; }
+.a-lead { margin: 0; max-width: 72ch; color: var(--label); text-wrap: pretty; }
+
+/* bandeau : nom du type et bascule */
+.a-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 24px; }
+.a-name { margin: 0; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; font-family: var(--mono); font-size: 18px; font-weight: 500; }
+.a-tag { font-family: var(--mono); font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--accent); padding: 4px 10px; border: 1px solid #1d3b30; border-radius: 999px; }
+.a-switch { display: flex; gap: 4px; padding: 4px; border: 1px solid var(--line); border-radius: 999px; background: var(--bg); }
+.a-switch button { font-family: var(--mono); font-size: 12px; letter-spacing: .16em; text-transform: uppercase; padding: 8px 14px; border: 0; border-radius: 999px; background: transparent; color: var(--label); cursor: pointer; }
+.a-switch button[aria-pressed="true"] { background: var(--lit); color: var(--bg); }
+
+/* schéma : étiquettes | page réduite | étiquettes */
+.a-diag { position: relative; display: grid; grid-template-columns: 190px minmax(0, 1fr) 190px; gap: 28px; padding: 24px; border: 1px solid #262626; border-radius: 20px; background: var(--panel); }
+.a-pins { position: relative; }
+.a-stage { position: relative; overflow: hidden; border-radius: 12px; border: 1px solid var(--line); background: var(--bg); }
+.a-leaders { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; z-index: 4; }
+.a-leaders path { fill: none; stroke: #4a4a46; stroke-width: 1.25; transition: stroke 120ms; }
+.a-leaders circle { fill: var(--panel); stroke: #4a4a46; stroke-width: 1.5; transition: fill 120ms, stroke 120ms; }
+.a-leaders g.is-active path { stroke: var(--accent); }
+.a-leaders g.is-active circle { fill: var(--accent); stroke: var(--accent); }
+.a-pin { position: absolute; left: 0; right: 0; display: grid; gap: 2px; padding: 4px 0; border: 0; background: none; color: var(--lit); font: inherit; text-align: left; cursor: default; }
+.a-pins.is-left .a-pin { text-align: right; justify-items: end; }
+.a-pin-title { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; }
+.a-pins.is-left .a-pin-title { flex-direction: row-reverse; }
+.a-num { display: inline-grid; place-items: center; flex: none; width: 22px; height: 22px; border-radius: 50%; border: 1px solid #333; background: #141414; color: var(--label); font: 500 11px var(--mono); }
+.a-field { font: 12px var(--mono); color: var(--muted); }
+.a-pin.is-active .a-num, .a-item.is-active .a-num { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+.a-pin.is-active .a-pin-title { color: var(--accent); }
+
+/* liste des zones */
+.a-sub { display: grid; gap: 6px; }
+.a-sub h2 { margin: 0; font-family: var(--mono); font-weight: 500; font-size: 13px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); }
+.a-sub p { margin: 0; color: var(--label); font-size: 15px; }
+.a-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); gap: 12px; }
+.a-item { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px 14px; align-content: start; padding: 18px 20px; border: 1px solid var(--line); border-radius: 14px; background: var(--panel); transition: border-color 120ms; }
+.a-item.is-active { border-color: #1d5c46; }
+.a-item .a-num { grid-row: span 3; margin-top: 2px; }
+.a-item h3 { margin: 0; font-size: 16px; display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: baseline; }
+.a-item h3 code { font: 12px var(--mono); color: var(--muted); font-weight: 400; }
+.a-item p { margin: 0; font-size: 14px; color: var(--label); }
+.a-rule { font-size: 13px !important; color: var(--muted) !important; }
+.a-rule b { color: var(--label); font-weight: 600; }
+.a-base { margin: 0; padding: 16px 20px; border: 1px dashed #2a2a2a; border-radius: 14px; font-size: 14px; color: var(--label); }
+.a-base b { color: var(--lit); font-weight: 600; }
+
+/* petit écran : pas d'étiquettes sur les côtés, les numéros restent sur les zones */
+@media (max-width: 900px) {
+  .a-diag { grid-template-columns: minmax(0, 1fr); padding: 12px; }
+  .a-pins, .a-leaders { display: none; }
+}
+
+/* ===== la homePage générique, à sa taille réelle (1320 px), réduite par transform ===== */
+.mini { position: absolute; left: 0; top: 0; width: 1320px; padding: 40px 40px 48px; transform-origin: 0 0; background-color: var(--bg); background-image: radial-gradient(circle, #161616 1.2px, transparent 1.6px); background-size: 22px 22px; font-family: var(--brand); font-size: 16px; line-height: 1.55; color: var(--lit); }
+.mini .pw { max-width: 1240px; margin: 0 auto; display: grid; gap: 48px; }
+.mini [data-zone] { position: relative; border-radius: 14px; transition: outline-color 120ms, background-color 120ms; outline: 3px solid transparent; outline-offset: 6px; }
+.mini [data-zone].is-active { outline-color: var(--accent); background-color: rgba(16, 185, 129, .08); }
+.mini .badge { position: absolute; left: -6px; top: -6px; transform: translate(-50%, -50%); z-index: 3; width: 30px; height: 30px; display: grid; place-items: center; border-radius: 50%; border: 1px solid #333; background: #141414; color: var(--label); font: 500 15px var(--mono); }
+.mini [data-zone].is-active > .badge { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+
+.mini .top { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.mini .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; letter-spacing: .22em; font-size: 15px; }
+.mini .brand::before { content: ""; width: 12px; height: 12px; border-radius: 50%; background: var(--accent); }
+.mini .topr { display: flex; align-items: center; gap: 12px; }
+.mini .exts { display: flex; gap: 12px; }
+.mini .ext { font-family: var(--mono); font-size: 13px; letter-spacing: .16em; text-transform: uppercase; color: var(--label); padding: 10px 16px; border: 1px solid var(--line); border-radius: 999px; background: var(--bg); }
+.mini .lang { display: flex; gap: 4px; padding: 4px; border: 1px solid var(--line); border-radius: 999px; background: var(--bg); }
+.mini .chip { font-family: var(--mono); font-size: 12px; letter-spacing: .16em; text-transform: uppercase; padding: 10px 16px; border-radius: 999px; border: 1px solid var(--line); background: var(--bg); color: var(--label); }
+.mini .lang .chip { padding: 6px 12px; border: 0; }
+.mini .chip.on { background: var(--lit); border-color: var(--lit); color: var(--bg); }
+
+.mini .hero { display: grid; gap: 22px; }
+.mini .title-box { max-width: 760px; margin: 0 auto; width: 100%; }
+.mini .title-box canvas { display: block; width: 100%; height: auto; }
+.mini .tagline { font-family: var(--mono); font-size: 24px; margin: 0; color: var(--lit); }
+.mini .tagline i { font-style: normal; color: var(--accent); padding: 0 .5em; }
+.mini .stats { display: flex; flex-wrap: wrap; gap: 8px 28px; margin: 0; padding: 0; list-style: none; font-family: var(--mono); font-size: 14px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); }
+.mini .stats b { color: var(--accent); font-weight: 500; font-size: 18px; margin-right: .5em; }
+
+.mini .bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 24px; }
+.mini .bar h2 { margin: 0; font-family: var(--mono); font-weight: 500; font-size: 13px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); }
+.mini .hint { margin: 0; color: var(--label); font-size: 14px; }
+
+.mini .edge-sec { display: grid; gap: 16px; }
+.mini .edge { padding: 18px; border-radius: 24px; background: linear-gradient(180deg, #161616, #0b0b0b); border: 1px solid #2a2a2a; box-shadow: 0 40px 80px -40px #000, inset 0 1px 0 #262626; }
+.mini .screen { position: relative; aspect-ratio: 2560 / 720; overflow: hidden; border-radius: 8px; background: #000; }
+.mini .slot { position: absolute; inset: 1.7%  .47%; background: #080808; border-radius: 6px; font-family: var(--mono); }
+.mini .s-lbl { position: absolute; left: 2.2%; top: 5.5%; display: flex; align-items: center; gap: 8px; font-size: 9px; letter-spacing: .2em; color: var(--label); }
+.mini .s-lbl::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: var(--accent); }
+.mini .s-tiles { position: absolute; left: 1.6%; right: 1.6%; top: 17%; bottom: 6%; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; }
+.mini .s-tile { display: grid; grid-template-rows: 1fr auto; place-items: center; padding: 10px; border: 1px solid #1d1d1d; border-radius: 9px; font-size: 11px; letter-spacing: .12em; color: var(--lit); }
+.mini .s-tile canvas { width: 64px; height: 64px; }
+.mini .s-tile.more { grid-template-rows: 1fr; border-style: dashed; color: var(--label); font-size: 14px; }
+.mini .pager { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 20px; }
+.mini .pdots { display: flex; gap: 2px; }
+.mini .pdots span { width: 32px; height: 32px; display: grid; place-items: center; }
+.mini .pdots span::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: #2a2a2a; }
+.mini .pdots span.on::before { background: var(--lit); }
+.mini .where { font-family: var(--mono); font-size: 13px; letter-spacing: .18em; text-transform: uppercase; color: var(--label); }
+.mini .nav { display: flex; gap: 8px; }
+
+.mini .hubsec { display: grid; gap: 22px; padding: 32px; border: 1px solid #262626; border-radius: 20px; background: var(--panel); }
+.mini .hub-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.mini .hub-head .id { display: flex; align-items: center; gap: 18px; }
+.mini .hub-head canvas { display: block; width: 64px; height: 64px; }
+.mini .hub-head h2 { margin: 0; font-family: var(--mono); font-weight: 500; font-size: 28px; letter-spacing: .14em; text-transform: uppercase; }
+.mini .hub-lead { margin: 0; font-size: 19px; color: var(--lit); }
+.mini .hub-k { margin: 0; font-family: var(--mono); font-size: 12px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); }
+.mini .parts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.mini .part { display: grid; gap: 10px; align-content: start; padding: 20px 22px; border: 1px solid var(--line); border-radius: 14px; background: var(--bg); }
+.mini .part .ph2 { display: flex; align-items: baseline; gap: 12px; }
+.mini .part h3 { margin: 0; font-size: 18px; font-weight: 700; }
+.mini .part .tag2 { font-family: var(--mono); font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--accent); }
+.mini .part p { margin: 0; color: var(--label); font-size: 15px; }
+.mini .part .more { font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); }
+.mini .daily { margin: 0; color: var(--label); font-size: 15px; }
+.mini .daily b, .mini .steps b { color: var(--lit); font-weight: 600; }
+.mini .steps { margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; counter-reset: st; }
+.mini .steps li { counter-increment: st; display: grid; grid-template-columns: auto 1fr; gap: 14px; align-items: center; padding: 16px 18px; border: 1px solid var(--line); border-radius: 14px; color: var(--label); font-size: 15px; }
+.mini .steps li::before { content: counter(st); display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: var(--accent); color: var(--bg); font-family: var(--mono); font-weight: 500; font-size: 14px; }
+.mini .links { display: flex; gap: 16px; font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--label); }
+.mini .links .mock { color: var(--accent); }
+
+.mini .status { display: inline-flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--label); white-space: nowrap; }
+.mini .status::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--c); }
+.mini .list { display: grid; gap: 18px; }
+.mini .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.mini .card { display: grid; grid-template-rows: auto auto 1fr auto; gap: 14px; padding: 22px; border: 1px solid #262626; border-radius: 18px; background: var(--panel); }
+.mini .card .row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.mini .card canvas { display: block; width: 70px; height: 70px; }
+.mini .card h3 { margin: 0; font-size: 21px; font-weight: 700; letter-spacing: .02em; }
+.mini .card p { margin: 0; color: var(--label); font-size: 15px; }
+.mini .foot { display: flex; justify-content: flex-end; padding-top: 14px; border-top: 1px solid var(--line); }
+
+.mini footer { display: flex; justify-content: space-between; gap: 12px 24px; font-family: var(--mono); font-size: 13px; letter-spacing: .24em; text-transform: uppercase; color: var(--label); }
+.mini footer .red { color: var(--accent); }
+
+/* ===== vue squelette : la même page, contenu masqué, chaque zone et chaque bloc nommés ===== */
+.mini.sk { background-image: none; }
+.mini.sk * { visibility: hidden; }
+.mini.sk [data-zone], .mini.sk [data-sk], .mini.sk .badge { visibility: visible; }
+.mini.sk [data-zone] { outline: 2px dashed rgba(16, 185, 129, .45); background-color: transparent; border-color: transparent; }
+.mini.sk [data-zone].is-active { outline: 3px solid var(--accent); background-color: rgba(16, 185, 129, .08); }
+.mini.sk [data-zone]::after { content: attr(data-name); position: absolute; top: -6px; right: 22px; transform: translateY(-50%); padding: 0 10px; background: var(--bg); color: var(--accent); font: 500 16px/1.4 var(--mono); letter-spacing: .16em; text-transform: uppercase; white-space: nowrap; visibility: visible; }
+.mini.sk [data-sk] { position: relative; color: transparent; background: transparent; border-color: transparent; box-shadow: none; outline: 1px dashed #3a3a38; outline-offset: -1px; border-radius: 10px; }
+.mini.sk [data-sk]::before { visibility: hidden; }
+.mini.sk [data-sk]::after { content: attr(data-sk); position: absolute; inset: 0; display: grid; place-items: center; padding: 0 8px; overflow: hidden; color: #8f8d87; font: 15px/1.2 var(--mono); letter-spacing: .06em; text-transform: none; text-align: center; white-space: normal; visibility: visible; }
+@media (prefers-reduced-motion: reduce) { .mini [data-zone], .a-item, .a-leaders path, .a-leaders circle { transition: none; } }
+</style>
+
+<div class="wrap">
+  <div class="a-top">
+    <span class="a-brand">MATHOD</span>
+    <span class="a-crumb">Charte · types de pages</span>
+  </div>
+
+  <div class="a-head">
+    <h1>Anatomie d'une homePage</h1>
+    <p class="a-lead">La homePage est l'accueil du site, il n'y en a qu'une (aujourd'hui Dot Page). Elle suit toujours le même squelette: huit zones, du haut vers le bas, dans cet ordre. Survole une étiquette pour repérer sa zone, ou passe en vue squelette pour voir ce qui remplit chaque bloc.</p>
+  </div>
+
+  <div class="a-bar">
+    <p class="a-name">homePage <span class="a-tag">Une seule par site</span></p>
+    <div class="a-switch" role="group" aria-label="Vue">
+      <button type="button" data-view="real" aria-pressed="true">Vraie vue</button>
+      <button type="button" data-view="skeleton" aria-pressed="false">Squelette</button>
+    </div>
+  </div>
+
+  <div class="a-diag" id="diag">
+    <svg class="a-leaders" id="leaders" aria-hidden="true"></svg>
+    <div class="a-pins is-left" id="pinsL"></div>
+    <div class="a-stage" id="stage">
+      <div class="mini" id="mini" aria-hidden="true">
+        <div class="pw">
+
+          <div class="top" data-zone="header" data-name="En-tête"><span class="badge">1</span>
+            <span class="brand" data-sk="marque">MARQUE</span>
+            <div class="topr">
+              <div class="lang" data-sk="FR / EN"><span class="chip on">FR</span><span class="chip">EN</span></div>
+              <div class="exts" data-sk="liens vers les pages ×3"><span class="ext">Page A</span><span class="ext">Page B</span><span class="ext">Externe ↗</span></div>
+            </div>
+          </div>
+
+          <section class="hero">
+            <div data-zone="title" data-name="Titre"><span class="badge">2</span>
+              <div class="title-box" data-sk="titre en points 5 × 7, dernier mot en accent"><canvas id="titleDots" width="2160" height="300"></canvas></div>
+            </div>
+            <div data-zone="tagline" data-name="Accroche"><span class="badge">3</span>
+              <p class="tagline" data-sk="une ligne, séparateur ● en accent">Accroche du projet<i>●</i>ce qu'il fait, en une ligne.</p>
+            </div>
+            <div data-zone="stats" data-name="Chiffres clés"><span class="badge">4</span>
+              <ul class="stats" data-sk="nombre en accent + libellé, ×4"><li><b>1</b>chiffre</li><li><b>1</b>chiffre</li><li><b>24</b>éléments</li><li><b>3</b>en cours</li></ul>
+            </div>
+          </section>
+
+          <section class="edge-sec" data-zone="showcase" data-name="Vitrine"><span class="badge">5</span>
+            <div class="bar" data-sk="bandeau de section"><h2>Vitrine</h2><p class="hint">Le produit en action, en direct ou en captures.</p></div>
+            <div class="edge" data-sk="écran simulé 2560 × 720, une vue toutes les 5 s">
+              <div class="screen"><div class="slot">
+                <div class="s-lbl">LIBELLÉ</div>
+                <div class="s-tiles">
+                  <div class="s-tile"><canvas width="140" height="140" data-pic="a"></canvas><span>VUE A</span></div>
+                  <div class="s-tile"><canvas width="140" height="140" data-pic="b"></canvas><span>VUE B</span></div>
+                  <div class="s-tile"><canvas width="140" height="140" data-pic="c"></canvas><span>VUE C</span></div>
+                  <div class="s-tile"><canvas width="140" height="140" data-pic="d"></canvas><span>VUE D</span></div>
+                  <div class="s-tile more">+</div>
+                </div>
+              </div></div>
+            </div>
+            <div class="pager" data-sk="pager · points, vue affichée, ‹ ›">
+              <div class="pdots"><span class="on"></span><span></span><span></span><span></span><span></span></div>
+              <div class="where">Accueil</div>
+              <div class="nav"><span class="chip">‹</span><span class="chip">Accueil</span><span class="chip">›</span></div>
+            </div>
+          </section>
+
+          <section class="hubsec" data-zone="intro" data-name="Présentation"><span class="badge">6</span>
+            <div class="hub-head" data-sk="pictogramme 7 × 7 + titre + statut">
+              <div class="id"><canvas width="140" height="140" data-pic="a"></canvas><h2>Nom du projet</h2></div>
+              <span class="status" style="--c: var(--wip)">En cours</span>
+            </div>
+            <p class="hub-lead" data-sk="texte d'intro">Une ou deux phrases qui disent ce qu'est le projet, à qui il sert et ce qu'il change au quotidien.</p>
+            <p class="hub-k" data-sk="sur-titre">Comment ça marche</p>
+            <div class="parts" data-sk="parties ×2, nom + rôle + texte + lien">
+              <div class="part"><div class="ph2"><h3>Partie A</h3><span class="tag2">Rôle</span></div><p>Ce que fait cette partie, en deux ou trois phrases, du point de vue de la personne qui l'utilise.</p></div>
+              <div class="part"><div class="ph2"><h3>Partie B</h3><span class="tag2">Rôle</span></div><p>Ce que fait cette partie, en deux ou trois phrases, du point de vue de la personne qui l'utilise.</p><span class="more">En savoir plus →</span></div>
+            </div>
+            <p class="daily" data-sk="au quotidien"><b>Au quotidien</b>: ce que fait la personne une fois tout installé, en une phrase.</p>
+            <p class="hub-k" data-sk="sur-titre">Installer</p>
+            <ol class="steps" data-sk="étapes numérotées ×3">
+              <li><span><b>Étape un</b>, en une phrase.</span></li>
+              <li><span><b>Étape deux</b>, en une phrase.</span></li>
+              <li><span><b>Étape trois</b>, en une phrase.</span></li>
+            </ol>
+            <div class="links" data-sk="liens"><span class="mock">Maquette →</span><span>Télécharger ↗</span><span>Fiche ↗</span></div>
+          </section>
+
+          <section class="list" data-zone="list" data-name="Liste"><span class="badge">7</span>
+            <div class="bar" data-sk="bandeau de section"><h2>Les éléments</h2></div>
+            <div class="grid">
+              <article class="card" data-sk="carte · pictogramme 7 × 7, statut, titre, texte, liens">
+                <div class="row"><canvas width="140" height="140" data-pic="b"></canvas><span class="status" style="--c: var(--wip)">En cours</span></div>
+                <h3>Élément A</h3><p>Description courte, d'une à trois lignes, de ce que fait l'élément.</p>
+                <div class="foot links"><span class="mock">Maquette →</span><span>Fiche ↗</span></div>
+              </article>
+              <article class="card" data-sk="carte">
+                <div class="row"><canvas width="140" height="140" data-pic="c"></canvas><span class="status" style="--c: var(--spec)">Spécifié</span></div>
+                <h3>Élément B</h3><p>Description courte, d'une à trois lignes, de ce que fait l'élément.</p>
+                <div class="foot links"><span class="mock">Maquette →</span><span>Fiche ↗</span></div>
+              </article>
+              <article class="card" data-sk="carte">
+                <div class="row"><canvas width="140" height="140" data-pic="d"></canvas><span class="status" style="--c: var(--design)">En conception</span></div>
+                <h3>Élément C</h3><p>Description courte, d'une à trois lignes, de ce que fait l'élément.</p>
+                <div class="foot links"><span class="mock">Maquette →</span><span>Fiche ↗</span></div>
+              </article>
+            </div>
+          </section>
+
+          <footer data-zone="footer" data-name="Pied de page"><span class="badge">8</span>
+            <span class="red" data-sk="slogan">Slogan · Touch · Dot-matrix</span>
+            <span data-sk="dépôt">compte/dépôt</span>
+          </footer>
+
+        </div>
+      </div>
+    </div>
+    <div class="a-pins" id="pinsR"></div>
+  </div>
+
+  <div class="a-sub">
+    <h2>Les zones</h2>
+    <p>Ce que chaque zone contient, et les valeurs à reprendre telles quelles (celles de Dot Page, <code>tools/site/index.html</code>).</p>
+  </div>
+  <ol class="a-list" id="list"></ol>
+
+  <p class="a-base"><b>Socle commun</b>: fond #080808 avec la trame de points de 22 px, contenu centré de 1240 px au plus, 48 px entre les zones, une seule couleur d'accent (émeraude #10B981), un seul thème sombre. Fira Code pour les libellés et les valeurs, Segoe UI pour le texte.</p>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  var ZONES = [
+    { id: "header", side: "L", name: "En-tête", field: ".top", desc: "La marque à gauche. À droite, le choix de langue, les liens vers les autres pages du site et le lien externe.", rule: "<b>Valeurs:</b> marque en capitales espacées .22em après un point d'accent de 12 px. Pastilles Fira Code 13 px, capitales .16em, bord #1F1F1F, arrondi complet." },
+    { id: "title", side: "R", name: "Titre en points", field: "#titleDots", desc: "Le nom du site dessiné en canvas avec la police 5 × 7. Le dernier mot est en points éteints sur un fond de points d'accent.", rule: "<b>Valeurs:</b> 760 px de large au plus, centré. Points allumés #F2F0E9, points de fond #171717." },
+    { id: "tagline", side: "L", name: "Accroche", field: ".tagline", desc: "Ce que fait le projet, en une ligne. Le séparateur ● est en couleur d'accent.", rule: "<b>Valeurs:</b> Fira Code de 17 à 24 px selon la largeur." },
+    { id: "stats", side: "R", name: "Chiffres clés", field: ".stats", desc: "Quatre ou cinq nombres qui résument le projet, le plus important en premier.", rule: "<b>Valeurs:</b> nombre en accent 18 px, libellé en capitales .2em 14 px." },
+    { id: "showcase", side: "L", name: "Vitrine", field: ".edge-sec", desc: "Le produit en action: un bandeau de section, l'écran simulé, puis la navigation entre les vues.", rule: "<b>Valeurs:</b> écran au format 2560 × 720. Une vue toutes les 5 s, en pause au survol et au focus clavier." },
+    { id: "intro", side: "R", name: "Présentation", field: ".hubsec", desc: "Le projet en une carte: pictogramme, titre et statut, texte d'intro, les parties, l'usage au quotidien, l'installation en étapes et les liens.", rule: "<b>Valeurs:</b> panneau #0E0E0E, bord #262626, arrondi 20 px. Étapes dans un rond d'accent de 28 px, centrées sur la hauteur." },
+    { id: "list", side: "L", name: "Liste", field: "#list .grid", desc: "Un bandeau de section, puis une carte par élément, sans filtres.", rule: "<b>Valeurs:</b> cartes de 280 px au moins, écart 14 px. Pictogramme 7 × 7 de 70 px, statut à point coloré, titre 21 px, texte 15 px, liens dans le pied." },
+    { id: "footer", side: "R", name: "Pied de page", field: "footer", desc: "Le slogan à gauche en couleur d'accent, le lien du dépôt à droite.", rule: "<b>Valeurs:</b> Fira Code 13 px, capitales .24em." }
+  ];
+
+  var diag = document.getElementById("diag"), stage = document.getElementById("stage"), mini = document.getElementById("mini");
+  var svg = document.getElementById("leaders"), NS = "http://www.w3.org/2000/svg";
+  var pinsL = document.getElementById("pinsL"), pinsR = document.getElementById("pinsR"), list = document.getElementById("list");
+
+  // étiquettes et fiches
+  ZONES.forEach(function (z, i) {
+    var pin = document.createElement("button");
+    pin.type = "button"; pin.className = "a-pin"; pin.dataset.zone = z.id;
+    pin.innerHTML = '<span class="a-pin-title"><span class="a-num">' + (i + 1) + '</span><span>' + z.name + '</span></span><span class="a-field">' + z.field + '</span>';
+    (z.side === "L" ? pinsL : pinsR).appendChild(pin);
+    var li = document.createElement("li");
+    li.className = "a-item"; li.dataset.zone = z.id; li.tabIndex = 0;
+    li.innerHTML = '<span class="a-num">' + (i + 1) + '</span><h3>' + z.name + ' <code>' + z.field + '</code></h3><p>' + z.desc + '</p><p class="a-rule">' + z.rule + '</p>';
+    list.appendChild(li);
+  });
+
+  // surlignage : étiquette, fiche ou zone de la page
+  function activate(id) {
+    document.querySelectorAll("[data-zone]").forEach(function (el) { el.classList.toggle("is-active", !!id && el.dataset.zone === id); });
+  }
+  document.querySelectorAll(".a-pin, .a-item, .mini [data-zone]").forEach(function (el) {
+    el.addEventListener("mouseenter", function () { activate(el.dataset.zone); });
+    el.addEventListener("mouseleave", function () { activate(null); });
+    el.addEventListener("focus", function () { activate(el.dataset.zone); });
+    el.addEventListener("blur", function () { activate(null); });
+  });
+
+  // bascule vraie vue / squelette
+  var btns = document.querySelectorAll(".a-switch button");
+  btns.forEach(function (b) {
+    b.addEventListener("click", function () {
+      mini.classList.toggle("sk", b.dataset.view === "skeleton");
+      btns.forEach(function (o) { o.setAttribute("aria-pressed", String(o === b)); });
+    });
+  });
+
+  // police 5 × 7 et titre (même dessin que Dot Page)
+  var F = {
+    D: ["####.", "#...#", "#...#", "#...#", "#...#", "#...#", "####."],
+    O: [".###.", "#...#", "#...#", "#...#", "#...#", "#...#", ".###."],
+    T: ["#####", "..#..", "..#..", "..#..", "..#..", "..#..", "..#.."],
+    I: ["###", ".#.", ".#.", ".#.", ".#.", ".#.", "###"],
+    R: ["####.", "#...#", "#...#", "####.", "#.#..", "#..#.", "#...#"],
+    E: ["#####", "#....", "#....", "####.", "#....", "#....", "#####"],
+    " ": ["..", "..", "..", "..", "..", "..", ".."]
+  };
+  function drawTitle(cv, text) {
+    var ctx = cv.getContext("2d"), cols = [], lastWordCol = 0;
+    text.split("").forEach(function (ch, i) {
+      if (ch === " ") lastWordCol = cols.length + F[" "][0].length;
+      var g = F[ch];
+      for (var c = 0; c < g[0].length; c++) cols.push(g.map(function (r) { return r[c] === "#"; }));
+      if (i < text.length - 1) cols.push([false, false, false, false, false, false, false]);
+    });
+    var pad = 1, total = cols.length + pad * 2, rows = 7 + pad * 2, accentFrom = lastWordCol + pad;
+    var pitch = cv.width / total, r = pitch * 0.36;
+    cv.height = Math.round(rows * pitch);
+    for (var x = 0; x < total; x++) for (var y = 0; y < rows; y++) {
+      var col = cols[x - pad], on = col && y >= pad && y < 7 + pad && col[y - pad];
+      var inWord = x >= accentFrom, accent = inWord && !on, lit = on && !inWord;
+      ctx.beginPath();
+      ctx.fillStyle = lit ? "#f2f0e9" : accent ? "#10b981" : "#171717";
+      ctx.arc(x * pitch + pitch / 2, y * pitch + pitch / 2, lit || accent ? r : r * 0.8, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+  drawTitle(document.getElementById("titleDots"), "DOT TITRE");
+
+  // pictogrammes 7 × 7 génériques
+  var PICS = {
+    a: ["#######", "#.....#", "#.###.#", "#.#.#.#", "#.###.#", "#.....#", "#######"],
+    b: ["...#...", "..###..", ".#####.", "#######", ".#####.", "..###..", "...#..."],
+    c: ["###.###", "###.###", "###.###", ".......", "###.###", "###.###", "###.###"],
+    d: [".#####.", "#.....#", "#.#.#.#", "#.....#", "#.###.#", "#.....#", ".#####."]
+  };
+  document.querySelectorAll("canvas[data-pic]").forEach(function (cv) {
+    var g = PICS[cv.dataset.pic], ctx = cv.getContext("2d"), p = cv.width / 7;
+    for (var y = 0; y < 7; y++) for (var x = 0; x < 7; x++) {
+      ctx.beginPath();
+      ctx.fillStyle = g[y][x] === "#" ? "#f2f0e9" : "#1c1c1c";
+      ctx.arc(x * p + p / 2, y * p + p / 2, p * 0.36, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  });
+
+  // mise à l'échelle de la page et tracé des traits
+  var NATIVE = 1320;
+  function layout() {
+    var s = stage.clientWidth / NATIVE;
+    mini.style.transform = "scale(" + s + ")";
+    stage.style.height = Math.ceil(mini.offsetHeight * s) + "px";
+    svg.textContent = "";
+    if (getComputedStyle(pinsL).display === "none") return;
+    var d = diag.getBoundingClientRect(), st = stage.getBoundingClientRect();
+    [[pinsL, true], [pinsR, false]].forEach(function (pair) {
+      var col = pair[0], left = pair[1], prev = -Infinity;
+      var colTop = col.getBoundingClientRect().top - d.top;
+      Array.prototype.forEach.call(col.children, function (pin) {
+        var zr = mini.querySelector('[data-zone="' + pin.dataset.zone + '"]').getBoundingClientRect();
+        var ty = zr.top - d.top + Math.min(zr.height / 2, 60 * s + 20);
+        var h = pin.offsetHeight, top = Math.max(ty - colTop - h / 2, prev + 10, 0);
+        pin.style.top = top + "px";
+        prev = top + h;
+        var pr = pin.getBoundingClientRect(), py = pr.top - d.top + 15;
+        var x0 = left ? pr.right - d.left + 8 : pr.left - d.left - 8;
+        var x1 = left ? st.left - d.left - 12 : st.right - d.left + 12;
+        var tx = left ? zr.left - d.left - 6 * s : zr.right - d.left + 6 * s;
+        var g = document.createElementNS(NS, "g"); g.dataset.zone = pin.dataset.zone;
+        var path = document.createElementNS(NS, "path");
+        path.setAttribute("d", "M" + x0 + " " + py + " H" + x1 + " L" + tx + " " + ty);
+        var dot = document.createElementNS(NS, "circle");
+        dot.setAttribute("cx", tx); dot.setAttribute("cy", ty); dot.setAttribute("r", 4.5);
+        g.appendChild(path); g.appendChild(dot); svg.appendChild(g);
+      });
+    });
+  }
+  layout();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(layout);
+  if (window.ResizeObserver) new ResizeObserver(layout).observe(diag); else window.addEventListener("resize", layout);
+})();
+</script>

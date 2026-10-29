@@ -37,6 +37,7 @@ Les artefacts appartiennent au compte claude.ai de la session VS Code (recréés
 | Dot Companion | `subPage` | https://claude.ai/artifact/DG6Y5j5NTaRhcXrUPyYzbQ | `tools/site/companion.html` | `build_site.py --companion-fragment <fichier>` |
 | Dot Release | `releasePage` | https://claude.ai/artifact/2FPiRAKZ1qtuiTxjnDyUJh | `tools/site/releases.html` + `releases.json` | `build_site.py --releases-fragment <fichier>` |
 | Companion Mockup | `modulePage` | https://claude.ai/artifact/BdvnCbdBqsspXWnYNLXA9d | `companion/mockups/reference.html` (charge la vraie `companion/web/settings.html`, `home.html`, `hub/module.js`) | `build_site.py --companion-mockup <dossier>` (page + fichiers) |
+| Gabarit homePage | `subPage` (charte) | https://claude.ai/artifact/Hr7w7CoyhY3ViCRQpZkMYz | `docs/design/homePage.html` (anatomie d’une homePage, vraie vue et squelette) | le fichier tel quel (site: `/design/homepage/`) |
 | Dot Hub | `modulePage` | https://claude.ai/artifact/WRmQrPJQqjq6igmpVkMc61 | `widgets/dot-hub/mockups/reference.html` (+ fichiers de Dot Clock) | dossier `site/dot-hub/` |
 | Dot Clock | `modulePage` | https://claude.ai/artifact/BEWYw6DnjPqLf5fcqCiwMR | `widgets/dot-clock/mockups/reference.html` + `scripts/`, `styles/`, `resources/` | dossier `site/dot-clock/` |
 | Dot Steam | `modulePage` | https://claude.ai/artifact/32wdKcfDbSCTtraduMR2wm | `widgets/dot-steam/mockups/reference.html` + fichiers du module | dossier `site/dot-steam/` |
