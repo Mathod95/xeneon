@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-Contexte du projet pour Claude Code. À lire avant toute modification. Ce fichier doit suffire pour reprendre le projet depuis n’importe où (VS Code, Cowork, nouvelle session) : le tenir à jour à chaque décision.
+Contexte du projet pour Claude Code. À lire avant toute modification. Ce fichier doit suffire pour reprendre le projet depuis n’importe où (VS Code, Cowork, nouvelle session) : le tenir à jour à chaque décision. **Lire aussi `MEMORY.md`** (préférences fines de Mathod95, leçons apprises, historique des décisions, questions ouvertes) et le compléter à chaque décision ou leçon nouvelle.
 
 ## Le projet
 
@@ -64,6 +64,8 @@ Fichiers générés : `site/` (ignoré par Git) ou un dossier de travail ; ils n
 ## Organisation
 
 ```
+CLAUDE.md                règles et contexte (ce fichier)
+MEMORY.md                mémoire de travail : préférences, leçons, historique, questions ouvertes
 widgets/dot-hub/         le seul widget iCUE : la coquille de Dot Hub (manifest.json)
 widgets/<slug>/          un module de Dot Hub (index.html servi par le compagnon, scripts/, styles/, resources/), sans manifest.json
   README.md              fiche : statut, contenu, données, tailles, notes, mocks
