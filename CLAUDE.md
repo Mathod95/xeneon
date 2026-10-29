@@ -27,32 +27,34 @@ Les artefacts (pages publiées sur claude.ai, privées) sont la vitrine de réf�
 
 Fichiers générés : `site/` (ignoré par Git) ou un dossier de travail ; ils ne sont pas commités (copies, 3,6 Mo pour Dot Page avec ses captures).
 
+Les artefacts appartiennent au compte claude.ai de la session VS Code (recréés le 29 octobre 2026, les anciennes adresses publiées depuis un autre compte ne sont plus suivies). Publier depuis un autre compte crée de nouvelles adresses, à reporter alors ici et dans `build_site.py`.
+
 ### Registre
 
 | Artefact | Type de page | Adresse | Source dans le dépôt | Fichier à publier |
 |---|---|---|---|---|
-| Dot Page | `homePage` | https://claude.ai/artifact/Fvc7r4TmmuaMhB9BPvc1Wo | `tools/site/index.html` + `README.md` + fiches + `tools/site/modules.en.json` | `build_site.py --fragment <fichier>` |
-| Dot Companion | `subPage` | https://claude.ai/artifact/DAno1HCPU7s9KcxcQxu5eQ | `tools/site/companion.html` | `build_site.py --companion-fragment <fichier>` |
-| Dot Release | `releasePage` | https://claude.ai/artifact/UZKaJbjN2o7HXNDCtsuyBd | `tools/site/releases.html` + `releases.json` | `build_site.py --releases-fragment <fichier>` |
-| Companion Mockup | `modulePage` | https://claude.ai/artifact/6G1rtfu8abJ7oiv7jDQHPp | `companion/mockups/reference.html` (charge la vraie `companion/web/settings.html`, `home.html`, `hub/module.js`) | `build_site.py --companion-mockup <dossier>` (page + fichiers) |
-| Dot Hub | `modulePage` | https://claude.ai/artifact/KU3rbf3d4gDMPK43v2Ey9c | `widgets/dot-hub/mockups/reference.html` (+ fichiers de Dot Clock) | dossier `site/dot-hub/` |
-| Dot Clock | `modulePage` | https://claude.ai/artifact/Jyw8kkNpYemjvNqEq1iQr4 | `widgets/dot-clock/mockups/reference.html` + `scripts/`, `styles/`, `resources/` | dossier `site/dot-clock/` |
-| Dot Steam | `modulePage` | https://claude.ai/artifact/NkJ3U4pTALqSTkvSpJEkFq | `widgets/dot-steam/mockups/reference.html` + fichiers du module | dossier `site/dot-steam/` |
-| Dot Home Assistant | `modulePage` | https://claude.ai/artifact/NbgwSbRsQLJXw2a7NvKWub | `widgets/dot-homeassistant/mockups/reference.html` | `site/dot-homeassistant/index.html` |
-| Dot Apps | `modulePage` | https://claude.ai/artifact/TqWJ3QWrD9LeoMS6pQtNGK | `widgets/dot-apps/mockups/reference.html` | `site/dot-apps/index.html` |
-| Dot Audio | `modulePage` | https://claude.ai/artifact/Y2QwVxRtVpvAVbpWpwcuhu | `widgets/dot-audio/mockups/reference.html` | `site/dot-audio/index.html` |
-| Dot Bambu Lab | `modulePage` | https://claude.ai/artifact/Bsm7hn39hu79RLqDSMEeAH | `widgets/dot-bambulab/mockups/reference.html` | `site/dot-bambulab/index.html` |
-| Dot Calculator | `modulePage` | https://claude.ai/artifact/HvwthZXi3gzKadTSjMUjaS | `widgets/dot-calculator/mockups/reference.html` | `site/dot-calculator/index.html` |
-| Dot Discord | `modulePage` | https://claude.ai/artifact/36soFGHWKKX7654FArNt9h | `widgets/dot-discord/mockups/reference.html` | `site/dot-discord/index.html` |
-| Dot GitHub | `modulePage` | https://claude.ai/artifact/2w6uUKaoEanoDqRZVTDScU | `widgets/dot-github/mockups/reference.html` | `site/dot-github/index.html` |
-| Dot Gmail | `modulePage` | https://claude.ai/artifact/AsfJfeMLbjHEJKkcJhUJNn | `widgets/dot-gmail/mockups/reference.html` | `site/dot-gmail/index.html` |
-| Dot Home | `modulePage` | https://claude.ai/artifact/LhxpSU1PrABNSoXAr7nE4a | `widgets/dot-home/mockups/reference.html` | `site/dot-home/index.html` |
-| Dot IA | `modulePage` | https://claude.ai/artifact/2M6n87roGDLaVz3bp4UPXP | `widgets/dot-ia/mockups/reference.html` | `site/dot-ia/index.html` |
-| Dot Notes | `modulePage` | https://claude.ai/artifact/HVyE6Pw4rDB2KvS4mukfdJ | `widgets/dot-notes/mockups/reference.html` | `site/dot-notes/index.html` |
-| Dot Plex | `modulePage` | https://claude.ai/artifact/3V3Lfh5Tu75CqepQYFpXoq | `widgets/dot-plex/mockups/reference.html` | `site/dot-plex/index.html` |
-| Dot Slack | `modulePage` | https://claude.ai/artifact/XDJPoh47vy4Y9N7mZ5BnHb | `widgets/dot-slack/mockups/reference.html` | `site/dot-slack/index.html` |
-| Dot Spotify | `modulePage` | https://claude.ai/artifact/XwMGNfNb9rFk6xJfbHUDGf | `widgets/dot-spotify/mockups/reference.html` | `site/dot-spotify/index.html` |
-| Dot Weather | `modulePage` | https://claude.ai/artifact/6bLczS7NxJ9MLL2KMyYSzZ | `widgets/dot-weather/mockups/reference.html` | `site/dot-weather/index.html` |
+| Dot Page | `homePage` | https://claude.ai/artifact/9LuRfha2bygFfup1GQk4mB | `tools/site/index.html` + `README.md` + fiches + `tools/site/modules.en.json` | `build_site.py --fragment <fichier>` |
+| Dot Companion | `subPage` | https://claude.ai/artifact/DG6Y5j5NTaRhcXrUPyYzbQ | `tools/site/companion.html` | `build_site.py --companion-fragment <fichier>` |
+| Dot Release | `releasePage` | https://claude.ai/artifact/2FPiRAKZ1qtuiTxjnDyUJh | `tools/site/releases.html` + `releases.json` | `build_site.py --releases-fragment <fichier>` |
+| Companion Mockup | `modulePage` | https://claude.ai/artifact/BdvnCbdBqsspXWnYNLXA9d | `companion/mockups/reference.html` (charge la vraie `companion/web/settings.html`, `home.html`, `hub/module.js`) | `build_site.py --companion-mockup <dossier>` (page + fichiers) |
+| Dot Hub | `modulePage` | https://claude.ai/artifact/WRmQrPJQqjq6igmpVkMc61 | `widgets/dot-hub/mockups/reference.html` (+ fichiers de Dot Clock) | dossier `site/dot-hub/` |
+| Dot Clock | `modulePage` | https://claude.ai/artifact/BEWYw6DnjPqLf5fcqCiwMR | `widgets/dot-clock/mockups/reference.html` + `scripts/`, `styles/`, `resources/` | dossier `site/dot-clock/` |
+| Dot Steam | `modulePage` | https://claude.ai/artifact/32wdKcfDbSCTtraduMR2wm | `widgets/dot-steam/mockups/reference.html` + fichiers du module | dossier `site/dot-steam/` |
+| Dot Home Assistant | `modulePage` | https://claude.ai/artifact/AWvhLH7JJNJJp4hZHyXNHx | `widgets/dot-homeassistant/mockups/reference.html` | `site/dot-homeassistant/index.html` |
+| Dot Apps | `modulePage` | https://claude.ai/artifact/H1iERAQjuQjsBimhPLzMm4 | `widgets/dot-apps/mockups/reference.html` | `site/dot-apps/index.html` |
+| Dot Audio | `modulePage` | https://claude.ai/artifact/Q6v78rrtfAS9tqs275ouuc | `widgets/dot-audio/mockups/reference.html` | `site/dot-audio/index.html` |
+| Dot Bambu Lab | `modulePage` | https://claude.ai/artifact/A2oAdA65PQqtXuWbCJpnvz | `widgets/dot-bambulab/mockups/reference.html` | `site/dot-bambulab/index.html` |
+| Dot Calculator | `modulePage` | https://claude.ai/artifact/EboRTHFchYmVniJJisxrL5 | `widgets/dot-calculator/mockups/reference.html` | `site/dot-calculator/index.html` |
+| Dot Discord | `modulePage` | https://claude.ai/artifact/Pfi98XxP5HzSVRPStqo8BR | `widgets/dot-discord/mockups/reference.html` | `site/dot-discord/index.html` |
+| Dot GitHub | `modulePage` | https://claude.ai/artifact/61bUnmTQvzorfxa78QRfgh | `widgets/dot-github/mockups/reference.html` | `site/dot-github/index.html` |
+| Dot Gmail | `modulePage` | https://claude.ai/artifact/LdhLcGYcvyb7JKXoKRbh8Z | `widgets/dot-gmail/mockups/reference.html` | `site/dot-gmail/index.html` |
+| Dot Home | `modulePage` | https://claude.ai/artifact/2iMP2wLHqkSsnMc8gkyeMm | `widgets/dot-home/mockups/reference.html` | `site/dot-home/index.html` |
+| Dot IA | `modulePage` | https://claude.ai/artifact/WfN55SzJM6BmbdsMHhrLMa | `widgets/dot-ia/mockups/reference.html` | `site/dot-ia/index.html` |
+| Dot Notes | `modulePage` | https://claude.ai/artifact/KDzEwfsf9spdysedns4ivd | `widgets/dot-notes/mockups/reference.html` | `site/dot-notes/index.html` |
+| Dot Plex | `modulePage` | https://claude.ai/artifact/KecpPioLvYHpXqdjLGwMzY | `widgets/dot-plex/mockups/reference.html` | `site/dot-plex/index.html` |
+| Dot Slack | `modulePage` | https://claude.ai/artifact/BTpWBDwL1HamdpezWkS9yq | `widgets/dot-slack/mockups/reference.html` | `site/dot-slack/index.html` |
+| Dot Spotify | `modulePage` | https://claude.ai/artifact/VdWjfo71YmvJjSgxKR1nUy | `widgets/dot-spotify/mockups/reference.html` | `site/dot-spotify/index.html` |
+| Dot Weather | `modulePage` | https://claude.ai/artifact/8L2VETdyiSuvhTxJoiGTRU | `widgets/dot-weather/mockups/reference.html` | `site/dot-weather/index.html` |
 
 - `python3 tools/build_site.py` (sans option) écrit tout le site dans `site/` : `site/<slug>/` est exactement le dossier de l’artefact du module (la page `index.html` sans `<base href="../">`, plus les fichiers du module qu’elle charge ; ignorer `preview.jpg`). Un module qui charge un autre module (Dot Hub → Dot Clock) a ses fichiers dans `site/<slug>/<autre-slug>/`.
 - Les adresses des quatre pages du site sont aussi dans `build_site.py` (`ARTIFACT_PAGE`, `ARTIFACT_RELEASE`, `ARTIFACT_COMPANION`, `ARTIFACT_COMPANION_MOCKUP`) pour que leurs boutons se répondent ; les tenir identiques à ce registre.

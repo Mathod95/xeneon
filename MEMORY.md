@@ -22,6 +22,8 @@ Mémoire de travail de Claude sur ce projet : ce que `CLAUDE.md` ne dit pas (pr�
 - Polices en capture headless : sans Fira Code chargée, les mesures sont fausses ; pour aligner du texte au pixel (Dot Home Assistant), les métriques réelles de Fira Code ont été lues avec fontTools (marge haute −4 px).
 - La sandbox ne peut ni joindre l’API GitHub (`api.github.com` bloqué), ni installer la cible Rust Windows : la compilation Windows n’est vérifiée que par la CI ; le code Win32 est vérifié sous Linux avec `cargo check --features check-win`.
 - Annoncer un nombre (ex. commits à pousser) seulement après l’avoir compté (`git rev-list --count origin/main..HEAD`).
+- Les artefacts ne sont visibles que du compte claude.ai qui les a publiés. Le 29 octobre 2026, ceux publiés depuis Cowork étaient introuvables depuis VS Code, les 22 ont été recréés depuis ce compte (nouvelles adresses dans le registre de `CLAUDE.md` et dans `build_site.py`).
+- WSL de Mathod95: Playwright installé avec `pip install --user --break-system-packages playwright` puis `python3 -m playwright install chromium` (captures de l’Edge simulée OK). Rust et `icuewidget` absents.
 
 ## Préférences de design notées
 
@@ -66,7 +68,7 @@ Mémoire de travail de Claude sur ce projet : ce que `CLAUDE.md` ne dit pas (pr�
 - 25 octobre : site GitHub Pages (Dot Page) avec Edge simulée ; tests clavier / iframes sur l’Edge (Dot Frametest) ; décision d’architecture (Dot Hub + compagnon).
 - 26 octobre : Dot Hub seul widget iCUE, chaque `dot-xxx` devient un module ; jamais de vertical ; focus XL ; libellé « ● DOT … » à la même place ; nombreuses maquettes (Plex, Bambu Lab, Home Assistant, Discord, Steam ex-Launcher, Audio, Apps, Gmail ex-Mail, Slack) ; un module par service (Homelab découpé) ; Dot Steam codé (v0.1, v0.2) ; releases v0.1.0 à v0.4.0 le même jour (v0.4.0 = Dot Steam 0.1.0 ; Dot Steam 0.2.0 est sur `main`, pour la prochaine).
 - 28 octobre : Dot Release ; fond en points partout ; Dot Home Assistant (cartes) puis pause ; Dot Companion (présentation + maquette) ; réglages avec l’Edge en direct ; compagnon 0.5.0 ; pages de Dot Hub ; push sans tag de 32 commits.
-- 29 octobre : retouches de Dot Page par commentaires ; vue Fenêtre retirée ; début de la DA des pages du site (`docs/design/`, types de pages) ; `CLAUDE.md` complété (artefacts = production, registre) ; ce fichier.
+- 29 octobre : retouches de Dot Page par commentaires ; vue Fenêtre retirée ; début de la DA des pages du site (`docs/design/`, types de pages) ; `CLAUDE.md` complété (artefacts = production, registre) ; ce fichier ; passage sur VS Code, les 22 artefacts recréés sur le compte claude.ai de la session.
 
 ## Questions ouvertes
 

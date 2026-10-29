@@ -29,10 +29,10 @@ LIVE = "https://mathod95.github.io/xeneon/"
 RELEASES_TEMPLATE = ROOT / "tools" / "site" / "releases.html"
 RELEASES_DATA = ROOT / "tools" / "site" / "releases.json"
 # artefacts claude.ai : Dot Page et Dot Release se répondent par leurs boutons
-ARTIFACT_PAGE = "https://claude.ai/artifact/Fvc7r4TmmuaMhB9BPvc1Wo"
-ARTIFACT_RELEASE = "https://claude.ai/artifact/UZKaJbjN2o7HXNDCtsuyBd"
-ARTIFACT_COMPANION = "https://claude.ai/artifact/DAno1HCPU7s9KcxcQxu5eQ"
-ARTIFACT_COMPANION_MOCKUP = "https://claude.ai/artifact/6G1rtfu8abJ7oiv7jDQHPp"
+ARTIFACT_PAGE = "https://claude.ai/artifact/9LuRfha2bygFfup1GQk4mB"
+ARTIFACT_RELEASE = "https://claude.ai/artifact/2FPiRAKZ1qtuiTxjnDyUJh"
+ARTIFACT_COMPANION = "https://claude.ai/artifact/DG6Y5j5NTaRhcXrUPyYzbQ"
+ARTIFACT_COMPANION_MOCKUP = "https://claude.ai/artifact/BdvnCbdBqsspXWnYNLXA9d"
 COMPANION_TEMPLATE = ROOT / "tools" / "site" / "companion.html"
 BLANK = ' target="_blank" rel="noopener"'
 
