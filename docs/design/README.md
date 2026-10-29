@@ -29,6 +29,8 @@ Pages web du site (GitHub Pages et artefacts). Les écrans de l’Edge et la pag
 
 Anatomie de chaque type (page générique en vraie vue ou en squelette, zones numérotées et leurs valeurs): `homePage.html`, `subPage.html`, `modulePage.html` et `releasePage.html`, qui partagent `anatomy.css` et `anatomy.js` (bascule, étiquettes, traits, police en points). Publiées en artefacts (Gabarit homePage, subPage, modulePage, releasePage) et sur le site (`/design/<type>/`). Une page de ce dossier qui change: régénérer le site et republier son artefact avec les deux fichiers communs.
 
+Écarts et chantiers en attente, rangés par zone des gabarits: `TODO.md`.
+
 ## Principes actés
 
 - **Dot style partout** : chiffres, titres et pictogrammes en points (grille 5 × 7 pour les caractères, 7 × 7 pour les pictogrammes) ; points éteints visibles en gris très sombre.
