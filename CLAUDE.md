@@ -37,7 +37,10 @@ Les artefacts appartiennent au compte claude.ai de la session VS Code (recréés
 | Dot Companion | `subPage` | https://claude.ai/artifact/DG6Y5j5NTaRhcXrUPyYzbQ | `tools/site/companion.html` | `build_site.py --companion-fragment <fichier>` |
 | Dot Release | `releasePage` | https://claude.ai/artifact/2FPiRAKZ1qtuiTxjnDyUJh | `tools/site/releases.html` + `releases.json` | `build_site.py --releases-fragment <fichier>` |
 | Companion Mockup | `modulePage` | https://claude.ai/artifact/BdvnCbdBqsspXWnYNLXA9d | `companion/mockups/reference.html` (charge la vraie `companion/web/settings.html`, `home.html`, `hub/module.js`) | `build_site.py --companion-mockup <dossier>` (page + fichiers) |
-| Gabarit homePage | `subPage` (charte) | https://claude.ai/artifact/Hr7w7CoyhY3ViCRQpZkMYz | `docs/design/homePage.html` (anatomie d’une homePage, vraie vue et squelette) | le fichier tel quel (site: `/design/homepage/`) |
+| Gabarit homePage | `subPage` (charte) | https://claude.ai/artifact/Hr7w7CoyhY3ViCRQpZkMYz | `docs/design/homePage.html` + `anatomy.css`, `anatomy.js` (anatomie d’une homePage, vraie vue et squelette) | le fichier et ses deux fichiers communs (site: `/design/homepage/`) |
+| Gabarit subPage | `subPage` (charte) | https://claude.ai/artifact/UizWMy8Epf8jyiJ1bQ3ReF | `docs/design/subPage.html` + `anatomy.css`, `anatomy.js` | idem (site: `/design/subpage/`) |
+| Gabarit modulePage | `subPage` (charte) | https://claude.ai/artifact/9x9w26wjw1EYwo4Z5XWcDV | `docs/design/modulePage.html` + `anatomy.css`, `anatomy.js` | idem (site: `/design/modulepage/`) |
+| Gabarit releasePage | `subPage` (charte) | https://claude.ai/artifact/Rh6kW7RcZHNpe5NFv3Xvkw | `docs/design/releasePage.html` + `anatomy.css`, `anatomy.js` | idem (site: `/design/releasepage/`) |
 | Dot Hub | `modulePage` | https://claude.ai/artifact/WRmQrPJQqjq6igmpVkMc61 | `widgets/dot-hub/mockups/reference.html` (+ fichiers de Dot Clock) | dossier `site/dot-hub/` |
 | Dot Clock | `modulePage` | https://claude.ai/artifact/BEWYw6DnjPqLf5fcqCiwMR | `widgets/dot-clock/mockups/reference.html` + `scripts/`, `styles/`, `resources/` | dossier `site/dot-clock/` |
 | Dot Steam | `modulePage` | https://claude.ai/artifact/32wdKcfDbSCTtraduMR2wm | `widgets/dot-steam/mockups/reference.html` + fichiers du module | dossier `site/dot-steam/` |

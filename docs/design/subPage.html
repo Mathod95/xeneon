@@ -1,0 +1,189 @@
+<title>Gabarit subPage</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap">
+<link rel="stylesheet" href="anatomy.css">
+<style>
+/* subPage générique, mêmes valeurs que Dot Companion (tools/site/companion.html). Partie commune dans anatomy.css et anatomy.js. */
+.mini .pw { max-width: 1240px; margin: 0 auto; display: grid; gap: 48px; }
+
+.mini .top { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.mini .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; letter-spacing: .22em; font-size: 15px; }
+.mini .brand::before { content: ""; width: 12px; height: 12px; border-radius: 50%; background: var(--accent); }
+.mini .topr { display: flex; align-items: center; gap: 12px; }
+.mini .exts { display: flex; gap: 12px; }
+.mini .ext { font-family: var(--mono); font-size: 13px; letter-spacing: .16em; text-transform: uppercase; color: var(--label); padding: 10px 16px; border: 1px solid var(--line); border-radius: 999px; background: var(--bg); }
+.mini .ext.cur { color: var(--bg); background: var(--lit); border-color: var(--lit); }
+.mini .lang { display: flex; gap: 4px; padding: 4px; border: 1px solid var(--line); border-radius: 999px; background: var(--bg); }
+.mini .chip { font-family: var(--mono); font-size: 12px; letter-spacing: .16em; text-transform: uppercase; padding: 6px 12px; border-radius: 999px; background: var(--bg); color: var(--label); }
+.mini .chip.on { background: var(--lit); color: var(--bg); }
+
+.mini .hero { display: grid; gap: 20px; }
+.mini .title-box { max-width: 760px; }
+.mini .title-box canvas { display: block; width: 100%; height: auto; }
+.mini .lede { margin: 0; font-family: var(--mono); font-size: 19px; color: var(--lit); max-width: 70ch; }
+.mini .lede i { font-style: normal; color: var(--accent); padding: 0 .5em; }
+.mini .facts { display: flex; flex-wrap: wrap; gap: 8px 28px; margin: 0; padding: 0; list-style: none; font-family: var(--mono); font-size: 13px; letter-spacing: .18em; text-transform: uppercase; color: var(--label); }
+.mini .facts b { color: var(--accent); font-weight: 500; margin-right: .5em; }
+.mini .cta { display: flex; flex-wrap: wrap; gap: 10px 12px; }
+.mini .btn { font-family: var(--mono); font-size: 13px; letter-spacing: .16em; text-transform: uppercase; padding: 12px 18px; border-radius: 999px; border: 1px solid var(--line); color: var(--label); background: var(--bg); }
+.mini .btn.main { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+
+.mini .sec { display: grid; gap: 18px; }
+.mini .sec > h2 { margin: 0; font-family: var(--mono); font-weight: 500; font-size: 13px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); }
+.mini .cards { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+.mini .card { display: grid; gap: 12px; align-content: start; padding: 22px; border: 1px solid var(--line); border-radius: 18px; background: var(--panel); }
+.mini .card canvas { display: block; width: 56px; height: 56px; }
+.mini .card h3 { margin: 0; font-size: 19px; font-weight: 700; }
+.mini .card p { margin: 0; color: var(--label); font-size: 15px; }
+.mini .steps { margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; counter-reset: st; }
+.mini .steps li { counter-increment: st; display: grid; grid-template-columns: auto 1fr; gap: 14px; align-items: center; padding: 18px 20px; border: 1px solid var(--line); border-radius: 14px; background: var(--panel); color: var(--label); font-size: 15px; }
+.mini .steps li::before { content: counter(st); display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: var(--accent); color: var(--bg); font-family: var(--mono); font-weight: 500; font-size: 14px; }
+.mini .steps b { color: var(--lit); font-weight: 600; }
+.mini .note { margin: 0; padding: 16px 20px; border: 1px solid #2a2414; border-radius: 14px; background: #0f0d08; color: var(--label); font-size: 15px; }
+.mini .note b { color: var(--wip); font-weight: 600; }
+.mini .table-scroll { border: 1px solid var(--line); border-radius: 14px; background: var(--panel); }
+.mini table { width: 100%; border-collapse: collapse; }
+.mini th, .mini td { text-align: left; padding: 14px 18px; vertical-align: top; border-bottom: 1px solid var(--line); font-size: 15px; }
+.mini tr:last-child td { border-bottom: 0; }
+.mini thead th { font-family: var(--mono); font-weight: 500; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.mini td:first-child { font-weight: 600; white-space: nowrap; color: var(--lit); }
+.mini td { color: var(--label); }
+.mini td .tagw { font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--wip); }
+.mini .list { margin: 0; padding: 0 0 0 18px; display: grid; gap: 8px; color: var(--label); }
+.mini .list li::marker { color: #3a3a3a; }
+.mini .list b { color: var(--lit); font-weight: 600; }
+
+.mini footer { display: flex; justify-content: space-between; gap: 12px 24px; font-family: var(--mono); font-size: 13px; letter-spacing: .24em; text-transform: uppercase; color: var(--label); }
+.mini footer .red { color: var(--accent); }
+</style>
+
+<div class="wrap">
+  <div class="a-top">
+    <span class="a-brand">MATHOD</span>
+    <span class="a-crumb">Charte · types de pages</span>
+  </div>
+
+  <div class="a-head">
+    <h1>Anatomie d'une subPage</h1>
+    <p class="a-lead">La subPage est la page générique sous l'accueil: présentation, guide, FAQ, tout ce qui n'est ni l'accueil, ni une maquette, ni les versions (aujourd'hui Dot Companion). Le haut est toujours le même (en-tête, titre, accroche, faits, actions), puis viennent des sections, chacune avec son sur-titre, dans la forme qui convient à son contenu. Survole une étiquette pour repérer sa zone, ou passe en vue squelette pour voir ce qui remplit chaque bloc.</p>
+  </div>
+
+  <div class="a-bar">
+    <p class="a-name">subPage <span class="a-tag">Autant que nécessaire</span></p>
+    <div class="a-switch" role="group" aria-label="Vue">
+      <button type="button" data-view="real" aria-pressed="true">Vraie vue</button>
+      <button type="button" data-view="skeleton" aria-pressed="false">Squelette</button>
+    </div>
+  </div>
+
+  <div class="a-diag" id="diag">
+    <svg class="a-leaders" id="leaders" aria-hidden="true"></svg>
+    <div class="a-pins is-left" id="pinsL"></div>
+    <div class="a-stage" id="stage">
+      <div class="mini" id="mini" aria-hidden="true">
+        <div class="pw">
+
+          <div class="top" data-zone="header" data-name="En-tête"><span class="badge">1</span>
+            <span class="brand" data-sk="marque">MARQUE</span>
+            <div class="topr">
+              <div class="lang" data-sk="FR / EN"><span class="chip on">FR</span><span class="chip">EN</span></div>
+              <div class="exts" data-sk="← accueil, pages sœurs (page courante allumée), externe"><span class="ext">← Accueil</span><span class="ext cur">Cette page</span><span class="ext">Page B</span><span class="ext">Externe ↗</span></div>
+            </div>
+          </div>
+
+          <section class="hero">
+            <div data-zone="title" data-name="Titre"><span class="badge">2</span>
+              <div class="title-box" data-sk="titre en points 5 × 7, calé à gauche"><canvas width="2200" height="260" data-title="DOT TITRE"></canvas></div>
+            </div>
+            <div data-zone="lede" data-name="Accroche"><span class="badge">3</span>
+              <p class="lede" data-sk="une ou deux lignes, séparateur ● en accent">Ce que dit la page, en une ou deux lignes<i>●</i>pour qui, et pourquoi la lire.</p>
+            </div>
+            <div data-zone="facts" data-name="Faits"><span class="badge">4</span>
+              <ul class="facts" data-sk="valeur en accent + libellé, ×3 ou 4"><li><b>1.0</b>version</li><li><b>Système</b>10 · 11</li><li><b>Local</b>où ça tourne</li><li><b>0</b>compte à créer</li></ul>
+            </div>
+            <div data-zone="cta" data-name="Actions"><span class="badge">5</span>
+              <div class="cta" data-sk="bouton principal plein + boutons bordés"><span class="btn main">Action principale ↗</span><span class="btn">Maquette →</span><span class="btn">Code source ↗</span></div>
+            </div>
+          </section>
+
+          <section class="sec" data-zone="cards" data-name="Section en cartes"><span class="badge">6</span>
+            <h2 data-sk="sur-titre">Ce que ça fait</h2>
+            <div class="cards">
+              <div class="card" data-sk="carte · pictogramme 7 × 7, titre, texte"><canvas width="112" height="112" data-pic="a"></canvas><h3>Carte A</h3><p>Une idée par carte, en deux ou trois phrases.</p></div>
+              <div class="card" data-sk="carte"><canvas width="112" height="112" data-pic="b"></canvas><h3>Carte B</h3><p>Une idée par carte, en deux ou trois phrases.</p></div>
+              <div class="card" data-sk="carte"><canvas width="112" height="112" data-pic="c"></canvas><h3>Carte C</h3><p>Une idée par carte, en deux ou trois phrases.</p></div>
+              <div class="card" data-sk="carte"><canvas width="112" height="112" data-pic="d"></canvas><h3>Carte D</h3><p>Une idée par carte, en deux ou trois phrases.</p></div>
+            </div>
+          </section>
+
+          <section class="sec" data-zone="steps" data-name="Section en étapes"><span class="badge">7</span>
+            <h2 data-sk="sur-titre">Installer</h2>
+            <ol class="steps" data-sk="étapes numérotées ×4">
+              <li><span><b>Étape un</b>, en une phrase.</span></li>
+              <li><span><b>Étape deux</b>, en une phrase.</span></li>
+              <li><span><b>Étape trois</b>, en une phrase.</span></li>
+              <li><span><b>Étape quatre</b>, en une phrase.</span></li>
+            </ol>
+            <p class="note" data-sk="note d'avertissement"><b>Ce qui peut surprendre</b>: ce que la personne va voir, et quoi faire, en une ou deux phrases.</p>
+          </section>
+
+          <section class="sec" data-zone="table" data-name="Section en tableau"><span class="badge">8</span>
+            <h2 data-sk="sur-titre">En détail</h2>
+            <div class="table-scroll" data-sk="tableau · en-têtes, une ligne par élément">
+              <table>
+                <thead><tr><th>Élément</th><th>Colonne B</th><th>Colonne C</th></tr></thead>
+                <tbody>
+                  <tr><td>Élément A</td><td>Ce qu'il utilise ou ce qu'il fait.</td><td>Valeur ou précision.</td></tr>
+                  <tr><td>Élément B</td><td>Ce qu'il utilise ou ce qu'il fait.</td><td>Valeur ou précision.</td></tr>
+                  <tr><td>Les autres</td><td>Ce qui reste à venir.</td><td><span class="tagw">Bientôt</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="sec" data-zone="list" data-name="Section en liste"><span class="badge">9</span>
+            <h2 data-sk="sur-titre">À savoir</h2>
+            <ul class="list" data-sk="liste à puces, mot clé en gras">
+              <li><b>Point clé</b>: une phrase qui l'explique.</li>
+              <li><b>Point clé</b>: une phrase qui l'explique.</li>
+              <li><b>Point clé</b>: une phrase qui l'explique.</li>
+            </ul>
+          </section>
+
+          <footer data-zone="footer" data-name="Pied de page"><span class="badge">10</span>
+            <span class="red" data-sk="slogan">Slogan · Touch · Dot-matrix</span>
+            <span data-sk="dépôt">compte/dépôt</span>
+          </footer>
+
+        </div>
+      </div>
+    </div>
+    <div class="a-pins" id="pinsR"></div>
+  </div>
+
+  <div class="a-sub">
+    <h2>Les zones</h2>
+    <p>Ce que chaque zone contient, et les valeurs à reprendre telles quelles (celles de Dot Companion, <code>tools/site/companion.html</code>). Les zones 1 à 5 sont toujours là ; les sections 6 à 9 se choisissent selon le contenu, dans n'importe quel ordre et autant de fois que nécessaire.</p>
+  </div>
+  <ol class="a-list" id="list"></ol>
+
+  <p class="a-base"><b>Socle commun</b>: fond #080808 avec la trame de points de 22 px, contenu centré de 1240 px au plus, 48 px entre les zones, une seule couleur d'accent (émeraude #10B981), un seul thème sombre. Fira Code pour les libellés et les valeurs, Segoe UI pour le texte. En-tête et pied de page identiques à ceux de la homePage.</p>
+</div>
+
+<script>
+window.ANATOMY = { native: 1320, zones: [
+  { id: "header", side: "L", name: "En-tête", field: ".top", desc: "Comme sur la homePage, avec en plus le retour à l'accueil. La page courante est allumée parmi les pages sœurs.", rule: "<b>Valeurs:</b> pastilles Fira Code 13 px, capitales .16em, bord #1F1F1F. Page courante en pastille pleine #F2F0E9 (aria-current)." },
+  { id: "title", side: "R", name: "Titre en points", field: "#titleDots", desc: "Le nom de la page dessiné en canvas avec la police 5 × 7, calé à gauche, tout en points allumés (pas d'accent, réservé à la homePage).", rule: "<b>Valeurs:</b> 760 px de large au plus. Points allumés #F2F0E9, points de fond #171717." },
+  { id: "lede", side: "L", name: "Accroche", field: ".lede", desc: "Ce que dit la page, en une ou deux lignes. Le séparateur ● est en couleur d'accent.", rule: "<b>Valeurs:</b> Fira Code de 15 à 19 px, 70 caractères par ligne au plus." },
+  { id: "facts", side: "R", name: "Faits", field: ".facts", desc: "Trois ou quatre repères courts: version, système, où ça tourne, ce qu'il faut créer.", rule: "<b>Valeurs:</b> valeur en accent, libellé en capitales .18em 13 px." },
+  { id: "cta", side: "L", name: "Actions", field: ".cta", desc: "L'action principale en bouton plein, les autres en boutons bordés. Une seule action principale par page.", rule: "<b>Valeurs:</b> Fira Code 13 px, capitales .16em, marges 12 × 18 px, arrondi complet. Bouton principal fond #10B981, texte #080808." },
+  { id: "cards", side: "R", name: "Section en cartes", field: ".sec .cards", desc: "Un sur-titre, puis une carte par idée, chacune avec son pictogramme.", rule: "<b>Valeurs:</b> sur-titre 13 px capitales .2em. Cartes de 270 px au moins, écart 14 px, panneau #0E0E0E arrondi 18 px, pictogramme 56 px, titre 19 px." },
+  { id: "steps", side: "L", name: "Section en étapes", field: ".steps + .note", desc: "Des étapes numérotées dans l'ordre où on les fait, puis une note pour ce qui peut surprendre.", rule: "<b>Valeurs:</b> rond d'accent 28 px, étapes de 260 px au moins. Note fond #0F0D08, bord #2A2414, mot clé en jaune #F5B942." },
+  { id: "table", side: "R", name: "Section en tableau", field: ".table-scroll", desc: "Pour comparer des éléments sur les mêmes colonnes. La dernière ligne peut annoncer ce qui vient.", rule: "<b>Valeurs:</b> en-têtes 12 px capitales .14em #7D7B76, cellules 15 px, première colonne en gras. Défile dans son cadre sur petit écran (620 px au moins)." },
+  { id: "list", side: "L", name: "Section en liste", field: ".list", desc: "Des points courts, chacun ouvert par son mot clé en gras.", rule: "<b>Valeurs:</b> puces #3A3A3A, 8 px entre les lignes, mot clé en #F2F0E9." },
+  { id: "footer", side: "R", name: "Pied de page", field: "footer", desc: "Le slogan à gauche en couleur d'accent, le lien du dépôt à droite.", rule: "<b>Valeurs:</b> Fira Code 13 px, capitales .24em." }
+] };
+</script>
+<script src="anatomy.js"></script>

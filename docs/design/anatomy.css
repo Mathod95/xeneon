@@ -1,0 +1,111 @@
+/* Anatomie d'un type de page (docs/design/<type>.html) : partie commune aux quatre pages.
+   En haut la bascule Vraie vue / Squelette, au centre la page générique réduite (.mini, à sa taille réelle puis
+   mise à l'échelle), étiquettes numérotées à gauche et à droite reliées à leur zone, puis la liste des zones.
+   Chaque page ne garde que le CSS de sa page générique (.mini …). Un seul thème sombre, celui du site. */
+:root {
+  --bg: #080808;
+  --panel: #0e0e0e;
+  --line: #1f1f1f;
+  --lit: #f2f0e9;
+  --label: #b8b6b0;
+  --muted: #7d7b76;
+  --unlit: #1c1c1c;
+  --accent: #10b981;
+  --wip: #f5b942;
+  --spec: #a78bfa;
+  --design: #5aa9e6;
+  --mono: "Fira Code", "Cascadia Mono", Consolas, monospace;
+  --brand: "Segoe UI", Selawik, system-ui, sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { background: var(--bg); }
+body {
+  margin: 0; background: var(--bg); color: var(--lit);
+  font-family: var(--brand); font-size: 16px; line-height: 1.55;
+  background-image: radial-gradient(circle, #161616 1.2px, transparent 1.6px);
+  background-size: 22px 22px;
+  padding-block: 28px 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 1320px; margin: 0 auto; display: grid; gap: 28px; }
+a { color: inherit; }
+button:focus-visible, .a-item:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+/* en-tête de la page d'anatomie */
+.a-top { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.a-brand { display: flex; align-items: center; gap: 10px; font-weight: 700; letter-spacing: .22em; font-size: 15px; }
+.a-brand::before { content: ""; width: 12px; height: 12px; border-radius: 50%; background: var(--accent); }
+.a-crumb { font-family: var(--mono); font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: var(--label); padding: 10px 16px; border: 1px solid var(--line); border-radius: 999px; background: var(--bg); }
+.a-head { display: grid; gap: 10px; }
+.a-head h1 { margin: 0; font-family: var(--mono); font-weight: 500; font-size: clamp(22px, 2.6vw, 30px); letter-spacing: .14em; text-transform: uppercase; text-wrap: balance; }
+.a-lead { margin: 0; max-width: 72ch; color: var(--label); text-wrap: pretty; }
+.a-lead code, .a-sub code { font-family: var(--mono); font-size: .9em; color: var(--lit); }
+
+/* bandeau : nom du type et bascule */
+.a-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 24px; }
+.a-name { margin: 0; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; font-family: var(--mono); font-size: 18px; font-weight: 500; }
+.a-tag { font-family: var(--mono); font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--accent); padding: 4px 10px; border: 1px solid #1d3b30; border-radius: 999px; }
+.a-switch { display: flex; gap: 4px; padding: 4px; border: 1px solid var(--line); border-radius: 999px; background: var(--bg); }
+.a-switch button { font-family: var(--mono); font-size: 12px; letter-spacing: .16em; text-transform: uppercase; padding: 8px 14px; border: 0; border-radius: 999px; background: transparent; color: var(--label); cursor: pointer; }
+.a-switch button[aria-pressed="true"] { background: var(--lit); color: var(--bg); }
+
+/* schéma : étiquettes | page réduite | étiquettes */
+.a-diag { position: relative; display: grid; grid-template-columns: 190px minmax(0, 1fr) 190px; gap: 28px; padding: 24px; border: 1px solid #262626; border-radius: 20px; background: var(--panel); }
+.a-pins { position: relative; }
+.a-stage { position: relative; overflow: hidden; border-radius: 12px; border: 1px solid var(--line); background: var(--bg); }
+.a-leaders { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; z-index: 4; }
+.a-leaders path { fill: none; stroke: #4a4a46; stroke-width: 1.25; transition: stroke 120ms; }
+.a-leaders circle { fill: var(--panel); stroke: #4a4a46; stroke-width: 1.5; transition: fill 120ms, stroke 120ms; }
+.a-leaders g.is-active path { stroke: var(--accent); }
+.a-leaders g.is-active circle { fill: var(--accent); stroke: var(--accent); }
+.a-pin { position: absolute; left: 0; right: 0; display: grid; gap: 2px; padding: 4px 0; border: 0; background: none; color: var(--lit); font: inherit; text-align: left; cursor: default; }
+.a-pins.is-left .a-pin { text-align: right; justify-items: end; }
+.a-pin-title { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; }
+.a-pins.is-left .a-pin-title { flex-direction: row-reverse; }
+.a-num { display: inline-grid; place-items: center; flex: none; width: 22px; height: 22px; border-radius: 50%; border: 1px solid #333; background: #141414; color: var(--label); font: 500 11px var(--mono); }
+.a-field { font: 12px var(--mono); color: var(--muted); }
+.a-pin.is-active .a-num, .a-item.is-active .a-num { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+.a-pin.is-active .a-pin-title { color: var(--accent); }
+
+/* liste des zones */
+.a-sub { display: grid; gap: 6px; }
+.a-sub h2 { margin: 0; font-family: var(--mono); font-weight: 500; font-size: 13px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); }
+.a-sub p { margin: 0; color: var(--label); font-size: 15px; }
+.a-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); gap: 12px; }
+.a-item { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px 14px; align-content: start; padding: 18px 20px; border: 1px solid var(--line); border-radius: 14px; background: var(--panel); transition: border-color 120ms; }
+.a-item.is-active { border-color: #1d5c46; }
+.a-item .a-num { grid-row: span 3; margin-top: 2px; }
+.a-item h3 { margin: 0; font-size: 16px; display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: baseline; }
+.a-item h3 code { font: 12px var(--mono); color: var(--muted); font-weight: 400; }
+.a-item p { margin: 0; font-size: 14px; color: var(--label); }
+.a-rule { font-size: 13px !important; color: var(--muted) !important; }
+.a-rule b { color: var(--label); font-weight: 600; }
+.a-base { margin: 0; padding: 16px 20px; border: 1px dashed #2a2a2a; border-radius: 14px; font-size: 14px; color: var(--label); }
+.a-base b { color: var(--lit); font-weight: 600; }
+
+/* petit écran : pas d'étiquettes sur les côtés, les numéros restent sur les zones */
+@media (max-width: 900px) {
+  .a-diag { grid-template-columns: minmax(0, 1fr); padding: 12px; }
+  .a-pins, .a-leaders { display: none; }
+}
+
+/* ===== la page générique, à sa taille réelle, réduite par transform ===== */
+.mini { position: absolute; left: 0; top: 0; padding: 40px 40px 48px; transform-origin: 0 0; background-color: var(--bg); background-image: radial-gradient(circle, #161616 1.2px, transparent 1.6px); background-size: 22px 22px; font-family: var(--brand); font-size: 16px; line-height: 1.55; color: var(--lit); }
+.mini [data-zone] { position: relative; border-radius: 14px; transition: outline-color 120ms, background-color 120ms; outline: 3px solid transparent; outline-offset: 6px; }
+.mini [data-zone].is-active { outline-color: var(--accent); background-color: rgba(16, 185, 129, .08); }
+.mini .badge { position: absolute; left: -6px; top: -6px; transform: translate(-50%, -50%); z-index: 3; width: 30px; height: 30px; display: grid; place-items: center; border-radius: 50%; border: 1px solid #333; background: #141414; color: var(--label); font: 500 15px/1 "Fira Code", Consolas, monospace; letter-spacing: 0; text-transform: none; }
+.mini [data-zone].is-active > .badge { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+
+/* ===== vue squelette : la même page, contenu masqué, chaque zone et chaque bloc nommés ===== */
+.mini.sk { background-image: none; }
+.mini.sk * { visibility: hidden; }
+.mini.sk [data-zone], .mini.sk [data-sk], .mini.sk .badge { visibility: visible; }
+.mini.sk [data-zone] { outline: 2px dashed rgba(16, 185, 129, .45); background-color: transparent; border-color: transparent; box-shadow: none; }
+.mini.sk [data-zone].is-active { outline: 3px solid var(--accent); background-color: rgba(16, 185, 129, .08); }
+.mini.sk [data-zone]::after { content: attr(data-name); position: absolute; top: -6px; right: 22px; transform: translateY(-50%); padding: 0 10px; background: var(--bg); color: var(--accent); font: 500 16px/1.4 "Fira Code", Consolas, monospace; letter-spacing: .16em; text-transform: uppercase; white-space: nowrap; visibility: visible; }
+.mini.sk [data-sk] { position: relative; color: transparent; background: transparent; border-color: transparent; box-shadow: none; outline: 1px dashed #3a3a38; outline-offset: -1px; border-radius: 10px; }
+.mini.sk [data-sk]::before { visibility: hidden; }
+.mini.sk [data-sk]::after { content: attr(data-sk); position: absolute; inset: 0; display: grid; place-items: center; padding: 0 8px; overflow: hidden; color: #8f8d87; font: 15px/1.2 "Fira Code", Consolas, monospace; letter-spacing: .06em; text-transform: none; text-align: center; white-space: normal; visibility: visible; }
+@media (prefers-reduced-motion: reduce) { .mini [data-zone], .a-item, .a-leaders path, .a-leaders circle { transition: none; } }

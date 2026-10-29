@@ -34,7 +34,10 @@ ARTIFACT_RELEASE = "https://claude.ai/artifact/2FPiRAKZ1qtuiTxjnDyUJh"
 ARTIFACT_COMPANION = "https://claude.ai/artifact/DG6Y5j5NTaRhcXrUPyYzbQ"
 ARTIFACT_COMPANION_MOCKUP = "https://claude.ai/artifact/BdvnCbdBqsspXWnYNLXA9d"
 COMPANION_TEMPLATE = ROOT / "tools" / "site" / "companion.html"
-DESIGN_HOME = ROOT / "docs" / "design" / "homePage.html"
+# charte, anatomie de chaque type de page, avec ses deux fichiers communs
+DESIGN = ROOT / "docs" / "design"
+DESIGN_PAGES = ["homePage", "subPage", "modulePage", "releasePage"]
+DESIGN_FILES = ["anatomy.css", "anatomy.js"]
 BLANK = ' target="_blank" rel="noopener"'
 
 
@@ -254,9 +257,13 @@ def main():
     (SITE / "releases" / "index.html").write_text(document(releases(sub, "", "Releases · Dot Hub")), encoding="utf-8")
     (SITE / "companion").mkdir()
     (SITE / "companion" / "index.html").write_text(document(companion(sub, "", "Dot Companion · Dot Hub")), encoding="utf-8")
-    # charte : anatomie de chaque type de page (le fichier du dépôt est aussi celui de l'artefact)
-    (SITE / "design" / "homepage").mkdir(parents=True)
-    (SITE / "design" / "homepage" / "index.html").write_text(document(DESIGN_HOME.read_text(encoding="utf-8")), encoding="utf-8")
+    # charte, anatomie de chaque type de page (le fichier du dépôt et ses deux fichiers communs sont aussi ceux de l'artefact)
+    for name in DESIGN_PAGES:
+        out = SITE / "design" / name.lower()
+        out.mkdir(parents=True)
+        (out / "index.html").write_text(document((DESIGN / (name + ".html")).read_text(encoding="utf-8")), encoding="utf-8")
+        for f in DESIGN_FILES:
+            shutil.copy(DESIGN / f, out / f)
     print(f"{len(widgets())} widget(s), {count} maquette(s) -> {SITE}")
 
 

@@ -1,0 +1,206 @@
+<title>Gabarit modulePage</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="anatomy.css">
+<style>
+/* modulePage générique, mêmes valeurs que les maquettes de référence (widgets/<slug>/mockups/reference.html, repère Dot Weather et Dot Clock).
+   Partie commune dans anatomy.css et anatomy.js. L'écran du module est à sa taille réelle XL (2536 × 696), réduit à la largeur du cadre. */
+.mini {
+  --m-panel: #0a0a0a; --m-line: #262626; --m-text: #e6e6e6; --m-muted: #8c8c8c;
+  --m-mono: "IBM Plex Mono", "Cascadia Mono", Consolas, monospace;
+  --m-sans: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  font-family: var(--m-sans); font-size: 15px; color: var(--m-text);
+}
+.mini .pw { max-width: 1480px; margin: 0 auto; display: grid; gap: 40px; }
+.mini header { display: grid; gap: 10px; }
+.mini .eyebrow { font-family: var(--m-mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--m-muted); display: flex; align-items: center; gap: 10px; }
+.mini .eyebrow::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+.mini h1 { font-family: var(--m-mono); font-weight: 500; font-size: 44px; line-height: 1.1; margin: 0; letter-spacing: -.01em; }
+.mini .lede { color: var(--m-muted); max-width: 72ch; margin: 0; }
+
+.mini figure { margin: 0; display: grid; gap: 12px; }
+.mini .head2 { display: grid; gap: 12px; }
+.mini .tag { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; font-family: var(--m-mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--m-muted); }
+.mini .tag b { color: var(--m-text); font-weight: 500; font-size: 14px; }
+.mini .sizebar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; }
+.mini .sizebar > span:first-child { font-family: var(--m-mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--m-muted); margin-right: 6px; }
+.mini .preset { font-family: var(--m-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; padding: 6px 10px; border-radius: 6px; border: 1px solid var(--m-line); color: var(--m-text); display: inline-flex; align-items: center; gap: 8px; }
+.mini .preset.on { background: var(--m-text); color: #0a0a0a; border-color: var(--m-text); }
+.mini .preset i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+
+/* l'écran du module : emplacement XL à l'échelle */
+.mini .frame { position: relative; width: 100%; aspect-ratio: 2536 / 696; border: 1px solid var(--m-line); border-radius: 10px; overflow: hidden; background: #080808; }
+.mini .scene { position: absolute; left: 0; top: 0; width: 2536px; height: 696px; transform: scale(.58360); transform-origin: 0 0; font-family: var(--mono); font-variant-ligatures: none; color: var(--lit); }
+.mini .s-dot { position: absolute; left: 56px; top: 51px; width: 10px; height: 10px; border-radius: 50%; background: var(--accent); }
+.mini .s-lbl { position: absolute; left: 80px; top: 44px; font-size: 18px; line-height: 24px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); }
+.mini .s-state { position: absolute; right: 56px; top: 44px; font-size: 18px; line-height: 24px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); }
+.mini .s-main { position: absolute; left: 56px; top: 120px; width: 560px; display: grid; gap: 14px; }
+.mini .s-main canvas { display: block; width: 520px; height: auto; }
+.mini .s-main b { font-weight: 400; font-size: 26px; letter-spacing: .14em; }
+.mini .s-main span { font-size: 18px; letter-spacing: .2em; color: var(--label); }
+.mini .s-mid { position: absolute; left: 720px; top: 120px; width: 1000px; height: 456px; display: grid; grid-template-rows: auto 1fr; gap: 18px; }
+.mini .s-mid > span { font-size: 18px; letter-spacing: .2em; color: var(--label); }
+.mini .s-bars { display: flex; align-items: flex-end; gap: 24px; background: radial-gradient(circle, #1c1c1c 6px, transparent 7px) 0 0 / 24px 24px; }
+.mini .s-bars i { flex: 1; background: radial-gradient(circle, #f2f0e9 6px, transparent 7px) 0 100% / 24px 24px; }
+.mini .s-bars i.acc { background-image: radial-gradient(circle, #10b981 6px, transparent 7px); }
+.mini .s-list { position: absolute; left: 1820px; right: 56px; top: 120px; display: grid; }
+.mini .s-list > span { font-size: 18px; letter-spacing: .2em; color: var(--label); padding-bottom: 12px; }
+.mini .s-row { display: flex; justify-content: space-between; align-items: center; height: 84px; border-bottom: 2px dotted #1c1c1c; font-size: 22px; letter-spacing: .12em; }
+.mini .s-row em { font-style: normal; color: var(--accent); }
+
+/* réglages simulés */
+.mini .settings { display: flex; flex-wrap: wrap; gap: 12px 28px; align-items: center; padding: 14px 16px; border: 1px solid var(--m-line); border-radius: 10px; background: var(--m-panel); }
+.mini .settings .lb { display: inline-flex; align-items: center; gap: 10px; font-family: var(--m-mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--m-muted); }
+.mini .settings .grp > b { font-family: var(--m-mono); font-weight: 400; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--m-text); }
+.mini .settings .grp { display: inline-flex; align-items: center; gap: 14px; }
+.mini .txt { font-family: var(--m-mono); font-size: 13px; letter-spacing: .04em; color: var(--m-text); background: #141414; border: 1px solid var(--m-line); border-radius: 6px; padding: 6px 10px; width: 10em; }
+.mini .rad, .mini .chk { width: 18px; height: 18px; border-radius: 50%; border: 2px solid #555; display: inline-block; }
+.mini .chk { border-radius: 4px; }
+.mini .rad.on, .mini .chk.on { border-color: var(--accent); background: radial-gradient(circle, var(--accent) 45%, transparent 50%); }
+.mini .chk.on { background: var(--accent); }
+.mini .sw { width: 36px; height: 28px; border: 1px solid var(--m-line); border-radius: 6px; padding: 3px; display: inline-block; }
+.mini .sw i { display: block; width: 100%; height: 100%; border-radius: 3px; }
+.mini figcaption { color: var(--m-muted); font-size: 14px; }
+
+/* tableau des choix et sections annexes */
+.mini .tsec { display: grid; gap: 14px; }
+.mini .diff-head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; }
+.mini .diff-head h2 { font-family: var(--m-mono); font-weight: 500; font-size: 13px; letter-spacing: .14em; text-transform: uppercase; margin: 0; }
+.mini .hint { color: var(--m-muted); font-size: 14px; margin: 0; }
+.mini .table-scroll { border: 1px solid var(--m-line); border-radius: 10px; overflow: hidden; }
+.mini table { width: 100%; border-collapse: collapse; }
+.mini th, .mini td { text-align: left; padding: 14px 16px; vertical-align: top; border-bottom: 1px solid var(--m-line); }
+.mini tr:last-child td { border-bottom: 0; }
+.mini thead th { font-family: var(--m-mono); font-weight: 500; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--m-muted); background: var(--m-panel); }
+.mini td:first-child { font-family: var(--m-mono); color: var(--m-muted); width: 3.5em; }
+.mini td:nth-child(2) { font-weight: 500; width: 15em; }
+.mini tr.todo td:nth-child(3) { color: var(--m-muted); }
+.mini td .ok { font-family: var(--m-mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); }
+.mini .renders { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.mini .renders figure { gap: 8px; }
+.mini .thumb { aspect-ratio: 2536 / 696; border: 1px solid var(--m-line); border-radius: 10px; background: #080808 radial-gradient(circle, #1c1c1c 2.4px, transparent 3px) 0 0 / 12px 12px; }
+.mini .renders figcaption { font-family: var(--m-mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; }
+</style>
+
+<div class="wrap">
+  <div class="a-top">
+    <span class="a-brand">MATHOD</span>
+    <span class="a-crumb">Charte · types de pages</span>
+  </div>
+
+  <div class="a-head">
+    <h1>Anatomie d'une modulePage</h1>
+    <p class="a-lead">La modulePage est la maquette de référence d'un module: une par module (<code>/&lt;slug&gt;/</code>), plus Companion Mockup. On y voit le module à sa taille réelle XL, ses réglages simulés, puis le tableau des choix à valider. Survole une étiquette pour repérer sa zone, ou passe en vue squelette pour voir ce qui remplit chaque bloc.</p>
+  </div>
+
+  <div class="a-bar">
+    <p class="a-name">modulePage <span class="a-tag">Une par module</span></p>
+    <div class="a-switch" role="group" aria-label="Vue">
+      <button type="button" data-view="real" aria-pressed="true">Vraie vue</button>
+      <button type="button" data-view="skeleton" aria-pressed="false">Squelette</button>
+    </div>
+  </div>
+
+  <div class="a-diag" id="diag">
+    <svg class="a-leaders" id="leaders" aria-hidden="true"></svg>
+    <div class="a-pins is-left" id="pinsL"></div>
+    <div class="a-stage" id="stage">
+      <div class="mini" id="mini" aria-hidden="true">
+        <div class="pw">
+
+          <header data-zone="header" data-name="En-tête"><span class="badge">1</span>
+            <div class="eyebrow" data-sk="sur-titre">Module Dot Hub · CORSAIR XENEON EDGE</div>
+            <h1 data-sk="nom du module">Dot Module</h1>
+            <p class="lede" data-sk="état de la proposition, ce que fait le module, données fictives">Proposition v0.1, à valider dans le tableau. Ce que fait le module en deux phrases, d'où viennent ses données et ce qu'il demande au compagnon. Toutes les valeurs sont fictives.</p>
+          </header>
+
+          <figure>
+            <div class="head2" data-zone="tag" data-name="Repère et tailles"><span class="badge">2</span>
+              <div class="tag" data-sk="repère · version et taille réelle"><b>Maquette de référence</b><span>Version 0.1 · taille réelle XL 2536 × 696 px</span></div>
+              <div class="sizebar" data-sk="tailles S, M, L, XL"><span>Widget size</span><span class="preset">S · 840 × 344</span><span class="preset">M · 840 × 696</span><span class="preset">L · 1688 × 696</span><span class="preset on">XL · 2536 × 696</span></div>
+            </div>
+
+            <div data-zone="frame" data-name="Écran du module"><span class="badge">3</span>
+              <div class="frame" data-sk="le module en XL, 2536 × 696, rendu par ses propres fichiers">
+                <div class="scene">
+                  <span class="s-dot"></span><span class="s-lbl">Dot Module</span>
+                  <span class="s-state">État · 00:00</span>
+                  <div class="s-main"><canvas width="1040" height="720" data-title="42"></canvas><b>VALEUR PRINCIPALE</b><span>DÉTAIL · UNITÉ</span></div>
+                  <div class="s-mid"><span>HISTORIQUE</span>
+                    <div class="s-bars"><i style="height:30%"></i><i style="height:45%"></i><i style="height:40%"></i><i style="height:60%"></i><i style="height:55%"></i><i style="height:75%"></i><i style="height:65%"></i><i style="height:85%"></i><i class="acc" style="height:70%"></i></div>
+                  </div>
+                  <div class="s-list"><span>LISTE</span>
+                    <div class="s-row">LIGNE A <em>00</em></div><div class="s-row">LIGNE B <em>00</em></div><div class="s-row">LIGNE C <em>00</em></div><div class="s-row">LIGNE D <em>00</em></div><div class="s-row">LIGNE E <em>00</em></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="settings" data-zone="settings" data-name="Réglages simulés"><span class="badge">4</span>
+              <span class="lb" data-sk="champ texte">Text setting <span class="txt">VALUE</span></span>
+              <span class="grp" data-sk="choix · nom de la propriété iCUE"><b>Choice</b><span class="lb"><span class="rad on"></span>Option A</span><span class="lb"><span class="rad"></span>Option B</span></span>
+              <span class="lb" data-sk="interrupteur"><span class="chk on"></span>Show unlit dots</span>
+              <span class="lb" data-sk="couleur"><span>Accent color</span><span class="sw"><i style="background:#10b981"></i></span></span>
+              <span class="lb" data-sk="couleur"><span>Lit dot color</span><span class="sw"><i style="background:#f2f0e9"></i></span></span>
+              <span class="lb" data-sk="couleur"><span>Unlit dot color</span><span class="sw"><i style="background:#1c1c1c"></i></span></span>
+              <span class="lb" data-sk="couleur"><span>Label color</span><span class="sw"><i style="background:#b8b6b0"></i></span></span>
+              <span class="preset" data-sk="préréglage"><i style="background:#10b981"></i>Émeraude</span>
+              <span class="preset" data-sk="préréglage"><i style="background:#ed403b"></i>Rouge A</span>
+            </div>
+
+            <figcaption data-zone="caption" data-name="Légende"><span class="badge">5</span><span data-sk="ce que montre l'écran, comment le toucher">Valeur principale à gauche, historique au centre, liste à droite. Touche une ligne pour ouvrir son détail ; garde le doigt sur l'écran pour revenir à l'accueil de Dot Hub.</span></figcaption>
+          </figure>
+
+          <section class="tsec" data-zone="table" data-name="Choix de design"><span class="badge">6</span>
+            <div class="diff-head" data-sk="titre + état du tableau"><h2>Choix de design</h2><p class="hint">Tout est à valider. Complété au fur et à mesure.</p></div>
+            <div class="table-scroll" data-sk="une ligne par décision · #, élément, proposition">
+              <table>
+                <thead><tr><th>#</th><th>Élément</th><th>Proposition</th></tr></thead>
+                <tbody>
+                  <tr><td>1</td><td>Données</td><td>D'où viennent les données et à quel rythme elles sont lues. <span class="ok">Validé le jj/mm</span></td></tr>
+                  <tr class="todo"><td>2</td><td>Mise en page XL</td><td>Ce qui va à gauche, au centre et à droite, et pourquoi.</td></tr>
+                  <tr class="todo"><td>3</td><td>Toucher</td><td>Ce que fait chaque zone tactile (60 × 60 px au moins).</td></tr>
+                  <tr class="todo"><td>4</td><td>Sans données</td><td>L'état affiché sur l'Edge quand rien n'arrive, jamais de valeur inventée.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="tsec" data-zone="annex" data-name="Sections annexes"><span class="badge">7</span>
+            <div class="diff-head" data-sk="titre + aide"><h2>Section annexe</h2><p class="hint">Comparaison de rendus, capture réelle de l'Edge…</p></div>
+            <div class="renders" data-sk="contenu libre · rendus comparés, capture réelle">
+              <figure><div class="thumb"></div><figcaption>Rendu A</figcaption></figure>
+              <figure><div class="thumb"></div><figcaption>Rendu B</figcaption></figure>
+              <figure><div class="thumb"></div><figcaption>Capture réelle</figcaption></figure>
+            </div>
+          </section>
+
+        </div>
+      </div>
+    </div>
+    <div class="a-pins" id="pinsR"></div>
+  </div>
+
+  <div class="a-sub">
+    <h2>Les zones</h2>
+    <p>Ce que chaque zone contient, et les valeurs à reprendre telles quelles (celles des maquettes de référence, <code>widgets/&lt;slug&gt;/mockups/reference.html</code>). Les zones 1 à 6 sont toujours là, la 7 seulement quand le module en a besoin.</p>
+  </div>
+  <ol class="a-list" id="list"></ol>
+
+  <p class="a-base"><b>Socle commun</b>: fond #080808 avec la trame de points de 22 px, une seule couleur d'accent, un seul thème sombre. Propre aux maquettes: contenu de 1480 px au plus, 40 px entre les zones, IBM Plex Mono et IBM Plex Sans pour la page (le module garde Fira Code), panneaux #0A0A0A, bords #262626. Maquette = module: la page charge les vrais fichiers du module quand il est codé, et ne garde que l'habillage.</p>
+</div>
+
+<script>
+window.ANATOMY = { native: 1560, zones: [
+  { id: "header", side: "L", name: "En-tête", field: "header", desc: "Un sur-titre (Module Dot Hub · CORSAIR XENEON EDGE), le nom du module, puis l'état de la proposition et ce que fait le module.", rule: "<b>Valeurs:</b> sur-titre IBM Plex Mono 12 px capitales .14em #8C8C8C après un point d'accent de 8 px. Nom en IBM Plex Mono de 28 à 44 px. Texte #8C8C8C, 72 caractères par ligne au plus." },
+  { id: "tag", side: "R", name: "Repère et tailles", field: ".tag + .sizebar", desc: "« Maquette de référence » avec la version et la taille réelle, puis les boutons de taille. Pour l'instant, seul le XL est travaillé.", rule: "<b>Valeurs:</b> IBM Plex Mono 12 px capitales .14em. Taille choisie en pastille pleine #E6E6E6, arrondi 6 px." },
+  { id: "frame", side: "L", name: "Écran du module", field: ".frame", desc: "Le module à la taille réelle de l'emplacement XL, mis à l'échelle de la page. Quand le module est codé, c'est son vrai rendu (mount de scripts/&lt;nom&gt;.js).", rule: "<b>Valeurs:</b> XL 2536 × 696, fond #080808. Libellé ● DOT … toujours au même endroit: point d'accent de 10 px à 56 / 51 px, texte Fira Code 18 px (interligne 24, capitales .2em) à 80 / 44 px. Textes de 18 px au moins, zones tactiles de 60 × 60 px au moins." },
+  { id: "settings", side: "R", name: "Réglages simulés", field: ".settings", desc: "Les réglages du module sous les noms de ses propriétés iCUE (en anglais), puis les quatre couleurs communes et les couleurs d'accent proposées.", rule: "<b>Valeurs:</b> panneau #0A0A0A, bord #262626, arrondi 10 px. Libellés 12 px capitales .1em. Accent color, Lit dot color, Unlit dot color, Label color ; préréglages Émeraude #10B981 et Rouge A #ED403B." },
+  { id: "caption", side: "L", name: "Légende", field: "figcaption", desc: "Ce que montre l'écran, puis ce que fait chaque geste.", rule: "<b>Valeurs:</b> 14 px, #8C8C8C." },
+  { id: "table", side: "R", name: "Choix de design", field: "table", desc: "Une ligne par décision, numérotée. Une ligne n'est « Validé » qu'avec l'accord de Mathod95, et sa date.", rule: "<b>Valeurs:</b> en-têtes 12 px capitales .12em sur #0A0A0A, numéro en IBM Plex Mono, élément en 500. Ligne à valider en #8C8C8C." },
+  { id: "annex", side: "L", name: "Sections annexes", field: "section", desc: "Facultatives: comparaison de rendus, capture réelle de l'Edge, tout ce qui aide à décider.", rule: "<b>Valeurs:</b> même bandeau que le tableau (titre 13 px capitales .14em, aide 14 px), 14 px entre les blocs." }
+] };
+</script>
+<script src="anatomy.js"></script>

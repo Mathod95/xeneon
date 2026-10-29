@@ -27,7 +27,7 @@ Pages web du site (GitHub Pages et artefacts). Les écrans de l’Edge et la pag
 
 `subPage` reste volontairement générale : une nouvelle page qui n’est ni l’accueil, ni une maquette, ni les versions en est une.
 
-Anatomie de chaque type (page générique en vraie vue ou en squelette, zones numérotées et leurs valeurs): `homePage.html` pour la homePage, publiée en artefact (Gabarit homePage) et sur le site (`/design/homepage/`). Les autres types suivront sur le même modèle.
+Anatomie de chaque type (page générique en vraie vue ou en squelette, zones numérotées et leurs valeurs): `homePage.html`, `subPage.html`, `modulePage.html` et `releasePage.html`, qui partagent `anatomy.css` et `anatomy.js` (bascule, étiquettes, traits, police en points). Publiées en artefacts (Gabarit homePage, subPage, modulePage, releasePage) et sur le site (`/design/<type>/`). Une page de ce dossier qui change: régénérer le site et republier son artefact avec les deux fichiers communs.
 
 ## Principes actés
 
