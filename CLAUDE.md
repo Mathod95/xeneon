@@ -31,8 +31,8 @@ widgets/<slug>/          un module de Dot Hub (index.html servi par le compagnon
   README.md              fiche : statut, contenu, données, tailles, notes, mocks
   mockups/               mocks de référence (exclus du paquet)
 templates/widget/        modèle de départ d’un module, avec détection des 4 tailles (scripts/sizes.js)
-docs/                    documentation Markdown (DESIGN.md, SPEC-TEMPLATE.md)
-docs/DESIGN.md           charte graphique (référence unique, en cours de définition)
+docs/                    documentation Markdown (design/, SPEC-TEMPLATE.md)
+docs/design/             charte graphique, DA (référence unique, en cours de définition ; index : README.md)
 docs/SPEC-TEMPLATE.md    fiche type d’un widget
 tools/build_site.py      génère le site GitHub Pages (`site/`) : accueil `tools/site/index.html` + maquettes de référence
 scripts/                 new-widget, package-widgets (.sh et .ps1)
@@ -64,7 +64,7 @@ Seul `widgets/dot-hub` a un `manifest.json` : c’est le seul paquet iCUE constr
 - **Saisie au clavier** (vérifié sur l’Edge avec Dot Frametest et Dot Typetest, octobre 2026) : toucher l’Edge ne donne pas le clavier à iCUE ; iCUE ne le prend que quand un champ de la page du widget reçoit le focus. Il faut la structure de la Checklist Corsair : `"features": ["sensor-screen"]` dans `supported_devices`, `<meta name="x-icue-interactive" />` (plus `x-icue-restrictions` et `x-icue-widget-group`) dans le `<head>`, un `translation.json`, au moins une `x-icue-property`, et `icueEvents = {…}` sans `var` ni `window.`. Sans ça, les touches partent dans la dernière fenêtre active de Windows.
 - **Réseau et iframes** (même test) : `fetch` vers `localhost` et `127.0.0.1` avec permission et port, iframe locale ou distante (GitHub Pages), `postMessage` dans les deux sens et toucher dans l’iframe fonctionnent (le toucher arrive comme souris). Le clavier n’entre **pas** dans une iframe : le widget garde le focus dans un champ invisible et renvoie les touches à l’iframe (pont clavier, voir Dot Frametest 0.0.6). `uniqueId` se lit avec `typeof uniqueId`, pas sur `window`. La redirection du widget vers une page locale, puis le retour, fonctionnent aussi. Détail des résultats : `tests/dot-frametest/README.md`. Le widget est un fichier local (`%APPDATA%\Corsair\CUE5\html_widgets\…`), moteur QtWebEngine 6.9.3.
 
-## Règles de conception (détail dans docs/DESIGN.md)
+## Règles de conception (détail dans docs/design/)
 
 - Dot-matrix partout (police 5 × 7 dessinée en canvas, voir `widgets/dot-system-monitor/scripts/widget.js`, fonction `drawDots`).
 - **Une mise en page par taille**, pas de simple mise à l’échelle :
@@ -139,7 +139,7 @@ Compilation Windows : `cargo build --release` sous Windows, ou depuis Linux/WSL 
 - **Dot Notes, Dot Weather, Dot IA, Dot Home, Dot GitHub, Dot Calculator, Dot Spotify, Dot Plex, Dot Bambu Lab, Dot Home Assistant, Dot Discord, Dot Audio, Dot Apps, Dot Gmail, Dot Slack** : en conception, maquette de référence dans `widgets/<slug>/mockups/reference.html` (choix de design à valider ; Dot Spotify mis de côté).
 - **Dot Calendar** : spécifié avec mocks.
 - Autres : fiche seule (idée).
-- **Prochaine étape** : définir la charte graphique (`docs/DESIGN.md`) à partir du mock de charte fourni par Mathod95, puis en faire le template de base de tous les widgets.
+- **Prochaine étape** : définir la charte graphique (`docs/design/`) à partir du mock de charte fourni par Mathod95, puis en faire le template de base de tous les widgets.
 
 ## À traiter plus tard (rappels de Mathod95)
 
