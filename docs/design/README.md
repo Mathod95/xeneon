@@ -47,6 +47,7 @@ Anatomie de chaque type (page générique en vraie vue ou en squelette, zones nu
 |---|---|
 | Fond | `#080808` |
 | Fond en points (pages web, maquettes, réglages) | `radial-gradient(circle, #161616 1.2px, transparent 1.6px)`, trame de 22 px |
+| Barre de défilement (pages web, maquettes) | `html { scrollbar-gutter: stable; }`, place toujours réservée, la page ne se décale pas d'une page à l'autre, qu'elle défile ou non |
 | Panneau / carte | `#0e0e0e` (pages web), `#121212` (réglages) |
 | Bordure fine | `#1f1f1f` à `#262626` |
 | Point allumé, texte principal | `#F2F0E9` |
