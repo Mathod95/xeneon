@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
 <style>
-/* Layout : maquette de référence (la vraie page de réglages dans une fenêtre de navigateur, la fenêtre du compagnon, la zone de notification proposée), puis tableau des choix. Un seul thème sombre, fond en points de Dot Page. */
+/* Layout : maquette de référence (la vraie page de réglages dans une fenêtre de navigateur, la zone de notification), puis tableau des choix. Un seul thème sombre, fond en points de Dot Page. */
 :root {
   --page: #080808;
   --panel: #0a0a0a;
@@ -59,12 +59,6 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
 .win iframe { display: block; width: 100%; height: 860px; border: 0; background: #0b0b0b; }
 .toast { min-height: 1.4em; margin: 0; font-family: var(--mono); font-size: 12px; letter-spacing: .08em; color: var(--brand); }
 
-/* fenêtre console du compagnon (aujourd'hui) */
-.console { max-width: 980px; }
-.console pre { margin: 0; padding: 18px 20px 26px; min-height: 360px; font-family: Consolas, "Cascadia Mono", var(--mono); font-size: 15px; line-height: 1.6; color: #cccccc; background: #0c0c0c; white-space: pre-wrap; }
-.console pre .cur { display: inline-block; width: 9px; height: 17px; background: #cccccc; vertical-align: -3px; animation: blink 1s steps(1) infinite; }
-@keyframes blink { 50% { opacity: 0; } }
-@media (prefers-reduced-motion: reduce) { .console pre .cur { animation: none; } }
 
 /* zone de notification (proposition) */
 .tray { position: relative; height: 520px; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: linear-gradient(160deg, #10241d, #0b0f14 60%); }
@@ -118,7 +112,6 @@ tr.todo td:nth-child(3) { color: var(--muted); }
     <div class="tag"><b>Maquette de référence</b><span>Version 0.2 · Dot Companion 0.5.0</span></div>
     <div class="views" role="group" aria-label="Vue">
       <button type="button" class="view" data-view="settings" aria-pressed="true">Réglages · navigateur</button>
-      <button type="button" class="view" data-view="console" aria-pressed="false">Fenêtre · jusqu'à 0.4.0</button>
       <button type="button" class="view" data-view="tray" aria-pressed="false">Zone de notification · 0.5.0</button>
     </div>
 
@@ -127,10 +120,6 @@ tr.todo td:nth-child(3) { color: var(--muted); }
       <iframe id="settingsFrame" title="Page de réglages de Dot Companion"></iframe>
     </div>
 
-    <div class="win console" id="vConsole" hidden>
-      <div class="bar"><span class="url">C:\Program Files\Dot Companion\dot-companion.exe</span><span class="ctl">— ▢ ✕</span></div>
-      <pre id="consoleText"></pre>
-    </div>
 
     <div class="tray" id="vTray" hidden>
       <div class="menu" id="trayMenu" role="menu" aria-label="Menu de Dot Companion">
@@ -342,15 +331,6 @@ tr.todo td:nth-child(3) { color: var(--muted); }
     f.srcdoc = html;
   };
 
-  // ---------- vue « Fenêtre » : la console du compagnon 0.4.0 (mêmes lignes que main.rs)
-  v("consoleText").innerHTML = [
-    "Dot Companion 0.4.0 prêt sur http://127.0.0.1:47800/",
-    "Réglages : http://127.0.0.1:47800/settings",
-    "Configuration : C:\\Users\\Mathod\\AppData\\Roaming\\Xeneon\\config.json",
-    "Fermer cette fenêtre arrête le compagnon.",
-    ""
-  ].join("\n") + '<span class="cur"></span>';
-
   // ---------- vue « Zone de notification » : icône en points 4 × 4 et menu
   (function () {
     var cv = document.createElement("canvas"), dpr = 2, p = 5; cv.width = cv.height = 4 * p * dpr; cv.style.width = cv.style.height = 4 * p + "px";
@@ -380,12 +360,11 @@ tr.todo td:nth-child(3) { color: var(--muted); }
   // ---------- vues
   var NOTES = {
     settings: "La vraie page de réglages : la carte DOT HUB (toujours là) montre l'accueil en direct, avec une tuile par module ajouté et une carte « + ». Toucher « + » ajoute une page : toucher « DOT », choisir un module, il tourne en direct avec ses réglages dessous. Les couleurs communes s'appliquent partout.",
-    console: "Jusqu'à 0.4.0 : une fenêtre console, qui devait rester ouverte. La fermer arrêtait le compagnon.",
     tray: "Depuis 0.5.0 : plus de fenêtre, une icône en points dans la zone de notification. Ici, un clic sur l'icône ouvre ou ferme le menu ; sur le PC, clic gauche ouvre les réglages, clic droit le menu."
   };
   function show(view) {
     document.querySelectorAll(".view").forEach(function (b) { b.setAttribute("aria-pressed", b.getAttribute("data-view") === view ? "true" : "false"); });
-    v("vSettings").hidden = view !== "settings"; v("vConsole").hidden = view !== "console"; v("vTray").hidden = view !== "tray";
+    v("vSettings").hidden = view !== "settings"; v("vTray").hidden = view !== "tray";
     v("viewNote").textContent = NOTES[view];
   }
   document.querySelectorAll(".view").forEach(function (b) { b.addEventListener("click", function () { show(b.getAttribute("data-view")); }); });
