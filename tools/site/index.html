@@ -473,7 +473,27 @@ footer a { color: var(--label); text-decoration: none; }
     document.getElementById("where").textContent = "Page " + (cur + 1) + " · " + (w ? w.name : "Dot Hub");
     var open = document.getElementById("open");
     open.hidden = !w; if (w) open.href = BASE + w.slug + "/";
+    autoNext();
   }
+  // défilement automatique : page suivante toutes les 5 s, puis retour à Dot Hub après la dernière.
+  // Un changement de page à la main relance les 5 s ; pause tant que la souris ou le focus clavier est sur l'Edge,
+  // onglet caché, ou si le système demande moins d'animations.
+  var AUTO_MS = 5000, autoTimer = null, autoHold = false;
+  var calm = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function autoNext() {
+    clearTimeout(autoTimer);
+    if (calm) return;
+    autoTimer = setTimeout(function () {
+      if (autoHold || document.hidden) autoNext();
+      else go((cur + 1) % (PAGES.length + 1));
+    }, AUTO_MS);
+  }
+  var edgeSec = screen.closest(".edge-sec");
+  edgeSec.addEventListener("mouseenter", function () { autoHold = true; });
+  edgeSec.addEventListener("mouseleave", function () { autoHold = false; autoNext(); });
+  // focus au clavier seulement : après un clic sur ‹ › ou un point, le défilement reprend
+  edgeSec.addEventListener("focusin", function (e) { try { autoHold = e.target.matches(":focus-visible"); } catch (x) { autoHold = false; } });
+  edgeSec.addEventListener("focusout", function () { autoHold = false; autoNext(); });
   // glisser pour changer de page
   var x0 = null, dragged = false;
   screen.addEventListener("pointerdown", function (e) { x0 = e.clientX; dragged = false; });
