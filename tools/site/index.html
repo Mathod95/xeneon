@@ -79,10 +79,9 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outlin
 .stats { display: flex; flex-wrap: wrap; gap: 8px 28px; margin: 0; padding: 0; list-style: none; font-family: var(--mono); font-size: 14px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); }
 .stats b { color: var(--accent); font-weight: 500; font-size: 18px; margin-right: .5em; font-variant-numeric: tabular-nums; }
 
-/* filtres */
+/* bandeaux de section, boutons */
 .bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 24px; }
 .bar h2 { margin: 0; font-family: var(--mono); font-weight: 500; font-size: 13px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); }
-.chips { display: flex; flex-wrap: wrap; gap: 8px; }
 .chip { font-family: var(--mono); font-size: 12px; letter-spacing: .16em; text-transform: uppercase; padding: 10px 16px; border-radius: 999px; border: 1px solid var(--line); background: var(--bg); color: var(--label); cursor: pointer; }
 .chip[aria-pressed="true"] { background: var(--lit); border-color: var(--lit); color: var(--bg); }
 
@@ -103,7 +102,6 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outlin
 .links a:hover { color: var(--lit); }
 .links a.mock { color: var(--accent); }
 .empty { color: var(--muted); }
-.none { color: var(--label); font-family: var(--mono); }
 
 /* la Xeneon Edge : l'accueil de Dot Hub (iso à companion/web/home.html en XL), puis une page par module */
 .edge-sec { display: grid; gap: 16px; }
@@ -215,14 +213,8 @@ footer a { color: var(--label); text-decoration: none; }
   <section style="display:grid;gap:18px" data-i18n-label="modules" id="list">
     <div class="bar">
       <h2 data-i18n="modules"></h2>
-      <div class="chips" role="group" data-i18n-label="filter">
-        <button type="button" class="chip" data-f="all" aria-pressed="true" data-i18n="fAll"></button>
-        <button type="button" class="chip" data-f="mock" aria-pressed="false" data-i18n="fMock"></button>
-        <button type="button" class="chip" data-f="wip" aria-pressed="false" data-i18n="fWip"></button>
-      </div>
     </div>
     <div class="grid" id="grid"></div>
-    <p class="none" id="none" hidden data-i18n="none"></p>
   </section>
 
   <footer>
@@ -261,7 +253,7 @@ footer a { color: var(--label); text-decoration: none; }
       mockup: "Maquette →", download: "Télécharger ↗", fiche: "Fiche ↗", more: "Tout sur Dot Companion →",
       edgeLabel: "Aperçu sur la Xeneon Edge", onEdge: "Sur la Xeneon Edge", edgeHint: "Touche une tuile de Dot Hub pour ouvrir le module, ou glisse.",
       prev: "Page précédente", next: "Page suivante",
-      modules: "Les modules", filter: "Filtrer", fAll: "Tous", fMock: "Avec maquette", fWip: "En cours", none: "Aucun module pour ce filtre.",
+      modules: "Les modules",
       sModules: "modules", sMock: "maquettes", sWip: "en cours",
       alt: " en taille XL", openMock: " · OUVRIR LA MAQUETTE →",
       kind: { wip: "en cours", spec: "spécifié", design: "en conception", idea: "idée" }
@@ -282,7 +274,7 @@ footer a { color: var(--label); text-decoration: none; }
       mockup: "Mockup →", download: "Download ↗", fiche: "Details ↗", more: "All about Dot Companion →",
       edgeLabel: "Preview on the Xeneon Edge", onEdge: "On the Xeneon Edge", edgeHint: "Tap a Dot Hub tile to open the module, or swipe.",
       prev: "Previous page", next: "Next page",
-      modules: "The modules", filter: "Filter", fAll: "All", fMock: "With mockup", fWip: "In progress", none: "No module for this filter.",
+      modules: "The modules",
       sModules: "modules", sMock: "mockups", sWip: "in progress",
       alt: " at XL size", openMock: " · OPEN THE MOCKUP →",
       kind: { wip: "in progress", spec: "specified", design: "in design", idea: "idea" }
@@ -399,14 +391,10 @@ footer a { color: var(--label); text-decoration: none; }
     });
   }
 
-  var filter = "all";
   function render() {
     var grid = document.getElementById("grid");
     grid.innerHTML = "";
-    var list = WIDGETS.filter(function (w) {
-      return filter === "all" || (filter === "mock" && w.mockup) || (filter === "wip" && w.kind === "wip");
-    });
-    list.forEach(function (w) {
+    WIDGETS.forEach(function (w) {
       var card = el("article", "card" + (w.mockup ? " has" : ""));
       var row = el("div", "row");
       var cv = pic(w.slug, w.mockup ? "#f2f0e9" : "#5f5d58");
@@ -428,15 +416,7 @@ footer a { color: var(--label); text-decoration: none; }
       card.appendChild(foot);
       grid.appendChild(card);
     });
-    document.getElementById("none").hidden = list.length > 0;
   }
-  document.querySelectorAll(".chip[data-f]").forEach(function (b) {
-    b.addEventListener("click", function () {
-      filter = b.getAttribute("data-f");
-      document.querySelectorAll(".chip[data-f]").forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
-      render();
-    });
-  });
 
 
   // ---------- la Xeneon Edge
