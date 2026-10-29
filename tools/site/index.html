@@ -254,7 +254,7 @@ footer a { color: var(--label); text-decoration: none; }
       edgeLabel: "Aperçu sur la Xeneon Edge", onEdge: "Sur la Xeneon Edge", edgeHint: "Touche une tuile de Dot Hub pour ouvrir le module, ou glisse.",
       prev: "Page précédente", next: "Page suivante",
       modules: "Les modules",
-      sModules: "modules", sMock: "maquettes", sWip: "en cours",
+      sWidget: "widget", sCompanion: "companion", sModules: "modules", sMock: "maquettes", sWip: "en cours",
       alt: " en taille XL", openMock: " · OUVRIR LA MAQUETTE →",
       kind: { wip: "en cours", spec: "spécifié", design: "en conception", idea: "idée" }
     },
@@ -275,7 +275,7 @@ footer a { color: var(--label); text-decoration: none; }
       edgeLabel: "Preview on the Xeneon Edge", onEdge: "On the Xeneon Edge", edgeHint: "Tap a Dot Hub tile to open the module, or swipe.",
       prev: "Previous page", next: "Next page",
       modules: "The modules",
-      sModules: "modules", sMock: "mockups", sWip: "in progress",
+      sWidget: "widget", sCompanion: "companion", sModules: "modules", sMock: "mockups", sWip: "in progress",
       alt: " at XL size", openMock: " · OPEN THE MOCKUP →",
       kind: { wip: "in progress", spec: "specified", design: "in design", idea: "idea" }
     }
@@ -386,7 +386,8 @@ footer a { color: var(--label); text-decoration: none; }
 
   function stats() {
     var ul = document.getElementById("stats"); ul.innerHTML = "";
-    [[WIDGETS.length, t("sModules")], [WIDGETS.filter(function (w) { return w.mockup; }).length, t("sMock")], [WIDGETS.filter(function (w) { return w.kind === "wip"; }).length, t("sWip")]].forEach(function (s) {
+    // un seul widget iCUE (Dot Hub) et un seul programme sur le PC (Dot Companion), puis les modules
+    [[1, t("sWidget")], [1, t("sCompanion")], [WIDGETS.length, t("sModules")], [WIDGETS.filter(function (w) { return w.mockup; }).length, t("sMock")], [WIDGETS.filter(function (w) { return w.kind === "wip"; }).length, t("sWip")]].forEach(function (s) {
       var li = el("li"); li.appendChild(el("b", "", String(s[0]))); li.appendChild(document.createTextNode(s[1])); ul.appendChild(li);
     });
   }
