@@ -64,7 +64,8 @@ Les artefacts appartiennent au compte claude.ai de la session VS Code (recréés
 - Les adresses des quatre pages du site sont aussi dans `build_site.py` (`ARTIFACT_PAGE`, `ARTIFACT_RELEASE`, `ARTIFACT_COMPANION`, `ARTIFACT_COMPANION_MOCKUP`) pour que leurs boutons se répondent ; les tenir identiques à ce registre.
 - Nouvel artefact : l’ajouter ici (et dans `build_site.py` si c’est une page du site).
 - **Ordre de publication** : la dernière publication s’ouvre chez Mathod95, il doit rester sur ce sur quoi on travaille. Module : Dot Page d’abord, puis le module. Compagnon : maquette, présentation, puis Dot Page et Dot Release.
-- **Après chaque modification d’un `dot-xxx`** (maquette, fiche, code) : régénérer et republier Dot Page aussi, pour qu’elle reste iso au dépôt.
+- **Pendant les retouches, on travaille en local** (décision du 30 octobre 2026): modifier les sources (jamais `site/`, écrasé à chaque build et ignoré par Git), lancer `python3 tools/build_site.py` (environ 20 s avec les captures), Mathod95 regarde sur http://127.0.0.1:8000/. Les artefacts ne sont republiés que sur sa demande (« publie »), en une seule fois: toutes les pages touchées depuis la dernière publication, Dot Page en dernier.
+- À la publication, après une modification d’un `dot-xxx` (maquette, fiche, code): republier Dot Page aussi, pour qu’elle reste iso au dépôt.
 - Voir le site en local (VS Code) : `python3 tools/build_site.py` puis `python3 -m http.server -d site` et ouvrir http://127.0.0.1:8000/ (Playwright est nécessaire pour les captures de l’Edge simulée ; sans lui, le site se construit sans aperçus).
 
 ## Organisation
