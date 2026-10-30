@@ -2,7 +2,7 @@
 
 Suivi des chantiers de la charte: ce qui reste à faire (`- [ ]`) et ce qui est fait (`- [x]`, avec la date), rangé par zone. Les sections reprennent les noms des zones des quatre gabarits (`homePage.html`, `subPage.html`, `modulePage.html`, `releasePage.html`), avec entre parenthèses les types de pages concernés. Une zone sans entrée n'a rien en attente. La règle qui en sort va dans `README.md`, la référence pour créer une page.
 
-## `.top` · En-tête (homePage, subPage, releasePage)
+## `.top` · En-tête (homePage, subPage, modulePage, releasePage)
 
 Même rendu sur les trois pages (marque « ● MATHOD » sur le site, « ● DOT HUB » dans les gabarits, sélecteur FR / EN, boutons `.ext` dans l'ordre Companion, Releases, GitHub ↗), mais le code est recopié six fois: `tools/site/index.html`, `companion.html`, `releases.html` et les trois gabarits.
 
@@ -15,6 +15,8 @@ Même rendu sur les trois pages (marque « ● MATHOD » sur le site, « ● DOT
 
 - [x] Marque « ● MATHOD » remplacée par « ● DOT HUB » dans les quatre gabarits (30 octobre 2026). Règle dans `README.md`.
 - [ ] Reporter « ● DOT HUB » sur les trois pages du site (`index.html`, `companion.html`, `releases.html`).
+- [x] modulePage: le même `.top` que les trois autres types de pages ajouté en zone 1 du gabarit (30 octobre 2026), avec ses valeurs du site (Segoe UI, Fira Code) et non celles de la maquette (IBM Plex). Aucune pastille allumée: une maquette n'est pas une page du menu. L'ancien « En-tête » de la modulePage devient « Présentation ». Règle dans `README.md`.
+- [ ] Ajouter ce `.top` en haut des 19 maquettes de référence (`widgets/*/mockups/reference.html`, `companion/mockups/reference.html`), liens compris (accueil, Companion, Releases, GitHub).
 - [ ] `index.html`: `.top` n'a pas `flex-wrap: wrap`, l'en-tête ne passe pas à la ligne sur un écran étroit comme sur les deux autres pages.
 - [ ] `releases.html`: `.topr` n'a pas `justify-content: flex-end`, les boutons passés à la ligne se calent à gauche au lieu de rester à droite comme sur `companion.html`.
 - [ ] `index.html`: le sélecteur FR / EN obtient son rendu par `.chip` (règle générale) puis `.lang .chip` (surcharge), alors que les sous-pages le définissent directement. Même rendu, à unifier.
@@ -48,7 +50,7 @@ Même rendu sur les trois pages (marque « ● MATHOD » sur le site, « ● DOT
 
 ## `.list` · Section en liste (subPage)
 
-## `header` · En-tête (modulePage)
+## `header` · Présentation (modulePage)
 
 - [ ] Sur-titre différent selon les maquettes: « Module Dot Hub · … » (Dot Apps, Dot Audio, Dot Bambu Lab, Dot Discord, Dot Gmail, Dot Home Assistant, Dot Plex, Dot Slack, Dot Steam), « Widget iCUE · … » (Dot Calculator, Dot Clock, Dot GitHub, Dot Home, Dot IA, Dot Notes, Dot Spotify, Dot Weather, et Dot Hub, pour qui c'est juste), « Programme Windows · … » (Companion Mockup, juste aussi). Passer les huit modules en « Module Dot Hub ». Le gabarit utilise déjà « Module Dot Hub ».
 

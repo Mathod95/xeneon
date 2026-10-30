@@ -27,6 +27,8 @@ Pages web du site (GitHub Pages et artefacts). Les écrans de l’Edge et la pag
 
 `subPage` reste volontairement générale : une nouvelle page qui n’est ni l’accueil, ni une maquette, ni les versions en est une.
 
+Toutes les pages du site, quel que soit leur type, commencent par le même en-tête `.top`: la marque « ● DOT HUB » à gauche ; à droite le choix de langue, le retour à l’accueil (sauf sur la homePage), les pages du site (la page en cours allumée si elle en fait partie) et le lien externe. Il garde les valeurs du site même sur une modulePage, dont le reste est en IBM Plex.
+
 Anatomie de chaque type (page générique en vraie vue ou en squelette, zones numérotées et leurs valeurs): `homePage.html`, `subPage.html`, `modulePage.html` et `releasePage.html`, qui partagent `anatomy.css` et `anatomy.js` (bascule, étiquettes, traits, police en points). Publiées en artefacts (Gabarit homePage, subPage, modulePage, releasePage) et sur le site (`/design/<type>/`). Une page de ce dossier qui change: régénérer le site et republier son artefact avec les deux fichiers communs.
 
 Ce README est la référence pour créer une page parfaite: chaque règle validée y est écrite. Le suivi des chantiers (ce qui reste à faire et ce qui est fait, rangé par zone des gabarits) est dans `TODO.md`. Une correction se note dans les deux: la règle ici, le suivi là-bas.

@@ -14,6 +14,17 @@
   font-family: var(--m-sans); font-size: 15px; color: var(--m-text);
 }
 .mini .pw { max-width: 1480px; margin: 0 auto; display: grid; gap: 40px; }
+/* en-tête du site, le même que sur les trois autres types de pages */
+.mini .top { display: flex; align-items: center; justify-content: space-between; gap: 16px; font-family: var(--brand); font-size: 16px; line-height: 1.55; color: var(--lit); }
+.mini .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; letter-spacing: .22em; font-size: 15px; }
+.mini .brand::before { content: ""; width: 12px; height: 12px; border-radius: 50%; background: var(--accent); }
+.mini .topr { display: flex; align-items: center; gap: 12px; }
+.mini .exts { display: flex; gap: 12px; }
+.mini .ext { font-family: var(--mono); font-size: 13px; letter-spacing: .16em; text-transform: uppercase; color: var(--label); padding: 10px 16px; border: 1px solid var(--line); border-radius: 999px; background: var(--bg); }
+.mini .lang { display: flex; gap: 4px; padding: 4px; border: 1px solid var(--line); border-radius: 999px; background: var(--bg); }
+.mini .chip { font-family: var(--mono); font-size: 12px; letter-spacing: .16em; text-transform: uppercase; padding: 6px 12px; border-radius: 999px; background: var(--bg); color: var(--label); }
+.mini .chip.on { background: var(--lit); color: var(--bg); }
+
 .mini header { display: grid; gap: 10px; }
 .mini .eyebrow { font-family: var(--m-mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--m-muted); display: flex; align-items: center; gap: 10px; }
 .mini .eyebrow::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
@@ -110,19 +121,27 @@
       <div class="mini" id="mini" aria-hidden="true">
         <div class="pw">
 
-          <header data-zone="header" data-name="En-tête"><span class="badge">1</span>
+          <div class="top" data-zone="top" data-name="En-tête"><span class="badge">1</span>
+            <span class="brand" data-sk="marque">DOT HUB</span>
+            <div class="topr">
+              <div class="lang" data-sk="FR / EN"><span class="chip on">FR</span><span class="chip">EN</span></div>
+              <div class="exts" data-sk="← accueil, pages du site, externe"><span class="ext">← Accueil</span><span class="ext">Page A</span><span class="ext">Page B</span><span class="ext">Externe ↗</span></div>
+            </div>
+          </div>
+
+          <header data-zone="header" data-name="Présentation"><span class="badge">2</span>
             <div class="eyebrow" data-sk="sur-titre">Module Dot Hub · CORSAIR XENEON EDGE</div>
             <h1 data-sk="nom du module">Dot Module</h1>
             <p class="lede" data-sk="état de la proposition, ce que fait le module, données fictives">Proposition v0.1, à valider dans le tableau. Ce que fait le module en deux phrases, d'où viennent ses données et ce qu'il demande au compagnon. Toutes les valeurs sont fictives.</p>
           </header>
 
           <figure>
-            <div class="head2" data-zone="tag" data-name="Repère et tailles"><span class="badge">2</span>
+            <div class="head2" data-zone="tag" data-name="Repère et tailles"><span class="badge">3</span>
               <div class="tag" data-sk="repère · version et taille réelle"><b>Maquette de référence</b><span>Version 0.1 · taille réelle XL 2536 × 696 px</span></div>
               <div class="sizebar" data-sk="tailles S, M, L, XL"><span>Widget size</span><span class="preset">S · 840 × 344</span><span class="preset">M · 840 × 696</span><span class="preset">L · 1688 × 696</span><span class="preset on">XL · 2536 × 696</span></div>
             </div>
 
-            <div data-zone="frame" data-name="Écran du module"><span class="badge">3</span>
+            <div data-zone="frame" data-name="Écran du module"><span class="badge">4</span>
               <div class="frame" data-sk="le module en XL, 2536 × 696, rendu par ses propres fichiers">
                 <div class="scene">
                   <span class="s-dot"></span><span class="s-lbl">Dot Module</span>
@@ -138,7 +157,7 @@
               </div>
             </div>
 
-            <div class="settings" data-zone="settings" data-name="Réglages simulés"><span class="badge">4</span>
+            <div class="settings" data-zone="settings" data-name="Réglages simulés"><span class="badge">5</span>
               <span class="lb" data-sk="champ texte">Text setting <span class="txt">VALUE</span></span>
               <span class="grp" data-sk="choix · nom de la propriété iCUE"><b>Choice</b><span class="lb"><span class="rad on"></span>Option A</span><span class="lb"><span class="rad"></span>Option B</span></span>
               <span class="lb" data-sk="interrupteur"><span class="chk on"></span>Show unlit dots</span>
@@ -150,10 +169,10 @@
               <span class="preset" data-sk="préréglage"><i style="background:#ed403b"></i>Rouge A</span>
             </div>
 
-            <figcaption data-zone="caption" data-name="Légende"><span class="badge">5</span><span data-sk="ce que montre l'écran, comment le toucher">Valeur principale à gauche, historique au centre, liste à droite. Touche une ligne pour ouvrir son détail ; garde le doigt sur l'écran pour revenir à l'accueil de Dot Hub.</span></figcaption>
+            <figcaption data-zone="caption" data-name="Légende"><span class="badge">6</span><span data-sk="ce que montre l'écran, comment le toucher">Valeur principale à gauche, historique au centre, liste à droite. Touche une ligne pour ouvrir son détail ; garde le doigt sur l'écran pour revenir à l'accueil de Dot Hub.</span></figcaption>
           </figure>
 
-          <section class="tsec" data-zone="table" data-name="Choix de design"><span class="badge">6</span>
+          <section class="tsec" data-zone="table" data-name="Choix de design"><span class="badge">7</span>
             <div class="diff-head" data-sk="titre + état du tableau"><h2>Choix de design</h2><p class="hint">Tout est à valider. Complété au fur et à mesure.</p></div>
             <div class="table-scroll" data-sk="une ligne par décision · #, élément, proposition">
               <table>
@@ -168,7 +187,7 @@
             </div>
           </section>
 
-          <section class="tsec" data-zone="annex" data-name="Sections annexes"><span class="badge">7</span>
+          <section class="tsec" data-zone="annex" data-name="Sections annexes"><span class="badge">8</span>
             <div class="diff-head" data-sk="titre + aide"><h2>Section annexe</h2><p class="hint">Comparaison de rendus, capture réelle de l'Edge…</p></div>
             <div class="renders" data-sk="contenu libre · rendus comparés, capture réelle">
               <figure><div class="thumb"></div><figcaption>Rendu A</figcaption></figure>
@@ -185,7 +204,7 @@
 
   <div class="a-sub">
     <h2>Les zones</h2>
-    <p>Ce que chaque zone contient, et les valeurs à reprendre telles quelles (celles des maquettes de référence, <code>widgets/&lt;slug&gt;/mockups/reference.html</code>). Les zones 1 à 6 sont toujours là, la 7 seulement quand le module en a besoin.</p>
+    <p>Ce que chaque zone contient, et les valeurs à reprendre telles quelles (celles des maquettes de référence, <code>widgets/&lt;slug&gt;/mockups/reference.html</code>). Les zones 1 à 7 sont toujours là, la 8 seulement quand le module en a besoin.</p>
   </div>
   <ol class="a-list" id="list"></ol>
 
@@ -194,13 +213,14 @@
 
 <script>
 window.ANATOMY = { native: 1560, zones: [
-  { id: "header", side: "L", name: "En-tête", field: "header", desc: "Un sur-titre (Module Dot Hub · CORSAIR XENEON EDGE), le nom du module, puis l'état de la proposition et ce que fait le module.", rule: "<b>Valeurs:</b> sur-titre IBM Plex Mono 12 px capitales .14em #8C8C8C après un point d'accent de 8 px. Nom en IBM Plex Mono de 28 à 44 px. Texte #8C8C8C, 72 caractères par ligne au plus." },
-  { id: "tag", side: "R", name: "Repère et tailles", field: ".tag + .sizebar", desc: "« Maquette de référence » avec la version et la taille réelle, puis les boutons de taille. Pour l'instant, seul le XL est travaillé.", rule: "<b>Valeurs:</b> IBM Plex Mono 12 px capitales .14em. Taille choisie en pastille pleine #E6E6E6, arrondi 6 px." },
-  { id: "frame", side: "L", name: "Écran du module", field: ".frame", desc: "Le module à la taille réelle de l'emplacement XL, mis à l'échelle de la page. Quand le module est codé, c'est son vrai rendu (mount de scripts/&lt;nom&gt;.js).", rule: "<b>Valeurs:</b> XL 2536 × 696, fond #080808. Libellé ● DOT … toujours au même endroit: point d'accent de 10 px à 56 / 51 px, texte Fira Code 18 px (interligne 24, capitales .2em) à 80 / 44 px. Textes de 18 px au moins, zones tactiles de 60 × 60 px au moins." },
-  { id: "settings", side: "R", name: "Réglages simulés", field: ".settings", desc: "Les réglages du module sous les noms de ses propriétés iCUE (en anglais), puis les quatre couleurs communes et les couleurs d'accent proposées.", rule: "<b>Valeurs:</b> panneau #0A0A0A, bord #262626, arrondi 10 px. Libellés 12 px capitales .1em. Accent color, Lit dot color, Unlit dot color, Label color ; préréglages Émeraude #10B981 et Rouge A #ED403B." },
-  { id: "caption", side: "L", name: "Légende", field: "figcaption", desc: "Ce que montre l'écran, puis ce que fait chaque geste.", rule: "<b>Valeurs:</b> 14 px, #8C8C8C." },
-  { id: "table", side: "R", name: "Choix de design", field: "table", desc: "Une ligne par décision, numérotée. Une ligne n'est « Validé » qu'avec l'accord de Mathod95, et sa date.", rule: "<b>Valeurs:</b> en-têtes 12 px capitales .12em sur #0A0A0A, numéro en IBM Plex Mono, élément en 500. Ligne à valider en #8C8C8C." },
-  { id: "annex", side: "L", name: "Sections annexes", field: "section", desc: "Facultatives: comparaison de rendus, capture réelle de l'Edge, tout ce qui aide à décider.", rule: "<b>Valeurs:</b> même bandeau que le tableau (titre 13 px capitales .14em, aide 14 px), 14 px entre les blocs." }
+  { id: "top", side: "L", name: "En-tête", field: ".top", desc: "Le même en-tête que sur les trois autres types de pages: la marque « ● DOT HUB », le choix de langue, le retour à l'accueil, les pages du site et le lien externe. Aucune pastille allumée: une maquette n'est pas une des pages du menu.", rule: "<b>Valeurs:</b> celles du site, pas celles de la maquette: marque en capitales espacées .22em après un point d'accent de 12 px, pastilles Fira Code 13 px, capitales .16em, bord #1F1F1F, arrondi complet." },
+  { id: "header", side: "R", name: "Présentation", field: "header", desc: "Un sur-titre (Module Dot Hub · CORSAIR XENEON EDGE), le nom du module, puis l'état de la proposition et ce que fait le module.", rule: "<b>Valeurs:</b> sur-titre IBM Plex Mono 12 px capitales .14em #8C8C8C après un point d'accent de 8 px. Nom en IBM Plex Mono de 28 à 44 px. Texte #8C8C8C, 72 caractères par ligne au plus." },
+  { id: "tag", side: "L", name: "Repère et tailles", field: ".tag + .sizebar", desc: "« Maquette de référence » avec la version et la taille réelle, puis les boutons de taille. Pour l'instant, seul le XL est travaillé.", rule: "<b>Valeurs:</b> IBM Plex Mono 12 px capitales .14em. Taille choisie en pastille pleine #E6E6E6, arrondi 6 px." },
+  { id: "frame", side: "R", name: "Écran du module", field: ".frame", desc: "Le module à la taille réelle de l'emplacement XL, mis à l'échelle de la page. Quand le module est codé, c'est son vrai rendu (mount de scripts/&lt;nom&gt;.js).", rule: "<b>Valeurs:</b> XL 2536 × 696, fond #080808. Libellé ● DOT … toujours au même endroit: point d'accent de 10 px à 56 / 51 px, texte Fira Code 18 px (interligne 24, capitales .2em) à 80 / 44 px. Textes de 18 px au moins, zones tactiles de 60 × 60 px au moins." },
+  { id: "settings", side: "L", name: "Réglages simulés", field: ".settings", desc: "Les réglages du module sous les noms de ses propriétés iCUE (en anglais), puis les quatre couleurs communes et les couleurs d'accent proposées.", rule: "<b>Valeurs:</b> panneau #0A0A0A, bord #262626, arrondi 10 px. Libellés 12 px capitales .1em. Accent color, Lit dot color, Unlit dot color, Label color ; préréglages Émeraude #10B981 et Rouge A #ED403B." },
+  { id: "caption", side: "R", name: "Légende", field: "figcaption", desc: "Ce que montre l'écran, puis ce que fait chaque geste.", rule: "<b>Valeurs:</b> 14 px, #8C8C8C." },
+  { id: "table", side: "L", name: "Choix de design", field: "table", desc: "Une ligne par décision, numérotée. Une ligne n'est « Validé » qu'avec l'accord de Mathod95, et sa date.", rule: "<b>Valeurs:</b> en-têtes 12 px capitales .12em sur #0A0A0A, numéro en IBM Plex Mono, élément en 500. Ligne à valider en #8C8C8C." },
+  { id: "annex", side: "R", name: "Sections annexes", field: "section", desc: "Facultatives: comparaison de rendus, capture réelle de l'Edge, tout ce qui aide à décider.", rule: "<b>Valeurs:</b> même bandeau que le tableau (titre 13 px capitales .14em, aide 14 px), 14 px entre les blocs." }
 ] };
 </script>
 <script src="anatomy.js"></script>
