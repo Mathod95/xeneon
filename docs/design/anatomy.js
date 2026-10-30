@@ -1,5 +1,6 @@
 // Anatomie d'un type de page (docs/design/<type>.html) : partie commune aux quatre pages.
-// La page déclare window.ANATOMY = { native: largeur réelle de .mini en px, zones: [{ id, side: "L"|"R", name, field, desc, rule }] }
+// La page déclare window.ANATOMY = { native: largeur réelle de .mini en px, zones: [{ id, side: "L"|"R", name, field, desc, rule, parts }] }
+// parts (facultatif) : les éléments de la zone, numérotés 1.1, 1.2… ; dans la page générique, l'élément n porte data-part="n".
 // puis charge ce fichier. Il crée les étiquettes et les fiches, met la page générique à l'échelle, trace les traits,
 // gère le survol et la bascule Vraie vue / Squelette, et dessine les titres et pictogrammes en points.
 (function () {
@@ -18,8 +19,20 @@
     (z.side === "L" ? pinsL : pinsR).appendChild(pin);
     var li = document.createElement("li");
     li.className = "a-item"; li.dataset.zone = z.id; li.tabIndex = 0;
-    li.innerHTML = '<span class="a-num">' + (i + 1) + '</span><h3>' + z.name + ' <code>' + z.field + '</code></h3><p>' + z.desc + '</p><p class="a-rule">' + z.rule + '</p>';
+    var parts = (z.parts || []).map(function (t, j) {
+      return '<li data-part="' + (i + 1) + '.' + (j + 1) + '"><span class="a-subnum">' + (i + 1) + '.' + (j + 1) + '</span><span>' + t + '</span></li>';
+    }).join("");
+    li.innerHTML = '<span class="a-num"' + (parts ? ' style="grid-row: span 4"' : '') + '>' + (i + 1) + '</span><h3>' + z.name + ' <code>' + z.field + '</code></h3><p>' + z.desc + '</p>'
+      + (parts ? '<ul class="a-parts">' + parts + '</ul>' : '') + '<p class="a-rule">' + z.rule + '</p>';
     list.appendChild(li);
+    // pastilles 1.1, 1.2… sur les éléments de la zone
+    var zone = mini.querySelector('[data-zone="' + z.id + '"]');
+    if (zone) zone.querySelectorAll("[data-part]").forEach(function (el) {
+      var b = document.createElement("span");
+      b.className = "badge sub"; b.textContent = (i + 1) + "." + el.dataset.part;
+      el.dataset.part = b.textContent;
+      el.appendChild(b);
+    });
   });
 
   // surlignage : étiquette, fiche ou zone de la page
@@ -31,6 +44,15 @@
     el.addEventListener("mouseleave", function () { activate(null); });
     el.addEventListener("focus", function () { activate(el.dataset.zone); });
     el.addEventListener("blur", function () { activate(null); });
+  });
+
+  // surlignage d'un élément : sa ligne dans la fiche et l'élément dans la page
+  function activatePart(id) {
+    document.querySelectorAll("[data-part]").forEach(function (el) { el.classList.toggle("is-part", !!id && el.dataset.part === id); });
+  }
+  document.querySelectorAll(".a-parts li, .mini [data-part]").forEach(function (el) {
+    el.addEventListener("mouseenter", function () { activatePart(el.dataset.part); });
+    el.addEventListener("mouseleave", function () { activatePart(null); });
   });
 
   // bascule vraie vue / squelette

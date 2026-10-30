@@ -123,10 +123,10 @@
         <div class="pw">
 
           <div class="top" data-zone="top" data-name="En-tête"><span class="badge">1</span>
-            <a class="brand" href="https://mathod95.github.io/xeneon/" tabindex="-1" data-sk="marque · lien">DOT HUB</a>
+            <a class="brand" data-part="1" href="https://mathod95.github.io/xeneon/" tabindex="-1" data-sk="marque">DOT HUB</a>
             <div class="topr">
-              <div class="lang" data-sk="FR / EN"><span class="chip on">FR</span><span class="chip">EN</span></div>
-              <div class="exts" data-sk="Companion, Releases, GitHub ↗"><a class="ext" href="https://mathod95.github.io/xeneon/companion/" tabindex="-1">Companion</a><a class="ext" href="https://mathod95.github.io/xeneon/releases/" tabindex="-1">Releases</a><a class="ext" href="https://github.com/Mathod95/xeneon" tabindex="-1" target="_blank" rel="noopener">GitHub ↗</a></div>
+              <div class="lang" data-part="2" data-sk="FR / EN"><span class="chip on">FR</span><span class="chip">EN</span></div>
+              <div class="exts"><a class="ext" data-part="3" data-sk="Companion" href="https://mathod95.github.io/xeneon/companion/" tabindex="-1">Companion</a><a class="ext" data-part="4" data-sk="Releases" href="https://mathod95.github.io/xeneon/releases/" tabindex="-1">Releases</a><a class="ext" data-part="5" data-sk="GitHub ↗" href="https://github.com/Mathod95/xeneon" tabindex="-1" target="_blank" rel="noopener">GitHub ↗</a></div>
             </div>
           </div>
 
@@ -214,7 +214,7 @@
 
 <script>
 window.ANATOMY = { native: 1560, zones: [
-  { id: "top", side: "L", name: "En-tête", field: ".top", desc: "La marque « ● DOT HUB » à gauche, lien vers la homePage. À droite, toujours dans cet ordre et sur toutes les pages: le choix de langue FR / EN, Companion (page Dot Companion), Releases (page Dot Release) et GitHub ↗ (le dépôt du projet, dans un nouvel onglet). Aucun bouton allumé: une maquette n'a pas de bouton dans l'en-tête.", rule: "<b>Valeurs:</b> celles du site, pas celles de la maquette: marque en capitales espacées .22em après un point d'accent de 12 px, pastilles Fira Code 13 px, capitales .16em, bord #1F1F1F, arrondi complet." },
+  { id: "top", side: "L", name: "En-tête", field: ".top", desc: "Le même sur toutes les pages, toujours dans cet ordre: la marque à gauche, le reste à droite. Aucun bouton allumé: une maquette n'a pas de bouton dans l'en-tête.", parts: ["La marque « ● DOT HUB » à gauche, lien vers la homePage.", "Le choix de langue FR / EN.", "Companion, lien vers la page Dot Companion.", "Releases, lien vers la page Dot Release.", "GitHub ↗, lien vers le dépôt du projet (nouvel onglet)."], rule: "<b>Valeurs:</b> celles du site, pas celles de la maquette: marque en capitales espacées .22em après un point d'accent de 12 px, pastilles Fira Code 13 px, capitales .16em, bord #1F1F1F, arrondi complet." },
   { id: "header", side: "R", name: "Présentation", field: "header", desc: "Un sur-titre (Module Dot Hub · CORSAIR XENEON EDGE), le nom du module, puis l'état de la proposition et ce que fait le module.", rule: "<b>Valeurs:</b> sur-titre IBM Plex Mono 12 px capitales .14em #8C8C8C après un point d'accent de 8 px. Nom en IBM Plex Mono de 28 à 44 px. Texte #8C8C8C, 72 caractères par ligne au plus." },
   { id: "tag", side: "L", name: "Repère et tailles", field: ".tag + .sizebar", desc: "« Maquette de référence » avec la version et la taille réelle, puis les boutons de taille. Pour l'instant, seul le XL est travaillé.", rule: "<b>Valeurs:</b> IBM Plex Mono 12 px capitales .14em. Taille choisie en pastille pleine #E6E6E6, arrondi 6 px." },
   { id: "frame", side: "R", name: "Écran du module", field: ".frame", desc: "Le module à la taille réelle de l'emplacement XL, mis à l'échelle de la page. Quand le module est codé, c'est son vrai rendu (mount de scripts/&lt;nom&gt;.js).", rule: "<b>Valeurs:</b> XL 2536 × 696, fond #080808. Libellé ● DOT … toujours au même endroit: point d'accent de 10 px à 56 / 51 px, texte Fira Code 18 px (interligne 24, capitales .2em) à 80 / 44 px. Textes de 18 px au moins, zones tactiles de 60 × 60 px au moins." },

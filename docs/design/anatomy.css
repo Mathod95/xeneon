@@ -81,6 +81,11 @@ button:focus-visible, .a-item:focus-visible { outline: 2px solid var(--accent); 
 .a-item h3 code { font: 12px var(--mono); color: var(--muted); font-weight: 400; }
 .a-item p { margin: 0; font-size: 14px; color: var(--label); }
 .a-rule { font-size: 13px !important; color: var(--muted) !important; }
+.a-parts { list-style: none; margin: 4px 0; padding: 0; display: grid; gap: 6px; font-size: 14px; color: var(--label); }
+.a-parts li { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 10px; align-items: baseline; border-radius: 8px; transition: color 120ms; }
+.a-subnum { min-width: 34px; padding: 1px 7px; border: 1px solid #333; border-radius: 999px; background: #141414; color: var(--label); font: 500 12px/1.5 var(--mono); text-align: center; }
+.a-parts li.is-part { color: var(--lit); }
+.a-parts li.is-part .a-subnum { background: var(--accent); border-color: var(--accent); color: var(--bg); }
 .a-rule b { color: var(--label); font-weight: 600; }
 .a-base { margin: 0; padding: 16px 20px; border: 1px dashed #2a2a2a; border-radius: 14px; font-size: 14px; color: var(--label); }
 .a-base b { color: var(--lit); font-weight: 600; }
@@ -97,6 +102,11 @@ button:focus-visible, .a-item:focus-visible { outline: 2px solid var(--accent); 
 .mini [data-zone].is-active { outline-color: var(--accent); background-color: rgba(16, 185, 129, .08); }
 .mini .badge { position: absolute; left: -6px; top: -6px; transform: translate(-50%, -50%); z-index: 3; width: 30px; height: 30px; display: grid; place-items: center; border-radius: 50%; border: 1px solid #333; background: #141414; color: var(--label); font: 500 15px/1 "Fira Code", Consolas, monospace; letter-spacing: 0; text-transform: none; }
 .mini [data-zone].is-active > .badge { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+/* éléments d'une zone : pastille 1.1, 1.2… sous l'élément */
+.mini [data-part] { position: relative; }
+.mini .badge.sub { left: 50%; top: calc(100% + 8px); transform: translateX(-50%); width: auto; min-width: 40px; height: 24px; padding: 0 7px; border-radius: 999px; font-size: 13px; }
+.mini [data-part].is-part { outline: 3px solid var(--accent); outline-offset: 3px; border-radius: 999px; }
+.mini [data-part].is-part > .badge.sub { background: var(--accent); border-color: var(--accent); color: var(--bg); }
 
 /* ===== vue squelette : la même page, contenu masqué, chaque zone et chaque bloc nommés ===== */
 .mini.sk { background-image: none; }
@@ -107,5 +117,6 @@ button:focus-visible, .a-item:focus-visible { outline: 2px solid var(--accent); 
 .mini.sk [data-zone]::after { content: attr(data-name); position: absolute; top: -6px; right: 22px; transform: translateY(-50%); padding: 0 10px; background: var(--bg); color: var(--accent); font: 500 16px/1.4 "Fira Code", Consolas, monospace; letter-spacing: .16em; text-transform: uppercase; white-space: nowrap; visibility: visible; }
 .mini.sk [data-sk] { position: relative; color: transparent; background: transparent; border-color: transparent; box-shadow: none; outline: 1px dashed #3a3a38; outline-offset: -1px; border-radius: 10px; }
 .mini.sk [data-sk]::before { visibility: hidden; }
+.mini.sk [data-sk].cur, .mini.sk [data-sk].on { color: transparent; background: transparent; border-color: transparent; }
 .mini.sk [data-sk]::after { content: attr(data-sk); position: absolute; inset: 0; display: grid; place-items: center; padding: 0 8px; overflow: hidden; color: #8f8d87; font: 15px/1.2 "Fira Code", Consolas, monospace; letter-spacing: .06em; text-transform: none; text-align: center; white-space: normal; visibility: visible; }
-@media (prefers-reduced-motion: reduce) { .mini [data-zone], .a-item, .a-leaders path, .a-leaders circle { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .mini [data-zone], .a-item, .a-parts li, .a-leaders path, .a-leaders circle { transition: none; } }
