@@ -84,8 +84,9 @@ def widgets():
 
 SHOT_JS = """
 async () => {
-  const frame = document.getElementById('frame') || document.getElementById('frameXL');
-  const stage = document.getElementById('stage') || document.getElementById('stageXL') || document.getElementById('hub');
+  // chaque maquette nomme son cadre #frame et son écran XL #stage
+  const frame = document.getElementById('frame');
+  const stage = document.getElementById('stage');
   if (!frame || !stage) return false;
   document.querySelectorAll('.wrap').forEach(w => { w.style.maxWidth = 'none'; });
   frame.style.maxWidth = 'none';
@@ -115,7 +116,7 @@ def previews(slugs):
             page.wait_for_timeout(300)
             if not page.evaluate(SHOT_JS):
                 continue
-            stage = page.locator("#stage, #stageXL, #hub").first
+            stage = page.locator("#stage")
             out[slug] = stage.screenshot(type="jpeg", quality=88)
         browser.close()
     return out

@@ -162,7 +162,7 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
       <button type="button" class="preset" data-size="xl" aria-pressed="true">XL · 2536 × 696</button>
     </div>
     <div class="frame xl" id="frame">
-      <div class="hub" id="hub">
+      <div class="hub" id="stage">
         <div class="stage xl" id="home"></div>
         <div id="clock" hidden></div>
         <div class="down" id="down" hidden><p class="brand"><span class="dot"></span>DOT HUB</p><p class="msg" id="msg"></p><p class="sub" id="sub"></p></div>
@@ -229,7 +229,7 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
     xl: "XL 2536 × 696 px", l: "L 1688 × 696 px", m: "M 840 × 696 px", s: "S 840 × 344 px"
   };
   var size = "xl", scale = 1;
-  var frame = v("frame"), hub = v("hub");
+  var frame = v("frame"), hub = v("stage");
 
   // ---------- Dot Home : même rendu que companion/web/home.html
   var PITCH = { xl: 19, l: 13, m: 9, s: 12 };

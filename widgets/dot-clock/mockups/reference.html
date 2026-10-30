@@ -149,8 +149,8 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
       <button type="button" class="preset" data-size="xl" aria-pressed="true">XL · 2536 × 696</button>
     </div>
     <div class="view view-xl" data-view="xl">
-      <div class="frame frame-xl" id="frameXL">
-        <div id="stageXL"></div>
+      <div class="frame frame-xl" id="frame">
+        <div id="stage"></div>
       </div>
     </div>
     <div class="view view-s" data-view="s" hidden>
@@ -292,7 +292,7 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
 
   // une scène par taille, chacune dessinée par le rendu du widget
   var clocks = [];
-  [["xl", "frameXL", "stageXL"], ["l", "frameL", "stageL"], ["m", "frameM", "stageM"], ["s", "frameS", "stageS"]].forEach(function (d) {
+  [["xl", "frame", "stage"], ["l", "frameL", "stageL"], ["m", "frameM", "stageM"], ["s", "frameS", "stageS"]].forEach(function (d) {
     var frame = v(d[1]), stage = v(d[2]), scale = 1;
     var clock = DotClock.mount(stage, { size: d[0], settings: settings, now: now, pixelRatio: function () { return Math.max(1, scale * (window.devicePixelRatio || 1)); } });
     function fit() {
