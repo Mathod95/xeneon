@@ -4,7 +4,7 @@ Suivi des chantiers de la charte: ce qui reste à faire (`- [ ]`) et ce qui est 
 
 ## `.top` · En-tête (homePage, subPage, releasePage)
 
-Même rendu sur les trois pages (marque « ● MATHOD », sélecteur FR / EN, boutons `.ext` dans l'ordre Companion, Releases, GitHub ↗), mais le code est recopié six fois: `tools/site/index.html`, `companion.html`, `releases.html` et les trois gabarits.
+Même rendu sur les trois pages (marque « ● MATHOD » sur le site, « ● DOT HUB » dans les gabarits, sélecteur FR / EN, boutons `.ext` dans l'ordre Companion, Releases, GitHub ↗), mais le code est recopié six fois: `tools/site/index.html`, `companion.html`, `releases.html` et les trois gabarits.
 
 Écarts voulus (à garder):
 
@@ -13,6 +13,8 @@ Même rendu sur les trois pages (marque « ● MATHOD », sélecteur FR / EN, bo
 
 À faire:
 
+- [x] Marque « ● MATHOD » remplacée par « ● DOT HUB » dans les quatre gabarits (30 octobre 2026). Règle dans `README.md`.
+- [ ] Reporter « ● DOT HUB » sur les trois pages du site (`index.html`, `companion.html`, `releases.html`).
 - [ ] `index.html`: `.top` n'a pas `flex-wrap: wrap`, l'en-tête ne passe pas à la ligne sur un écran étroit comme sur les deux autres pages.
 - [ ] `releases.html`: `.topr` n'a pas `justify-content: flex-end`, les boutons passés à la ligne se calent à gauche au lieu de rester à droite comme sur `companion.html`.
 - [ ] `index.html`: le sélecteur FR / EN obtient son rendu par `.chip` (règle générale) puis `.lang .chip` (surcharge), alors que les sous-pages le définissent directement. Même rendu, à unifier.

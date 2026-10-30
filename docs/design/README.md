@@ -48,6 +48,7 @@ Ce README est la référence pour créer une page parfaite: chaque règle valid�
 | Fond | `#080808` |
 | Fond en points (pages web, maquettes, réglages) | `radial-gradient(circle, #161616 1.2px, transparent 1.6px)`, trame de 22 px |
 | Barre de défilement (pages web, maquettes) | `html { scrollbar-gutter: stable; }`, place toujours réservée, la page ne se décale pas d'une page à l'autre, qu'elle défile ou non |
+| Marque de l'en-tête (`.top`) | « ● DOT HUB », point d'accent de 12 px, texte en capitales, 15 px, gras, espacement .22em, à gauche de l'en-tête, la même sur toutes les pages |
 | Panneau / carte | `#0e0e0e` (pages web), `#121212` (réglages) |
 | Bordure fine | `#1f1f1f` à `#262626` |
 | Point allumé, texte principal | `#F2F0E9` |
