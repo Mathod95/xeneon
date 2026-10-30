@@ -10,7 +10,7 @@
 .mini .pw { max-width: 1240px; margin: 0 auto; display: grid; gap: 48px; }
 
 .mini .top { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
-.mini .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; letter-spacing: .22em; font-size: 15px; }
+.mini .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; letter-spacing: .22em; font-size: 15px; color: inherit; text-decoration: none; }
 .mini .brand::before { content: ""; width: 12px; height: 12px; border-radius: 50%; background: var(--accent); }
 .mini .topr { display: flex; align-items: center; gap: 12px; }
 .mini .exts { display: flex; gap: 12px; }
@@ -89,7 +89,7 @@
         <div class="pw">
 
           <div class="top" data-zone="header" data-name="En-tête"><span class="badge">1</span>
-            <span class="brand" data-sk="marque">DOT HUB</span>
+            <a class="brand" href="https://mathod95.github.io/xeneon/" tabindex="-1" data-sk="marque · lien">DOT HUB</a>
             <div class="topr">
               <div class="lang" data-sk="FR / EN"><span class="chip on">FR</span><span class="chip">EN</span></div>
               <div class="exts" data-sk="← accueil, pages sœurs (Releases allumée), externe"><span class="ext">← Accueil</span><span class="ext">Page A</span><span class="ext cur">Releases</span><span class="ext">Externe ↗</span></div>
@@ -167,7 +167,7 @@
 
 <script>
 window.ANATOMY = { native: 1320, zones: [
-  { id: "header", side: "L", name: "En-tête", field: ".top", desc: "Comme sur la subPage: retour à l'accueil, pages sœurs, et Releases allumée comme page courante.", rule: "<b>Valeurs:</b> pastilles Fira Code 13 px, capitales .16em. Page courante en pastille pleine #F2F0E9 (aria-current)." },
+  { id: "header", side: "L", name: "En-tête", field: ".top", desc: "Comme sur la subPage: la marque « ● DOT HUB », lien vers la homePage, retour à l'accueil, pages sœurs, et Releases allumée comme page courante.", rule: "<b>Valeurs:</b> pastilles Fira Code 13 px, capitales .16em. Page courante en pastille pleine #F2F0E9 (aria-current)." },
   { id: "title", side: "R", name: "Titre en points", field: "#titleDots", desc: "RELEASES dessiné en canvas avec la police 5 × 7, calé à gauche, tout en points allumés.", rule: "<b>Valeurs:</b> 620 px de large au plus. Points allumés #F2F0E9, points de fond #171717." },
   { id: "lede", side: "L", name: "Accroche", field: ".lede", desc: "Ce que couvrent les versions et dans quel ordre, en une ligne. Le séparateur ● est en couleur d'accent.", rule: "<b>Valeurs:</b> Fira Code de 15 à 19 px." },
   { id: "next", side: "L", name: "Prochaine version", field: ".rel (next)", desc: "Ce qui est déjà sur main mais pas encore tagué. Toujours en premier, avec un lien vers l'exe compilé par les Actions.", rule: "<b>Valeurs:</b> pastille « Sur main », badge jaune #F5B942. À chaque commit qui change le produit, une ligne de plus ici." },

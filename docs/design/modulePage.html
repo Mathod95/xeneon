@@ -16,7 +16,7 @@
 .mini .pw { max-width: 1480px; margin: 0 auto; display: grid; gap: 40px; }
 /* en-tête du site, le même que sur les trois autres types de pages */
 .mini .top { display: flex; align-items: center; justify-content: space-between; gap: 16px; font-family: var(--brand); font-size: 16px; line-height: 1.55; color: var(--lit); }
-.mini .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; letter-spacing: .22em; font-size: 15px; }
+.mini .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; letter-spacing: .22em; font-size: 15px; color: inherit; text-decoration: none; }
 .mini .brand::before { content: ""; width: 12px; height: 12px; border-radius: 50%; background: var(--accent); }
 .mini .topr { display: flex; align-items: center; gap: 12px; }
 .mini .exts { display: flex; gap: 12px; }
@@ -122,7 +122,7 @@
         <div class="pw">
 
           <div class="top" data-zone="top" data-name="En-tête"><span class="badge">1</span>
-            <span class="brand" data-sk="marque">DOT HUB</span>
+            <a class="brand" href="https://mathod95.github.io/xeneon/" tabindex="-1" data-sk="marque · lien">DOT HUB</a>
             <div class="topr">
               <div class="lang" data-sk="FR / EN"><span class="chip on">FR</span><span class="chip">EN</span></div>
               <div class="exts" data-sk="← accueil, pages du site, externe"><span class="ext">← Accueil</span><span class="ext">Page A</span><span class="ext">Page B</span><span class="ext">Externe ↗</span></div>
@@ -213,7 +213,7 @@
 
 <script>
 window.ANATOMY = { native: 1560, zones: [
-  { id: "top", side: "L", name: "En-tête", field: ".top", desc: "Le même en-tête que sur les trois autres types de pages: la marque « ● DOT HUB », le choix de langue, le retour à l'accueil, les pages du site et le lien externe. Aucune pastille allumée: une maquette n'est pas une des pages du menu.", rule: "<b>Valeurs:</b> celles du site, pas celles de la maquette: marque en capitales espacées .22em après un point d'accent de 12 px, pastilles Fira Code 13 px, capitales .16em, bord #1F1F1F, arrondi complet." },
+  { id: "top", side: "L", name: "En-tête", field: ".top", desc: "Le même en-tête que sur les trois autres types de pages: la marque « ● DOT HUB » (lien vers la homePage), le choix de langue, le retour à l'accueil, les pages du site et le lien externe. Aucune pastille allumée: une maquette n'est pas une des pages du menu.", rule: "<b>Valeurs:</b> celles du site, pas celles de la maquette: marque en capitales espacées .22em après un point d'accent de 12 px, pastilles Fira Code 13 px, capitales .16em, bord #1F1F1F, arrondi complet." },
   { id: "header", side: "R", name: "Présentation", field: "header", desc: "Un sur-titre (Module Dot Hub · CORSAIR XENEON EDGE), le nom du module, puis l'état de la proposition et ce que fait le module.", rule: "<b>Valeurs:</b> sur-titre IBM Plex Mono 12 px capitales .14em #8C8C8C après un point d'accent de 8 px. Nom en IBM Plex Mono de 28 à 44 px. Texte #8C8C8C, 72 caractères par ligne au plus." },
   { id: "tag", side: "L", name: "Repère et tailles", field: ".tag + .sizebar", desc: "« Maquette de référence » avec la version et la taille réelle, puis les boutons de taille. Pour l'instant, seul le XL est travaillé.", rule: "<b>Valeurs:</b> IBM Plex Mono 12 px capitales .14em. Taille choisie en pastille pleine #E6E6E6, arrondi 6 px." },
   { id: "frame", side: "R", name: "Écran du module", field: ".frame", desc: "Le module à la taille réelle de l'emplacement XL, mis à l'échelle de la page. Quand le module est codé, c'est son vrai rendu (mount de scripts/&lt;nom&gt;.js).", rule: "<b>Valeurs:</b> XL 2536 × 696, fond #080808. Libellé ● DOT … toujours au même endroit: point d'accent de 10 px à 56 / 51 px, texte Fira Code 18 px (interligne 24, capitales .2em) à 80 / 44 px. Textes de 18 px au moins, zones tactiles de 60 × 60 px au moins." },
