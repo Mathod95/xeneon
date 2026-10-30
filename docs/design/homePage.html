@@ -21,8 +21,8 @@
 .mini .chip.on { background: var(--lit); border-color: var(--lit); color: var(--bg); }
 
 .mini .hero { display: grid; gap: 22px; }
-.mini .title-box { max-width: 760px; margin: 0 auto; width: 100%; }
-.mini .title-box canvas { display: block; width: 100%; height: auto; }
+.mini .title-box { width: 100%; }
+.mini .title-box canvas { display: block; width: 100%; max-width: 760px; height: auto; margin: 0 auto; }
 .mini .tagline { font-family: var(--mono); font-size: 24px; margin: 0; color: var(--lit); }
 .mini .tagline i { font-style: normal; color: var(--accent); padding: 0 .5em; }
 .mini .stats { display: flex; flex-wrap: wrap; gap: 8px 28px; margin: 0; padding: 0; list-style: none; font-family: var(--mono); font-size: 14px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); }
@@ -32,7 +32,7 @@
 .mini .bar h2 { margin: 0; font-family: var(--mono); font-weight: 500; font-size: 13px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); }
 .mini .hint { margin: 0; color: var(--label); font-size: 14px; }
 
-.mini .edge-sec { display: grid; gap: 16px; }
+.mini .showcase { display: grid; gap: 16px; }
 .mini .edge { padding: 18px; border-radius: 24px; background: linear-gradient(180deg, #161616, #0b0b0b); border: 1px solid #2a2a2a; box-shadow: 0 40px 80px -40px #000, inset 0 1px 0 #262626; }
 .mini .screen { position: relative; aspect-ratio: 2560 / 720; overflow: hidden; border-radius: 8px; background: #000; }
 .mini .slot { position: absolute; inset: 1.7%  .47%; background: #080808; border-radius: 6px; font-family: var(--mono); }
@@ -44,19 +44,21 @@
 .mini .s-tile.more { grid-template-rows: 1fr; border-style: dashed; color: var(--label); font-size: 14px; }
 .mini .pager { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 20px; }
 .mini .pdots { display: flex; gap: 2px; }
-.mini .pdots span { width: 32px; height: 32px; display: grid; place-items: center; }
-.mini .pdots span::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: #2a2a2a; }
+.mini .pdots span:not(.badge) { width: 32px; height: 32px; display: grid; place-items: center; }
+.mini .pdots span:not(.badge)::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: #2a2a2a; }
 .mini .pdots span.on::before { background: var(--lit); }
-.mini .where { font-family: var(--mono); font-size: 13px; letter-spacing: .18em; text-transform: uppercase; color: var(--label); }
+.mini .where { font-family: var(--mono); font-size: 13px; letter-spacing: .18em; text-transform: uppercase; color: var(--accent); text-decoration: none; }
+.mini .where:hover { color: var(--lit); }
 .mini .nav { display: flex; gap: 8px; }
 
-.mini .hubsec { display: grid; gap: 22px; padding: 32px; border: 1px solid #262626; border-radius: 20px; background: var(--panel); }
-.mini .hub-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
-.mini .hub-head .id { display: flex; align-items: center; gap: 18px; }
-.mini .hub-head canvas { display: block; width: 64px; height: 64px; }
-.mini .hub-head h2 { margin: 0; font-family: var(--mono); font-weight: 500; font-size: 28px; letter-spacing: .14em; text-transform: uppercase; }
-.mini .hub-lead { margin: 0; font-size: 19px; color: var(--lit); }
-.mini .hub-k { margin: 0; font-family: var(--mono); font-size: 12px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); }
+.mini .about { display: grid; gap: 22px; padding: 32px; border: 1px solid #262626; border-radius: 20px; background: var(--panel); }
+.mini .about-head { display: flex; align-items: stretch; gap: 16px; }
+.mini .about-head .pic { display: block; flex: none; }
+.mini .about-head canvas { display: block; width: 70px; height: 70px; }
+.mini .about-head .head { display: flex; flex-direction: column; justify-content: space-between; min-width: 0; flex: 1; height: 70px; }
+.mini .about-head h2 { margin: 0; font-family: var(--mono); font-weight: 500; font-size: 28px; line-height: 1.15; letter-spacing: .14em; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mini .about-lead { margin: 0; font-size: 19px; color: var(--lit); }
+.mini .about-k { margin: 0; font-family: var(--mono); font-size: 12px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); }
 .mini .parts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
 .mini .part { display: grid; gap: 10px; align-content: start; padding: 20px 22px; border: 1px solid var(--line); border-radius: 14px; background: var(--bg); }
 .mini .part .ph2 { display: flex; align-items: baseline; gap: 12px; }
@@ -72,23 +74,26 @@
 .mini .links { display: flex; gap: 16px; font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--label); }
 .mini .links .mock { color: var(--accent); }
 
-.mini .status { display: inline-flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--label); white-space: nowrap; }
+.mini .status { display: flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--label); white-space: nowrap; }
 .mini .status::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--c); }
 .mini .list { display: grid; gap: 18px; }
-.mini .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
-.mini .card { display: grid; grid-template-rows: auto auto 1fr auto; gap: 14px; padding: 22px; border: 1px solid #262626; border-radius: 18px; background: var(--panel); }
-.mini .card .row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.mini .grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+.mini .card { display: grid; grid-template-rows: auto 1fr; gap: 14px; padding: 22px; border: 1px solid var(--line); border-radius: 18px; background: var(--panel); color: inherit; text-decoration: none; }
+.mini .card.has { border-color: #262626; }
+.mini .card.has:hover { border-color: var(--accent); }
+.mini .card .row { display: flex; align-items: stretch; gap: 16px; }
+.mini .card .head { display: flex; flex-direction: column; justify-content: space-between; min-width: 0; flex: 1; height: 70px; }
+.mini .ver { font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.mini .card .pic { display: block; flex: none; }
+/* squelette : la première carte garde son contour, ses éléments 5.2 à 5.6 sont nommés un par un */
+.mini.sk .card.first { visibility: visible; border: 1px dashed #3a3a38; background: transparent; }
 .mini .card canvas { display: block; width: 70px; height: 70px; }
-.mini .card h3 { margin: 0; font-size: 21px; font-weight: 700; letter-spacing: .02em; }
+.mini .card h3 { margin: 0; font-size: 21px; font-weight: 700; letter-spacing: .02em; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .mini .card p { margin: 0; color: var(--label); font-size: 15px; }
 .mini .foot { display: flex; justify-content: flex-end; padding-top: 14px; border-top: 1px solid var(--line); }
 
-.mini footer { display: flex; justify-content: space-between; gap: 12px 24px; font-family: var(--mono); font-size: 13px; letter-spacing: .24em; text-transform: uppercase; color: var(--label); }
-.mini footer .red { color: var(--accent); }
-
-/* Les zones : une fiche par ligne, texte limité à une largeur de lecture */
-.a-list { grid-template-columns: minmax(0, 1fr); }
-.a-item > p, .a-item > .a-parts { max-width: 90ch; }
+.mini .footer { display: flex; justify-content: space-between; gap: 12px 24px; font-family: var(--mono); font-size: 13px; letter-spacing: .24em; text-transform: uppercase; color: var(--label); }
+.mini .footer .red { color: var(--accent); }
 </style>
 
 <div class="wrap">
@@ -99,7 +104,7 @@
 
   <div class="a-head">
     <h1>Anatomie d'une homePage</h1>
-    <p class="a-lead">La homePage est l'accueil du site, il n'y en a qu'une (aujourd'hui Dot Page). Elle suit toujours le même squelette: huit zones, du haut vers le bas, dans cet ordre. Survole une étiquette pour repérer sa zone, ou passe en vue squelette pour voir ce qui remplit chaque bloc.</p>
+    <p class="a-lead">La homePage est l'accueil du site, il n'y en a qu'une (aujourd'hui Dot Page). Elle suit toujours le même squelette: six zones, du haut vers le bas, dans cet ordre. Survole une étiquette pour repérer sa zone, ou passe en vue squelette pour voir ce qui remplit chaque bloc.</p>
   </div>
 
   <div class="a-bar">
@@ -117,7 +122,7 @@
       <div class="mini" id="mini" aria-hidden="true">
         <div class="pw">
 
-          <div class="top" data-zone="header" data-name="En-tête"><span class="badge">1</span>
+          <div class="top" data-zone="header" data-name="Top"><span class="badge">1</span>
             <a class="brand" data-part="1" href="https://mathod95.github.io/xeneon/" tabindex="-1" data-sk="marque">DOT HUB</a>
             <div class="topr">
               <div class="lang" data-part="2" data-sk="FR / EN"><span class="chip on">FR</span><span class="chip">EN</span></div>
@@ -125,21 +130,15 @@
             </div>
           </div>
 
-          <section class="hero">
-            <div data-zone="title" data-name="Titre"><span class="badge">2</span>
-              <div class="title-box" data-sk="titre en points 5 × 7, dernier mot en accent"><canvas id="titleDots" width="2160" height="300" data-title="DOT TITRE" data-accent-last></canvas></div>
-            </div>
-            <div data-zone="tagline" data-name="Accroche"><span class="badge">3</span>
-              <p class="tagline" data-sk="une ligne, séparateur ● en accent">Accroche du projet<i>●</i>ce qu'il fait, en une ligne.</p>
-            </div>
-            <div data-zone="stats" data-name="Chiffres clés"><span class="badge">4</span>
-              <ul class="stats" data-sk="nombre en accent + libellé, ×4"><li><b>1</b>chiffre</li><li><b>1</b>chiffre</li><li><b>24</b>éléments</li><li><b>3</b>en cours</li></ul>
-            </div>
+          <section class="hero" data-zone="hero" data-name="Hero"><span class="badge">2</span>
+            <div class="title-box" data-part="1" data-part-at="r" data-sk="titre en points 5 × 7, points tous les 19 px, centré, 760 px au plus, dernier mot en accent"><canvas id="titleDots" width="1520" height="342" data-title="DOT HUB" data-pitch="19" data-accent-last></canvas></div>
+            <p class="tagline" data-part="2" data-part-at="r" data-sk="une ligne, séparateur ● en accent">Accroche du projet<i>●</i>ce qu'il fait, en une ligne.</p>
+            <ul class="stats" data-part="3" data-part-at="r" data-sk="nombre en accent + libellé, ×4"><li><b>1</b>chiffre</li><li><b>1</b>chiffre</li><li><b>24</b>éléments</li><li><b>3</b>en cours</li></ul>
           </section>
 
-          <section class="edge-sec" data-zone="showcase" data-name="Vitrine"><span class="badge">5</span>
-            <div class="bar" data-sk="bandeau de section"><h2>Vitrine</h2><p class="hint">Le produit en action, en direct ou en captures.</p></div>
-            <div class="edge" data-sk="écran simulé 2560 × 720, une vue toutes les 5 s">
+          <section class="showcase" data-zone="showcase" data-name="Showcase"><span class="badge">3</span>
+            <div class="bar"><h2 data-part="1" data-part-at="o-r" data-sk="titre">Vitrine</h2><p class="hint" data-part="2" data-part-at="o-l" data-sk="aide">Le produit en action, en direct ou en captures.</p></div>
+            <div class="edge" data-part="3" data-part-at="tl" data-sk="écran Xeneon Edge 2560 × 720, une vue toutes les 5 s">
               <div class="screen"><div class="slot">
                 <div class="s-lbl">LIBELLÉ</div>
                 <div class="s-tiles">
@@ -151,58 +150,59 @@
                 </div>
               </div></div>
             </div>
-            <div class="pager" data-sk="pager · points, vue affichée, ‹ ›">
-              <div class="pdots"><span class="on"></span><span></span><span></span><span></span><span></span></div>
-              <div class="where">Accueil</div>
-              <div class="nav"><span class="chip">‹</span><span class="chip">Accueil</span><span class="chip">›</span></div>
+            <div class="pager">
+              <div class="pdots" data-part="4" data-part-at="o-r" data-sk="points"><span class="on"></span><span></span><span></span><span></span><span></span></div>
+              <a class="where" data-part="5" data-part-at="o-r" href="https://mathod95.github.io/xeneon/design/modulepage/" tabindex="-1" data-sk="nom de la vue, lien">Accueil</a>
+              <div class="nav" data-part="6" data-part-at="o-l" data-sk="‹ vue ›"><span class="chip">‹</span><span class="chip">Accueil</span><span class="chip">›</span></div>
             </div>
           </section>
 
-          <section class="hubsec" data-zone="intro" data-name="Présentation"><span class="badge">6</span>
-            <div class="hub-head" data-sk="pictogramme 7 × 7 + titre + statut">
-              <div class="id"><canvas width="140" height="140" data-pic="a"></canvas><h2>Nom du projet</h2></div>
-              <span class="status" style="--c: var(--wip)">En cours</span>
+          <section class="about" data-zone="intro" data-name="About"><span class="badge">4</span>
+            <div class="about-head">
+              <span class="pic" data-part="1" data-part-at="t" data-sk="picto"><canvas width="140" height="140" data-pic="a"></canvas></span>
+              <div class="head"><h2 data-part="2" data-part-at="r" data-sk="titre">Nom du projet</h2><span class="status" data-part="3" data-part-at="r" data-sk="statut" style="--c: var(--wip)">En cours</span><span class="ver" data-part="4" data-part-at="r" data-sk="version">v0.5.0</span></div>
             </div>
-            <p class="hub-lead" data-sk="texte d'intro">Une ou deux phrases qui disent ce qu'est le projet, à qui il sert et ce qu'il change au quotidien.</p>
-            <p class="hub-k" data-sk="sur-titre">Comment ça marche</p>
-            <div class="parts" data-sk="parties ×2, nom + rôle + texte + lien">
+            <p class="about-lead" data-part="5" data-part-at="r" data-sk="intro">Une ou deux phrases qui disent ce qu'est le projet, à qui il sert et ce qu'il change au quotidien.</p>
+            <p class="about-k" data-part="6" data-part-at="r" data-sk="sur-titre">Comment ça marche</p>
+            <div class="parts" data-part="7" data-part-at="tr" data-sk="parties ×2, nom + rôle + texte + lien">
               <div class="part"><div class="ph2"><h3>Partie A</h3><span class="tag2">Rôle</span></div><p>Ce que fait cette partie, en deux ou trois phrases, du point de vue de la personne qui l'utilise.</p></div>
               <div class="part"><div class="ph2"><h3>Partie B</h3><span class="tag2">Rôle</span></div><p>Ce que fait cette partie, en deux ou trois phrases, du point de vue de la personne qui l'utilise.</p><span class="more">En savoir plus →</span></div>
             </div>
-            <p class="daily" data-sk="au quotidien"><b>Au quotidien</b>: ce que fait la personne une fois tout installé, en une phrase.</p>
-            <p class="hub-k" data-sk="sur-titre">Installer</p>
-            <ol class="steps" data-sk="étapes numérotées ×3">
+            <p class="daily" data-part="8" data-part-at="r" data-sk="au quotidien"><b>Au quotidien</b>: ce que fait la personne une fois tout installé, en une phrase.</p>
+            <p class="about-k" data-part="9" data-part-at="r" data-sk="sur-titre">Installer</p>
+            <ol class="steps" data-part="10" data-part-at="tr" data-sk="étapes numérotées ×3">
               <li><span><b>Étape un</b>, en une phrase.</span></li>
               <li><span><b>Étape deux</b>, en une phrase.</span></li>
               <li><span><b>Étape trois</b>, en une phrase.</span></li>
             </ol>
-            <div class="links" data-sk="liens"><span class="mock">Maquette →</span><span>Télécharger ↗</span><span>Fiche ↗</span></div>
+            <div class="links" data-part="11" data-part-at="r" data-sk="liens"><span class="mock">Maquette →</span><span>Télécharger ↗</span><span>Fiche ↗</span></div>
           </section>
 
-          <section class="list" data-zone="list" data-name="Liste"><span class="badge">7</span>
-            <div class="bar" data-sk="bandeau de section"><h2>Les éléments</h2></div>
+          <section class="list" data-zone="list" data-name="List"><span class="badge">5</span>
+            <div class="bar" data-part="1" data-part-at="r" data-sk="bandeau de section"><h2>Les éléments</h2></div>
             <div class="grid">
-              <article class="card" data-sk="carte · pictogramme 7 × 7, statut, titre, texte, liens">
-                <div class="row"><canvas width="140" height="140" data-pic="b"></canvas><span class="status" style="--c: var(--wip)">En cours</span></div>
-                <h3>Élément A</h3><p>Description courte, d'une à trois lignes, de ce que fait l'élément.</p>
-                <div class="foot links"><span class="mock">Maquette →</span><span>Fiche ↗</span></div>
-              </article>
-              <article class="card" data-sk="carte">
-                <div class="row"><canvas width="140" height="140" data-pic="c"></canvas><span class="status" style="--c: var(--spec)">Spécifié</span></div>
-                <h3>Élément B</h3><p>Description courte, d'une à trois lignes, de ce que fait l'élément.</p>
-                <div class="foot links"><span class="mock">Maquette →</span><span>Fiche ↗</span></div>
-              </article>
-              <article class="card" data-sk="carte">
-                <div class="row"><canvas width="140" height="140" data-pic="d"></canvas><span class="status" style="--c: var(--design)">En conception</span></div>
-                <h3>Élément C</h3><p>Description courte, d'une à trois lignes, de ce que fait l'élément.</p>
-                <div class="foot links"><span class="mock">Maquette →</span><span>Fiche ↗</span></div>
-              </article>
+              <a class="card has first" href="https://mathod95.github.io/xeneon/design/modulepage/" tabindex="-1">
+                <div class="row"><span class="pic" data-part="2" data-part-at="t" data-sk="picto"><canvas width="140" height="140" data-pic="b"></canvas></span><div class="head"><h3 data-part="3" data-part-at="r" data-sk="titre">Élément A</h3><span class="status" data-part="4" data-part-at="r" data-sk="statut" style="--c: var(--wip)">En cours</span><span class="ver" data-part="5" data-part-at="r" data-sk="version">v0.1.3</span></div></div>
+                <p data-part="6" data-part-at="r" data-sk="description">Description courte, d'une à trois lignes, de ce que fait l'élément.</p>
+              </a>
+              <a class="card has" href="https://mathod95.github.io/xeneon/design/modulepage/" tabindex="-1" data-sk="carte">
+                <div class="row"><canvas width="140" height="140" data-pic="c"></canvas><div class="head"><h3>Élément B</h3><span class="status" style="--c: var(--spec)">Spécifié</span><span class="ver">v0.2.0</span></div></div>
+                <p>Description courte, d'une à trois lignes, de ce que fait l'élément.</p>
+              </a>
+              <a class="card has" href="https://mathod95.github.io/xeneon/design/modulepage/" tabindex="-1" data-sk="carte">
+                <div class="row"><canvas width="140" height="140" data-pic="d"></canvas><div class="head"><h3>Élément C</h3><span class="status" style="--c: var(--design)">En conception</span><span class="ver">v0.1</span></div></div>
+                <p>Description courte, d'une à trois lignes, de ce que fait l'élément.</p>
+              </a>
+              <a class="card has" href="https://mathod95.github.io/xeneon/design/modulepage/" tabindex="-1" data-sk="carte">
+                <div class="row"><canvas width="140" height="140" data-pic="a"></canvas><div class="head"><h3>Élément D</h3><span class="status" style="--c: var(--idea)">Idée</span><span class="ver">v0.0.1</span></div></div>
+                <p>Description courte, d'une à trois lignes, de ce que fait l'élément.</p>
+              </a>
             </div>
           </section>
 
-          <footer data-zone="footer" data-name="Pied de page"><span class="badge">8</span>
-            <span class="red" data-sk="slogan">Slogan · Touch · Dot-matrix</span>
-            <span data-sk="dépôt">compte/dépôt</span>
+          <footer class="footer" data-zone="footer" data-name="Footer"><span class="badge">6</span>
+            <span class="red" data-part="1" data-sk="slogan">Slogan · Touch · Dot-matrix</span>
+            <span data-part="2" data-sk="Mathod95/dépôt">Mathod95/projet</span>
           </footer>
 
         </div>
@@ -222,14 +222,12 @@
 
 <script>
 window.ANATOMY = { native: 1320, zones: [
-    { id: "header", side: "L", name: "En-tête", field: ".top", desc: "Le même sur toutes les pages, toujours dans cet ordre: la marque à gauche, le reste à droite. Aucun bouton allumé: la marque mène déjà ici.", parts: ["La marque « ● DOT HUB » à gauche, lien vers la homePage.", "Le choix de langue FR / EN.", "Companion, lien vers la page Dot Companion.", "Releases, lien vers la page Dot Release.", "GitHub ↗, lien vers le dépôt du projet (nouvel onglet)."], rule: "<b>Valeurs:</b><br><b>1.1</b> Segoe UI 15 px gras, capitales espacées .22em, #F2F0E9, après un point d'accent de 12 px (10 px d'écart). Texte seul, sans marge ni bord: 23 px de haut.<br><b>1.2</b> Groupe à bord #1F1F1F sur #080808, arrondi complet, 4 px de marge et 4 px entre les puces: 38 px de haut. Puces Fira Code 12 px, capitales .16em, #B8B6B0, marge 6 × 12 px, sans bord ; langue choisie en pastille pleine #F2F0E9, texte #080808.<br><b>1.3 à 1.5</b> Pastilles Fira Code 13 px, capitales .16em, #B8B6B0 sur #080808, marge 10 × 16 px, bord #1F1F1F, arrondi complet: 42 px de haut. Survol: texte #F2F0E9, bord #333. Page en cours: pastille pleine #F2F0E9, texte #080808 (aria-current).<br><b>Ensemble</b> 16 px entre la marque et la partie droite, 12 px entre les éléments de droite, tous centrés verticalement ; sur un écran étroit, la partie droite passe à la ligne et reste calée à droite." },
-    { id: "title", side: "R", name: "Titre en points", field: "#titleDots", desc: "Le nom du site dessiné en canvas avec la police 5 × 7. Le dernier mot est en points éteints sur un fond de points d'accent.", rule: "<b>Valeurs:</b> 760 px de large au plus, centré. Points allumés #F2F0E9, points de fond #171717." },
-    { id: "tagline", side: "L", name: "Accroche", field: ".tagline", desc: "Ce que fait le projet, en une ligne. Le séparateur ● est en couleur d'accent.", rule: "<b>Valeurs:</b> Fira Code de 17 à 24 px selon la largeur." },
-    { id: "stats", side: "R", name: "Chiffres clés", field: ".stats", desc: "Quatre ou cinq nombres qui résument le projet, le plus important en premier.", rule: "<b>Valeurs:</b> nombre en accent 18 px, libellé en capitales .2em 14 px." },
-    { id: "showcase", side: "L", name: "Vitrine", field: ".edge-sec", desc: "Le produit en action: un bandeau de section, l'écran simulé, puis la navigation entre les vues.", rule: "<b>Valeurs:</b> écran au format 2560 × 720. Une vue toutes les 5 s, en pause au survol et au focus clavier." },
-    { id: "intro", side: "R", name: "Présentation", field: ".hubsec", desc: "Le projet en une carte: pictogramme, titre et statut, texte d'intro, les parties, l'usage au quotidien, l'installation en étapes et les liens.", rule: "<b>Valeurs:</b> panneau #0E0E0E, bord #262626, arrondi 20 px. Étapes dans un rond d'accent de 28 px, centrées sur la hauteur." },
-    { id: "list", side: "L", name: "Liste", field: "#list .grid", desc: "Un bandeau de section, puis une carte par élément, sans filtres.", rule: "<b>Valeurs:</b> cartes de 280 px au moins, écart 14 px. Pictogramme 7 × 7 de 70 px, statut à point coloré, titre 21 px, texte 15 px, liens dans le pied." },
-    { id: "footer", side: "R", name: "Pied de page", field: "footer", desc: "Le slogan à gauche en couleur d'accent, le lien du dépôt à droite.", rule: "<b>Valeurs:</b> Fira Code 13 px, capitales .24em." }
+    { id: "header", side: "L", name: "Top", field: ".top", desc: "Le même sur toutes les pages, toujours dans cet ordre: la marque à gauche, le reste à droite. Aucun bouton allumé: la marque mène déjà ici.", parts: ["La marque « ● DOT HUB » à gauche, lien vers la homePage.", "Le choix de langue FR / EN.", "Companion, lien vers la page Dot Companion.", "Releases, lien vers la page Dot Release.", "GitHub ↗, lien vers le dépôt du projet (nouvel onglet)."], rule: "<b>Valeurs:</b><br><b>Ensemble</b> en ligne, écart 16 px; répartis aux deux bouts. Rangée de 42 px, la marque à gauche, le reste à droite, tout centré verticalement<br><b>1.1</b> <code>a.brand</code>: Segoe UI 15 px, interligne 23,3 px, gras, espacement .22em, #F2F0E9, précédé d'un point de 12 px #10B981, en ligne, écart 10 px. Lien vers la homePage<br><b>1.2</b> <code>div.lang</code>: marge 4 px, bord 1 px #1F1F1F, arrondi 999 px, fond #080808, en ligne, écart 4 px, 98 × 38 px · <code>span.chip</code>: Fira Code 12 px, interligne normal, espacement .16em, capitales, #B8B6B0, marge 6 × 12 px, arrondi 999 px, fond #080808. Langue choisie en pastille pleine #F2F0E9, texte #080808<br><b>1.3</b> <code>a.ext</code>: Fira Code 13 px, interligne 20,2 px, espacement .16em, capitales, #B8B6B0, marge 10 × 16 px, bord 1 px #1F1F1F, arrondi 999 px, fond #080808, 125 × 42 px. Survol: texte #F2F0E9, bord #333. Page en cours: pastille pleine #F2F0E9, texte #080808 (aria-current)<br><b>1.4</b> <code>a.ext</code>: Fira Code 13 px, interligne 20,2 px, espacement .16em, capitales, #B8B6B0, marge 10 × 16 px, bord 1 px #1F1F1F, arrondi 999 px, fond #080808, 115 × 42 px. Comme 1.3<br><b>1.5</b> <code>a.ext</code>: Fira Code 13 px, interligne 20,2 px, espacement .16em, capitales, #B8B6B0, marge 10 × 16 px, bord 1 px #1F1F1F, arrondi 999 px, fond #080808, 114 × 42 px. Comme 1.3, ouvre le dépôt dans un nouvel onglet" },
+    { id: "hero", side: "R", name: "Hero", field: ".hero", desc: "L'ouverture de la page, centrée: le nom du site en points, ce que fait le projet, puis ses chiffres clés.", parts: ["Le titre en points (<code>#titleDots</code>): le nom du site dessiné en canvas avec la police 5 × 7, le dernier mot en points éteints sur un fond de points d'accent.", "L'accroche (<code>.tagline</code>): ce que fait le projet, en une ligne, le séparateur ● en couleur d'accent.", "Les chiffres clés (<code>.stats</code>): quatre ou cinq nombres qui résument le projet, le plus important en premier."], rule: "<b>Valeurs:</b><br><b>Ensemble</b> 22 px entre les éléments. 48 px sous l'en-tête<br><b>2.1</b> <code>div.title-box</code>: dessin en points de 760 × 171 px. Points tous les 19 px (la largeur suit le texte), 760 px au plus, centré. Dernier mot en points éteints sur un fond de points d'accent #10B981, points allumés #F2F0E9, points de fond #171717, rayon des points 0,36 × l'écart<br><b>2.2</b> <code>p.tagline</code>: Fira Code 24 px, interligne 37,2 px, #F2F0E9 · <code>i</code>: Fira Code 24 px, interligne 37,2 px, #10B981, marge 0 × 12 px. Séparateur ● en accent #10B981, .5em de chaque côté<br><b>2.3</b> <code>ul.stats</code>: en ligne, écart 28 px · <code>li</code>: Fira Code 14 px, interligne 21,7 px, espacement .2em, capitales, #B8B6B0 · <code>b</code>: Fira Code 18 px, interligne 27,9 px, graisse 500, espacement .16em, capitales, #10B981. Nombre en accent #10B981, 18 px, chiffres à largeur fixe, .5em après le nombre" },
+    { id: "showcase", side: "L", name: "Showcase", field: ".showcase", desc: "Le produit en action: un bandeau de section, l'écran simulé, puis la navigation entre les vues.", parts: ["Le titre de section (<code>.bar h2</code>), à gauche.", "L'aide (<code>.hint</code>): une phrase qui dit ce qu'on voit, à droite.", "L'écran Xeneon Edge (<code>.edge</code>): le boîtier, l'écran 2560 × 720 (<code>.screen</code>) et l'emplacement XL 2536 × 696 à 12 px du bord, où défilent les vues. Le même sur les modulePage (zone 4, Écran Xeneon Edge).", "Les points (<code>.pdots</code>): un par vue, celui de la vue affichée allumé. Toucher un point ouvre sa vue.", "Le nom de la vue affichée (<code>.where</code>): seulement le nom du module (ou de l'accueil), cliquable, qui ouvre sa page. Pas de numéro de page.", "Les boutons (<code>.nav</code>): ‹ vue précédente, retour à l'accueil, vue suivante ›."], rule: "<b>Valeurs:</b><br><b>Ensemble</b> 16 px entre les éléments. Une vue toutes les 5 s (l'accueil puis une capture XL par maquette), en pause tant que la souris ou le focus clavier est sur l'écran ; un changement à la main relance les 5 s<br><b>3.1</b> <code>h2</code>: Fira Code 13 px, interligne 20,2 px, graisse 500, espacement .2em, capitales, #B8B6B0<br><b>3.2</b> <code>p.hint</code>: Segoe UI 14 px, interligne 21,7 px, #B8B6B0<br><b>3.3</b> <code>div.edge</code>: marge 18 px, bord 1 px #2A2A2A, arrondi 24 px, fond en dégradé, 1240 × 376 px · <code>div.s-lbl</code>: Fira Code 9 px, interligne 14 px, espacement .2em, #B8B6B0, précédé d'un point de 5 px #10B981, en ligne, écart 8 px · <code>div.s-tile</code>: marge 10 px, bord 1 px #1D1D1D, arrondi 9 px, normal px entre les éléments · <code>span</code>: Fira Code 11 px, interligne 17,1 px, espacement .12em, #F2F0E9 · <code>div.s-tile.more</code>: Fira Code 14 px, interligne 21,7 px, espacement .12em, #B8B6B0, marge 10 px, bord 1 px #1D1D1D en pointillés, arrondi 9 px, normal px entre les éléments. Écran au format 2560 × 720, fond #000, arrondi 8 px ; emplacement XL 2536 × 696 à 12 / 12 px, fond #080808<br><b>3.4</b> <code>div.pdots</code>: en ligne, écart 2 px · <code>span</code>: précédé d'un point de 10 px #2A2A2A, normal px entre les éléments · <code>span.</code>: précédé d'un point de 10 px #F2F0E9, normal px entre les éléments. Zones tactiles de 32 × 32 px, point de 10 px #2A2A2A, #F2F0E9 pour la vue affichée<br><b>3.5</b> <code>a.where</code>: Fira Code 13 px, interligne 20,2 px, espacement .18em, capitales, #10B981. Seulement le nom de la vue, en accent, lien vers sa page (survol en #F2F0E9). Pas de numéro de page, pas de lien Maquette<br><b>3.6</b> <code>div.nav</code>: en ligne, écart 8 px · <code>span.chip</code>: Fira Code 12 px, interligne normal, espacement .16em, capitales, #B8B6B0, marge 10 × 16 px, bord 1 px #1F1F1F, arrondi 999 px, fond #080808. ‹ vue précédente, retour à l'accueil, vue suivante ›" },
+    { id: "intro", side: "R", name: "About", field: ".about", desc: "Le projet en une carte: son identité, ce qu'il est, comment il marche, comment l'installer, puis les liens.", parts: ["Le pictogramme (<code>.about-head canvas</code>): le projet dessiné en points 7 × 7.", "Le titre (<code>.about-head h2</code>): le nom du projet, à droite du pictogramme, en haut, sur une ligne.", "Le statut (<code>.status</code>): sous le titre, un point de couleur puis l'état du projet.", "La version (<code>.ver</code>): sous le statut, en bas, la version du projet.", "L'intro (<code>.about-lead</code>): ce qu'est le projet, à qui il sert et ce qu'il change, en une ou deux phrases.", "Le sur-titre « Comment ça marche » (<code>.about-k</code>).", "Les parties (<code>.parts</code>): une case par partie du projet, avec son nom, son rôle, ce qu'elle fait et un lien.", "Au quotidien (<code>.daily</code>): ce que fait la personne une fois tout installé, en une phrase.", "Le sur-titre « Installer » (<code>.about-k</code>).", "Les étapes (<code>.steps</code>): l'installation en étapes numérotées, une phrase chacune.", "Les liens (<code>.links</code>): la maquette (en accent), le téléchargement, la fiche."], rule: "<b>Valeurs:</b><br><b>Ensemble</b> marge 32 px; bord 1 px #262626; arrondi 20 px; fond #0E0E0E; 22 px entre les éléments. Le haut est disposé comme celui d'une carte de la zone List (5.2 à 5.5): le titre en haut, la version en bas, calés sur les 70 px du pictogramme<br><b>4.1</b> <code>span.pic</code>: dessin en points de 70 × 70 px<br><b>4.2</b> <code>h2</code>: Fira Code 28 px, interligne 32,2 px, graisse 500, espacement .14em, capitales, #F2F0E9, une ligne, coupée par « … »<br><b>4.3</b> <code>span.status</code>: Fira Code 12 px, interligne 18,6 px, espacement .14em, capitales, #B8B6B0, précédé d'un point de 8 px #F5B942, en ligne, écart 8 px. Point à la couleur du statut (voir 5.4)<br><b>4.4</b> <code>span.ver</code>: Fira Code 12 px, interligne 18,6 px, espacement .14em, capitales, #7D7B76<br><b>4.5</b> <code>p.about-lead</code>: Segoe UI 19 px, interligne 29,5 px, #F2F0E9<br><b>4.6</b> <code>p.about-k</code>: Fira Code 12 px, interligne 18,6 px, espacement .2em, capitales, #B8B6B0<br><b>4.7</b> <code>div.parts</code>: 2 colonnes, écart 12 px · <code>div.part</code>: marge 20 × 22 px, bord 1 px #1F1F1F, arrondi 14 px, fond #080808, 10 px entre les éléments · <code>h3</code>: Segoe UI 18 px, interligne 27,9 px, gras, #F2F0E9 · <code>span.tag2</code>: Fira Code 11 px, interligne 17,1 px, espacement .16em, capitales, #10B981 · <code>p</code>: Segoe UI 15 px, interligne 23,3 px, #B8B6B0 · <code>span.more</code>: Fira Code 12 px, interligne 18,6 px, espacement .14em, capitales, #10B981. Partie: nom en gras, rôle en accent, texte, lien en accent<br><b>4.8</b> <code>p.daily</code>: Segoe UI 15 px, interligne 23,3 px, #B8B6B0 · <code>b</code>: Segoe UI 15 px, interligne 23,3 px, graisse 600, #F2F0E9<br><b>4.9</b> <code>p.about-k</code>: Fira Code 12 px, interligne 18,6 px, espacement .2em, capitales, #B8B6B0<br><b>4.10</b> <code>ol.steps</code>: 3 colonnes, écart 12 px · <code>li</code>: numéro dans un rond de 28 px #10B981, marge 16 × 18 px, bord 1 px #1F1F1F, arrondi 14 px, 2 colonnes, écart 14 px · <code>span</code>: Segoe UI 15 px, interligne 23,3 px, #B8B6B0 · <code>b</code>: Segoe UI 15 px, interligne 23,3 px, graisse 600, #F2F0E9. Numéro dans un rond d'accent #10B981 de 28 px, texte #080808<br><b>4.11</b> <code>div.links</code>: en ligne, écart 16 px · <code>span.mock</code>: Fira Code 12 px, interligne 18,6 px, espacement .14em, capitales, #10B981 · <code>span</code>: Fira Code 12 px, interligne 18,6 px, espacement .14em, capitales, #B8B6B0. Maquette en accent #10B981, les autres en #B8B6B0" },
+    { id: "list", side: "L", name: "List", field: ".list", desc: "Un bandeau de section, puis une carte par élément, sans filtres. Chaque carte a le même contenu, détaillé ici sur la première. Toutes les cartes sont cliquables, même celles des idées: chaque élément a une page à consulter.", parts: ["Le bandeau de section (<code>.bar</code>): le titre de la liste, court (sur Dot Page: « Les dots »).", "Le pictogramme (<code>.card canvas</code>): l'élément dessiné en points 7 × 7.", "Le titre (<code>.card h3</code>): le nom de l'élément sans le préfixe commun à tous (« Dot »), pour laisser la place au titre ; la page de l'élément garde le nom complet. À droite du pictogramme, en haut, sur une ligne.", "Le statut (<code>.status</code>): sous le titre, un point de couleur puis l'état de l'élément (En cours, Spécifié, En conception, Idée).", "La version (<code>.ver</code>): sous le statut, en bas, la version de l'élément.", "La description (<code>.card p</code>): ce que fait l'élément, d'une à trois lignes."], rule: "<b>Valeurs:</b><br><b>Ensemble</b> 18 px entre les éléments; <code>div.grid</code>: 4 colonnes, écart 14 px; <code>a.card.has</code>: marge 22 px, bord 1 px #262626, arrondi 18 px, fond #0E0E0E, 14 px entre les éléments. 4 cartes par ligne par défaut. Toutes les cartes sont cliquables, même celles des idées: la page de l'élément (sa modulePage, ou sa fiche tant qu'il n'a pas de maquette). Bord #262626, bord en accent #10B981 au survol<br><b>5.1</b> <code>div.bar</code>: en ligne, écart 24 px, répartis aux deux bouts · <code>h2</code>: Fira Code 13 px, interligne 20,2 px, graisse 500, espacement .2em, capitales, #B8B6B0<br><b>5.2</b> <code>span.pic</code>: dessin en points de 70 × 70 px<br><b>5.3</b> <code>h3</code>: Segoe UI 21 px, interligne 27,3 px, gras, espacement .02em, #F2F0E9, une ligne, coupée par « … ». Le nom sans « Dot » (préfixe commun à tous les éléments)<br><b>5.4</b> <code>span.status</code>: Fira Code 12 px, interligne 18,6 px, espacement .14em, capitales, #B8B6B0, précédé d'un point de 8 px #F5B942, en ligne, écart 8 px. Couleur du point: en cours #F5B942, spécifié #A78BFA, en conception #5AA9E6, idée #6B6B6B<br><b>5.5</b> <code>span.ver</code>: Fira Code 12 px, interligne 18,6 px, espacement .14em, capitales, #7D7B76<br><b>5.6</b> <code>p</code>: Segoe UI 15 px, interligne 23,3 px, #B8B6B0" },
+    { id: "footer", side: "R", name: "Footer", field: ".footer", desc: "Le slogan du projet à gauche, le lien vers son dépôt à droite. Le même sur toutes les pages.", parts: ["Le slogan (<code>.red</code>): ce qu'est le projet, en quelques mots séparés par ·, propre à chaque projet.", "Le lien du dépôt: toujours sur le compte Mathod95 (<code>Mathod95/&lt;dépôt&gt;</code>), vers la page GitHub du projet."], rule: "<b>Valeurs:</b><br><b>Ensemble</b> en ligne, écart 24 px; répartis aux deux bouts. Slogan à gauche, lien à droite, dernière zone de la page<br><b>6.1</b> <code>span.red</code>: Fira Code 13 px, interligne 20,2 px, espacement .24em, capitales, #10B981. Propre à chaque projet<br><b>6.2</b> <code>span</code>: Fira Code 13 px, interligne 20,2 px, espacement .24em, capitales, #B8B6B0. Toujours Mathod95/&lt;dépôt&gt;" }
   ] };
 </script>
 <script src="anatomy.js"></script>

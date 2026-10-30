@@ -14,6 +14,7 @@
   --wip: #f5b942;
   --spec: #a78bfa;
   --design: #5aa9e6;
+  --idea: #6b6b6b;
   --mono: "Fira Code", "Cascadia Mono", Consolas, monospace;
   --brand: "Segoe UI", Selawik, system-ui, sans-serif;
   color-scheme: dark;
@@ -73,7 +74,7 @@ button:focus-visible, .a-item:focus-visible { outline: 2px solid var(--accent); 
 .a-sub { display: grid; gap: 6px; }
 .a-sub h2 { margin: 0; font-family: var(--mono); font-weight: 500; font-size: 13px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); }
 .a-sub p { margin: 0; color: var(--label); font-size: 15px; }
-.a-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); gap: 12px; }
+.a-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; } /* une fiche par ligne, sur toute la largeur */
 .a-item { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px 14px; align-content: start; padding: 18px 20px; border: 1px solid var(--line); border-radius: 14px; background: var(--panel); transition: border-color 120ms; }
 .a-item.is-active { border-color: #1d5c46; }
 .a-item .a-num { grid-row: span 3; margin-top: 2px; }
@@ -105,7 +106,18 @@ button:focus-visible, .a-item:focus-visible { outline: 2px solid var(--accent); 
 /* éléments d'une zone : pastille 1.1, 1.2… sous l'élément */
 .mini [data-part] { position: relative; }
 .mini .badge.sub { left: 50%; top: calc(100% + 8px); transform: translateX(-50%); width: auto; min-width: 40px; height: 24px; padding: 0 7px; border-radius: 999px; font-size: 13px; }
-.mini [data-part].is-part { outline: 3px solid var(--accent); outline-offset: 3px; border-radius: 999px; }
+.mini [data-part-at="t"] > .badge.sub { top: -8px; transform: translate(-50%, -100%); }
+.mini [data-part-at="tl"] > .badge.sub { left: 14px; top: 14px; transform: none; }
+.mini [data-part-at="tr"] > .badge.sub { left: auto; right: 14px; top: 14px; transform: none; }
+.mini [data-part-at="l"] > .badge.sub { left: 8px; top: 50%; transform: translateY(-50%); }
+.mini [data-part-at="o-r"] > .badge.sub { left: calc(100% + 8px); top: 50%; transform: translateY(-50%); }
+.mini [data-part-at="o-l"] > .badge.sub { left: auto; right: calc(100% + 8px); top: 50%; transform: translateY(-50%); }
+.mini [data-part-at="r"] > .badge.sub { left: auto; right: 8px; top: 50%; transform: translateY(-50%); }
+/* En-tête : la marque a la hauteur des pastilles (42 px), texte centré verticalement ; les pastilles 1.1 à 1.5 sur une même ligne, sous la rangée. */
+.mini .top .brand { height: 42px; }
+.mini .top [data-part] > .badge.sub { top: calc(50% + 29px); }
+.mini [data-part].is-part { outline: 3px solid var(--accent); outline-offset: 3px; }
+.mini .top [data-part].is-part { border-radius: 999px; }
 .mini [data-part].is-part > .badge.sub { background: var(--accent); border-color: var(--accent); color: var(--bg); }
 
 /* ===== vue squelette : la même page, contenu masqué, chaque zone et chaque bloc nommés ===== */
@@ -118,5 +130,11 @@ button:focus-visible, .a-item:focus-visible { outline: 2px solid var(--accent); 
 .mini.sk [data-sk] { position: relative; color: transparent; background: transparent; border-color: transparent; box-shadow: none; outline: 1px dashed #3a3a38; outline-offset: -1px; border-radius: 10px; }
 .mini.sk [data-sk]::before { visibility: hidden; }
 .mini.sk [data-sk].cur, .mini.sk [data-sk].on { color: transparent; background: transparent; border-color: transparent; }
+/* squelette : le texte d'un bloc nommé reste caché, même si sa page lui donne une couleur */
+.mini.sk [data-sk] { color: transparent !important; }
 .mini.sk [data-sk]::after { content: attr(data-sk); position: absolute; inset: 0; display: grid; place-items: center; padding: 0 8px; overflow: hidden; color: #8f8d87; font: 15px/1.2 "Fira Code", Consolas, monospace; letter-spacing: .06em; text-transform: none; text-align: center; white-space: normal; visibility: visible; }
+/* Hero : les éléments du milieu sont des rectangles ; le premier (le titre, 2.1) reprend l'arrondi du haut de sa zone (14 px), le dernier (2.2, 2.3 ou 2.4 selon la page) celui du bas, en vraie vue comme en squelette */
+.mini .hero > [data-part], .mini.sk .hero > [data-part] { border-radius: 0; }
+.mini .hero > .badge + [data-part], .mini.sk .hero > .badge + [data-part] { border-radius: 14px 14px 0 0; }
+.mini .hero > [data-part]:last-child, .mini.sk .hero > [data-part]:last-child { border-radius: 0 0 14px 14px; }
 @media (prefers-reduced-motion: reduce) { .mini [data-zone], .a-item, .a-parts li, .a-leaders path, .a-leaders circle { transition: none; } }

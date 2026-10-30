@@ -75,11 +75,15 @@
     R: ["####.", "#...#", "#...#", "####.", "#.#..", "#..#.", "#...#"],
     S: [".####", "#....", "#....", ".###.", "....#", "....#", "####."],
     T: ["#####", "..#..", "..#..", "..#..", "..#..", "..#..", "..#.."],
+    H: ["#...#", "#...#", "#...#", "#####", "#...#", "#...#", "#...#"],
+    U: ["#...#", "#...#", "#...#", "#...#", "#...#", "#...#", ".###."],
+    B: ["####.", "#...#", "#...#", "####.", "#...#", "#...#", "####."],
     2: [".###.", "#...#", "....#", "...#.", "..#..", ".#...", "#####"],
     4: ["...#.", "..##.", ".#.#.", "#..#.", "#####", "...#.", "...#."],
     " ": ["..", "..", "..", "..", "..", "..", ".."]
   };
   // accentLast : le dernier mot en points éteints sur un fond de points d'accent (titre de la homePage)
+  // sans data-pitch, l'écart entre les points découle de la largeur du canvas
   function drawTitle(cv, text, accentLast, lit) {
     var ctx = cv.getContext("2d"), cols = [], lastWordCol = 0;
     text.split("").forEach(function (ch, i) {
@@ -89,6 +93,8 @@
       if (i < text.length - 1) cols.push([false, false, false, false, false, false, false]);
     });
     var pad = 1, total = cols.length + pad * 2, rows = 7 + pad * 2, accentFrom = accentLast ? lastWordCol + pad : Infinity;
+    // data-pitch : écart fixe entre les points, en px ; la largeur du titre suit alors la longueur du texte (canvas en double résolution)
+    if (cv.dataset.pitch) { var pp = +cv.dataset.pitch; cv.width = total * pp * 2; cv.style.width = total * pp + "px"; }
     var pitch = cv.width / total, r = pitch * 0.36;
     cv.height = Math.round(rows * pitch);
     for (var x = 0; x < total; x++) for (var y = 0; y < rows; y++) {

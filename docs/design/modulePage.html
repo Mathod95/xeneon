@@ -13,7 +13,7 @@
   --m-sans: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
   font-family: var(--m-sans); font-size: 15px; color: var(--m-text);
 }
-.mini .pw { max-width: 1480px; margin: 0 auto; display: grid; gap: 40px; }
+.mini .pw { max-width: 1240px; margin: 0 auto; display: grid; gap: 48px; }
 /* en-tête du site, le même que sur les trois autres types de pages */
 .mini .top { display: flex; align-items: center; justify-content: space-between; gap: 16px; font-family: var(--brand); font-size: 16px; line-height: 1.55; color: var(--lit); }
 .mini .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; letter-spacing: .22em; font-size: 15px; color: inherit; text-decoration: none; }
@@ -26,11 +26,11 @@
 .mini .chip { font-family: var(--mono); font-size: 12px; letter-spacing: .16em; text-transform: uppercase; padding: 6px 12px; border-radius: 999px; background: var(--bg); color: var(--label); line-height: normal; }
 .mini .chip.on { background: var(--lit); color: var(--bg); }
 
-.mini header { display: grid; gap: 10px; }
-.mini .eyebrow { font-family: var(--m-mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--m-muted); display: flex; align-items: center; gap: 10px; }
-.mini .eyebrow::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
-.mini h1 { font-family: var(--m-mono); font-weight: 500; font-size: 44px; line-height: 1.1; margin: 0; letter-spacing: -.01em; }
-.mini .lede { color: var(--m-muted); max-width: 72ch; margin: 0; }
+.mini .hero { display: grid; gap: 10px; }
+.mini .hero .title { font-family: var(--mono); font-weight: 500; font-size: 70px; line-height: 1.1; margin: 0; letter-spacing: -.01em; }
+.mini .facts { display: flex; flex-wrap: wrap; gap: 8px 28px; margin: 0; padding: 0; list-style: none; font-family: var(--mono); font-size: 13px; letter-spacing: .18em; text-transform: uppercase; color: var(--label); }
+.mini .facts b { color: var(--accent); font-weight: 500; margin-right: .5em; }
+.mini .lede { color: var(--m-muted); margin: 0; }
 
 .mini figure { margin: 0; display: grid; gap: 12px; }
 .mini .head2 { display: grid; gap: 12px; }
@@ -43,8 +43,11 @@
 .mini .preset i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
 
 /* l'écran du module : emplacement XL à l'échelle */
-.mini .frame { position: relative; width: 100%; aspect-ratio: 2536 / 696; border: 1px solid var(--m-line); border-radius: 10px; overflow: hidden; background: #080808; }
-.mini .scene { position: absolute; left: 0; top: 0; width: 2536px; height: 696px; transform: scale(.58360); transform-origin: 0 0; font-family: var(--mono); font-variant-ligatures: none; color: var(--lit); }
+/* écran Xeneon Edge : le même que la vitrine de la homePage (5.2, .edge), valeurs de tools/site/index.html */
+.mini .edge { padding: clamp(6px, 1.2%, 18px); border-radius: 24px; background: linear-gradient(180deg, #161616, #0b0b0b); border: 1px solid #2a2a2a; box-shadow: 0 40px 80px -40px #000, inset 0 1px 0 #262626; }
+.mini .screen { position: relative; aspect-ratio: 2560 / 720; overflow: hidden; border-radius: 8px; background: #000; }
+.mini .panel { position: absolute; left: 0; top: 0; width: 2560px; height: 720px; transform-origin: 0 0; }
+.mini .scene { position: absolute; left: 12px; top: 12px; width: 2536px; height: 696px; background: #080808; border-radius: 12px; overflow: hidden; font-family: var(--mono); font-variant-ligatures: none; color: var(--lit); }
 .mini .s-dot { position: absolute; left: 56px; top: 51px; width: 10px; height: 10px; border-radius: 50%; background: var(--accent); }
 .mini .s-lbl { position: absolute; left: 80px; top: 44px; font-size: 18px; line-height: 24px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); }
 .mini .s-state { position: absolute; right: 56px; top: 44px; font-size: 18px; line-height: 24px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); }
@@ -94,6 +97,10 @@
 .mini .renders figure { gap: 8px; }
 .mini .thumb { aspect-ratio: 2536 / 696; border: 1px solid var(--m-line); border-radius: 10px; background: #080808 radial-gradient(circle, #1c1c1c 2.4px, transparent 3px) 0 0 / 12px 12px; }
 .mini .renders figcaption { font-family: var(--m-mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; }
+
+/* pied de page : le même que sur les trois autres types de pages (valeurs du site) */
+.mini .footer { display: flex; justify-content: space-between; gap: 12px 24px; font-family: var(--mono); font-size: 13px; letter-spacing: .24em; text-transform: uppercase; color: var(--label); }
+.mini .footer .red { color: var(--accent); }
 </style>
 
 <div class="wrap">
@@ -122,7 +129,7 @@
       <div class="mini" id="mini" aria-hidden="true">
         <div class="pw">
 
-          <div class="top" data-zone="top" data-name="En-tête"><span class="badge">1</span>
+          <div class="top" data-zone="top" data-name="Top"><span class="badge">1</span>
             <a class="brand" data-part="1" href="https://mathod95.github.io/xeneon/" tabindex="-1" data-sk="marque">DOT HUB</a>
             <div class="topr">
               <div class="lang" data-part="2" data-sk="FR / EN"><span class="chip on">FR</span><span class="chip">EN</span></div>
@@ -130,11 +137,11 @@
             </div>
           </div>
 
-          <header data-zone="header" data-name="Présentation"><span class="badge">2</span>
-            <div class="eyebrow" data-sk="sur-titre">Module Dot Hub · CORSAIR XENEON EDGE</div>
-            <h1 data-sk="nom du module">Dot Module</h1>
-            <p class="lede" data-sk="état de la proposition, ce que fait le module, données fictives">Proposition v0.1, à valider dans le tableau. Ce que fait le module en deux phrases, d'où viennent ses données et ce qu'il demande au compagnon. Toutes les valeurs sont fictives.</p>
-          </header>
+          <section class="hero" data-zone="hero" data-name="Hero"><span class="badge">2</span>
+            <h1 class="title" data-part="1" data-part-at="r" data-sk="nom du module, en texte">Dot Module</h1>
+            <p class="lede" data-part="2" data-part-at="r" data-sk="état de la proposition, ce que fait le module, données fictives">Proposition v0.1, à valider dans le tableau. Ce que fait le module en deux phrases, d'où viennent ses données et ce qu'il demande au compagnon. Toutes les valeurs sont fictives.</p>
+            <ul class="facts" data-part="3" data-part-at="r" data-sk="valeur en accent + libellé, ×3"><li><b>8</b>fonctions</li><li><b>0.1</b>version</li><li><b>Oui</b>connexion externe (API)</li></ul>
+          </section>
 
           <figure>
             <div class="head2" data-zone="tag" data-name="Repère et tailles"><span class="badge">3</span>
@@ -142,9 +149,10 @@
               <div class="sizebar" data-sk="tailles S, M, L, XL"><span>Widget size</span><span class="preset">S · 840 × 344</span><span class="preset">M · 840 × 696</span><span class="preset">L · 1688 × 696</span><span class="preset on">XL · 2536 × 696</span></div>
             </div>
 
-            <div data-zone="frame" data-name="Écran du module"><span class="badge">4</span>
-              <div class="frame" data-sk="le module en XL, 2536 × 696, rendu par ses propres fichiers">
-                <div class="scene">
+            <div data-zone="edge" data-name="Écran Xeneon Edge"><span class="badge">4</span>
+              <div class="edge" data-sk="écran Xeneon Edge 2560 × 720, le module dans l'emplacement XL 2536 × 696">
+                <div class="screen"><div class="panel">
+                  <div class="scene">
                   <span class="s-dot"></span><span class="s-lbl">Dot Module</span>
                   <span class="s-state">État · 00:00</span>
                   <div class="s-main"><canvas width="1040" height="720" data-title="42"></canvas><b>VALEUR PRINCIPALE</b><span>DÉTAIL · UNITÉ</span></div>
@@ -155,6 +163,7 @@
                     <div class="s-row">LIGNE A <em>00</em></div><div class="s-row">LIGNE B <em>00</em></div><div class="s-row">LIGNE C <em>00</em></div><div class="s-row">LIGNE D <em>00</em></div><div class="s-row">LIGNE E <em>00</em></div>
                   </div>
                 </div>
+                </div></div>
               </div>
             </div>
 
@@ -197,6 +206,11 @@
             </div>
           </section>
 
+          <footer class="footer" data-zone="footer" data-name="Footer"><span class="badge">9</span>
+            <span class="red" data-part="1" data-sk="slogan">Slogan · Touch · Dot-matrix</span>
+            <span data-part="2" data-sk="Mathod95/dépôt">Mathod95/projet</span>
+          </footer>
+
         </div>
       </div>
     </div>
@@ -205,23 +219,28 @@
 
   <div class="a-sub">
     <h2>Les zones</h2>
-    <p>Ce que chaque zone contient, et les valeurs à reprendre telles quelles (celles des maquettes de référence, <code>widgets/&lt;slug&gt;/mockups/reference.html</code>). Les zones 1 à 7 sont toujours là, la 8 seulement quand le module en a besoin.</p>
+    <p>Ce que chaque zone contient, et les valeurs à reprendre telles quelles (celles des maquettes de référence, <code>widgets/&lt;slug&gt;/mockups/reference.html</code>). Les zones 1 à 7 et 9 sont toujours là, la 8 seulement quand le module en a besoin.</p>
   </div>
   <ol class="a-list" id="list"></ol>
 
-  <p class="a-base"><b>Socle commun</b>: fond #080808 avec la trame de points de 22 px, place de la barre de défilement toujours réservée (la page ne se décale pas d'une page à l'autre), une seule couleur d'accent, un seul thème sombre. Propre aux maquettes: contenu de 1480 px au plus, 40 px entre les zones, IBM Plex Mono et IBM Plex Sans pour la page (le module garde Fira Code), panneaux #0A0A0A, bords #262626. Maquette = module: la page charge les vrais fichiers du module quand il est codé, et ne garde que l'habillage.</p>
+  <p class="a-base"><b>Socle commun</b>: fond #080808 avec la trame de points de 22 px, place de la barre de défilement toujours réservée (la page ne se décale pas d'une page à l'autre), une seule couleur d'accent, un seul thème sombre. Propre aux maquettes: contenu de 1240 px au plus, comme les autres pages, 48 px entre les zones, comme les autres pages, IBM Plex Mono et IBM Plex Sans pour la page (le module garde Fira Code), panneaux #0A0A0A, bords #262626. Maquette = module: la page charge les vrais fichiers du module quand il est codé, et ne garde que l'habillage.</p>
 </div>
 
 <script>
-window.ANATOMY = { native: 1560, zones: [
-  { id: "top", side: "L", name: "En-tête", field: ".top", desc: "Le même sur toutes les pages, toujours dans cet ordre: la marque à gauche, le reste à droite. Aucun bouton allumé: une maquette n'a pas de bouton dans l'en-tête.", parts: ["La marque « ● DOT HUB » à gauche, lien vers la homePage.", "Le choix de langue FR / EN.", "Companion, lien vers la page Dot Companion.", "Releases, lien vers la page Dot Release.", "GitHub ↗, lien vers le dépôt du projet (nouvel onglet)."], rule: "<b>Valeurs:</b><br><b>1.1</b> Segoe UI 15 px gras, capitales espacées .22em, #F2F0E9, après un point d'accent de 12 px (10 px d'écart). Texte seul, sans marge ni bord: 23 px de haut.<br><b>1.2</b> Groupe à bord #1F1F1F sur #080808, arrondi complet, 4 px de marge et 4 px entre les puces: 38 px de haut. Puces Fira Code 12 px, capitales .16em, #B8B6B0, marge 6 × 12 px, sans bord ; langue choisie en pastille pleine #F2F0E9, texte #080808.<br><b>1.3 à 1.5</b> Pastilles Fira Code 13 px, capitales .16em, #B8B6B0 sur #080808, marge 10 × 16 px, bord #1F1F1F, arrondi complet: 42 px de haut. Survol: texte #F2F0E9, bord #333. Page en cours: pastille pleine #F2F0E9, texte #080808 (aria-current).<br><b>Ensemble</b> 16 px entre la marque et la partie droite, 12 px entre les éléments de droite, tous centrés verticalement ; sur un écran étroit, la partie droite passe à la ligne et reste calée à droite." },
-  { id: "header", side: "R", name: "Présentation", field: "header", desc: "Un sur-titre (Module Dot Hub · CORSAIR XENEON EDGE), le nom du module, puis l'état de la proposition et ce que fait le module.", rule: "<b>Valeurs:</b> sur-titre IBM Plex Mono 12 px capitales .14em #8C8C8C après un point d'accent de 8 px. Nom en IBM Plex Mono de 28 à 44 px. Texte #8C8C8C, 72 caractères par ligne au plus." },
-  { id: "tag", side: "L", name: "Repère et tailles", field: ".tag + .sizebar", desc: "« Maquette de référence » avec la version et la taille réelle, puis les boutons de taille. Pour l'instant, seul le XL est travaillé.", rule: "<b>Valeurs:</b> IBM Plex Mono 12 px capitales .14em. Taille choisie en pastille pleine #E6E6E6, arrondi 6 px." },
-  { id: "frame", side: "R", name: "Écran du module", field: ".frame", desc: "Le module à la taille réelle de l'emplacement XL, mis à l'échelle de la page. Quand le module est codé, c'est son vrai rendu (mount de scripts/&lt;nom&gt;.js).", rule: "<b>Valeurs:</b> XL 2536 × 696, fond #080808. Libellé ● DOT … toujours au même endroit: point d'accent de 10 px à 56 / 51 px, texte Fira Code 18 px (interligne 24, capitales .2em) à 80 / 44 px. Textes de 18 px au moins, zones tactiles de 60 × 60 px au moins." },
-  { id: "settings", side: "L", name: "Réglages simulés", field: ".settings", desc: "Les réglages du module sous les noms de ses propriétés iCUE (en anglais), puis les quatre couleurs communes et les couleurs d'accent proposées.", rule: "<b>Valeurs:</b> panneau #0A0A0A, bord #262626, arrondi 10 px. Libellés 12 px capitales .1em. Accent color, Lit dot color, Unlit dot color, Label color ; préréglages Émeraude #10B981 et Rouge A #ED403B." },
-  { id: "caption", side: "R", name: "Légende", field: "figcaption", desc: "Ce que montre l'écran, puis ce que fait chaque geste.", rule: "<b>Valeurs:</b> 14 px, #8C8C8C." },
-  { id: "table", side: "L", name: "Choix de design", field: "table", desc: "Une ligne par décision, numérotée. Une ligne n'est « Validé » qu'avec l'accord de Mathod95, et sa date.", rule: "<b>Valeurs:</b> en-têtes 12 px capitales .12em sur #0A0A0A, numéro en IBM Plex Mono, élément en 500. Ligne à valider en #8C8C8C." },
-  { id: "annex", side: "R", name: "Sections annexes", field: "section", desc: "Facultatives: comparaison de rendus, capture réelle de l'Edge, tout ce qui aide à décider.", rule: "<b>Valeurs:</b> même bandeau que le tableau (titre 13 px capitales .14em, aide 14 px), 14 px entre les blocs." }
+window.ANATOMY = { native: 1320, zones: [
+  { id: "top", side: "L", name: "Top", field: ".top", desc: "Le même sur toutes les pages, toujours dans cet ordre: la marque à gauche, le reste à droite. Aucun bouton allumé: une maquette n'a pas de bouton dans l'en-tête.", parts: ["La marque « ● DOT HUB » à gauche, lien vers la homePage.", "Le choix de langue FR / EN.", "Companion, lien vers la page Dot Companion.", "Releases, lien vers la page Dot Release.", "GitHub ↗, lien vers le dépôt du projet (nouvel onglet)."], rule: "<b>Valeurs:</b><br><b>Ensemble</b> en ligne, écart 16 px; répartis aux deux bouts. Rangée de 42 px, la marque à gauche, le reste à droite, tout centré verticalement. Aucune pastille allumée<br><b>1.1</b> <code>a.brand</code>: Segoe UI 15 px, interligne 23,3 px, gras, espacement .22em, #F2F0E9, précédé d'un point de 12 px #10B981, en ligne, écart 10 px. Lien vers la homePage<br><b>1.2</b> <code>div.lang</code>: marge 4 px, bord 1 px #1F1F1F, arrondi 999 px, fond #080808, en ligne, écart 4 px, 98 × 38 px · <code>span.chip</code>: Fira Code 12 px, interligne normal, espacement .16em, capitales, #B8B6B0, marge 6 × 12 px, arrondi 999 px, fond #080808. Langue choisie en pastille pleine #F2F0E9, texte #080808<br><b>1.3</b> <code>a.ext</code>: Fira Code 13 px, interligne 20,2 px, espacement .16em, capitales, #B8B6B0, marge 10 × 16 px, bord 1 px #1F1F1F, arrondi 999 px, fond #080808, 125 × 42 px. Survol: texte #F2F0E9, bord #333<br><b>1.4</b> <code>a.ext</code>: Fira Code 13 px, interligne 20,2 px, espacement .16em, capitales, #B8B6B0, marge 10 × 16 px, bord 1 px #1F1F1F, arrondi 999 px, fond #080808, 115 × 42 px. Comme 1.3<br><b>1.5</b> <code>a.ext</code>: Fira Code 13 px, interligne 20,2 px, espacement .16em, capitales, #B8B6B0, marge 10 × 16 px, bord 1 px #1F1F1F, arrondi 999 px, fond #080808, 114 × 42 px. Comme 1.3, ouvre le dépôt dans un nouvel onglet" },
+  { id: "hero", side: "R", name: "Hero", field: ".hero", desc: "L'ouverture de la maquette, calée à gauche: le nom du module, l'état de la proposition et ce que fait le module, puis ses faits. Pas de grand titre en points: le module, juste en dessous, est déjà en points.", parts: ["Le titre (<code>.title</code>): le nom du module, en texte.", "L'accroche (<code>.lede</code>): l'état de la proposition, ce que fait le module, d'où viennent ses données.", "Les faits (<code>.facts</code>): le nombre de fonctions, la version de la maquette, et s'il faut une connexion externe (une API) pour certaines fonctions."], rule: "<b>Valeurs:</b><br><b>Ensemble</b> 10 px entre les éléments<br><b>2.1</b> <code>h1.title</code>: Fira Code 70 px, interligne 77 px, graisse 500, espacement -0.01em, #E6E6E6. Pas de sur-titre, pas de titre en points<br><b>2.2</b> <code>p.lede</code>: IBM Plex Sans 15 px, interligne 23,3 px, #8C8C8C<br><b>2.3</b> <code>ul.facts</code>: en ligne, écart 28 px · <code>li</code>: Fira Code 13 px, interligne 20,2 px, espacement .18em, capitales, #B8B6B0 · <code>b</code>: Fira Code 13 px, interligne 20,2 px, graisse 500, espacement .18em, capitales, #10B981. Valeur en accent #10B981 ; connexion externe: Oui ou Non" },
+  { id: "tag", side: "L", name: "Repère et tailles", field: ".tag + .sizebar", desc: "« Maquette de référence » avec la version et la taille réelle, puis les boutons de taille. Pour l'instant, seul le XL est travaillé.", rule: "<b>Valeurs:</b><br><b>Ensemble</b> 12 px entre les éléments. Taille choisie en pastille pleine. Pour l'instant, seul le XL est travaillé<br><b>repère · version et taille réelle</b> <code>div.tag</code>: en ligne, écart 12 px, répartis aux deux bouts · <code>b</code>: IBM Plex Mono 14 px, interligne 21,7 px, graisse 500, espacement .12em, capitales, #E6E6E6 · <code>span</code>: IBM Plex Mono 12 px, interligne 18,6 px, espacement .14em, capitales, #8C8C8C<br><b>tailles S, M, L, XL</b> <code>div.sizebar</code>: en ligne, écart 10 px · <code>span</code>: IBM Plex Mono 12 px, interligne 18,6 px, espacement .1em, capitales, #8C8C8C · <code>span.preset</code>: IBM Plex Mono 11 px, interligne 17,1 px, espacement .1em, capitales, #E6E6E6, marge 6 × 10 px, bord 1 px #262626, arrondi 6 px, en ligne, écart 8 px" },
+  { id: "edge", side: "R", name: "Écran Xeneon Edge", field: ".edge", desc: "Le même écran que dans la zone Showcase de la homePage (3.3): le boîtier de l'Edge, l'écran 2560 × 720 et, dedans, l'emplacement XL 2536 × 696 où le module s'affiche à sa taille réelle, réduit à la largeur de la page. Quand le module est codé, c'est son vrai rendu (mount de scripts/&lt;nom&gt;.js).", rule: "<b>Valeurs:</b><br><b>Ensemble</b> Le même écran que dans la zone Showcase de la homePage (3.3): écran au format 2560 × 720, fond #000, arrondi 8 px ; emplacement XL 2536 × 696 à 12 / 12 px, fond #080808, arrondi 12 px ; le module à sa taille réelle, réduit à la largeur de l'écran. Libellé ● DOT … toujours au même endroit: point d'accent de 10 px à 56 / 51 px, texte Fira Code 18 px (interligne 24 px, capitales .2em) à 80 / 44 px. Sur l'Edge: textes de 18 px au moins, zones tactiles de 60 × 60 px au moins<br><b>écran Xeneon Edge 2560 × 720, le module dans l'emplacement XL 2536 × 696</b> <code>div.edge</code>: marge 14,9 px, bord 1 px #2A2A2A, arrondi 24 px, fond en dégradé, 1240 × 372 px · <code>span.s-lbl</code>: Fira Code 18 px, interligne 24 px, espacement .2em, capitales, #B8B6B0 · <code>span.s-state</code>: Fira Code 18 px, interligne 24 px, espacement .2em, capitales, #B8B6B0 · <code>b</code>: Fira Code 26 px, interligne 40,3 px, espacement .14em, #F2F0E9 · <code>span</code>: Fira Code 18 px, interligne 27,9 px, espacement .2em, #B8B6B0 · <code>div.s-row</code>: Fira Code 22 px, interligne 34,1 px, espacement .12em, #F2F0E9, trait 2 px #1C1C1C en dessous, en ligne, écart normal px, répartis aux deux bouts · <code>em</code>: Fira Code 22 px, interligne 34,1 px, espacement .12em, #10B981" },
+  { id: "settings", side: "L", name: "Réglages simulés", field: ".settings", desc: "Les réglages du module sous les noms de ses propriétés iCUE (en anglais), puis les quatre couleurs communes et les couleurs d'accent proposées.", rule: "<b>Valeurs:</b><br><b>Ensemble</b> marge 14 × 16 px; bord 1 px #262626; arrondi 10 px; fond #0A0A0A; en ligne, écart 28 px. Les réglages sous les noms des propriétés iCUE (en anglais), puis Accent color, Lit dot color, Unlit dot color, Label color ; préréglages Émeraude #10B981 et Rouge A #ED403B<br><b>champ texte</b> <code>span.lb</code>: IBM Plex Mono 12 px, interligne 18,6 px, espacement .1em, capitales, #8C8C8C, en ligne, écart 10 px · <code>span.txt</code>: IBM Plex Mono 13 px, interligne 20,2 px, espacement .04em, capitales, #E6E6E6, marge 6 × 10 px, bord 1 px #262626, arrondi 6 px, fond #141414<br><b>choix · nom de la propriété iCUE</b> <code>span.grp</code>: en ligne, écart 14 px · <code>b</code>: IBM Plex Mono 12 px, interligne 18,6 px, espacement .1em, capitales, #E6E6E6 · <code>span.lb</code>: IBM Plex Mono 12 px, interligne 18,6 px, espacement .1em, capitales, #8C8C8C, en ligne, écart 10 px · <code>span.rad</code>: bord 2 px #555555, arrondi 50 px<br><b>interrupteur</b> <code>span.lb</code>: IBM Plex Mono 12 px, interligne 18,6 px, espacement .1em, capitales, #8C8C8C, en ligne, écart 10 px · <code>span.chk</code>: bord 2 px #10B981, arrondi 4 px, fond #10B981<br><b>couleur</b> <code>span.lb</code>: en ligne, écart 10 px · <code>span</code>: IBM Plex Mono 12 px, interligne 18,6 px, espacement .1em, capitales, #8C8C8C · <code>span.sw</code>: marge 3 px, bord 1 px #262626, arrondi 6 px · <code>i</code>: arrondi 3 px, fond #10B981<br><b>couleur</b> <code>span.lb</code>: en ligne, écart 10 px · <code>span</code>: IBM Plex Mono 12 px, interligne 18,6 px, espacement .1em, capitales, #8C8C8C · <code>span.sw</code>: marge 3 px, bord 1 px #262626, arrondi 6 px · <code>i</code>: arrondi 3 px, fond #F2F0E9<br><b>couleur</b> <code>span.lb</code>: en ligne, écart 10 px · <code>span</code>: IBM Plex Mono 12 px, interligne 18,6 px, espacement .1em, capitales, #8C8C8C · <code>span.sw</code>: marge 3 px, bord 1 px #262626, arrondi 6 px · <code>i</code>: arrondi 3 px, fond #1C1C1C<br><b>couleur</b> <code>span.lb</code>: en ligne, écart 10 px · <code>span</code>: IBM Plex Mono 12 px, interligne 18,6 px, espacement .1em, capitales, #8C8C8C · <code>span.sw</code>: marge 3 px, bord 1 px #262626, arrondi 6 px · <code>i</code>: arrondi 3 px, fond #B8B6B0<br><b>préréglage</b> <code>span.preset</code>: IBM Plex Mono 11 px, interligne 17,1 px, espacement .1em, capitales, #E6E6E6, marge 6 × 10 px, bord 1 px #262626, arrondi 6 px, en ligne, écart 8 px, 105 × 31 px · <code>i</code>: arrondi 50 px, fond #10B981<br><b>préréglage</b> <code>span.preset</code>: IBM Plex Mono 11 px, interligne 17,1 px, espacement .1em, capitales, #E6E6E6, marge 6 × 10 px, bord 1 px #262626, arrondi 6 px, en ligne, écart 8 px, 97 × 31 px · <code>i</code>: arrondi 50 px, fond #ED403B" },
+  { id: "caption", side: "R", name: "Légende", field: "figcaption", desc: "Ce que montre l'écran, puis ce que fait chaque geste.", rule: "<b>Valeurs:</b><br><b>Ensemble</b> <br><b>ce que montre l'écran, comment le toucher</b> <code>span</code>: IBM Plex Sans 14 px, interligne 21,7 px, #8C8C8C" },
+  { id: "table", side: "L", name: "Choix de design", field: "table", desc: "Une ligne par décision, numérotée. Une ligne n'est « Validé » qu'avec l'accord de Mathod95, et sa date.", rule: "<b>Valeurs:</b><br><b>Ensemble</b> 14 px entre les éléments. Une ligne n'est « Validé » qu'avec l'accord de Mathod95, et sa date. Ligne à valider en #8C8C8C<br><b>titre + état du tableau</b> <code>div.diff-head</code>: en ligne, écart 16 px, répartis aux deux bouts · <code>h2</code>: IBM Plex Mono 13 px, interligne 20,2 px, graisse 500, espacement .14em, capitales, #E6E6E6 · <code>p.hint</code>: IBM Plex Sans 14 px, interligne 21,7 px, #8C8C8C<br><b>une ligne par décision · #, élément, proposition</b> <code>div.table-scroll</code>: bord 1 px #262626, arrondi 10 px, 1240 × 258 px · <code>th</code>: IBM Plex Mono 12 px, interligne 18,6 px, graisse 500, espacement .12em, capitales, #8C8C8C, marge 14 × 16 px, trait 1 px #262626 en dessous, fond #0A0A0A · <code>td</code>: IBM Plex Mono 15 px, interligne 23,3 px, #8C8C8C, marge 14 × 16 px, trait 1 px #262626 en dessous · <code>span.ok</code>: IBM Plex Mono 12 px, interligne 18,6 px, espacement .1em, capitales, #10B981" },
+  { id: "annex", side: "R", name: "Sections annexes", field: "section", desc: "Facultatives: comparaison de rendus, capture réelle de l'Edge, tout ce qui aide à décider.", rule: "<b>Valeurs:</b><br><b>Ensemble</b> 14 px entre les éléments<br><b>titre + aide</b> <code>div.diff-head</code>: en ligne, écart 16 px, répartis aux deux bouts · <code>h2</code>: IBM Plex Mono 13 px, interligne 20,2 px, graisse 500, espacement .14em, capitales, #E6E6E6 · <code>p.hint</code>: IBM Plex Sans 14 px, interligne 21,7 px, #8C8C8C<br><b>contenu libre · rendus comparés, capture réelle</b> <code>div.renders</code>: 3 colonnes, écart 14 px · <code>div.thumb</code>: bord 1 px #262626, arrondi 10 px, fond #080808 · <code>figcaption</code>: IBM Plex Mono 12 px, interligne 18,6 px, espacement .1em, capitales, #8C8C8C" },
+  { id: "footer", side: "L", name: "Footer", field: ".footer", desc: "Le slogan du projet à gauche, le lien vers son dépôt à droite. Le même sur toutes les pages.", parts: ["Le slogan (<code>.red</code>): ce qu'est le projet, en quelques mots séparés par ·, propre à chaque projet.", "Le lien du dépôt: toujours sur le compte Mathod95 (<code>Mathod95/&lt;dépôt&gt;</code>), vers la page GitHub du projet."], rule: "<b>Valeurs:</b><br><b>Ensemble</b> en ligne, écart 24 px; répartis aux deux bouts. Slogan à gauche, lien à droite, dernière zone de la page<br><b>9.1</b> <code>span.red</code>: Fira Code 13 px, interligne 20,2 px, espacement .24em, capitales, #10B981. Propre à chaque projet<br><b>9.2</b> <code>span</code>: Fira Code 13 px, interligne 20,2 px, espacement .24em, capitales, #B8B6B0. Toujours Mathod95/&lt;dépôt&gt;" }
 ] };
 </script>
 <script src="anatomy.js"></script>
+<script>
+// écran : le panneau 2560 × 720 à sa taille réelle, réduit à la largeur de l'écran simulé
+document.querySelectorAll(".mini .screen").forEach(function (sc) { sc.firstElementChild.style.transform = "scale(" + sc.offsetWidth / 2560 + ")"; });
+</script>
