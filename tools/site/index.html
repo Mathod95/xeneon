@@ -39,7 +39,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outlin
 
 /* en-tête */
 .top { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
-.brand { display: flex; align-items: center; gap: 10px; font-weight: 700; letter-spacing: .22em; font-size: 15px; }
+.brand { display: flex; align-items: center; gap: 10px; height: 42px; font-weight: 700; letter-spacing: .22em; font-size: 15px; color: var(--lit); text-decoration: none; }
 .brand::before { content: ""; width: 12px; height: 12px; border-radius: 50%; background: var(--accent); }
 .ext { font-family: var(--mono); font-size: 13px; letter-spacing: .16em; text-transform: uppercase; color: var(--label); text-decoration: none; padding: 10px 16px; border: 1px solid var(--line); border-radius: 999px; background: var(--bg); }
 .ext:hover { color: var(--lit); border-color: #333; }
@@ -48,17 +48,17 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outlin
 .lang .chip { padding: 6px 12px; border: 0; }
 
 /* Dot Hub : ce qu'est le projet */
-.hubsec { display: grid; gap: 22px; padding: clamp(20px, 3vw, 32px); border: 1px solid #262626; border-radius: 20px; background: var(--panel); }
-.hub-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
-.hub-head .id { display: flex; align-items: center; gap: 18px; }
-.hub-head canvas { display: block; width: 64px; height: 64px; }
-.hub-head h2 { margin: 0; font-family: var(--mono); font-weight: 500; font-size: clamp(22px, 2.6vw, 28px); letter-spacing: .14em; text-transform: uppercase; }
-.hub-lead { margin: 0; font-size: clamp(16px, 1.6vw, 19px); color: var(--lit); text-wrap: pretty; }
+.about { display: grid; gap: 22px; padding: clamp(20px, 3vw, 32px); border: 1px solid #262626; border-radius: 20px; background: var(--panel); }
+.about-head { display: flex; align-items: stretch; gap: 16px; }
+.about-head canvas { display: block; flex: none; width: 70px; height: 70px; }
+.about-head .head { display: flex; flex-direction: column; justify-content: space-between; min-width: 0; flex: 1; height: 70px; }
+.about-head h2 { margin: 0; font-family: var(--mono); font-weight: 500; font-size: 28px; line-height: 1.15; letter-spacing: .14em; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.about-lead { margin: 0; font-size: clamp(16px, 1.6vw, 19px); color: var(--lit); text-wrap: pretty; }
 .steps { margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: 12px; counter-reset: st; }
 .steps li { counter-increment: st; display: grid; grid-template-columns: auto 1fr; gap: 14px; align-items: center; padding: 16px 18px; border: 1px solid var(--line); border-radius: 14px; color: var(--label); font-size: 15px; }
 .steps li::before { content: counter(st); display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: var(--accent); color: var(--bg); font-family: var(--mono); font-weight: 500; font-size: 14px; }
 .steps b { color: var(--lit); font-weight: 600; }
-.hub-k { margin: 0; font-family: var(--mono); font-size: 12px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); }
+.about-k { margin: 0; font-family: var(--mono); font-size: 12px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); }
 .parts { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr)); gap: 12px; }
 .part { display: grid; gap: 10px; align-content: start; padding: 20px 22px; border: 1px solid var(--line); border-radius: 14px; background: var(--bg); }
 .part .ph2 { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
@@ -69,11 +69,11 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outlin
 .part .more:hover { color: var(--lit); }
 .daily { margin: 0; color: var(--label); font-size: 15px; }
 .daily b { color: var(--lit); font-weight: 600; }
-.hub-links { font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; flex-wrap: wrap; }
+.about-links { font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; flex-wrap: wrap; }
 
 /* titre */
 .hero { display: grid; gap: 22px; }
-.hero canvas { display: block; width: 100%; max-width: 760px; height: auto; justify-self: center; }
+.hero canvas { display: block; max-width: min(100%, 760px); height: auto; justify-self: center; }
 .tagline { font-family: var(--mono); font-size: clamp(17px, 2.2vw, 24px); margin: 0; color: var(--lit); text-wrap: balance; }
 .tagline i { font-style: normal; color: var(--accent); padding: 0 .5em; }
 .stats { display: flex; flex-wrap: wrap; gap: 8px 28px; margin: 0; padding: 0; list-style: none; font-family: var(--mono); font-size: 14px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); }
@@ -86,15 +86,18 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outlin
 .chip[aria-pressed="true"] { background: var(--lit); border-color: var(--lit); color: var(--bg); }
 
 /* cartes */
+.list { display: grid; gap: 18px; }
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); gap: 14px; }
-.card { display: grid; grid-template-rows: auto auto 1fr auto; gap: 14px; padding: 22px; min-width: 0; border: 1px solid var(--line); border-radius: 18px; background: var(--panel); }
+.card { display: grid; grid-template-rows: auto 1fr; gap: 14px; padding: 22px; min-width: 0; border: 1px solid var(--line); border-radius: 18px; background: var(--panel); color: inherit; text-decoration: none; }
 .card.has { border-color: #262626; }
 .card.has:hover { border-color: var(--accent); }
-.card .row { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-width: 0; }
+.card .row { display: flex; align-items: stretch; gap: 16px; min-width: 0; }
+.card .head { display: flex; flex-direction: column; justify-content: space-between; min-width: 0; flex: 1; height: 70px; }
 .card canvas { display: block; flex: none; width: 70px; height: 70px; }
-.status { display: inline-flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--label); white-space: nowrap; }
+.status { display: flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--label); white-space: nowrap; }
 .status::before { content: ""; flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--c, var(--idea)); }
-.card h3 { margin: 0; font-size: 21px; font-weight: 700; letter-spacing: .02em; text-wrap: balance; }
+.card h3 { margin: 0; font-size: 21px; font-weight: 700; letter-spacing: .02em; line-height: 1.3; color: var(--lit); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ver { font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
 .card p { margin: 0; color: var(--label); font-size: 15px; min-width: 0; }
 .foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 10px; padding-top: 14px; border-top: 1px solid var(--line); font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; }
 .links { display: flex; gap: 16px; }
@@ -104,7 +107,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outlin
 .empty { color: var(--muted); }
 
 /* la Xeneon Edge : l'accueil de Dot Hub (iso à companion/web/home.html en XL), puis une page par module */
-.edge-sec { display: grid; gap: 16px; }
+.showcase { display: grid; gap: 16px; }
 .hint { margin: 0; color: var(--label); font-size: 14px; }
 .edge { padding: clamp(6px, 1.2%, 18px); border-radius: clamp(10px, 1.6vw, 24px); background: linear-gradient(180deg, #161616, #0b0b0b); border: 1px solid #2a2a2a; box-shadow: 0 40px 80px -40px #000, inset 0 1px 0 #262626; }
 .screen { position: relative; aspect-ratio: 2560 / 720; max-width: 100%; overflow: hidden; border-radius: clamp(3px, .5vw, 8px); background: #000; touch-action: pan-y; cursor: grab; user-select: none; }
@@ -138,18 +141,18 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outlin
 .dots button::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: #2a2a2a; }
 .dots button[aria-current="true"]::before { background: var(--lit); }
 .dots button:hover::before { background: var(--label); }
-.where { display: flex; align-items: center; gap: 14px; font-family: var(--mono); font-size: 13px; letter-spacing: .18em; text-transform: uppercase; color: var(--label); }
-.where a { color: var(--accent); text-decoration: none; }
+.where { font-family: var(--mono); font-size: 13px; letter-spacing: .18em; text-transform: uppercase; color: var(--accent); text-decoration: none; }
+.where:hover { color: var(--lit); }
 .nav { display: flex; gap: 8px; }
 
-footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px 24px; font-family: var(--mono); font-size: 13px; letter-spacing: .24em; text-transform: uppercase; }
-footer .red { color: var(--accent); }
-footer a { color: var(--label); text-decoration: none; }
+.footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px 24px; font-family: var(--mono); font-size: 13px; letter-spacing: .24em; text-transform: uppercase; }
+.footer .red { color: var(--accent); }
+.footer a { color: var(--label); text-decoration: none; }
 </style>
 
 <div class="wrap">
   <div class="top">
-    <span class="brand">MATHOD</span>
+    <a class="brand" href="./">DOT HUB</a>
     <div class="topr">
       <div class="lang" role="group" aria-label="Language">
         <button type="button" class="chip" data-lang="fr" aria-pressed="false">FR</button>
@@ -168,7 +171,7 @@ footer a { color: var(--label); text-decoration: none; }
     <ul class="stats" id="stats"></ul>
   </section>
 
-  <section class="edge-sec" data-i18n-label="edgeLabel">
+  <section class="showcase" data-i18n-label="edgeLabel">
     <div class="bar">
       <h2 data-i18n="onEdge"></h2>
       <p class="hint" data-i18n="edgeHint"></p>
@@ -176,7 +179,7 @@ footer a { color: var(--label); text-decoration: none; }
     <div class="edge"><div class="screen" id="screen"><div class="native" id="native"><div class="strip" id="strip"></div></div></div></div>
     <div class="pager">
       <div class="dots" id="dots" role="group" aria-label="Pages"></div>
-      <div class="where"><span id="where"></span><a id="open" href="#" hidden data-i18n="mockup"></a></div>
+      <a class="where" id="where" href="#"></a>
       <div class="nav">
         <button type="button" class="chip" id="prev" data-i18n-label="prev">‹</button>
         <button type="button" class="chip" id="homeBtn">Dot Hub</button>
@@ -185,39 +188,39 @@ footer a { color: var(--label); text-decoration: none; }
     </div>
   </section>
 
-  <section class="hubsec" aria-labelledby="hubTitle">
-    <div class="hub-head">
-      <div class="id"><canvas id="hubPic" width="140" height="140" aria-hidden="true"></canvas><h2 id="hubTitle">Dot Hub</h2></div>
-      <span class="status" id="hubStatus"></span>
+  <section class="about" aria-labelledby="hubTitle">
+    <div class="about-head">
+      <canvas id="hubPic" width="140" height="140" aria-hidden="true"></canvas>
+      <div class="head"><h2 id="hubTitle">Dot Hub</h2><span class="status" id="hubStatus"></span><span class="ver" id="hubVer"></span></div>
     </div>
-    <p class="hub-lead" data-i18n="hubLead"></p>
-    <p class="hub-k" data-i18n="howK"></p>
+    <p class="about-lead" data-i18n="hubLead"></p>
+    <p class="about-k" data-i18n="howK"></p>
     <div class="parts">
       <div class="part"><div class="ph2"><h3 data-i18n="p1t"></h3><span class="tag2" data-i18n="p1k"></span></div><p data-i18n="p1"></p></div>
       <div class="part"><div class="ph2"><h3 data-i18n="p2t"></h3><span class="tag2" data-i18n="p2k"></span></div><p data-i18n="p2"></p><a class="more" href="__COMPANION__"__COMPANION_TARGET__ data-i18n="more"></a></div>
     </div>
     <p class="daily" data-i18n-html="daily"></p>
-    <p class="hub-k" data-i18n="installK"></p>
+    <p class="about-k" data-i18n="installK"></p>
     <ol class="steps">
       <li><span data-i18n-html="step1"></span></li>
       <li><span data-i18n-html="step2"></span></li>
       <li><span data-i18n-html="step3"></span></li>
     </ol>
-    <div class="links hub-links">
+    <div class="links about-links">
       <a class="mock" id="hubMock" href="#" data-i18n="mockup"></a>
       <a href="https://github.com/Mathod95/xeneon/releases/latest" target="_blank" rel="noopener" data-i18n="download"></a>
       <a id="hubFiche" href="#" target="_blank" rel="noopener" data-i18n="fiche"></a>
     </div>
   </section>
 
-  <section style="display:grid;gap:18px" data-i18n-label="modules" id="list">
+  <section class="list" data-i18n-label="modules" id="list">
     <div class="bar">
       <h2 data-i18n="modules"></h2>
     </div>
     <div class="grid" id="grid"></div>
   </section>
 
-  <footer>
+  <footer class="footer">
     <span class="red">For Xeneon Edge · Touch · Dot-matrix</span>
     <a href="https://github.com/Mathod95/xeneon" target="_blank" rel="noopener">Mathod95/xeneon</a>
   </footer>
@@ -253,7 +256,7 @@ footer a { color: var(--label); text-decoration: none; }
       mockup: "Maquette →", download: "Télécharger ↗", fiche: "Fiche ↗", more: "Tout sur Dot Companion →",
       edgeLabel: "Aperçu sur la Xeneon Edge", onEdge: "Sur la Xeneon Edge", edgeHint: "Touche une tuile de Dot Hub pour ouvrir le module, ou glisse.",
       prev: "Page précédente", next: "Page suivante",
-      modules: "Les modules",
+      modules: "Les dots",
       sWidget: "widget", sCompanion: "companion", sModules: "modules", sMock: "maquettes", sWip: "en cours",
       alt: " en taille XL", openMock: " · OUVRIR LA MAQUETTE →",
       kind: { wip: "en cours", spec: "spécifié", design: "en conception", idea: "idée" }
@@ -274,7 +277,7 @@ footer a { color: var(--label); text-decoration: none; }
       mockup: "Mockup →", download: "Download ↗", fiche: "Details ↗", more: "All about Dot Companion →",
       edgeLabel: "Preview on the Xeneon Edge", onEdge: "On the Xeneon Edge", edgeHint: "Tap a Dot Hub tile to open the module, or swipe.",
       prev: "Previous page", next: "Next page",
-      modules: "The modules",
+      modules: "The dots",
       sWidget: "widget", sCompanion: "companion", sModules: "modules", sMock: "mockups", sWip: "in progress",
       alt: " at XL size", openMock: " · OPEN THE MOCKUP →",
       kind: { wip: "in progress", spec: "specified", design: "in design", idea: "idea" }
@@ -289,9 +292,13 @@ footer a { color: var(--label); text-decoration: none; }
   function t(k) { return STR[lang][k]; }
   function desc(w) { return lang === "en" && w.desc_en ? w.desc_en : w.desc; }
   function statusText(w) {
-    if (lang === "fr") return w.status;
-    var m = /\(([^)]*)\)/.exec(w.status);
-    return t("kind")[w.kind] + (m ? " (" + m[1] + ")" : "");
+    return lang === "fr" ? w.status.replace(/\s*\([^)]*\)\s*$/, "") : t("kind")[w.kind];
+  }
+  // noms raccourcis dans les cartes (pour l'instant)
+  var SHORT = { "dot-system-monitor": "Monitor" };
+  function version(w) {
+    var m = /\(v?([\d.]+)\)/.exec(w.status);
+    return m ? "v" + m[1] : "--";
   }
 
   // police 5 × 7 points pour le titre
@@ -321,6 +328,8 @@ footer a { color: var(--label); text-decoration: none; }
     });
     var pad = 1, total = cols.length + pad * 2, rows = 7 + pad * 2;
     var accentFrom = lastWordCol + pad;          // une colonne de fond avant la première lettre du dernier mot
+    // points tous les 19 px : la largeur du titre suit le texte (canvas en double résolution)
+    cv.width = total * 19 * 2; cv.style.width = total * 19 + "px";
     var pitch = cv.width / total, r = pitch * 0.36;
     cv.height = Math.round(rows * pitch);
     ctx.clearRect(0, 0, cv.width, cv.height);
@@ -396,25 +405,24 @@ footer a { color: var(--label); text-decoration: none; }
     var grid = document.getElementById("grid");
     grid.innerHTML = "";
     WIDGETS.forEach(function (w) {
-      var card = el("article", "card" + (w.mockup ? " has" : ""));
+      // toute la carte est cliquable : la maquette (modulePage) si elle existe, sinon la fiche du module
+      var card = el("a", "card has");
+      if (w.mockup) card.href = BASE + w.slug + "/";
+      else { card.href = REPO + w.slug; card.target = "_blank"; card.rel = "noopener"; }
       var row = el("div", "row");
-      var cv = pic(w.slug, w.mockup ? "#f2f0e9" : "#5f5d58");
-      row.appendChild(cv);
+      row.appendChild(pic(w.slug, w.mockup ? "#f2f0e9" : "#5f5d58"));
+      var head = el("div", "head");
+      // dans les cartes, le nom sans « Dot » pour laisser la place au titre (la page du module le garde)
+      head.appendChild(el("h3", "", SHORT[w.slug] || w.name.replace(/^Dot\s+/, "")));
       var st = el("span", "status", statusText(w)); st.style.setProperty("--c", KIND[w.kind] || KIND.idea);
-      row.appendChild(st);
+      head.appendChild(st);
+      head.appendChild(el("span", "ver", version(w)));
+      row.appendChild(head);
       card.appendChild(row);
-      card.appendChild(el("h3", "", w.name));
       card.appendChild(el("p", "", desc(w)));
-      var foot = el("div", "foot");
-      var links = el("span", "links");
-      if (w.mockup) {
-        var a = el("a", "mock", t("mockup")); a.href = BASE + w.slug + "/"; links.appendChild(a);
-        card.addEventListener("mouseenter", function () { row.replaceChild(pic(w.slug, "#10b981"), row.firstChild); });
-        card.addEventListener("mouseleave", function () { row.replaceChild(pic(w.slug, "#f2f0e9"), row.firstChild); });
-      }
-      var f = el("a", "", t("fiche")); f.href = REPO + w.slug; f.target = "_blank"; f.rel = "noopener"; links.appendChild(f);
-      foot.appendChild(links);
-      card.appendChild(foot);
+      var base = w.mockup ? "#f2f0e9" : "#5f5d58";
+      card.addEventListener("mouseenter", function () { row.replaceChild(pic(w.slug, "#10b981"), row.firstChild); });
+      card.addEventListener("mouseleave", function () { row.replaceChild(pic(w.slug, base), row.firstChild); });
       grid.appendChild(card);
     });
   }
@@ -470,9 +478,9 @@ footer a { color: var(--label); text-decoration: none; }
     strip.style.transform = "translateX(" + (-cur * 2560) + "px)";
     document.querySelectorAll("#dots button").forEach(function (d, k) { d.setAttribute("aria-current", k === cur ? "true" : "false"); });
     var w = PAGES[cur - 1];
-    document.getElementById("where").textContent = "Page " + (cur + 1) + " · " + (w ? w.name : "Dot Hub");
-    var open = document.getElementById("open");
-    open.hidden = !w; if (w) open.href = BASE + w.slug + "/";
+    var where = document.getElementById("where");
+    where.textContent = w ? w.name : "Dot Hub";
+    where.href = BASE + (w ? w.slug : "dot-hub") + "/";
     autoNext();
   }
   // défilement automatique : page suivante toutes les 5 s, puis retour à Dot Hub après la dernière.
@@ -488,7 +496,7 @@ footer a { color: var(--label); text-decoration: none; }
       else go((cur + 1) % (PAGES.length + 1));
     }, AUTO_MS);
   }
-  var edgeSec = screen.closest(".edge-sec");
+  var edgeSec = screen.closest(".showcase");
   edgeSec.addEventListener("mouseenter", function () { autoHold = true; });
   edgeSec.addEventListener("mouseleave", function () { autoHold = false; autoNext(); });
   // focus au clavier seulement : après un clic sur ‹ › ou un point, le défilement reprend
@@ -514,6 +522,7 @@ footer a { color: var(--label); text-decoration: none; }
     for (var y = 0; y < 7; y++) for (var x = 0; x < 7; x++) { ctx.beginPath(); ctx.fillStyle = g[y][x] === "#" ? "#10b981" : "#1c1c1c"; ctx.arc(x * p + p / 2, y * p + p / 2, p * .36, 0, 7); ctx.fill(); }
     if (!HUB) return;
     var st = document.getElementById("hubStatus"); st.textContent = statusText(HUB); st.style.setProperty("--c", KIND[HUB.kind] || KIND.idea);
+    document.getElementById("hubVer").textContent = version(HUB);
     var m = document.getElementById("hubMock"); m.hidden = !HUB.mockup; m.href = BASE + "dot-hub/";
     document.getElementById("hubFiche").href = REPO + "dot-hub";
   }

@@ -3,7 +3,7 @@
   "releases": [
     {
       "version": "next",
-      "date": "2026-10-28",
+      "date": "2026-10-30",
       "title": {
         "fr": "Dot Steam 0.2",
         "en": "Dot Steam 0.2"
@@ -66,6 +66,14 @@
       ],
       "changed": [
         {
+          "fr": "Dot Page 2.0 : en-tête « ● DOT HUB », Dot Hub présenté comme une carte (pictogramme, statut, version), modules renommés « Les dots » en cartes entièrement cliquables avec leur version, nom du module affiché sous la Xeneon Edge cliquable",
+          "en": "Dot Page 2.0: « ● DOT HUB » header, Dot Hub shown as a card (pictogram, status, version), modules renamed « The dots » as fully clickable cards with their version, module name under the Xeneon Edge now clickable"
+        },
+        {
+          "fr": "Charte : gabarits homePage, subPage, modulePage et releasePage harmonisés (mêmes Top, Hero et Footer), toutes les valeurs dans les fiches des zones",
+          "en": "Design guide: homePage, subPage, modulePage and releasePage templates aligned (same Top, Hero and Footer), every value in the zone cards"
+        },
+        {
           "fr": "Dot Companion : au premier démarrage de 0.5.0, chaque Dot Hub (un module et ses réglages) devient une page, qu'il continue d'afficher",
           "en": "Dot Companion: on first start of 0.5.0, each Dot Hub (a module and its settings) becomes a page, which it keeps showing"
         },
@@ -83,6 +91,10 @@
         }
       ],
       "fixed": [
+        {
+          "fr": "Site : la page ne se décale plus quand la barre de défilement apparaît",
+          "en": "Site: the page no longer shifts when the scrollbar appears"
+        },
         {
           "fr": "Dot Steam : les noms longs débordaient sur les jaquettes voisines",
           "en": "Dot Steam: long names overflowed onto the next covers"
