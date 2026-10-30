@@ -85,6 +85,10 @@
 
 .mini footer { display: flex; justify-content: space-between; gap: 12px 24px; font-family: var(--mono); font-size: 13px; letter-spacing: .24em; text-transform: uppercase; color: var(--label); }
 .mini footer .red { color: var(--accent); }
+
+/* Les zones : une fiche par ligne, texte limité à une largeur de lecture */
+.a-list { grid-template-columns: minmax(0, 1fr); }
+.a-item > p, .a-item > .a-parts { max-width: 90ch; }
 </style>
 
 <div class="wrap">
