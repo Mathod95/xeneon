@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fiches de la charte pour les vraies pages du site : docs/design/edge/homePage.html (Dot Page) et subPage.html (Dot Companion).
+"""Fiches de la charte pour les vraies pages du site : docs/design/edge/homePage.html (Dot Page), subPage.html (Dot Companion) et releasePage.html (Dot Release).
 
 Les gabarits de docs/design/ restent la vue générale ; ces fiches montrent les pages telles qu'elles sont, avec leurs
 textes et leurs valeurs. La vraie vue est la page elle-même, figée (son HTML et son CSS, les canvas en images, la
@@ -160,6 +160,84 @@ PAGES = {
             dict(footer(7, "L")),
         ],
     },
+    "releasePage": {
+        "path": "releases/", "title": "Dot Release · anatomie", "h1": "Anatomie de Dot Release",
+        "lead": "Dot Release telle qu'elle est aujourd'hui (<code>tools/site/releases.html</code>, données <code>releases.json</code>), la releasePage du site. La vraie vue est la page elle-même, figée ; chaque valeur est mesurée sur la page. Elle n'a pas encore été reprise d'après la charte (marque MATHOD, bouton « ← Dot Page », pied de page sans classe). La version générale est le gabarit releasePage (<code>docs/design/releasePage.html</code>).",
+        "name": "Dot Release", "tag": "releasePage · page actuelle",
+        "sub": "Ce que chaque zone contient sur Dot Release, et ses valeurs mesurées sur la page (en français, sur un écran de PC). Une version = un tag, plus « next » pour ce qui est sur main sans tag.",
+        "rename": {"badge": "r-badge"},
+        "zones": [
+            {"id": "header", "side": "L", "name": "Top", "field": ".top", "sel": [".top", 0],
+             "desc": "L'ancien en-tête: la marque « ● MATHOD » et un bouton « ← Dot Page » en plus. Releases est allumé: c'est la page en cours. À reprendre comme sur Dot Page et Dot Companion.",
+             "_": "Rangée de 42 px, la marque à gauche, le reste à droite, tout centré verticalement",
+             "parts": [
+                 {"sel": [".top .brand", 0], "sk": "marque", "text": "La marque « ● MATHOD » (« ● DOT HUB » sur les autres pages), lien vers Dot Page."},
+                 {"sel": [".top .lang", 0], "sk": "FR / EN", "text": "Le choix de langue FR / EN.", "note": "Langue choisie en pastille pleine #F2F0E9, texte #080808"},
+                 {"sel": [".top .ext", 0], "sk": "← Dot Page", "text": "« ← Dot Page », retour à l'accueil (absent des autres pages)."},
+                 {"sel": [".top .ext", 1], "sk": "Companion", "text": "Companion, lien vers la page Dot Companion.", "note": "Survol: texte #F2F0E9, bord #333"},
+                 {"sel": [".top .ext", 2], "sk": "Releases", "text": "Releases, allumé (page en cours).", "note": "Pastille pleine #F2F0E9, texte #080808 (aria-current)"},
+                 {"sel": [".top .ext", 3], "sk": "GitHub ↗", "text": "GitHub ↗, lien vers le dépôt (nouvel onglet)."},
+             ]},
+            {"id": "hero", "side": "R", "name": "Hero", "field": ".hero", "sel": [".hero", 0],
+             "desc": "L'ouverture de la page, calée à gauche: RELEASES en points, puis ce que raconte la page.",
+             "_": "48 px sous l'en-tête",
+             "parts": [
+                 {"sel": ["#titleDots", 0], "at": "r", "sk": "RELEASES en points tous les 14 px", "text": "Le titre en points: « RELEASES », police 5 × 7.", "note": "Points tous les 14 px, calé à gauche"},
+                 {"sel": [".lede", 0], "at": "r", "sk": "accroche", "text": "L'accroche: ce qui a changé, version par version."},
+             ]},
+            {"id": "next", "side": "L", "name": "Prochaine version", "field": ".rel (next)", "sel": ["article.rel", 0],
+             "desc": "Ce qui est sur main sans tag (entrée « next » de releases.json). Toujours en premier, avec le lien vers l'exe compilé par les Actions.",
+             "parts": [
+                 {"sel": ["article.rel:nth-of-type(1) .ver", 0], "at": "t", "sk": "Sur main", "text": "« Sur main » à la place du numéro."},
+                 {"sel": ["article.rel:nth-of-type(1) time", 0], "at": "t", "sk": "date", "text": "« pas encore publiée »."},
+                 {"sel": ["article.rel:nth-of-type(1) .r-badge", 0], "at": "t", "sk": "Prochaine version", "text": "L'étiquette « Prochaine version », point et texte en jaune.", "note": "Jaune #F5B942"},
+                 {"sel": ["article.rel:nth-of-type(1) > h2", 0], "at": "r", "sk": "titre", "text": "Le titre de la version."},
+                 {"sel": ["article.rel:nth-of-type(1) .comps", 0], "at": "r", "sk": "composants", "text": "Les composants modifiés depuis la version précédente, avec leur nouvelle version (calculé par la page ; releases.json garde la liste complète)."},
+                 {"sel": ["article.rel:nth-of-type(1) .sec", 0], "at": "tr", "sk": "Nouveau", "text": "Nouveau: les lignes ajoutées, titre en émeraude.", "note": "Couleur de la section: Nouveau #10B981, Changé #5AA9E6, Corrigé #F5B942"},
+                 {"sel": ["article.rel:nth-of-type(1) .sec", 1], "at": "tr", "sk": "Changé", "text": "Changé, titre en bleu."},
+                 {"sel": ["article.rel:nth-of-type(1) .sec", 2], "at": "tr", "sk": "Corrigé", "text": "Corrigé, titre en jaune."},
+                 {"sel": ["article.rel:nth-of-type(1) .rel-foot", 0], "at": "r", "sk": "liens", "text": "Les liens: l'exe dans GitHub Actions, les changements depuis le dernier tag."},
+             ]},
+            {"id": "latest", "side": "L", "name": "Dernière version", "field": ".rel.latest", "sel": ["article.rel", 1],
+             "desc": "La dernière version taguée: même squelette, numéro et bord en accent, étiquette « Dernière version ».",
+             "_": "Bord #262626 au lieu de #1F1F1F",
+             "parts": [
+                 {"sel": ["article.rel:nth-of-type(2) .ver", 0], "at": "t", "sk": "version", "text": "Le numéro de version, en accent.", "note": "Bord et texte #10B981"},
+                 {"sel": ["article.rel:nth-of-type(2) time", 0], "at": "t", "sk": "date", "text": "La date du tag."},
+                 {"sel": ["article.rel:nth-of-type(2) .r-badge", 0], "at": "t", "sk": "Dernière version", "text": "L'étiquette « Dernière version », en accent."},
+                 {"sel": ["article.rel:nth-of-type(2) > h2", 0], "at": "r", "sk": "titre", "text": "Le titre de la version."},
+                 {"sel": ["article.rel:nth-of-type(2) .comps", 0], "at": "r", "sk": "composants", "text": "Les composants modifiés depuis la version précédente."},
+                 {"sel": ["article.rel:nth-of-type(2) .sec", 0], "at": "tr", "sk": "section", "text": "Les sections Nouveau, Changé, Corrigé ; une section vide n'est pas affichée."},
+                 {"sel": ["article.rel:nth-of-type(2) .rel-foot", 0], "at": "r", "sk": "liens", "text": "Les liens: changements depuis le tag précédent, téléchargement de la release."},
+             ]},
+            {"id": "older", "side": "L", "name": "Versions précédentes", "field": ".rel", "sel": ["article.rel", 2],
+             "desc": "Les versions plus anciennes, de la plus récente à la plus ancienne, même squelette sans étiquette.",
+             "parts": [
+                 {"sel": ["article.rel:nth-of-type(3) .ver", 0], "at": "t", "sk": "version", "text": "Le numéro de version."},
+                 {"sel": ["article.rel:nth-of-type(3) time", 0], "at": "t", "sk": "date", "text": "La date du tag."},
+                 {"sel": ["article.rel:nth-of-type(3) > h2", 0], "at": "r", "sk": "titre", "text": "Le titre de la version."},
+                 {"sel": ["article.rel:nth-of-type(3) .comps", 0], "at": "r", "sk": "composants", "text": "Les composants modifiés depuis la version précédente."},
+                 {"sel": ["article.rel:nth-of-type(3) .sec", 0], "at": "tr", "sk": "section", "text": "Les sections, comme pour la dernière version."},
+                 {"sel": ["article.rel:nth-of-type(3) .rel-foot", 0], "at": "r", "sk": "liens", "text": "Les liens: changements, téléchargement."},
+             ],
+             "others": ["article.rel:nth-of-type(n+4)", "version"]},
+            {"id": "toc", "side": "R", "name": "Liste des versions", "field": ".side .toc", "sel": [".side", 0],
+             "desc": "Une entrée par version, à droite, qui reste visible au défilement. La version à l'écran est allumée ; toucher une entrée y descend.",
+             "_": "Colonne collée à 24 px du haut au défilement (sticky)",
+             "parts": [
+                 {"sel": [".side h2", 0], "at": "r", "sk": "Versions", "text": "Le titre « Versions »."},
+                 {"sel": [".toc li", 0], "at": "r", "sk": "entrée à l'écran", "text": "L'entrée de la version à l'écran: point et numéro allumés.", "note": "Point #10B981 (aria-current)"},
+                 {"sel": [".toc li", 1], "at": "r", "sk": "entrée", "text": "Une autre entrée: numéro, puis date · titre en petit.", "note": "Point #2A2A2A"},
+             ]},
+            {"id": "footer", "side": "R", "name": "Footer", "field": "footer", "sel": ["footer", 0],
+             "desc": "Le slogan à gauche, le lien vers le dépôt à droite. Ici sans la classe .footer des autres pages.",
+             "_": "Slogan à gauche, lien à droite, dernière zone de la page",
+             "parts": [
+                 {"sel": ["footer .red", 0], "sk": "slogan", "text": "Le slogan « For Xeneon Edge · Touch · Dot-matrix », en accent."},
+                 {"sel": ["footer a", 0], "sk": "Mathod95/xeneon", "text": "Le lien Mathod95/xeneon, vers la page GitHub du projet."},
+             ]},
+        ],
+    },
 }
 
 BASE = ("<b>Socle commun</b>: fond #080808 avec la trame de points de 22 px, place de la barre de défilement toujours réservée, "
@@ -168,8 +246,10 @@ BASE = ("<b>Socle commun</b>: fond #080808 avec la trame de points de 22 px, pla
 
 # ---------------------------------------------------------------- dans la page : zones, mesures, page figée
 ANNOTATE = """
-(spec) => {
+([spec, rename]) => {
   const pick = s => document.querySelectorAll(s[0])[s[1]];
+  // classes de la page qui portent le nom d'une classe de l'anatomie (.badge…)
+  Object.entries(rename || {}).forEach(([a, b]) => document.querySelectorAll('.' + a).forEach(e => e.classList.replace(a, b)));
   document.querySelectorAll('h1#title').forEach(h => h.remove());    // titre caché pour les lecteurs d'écran
   spec.forEach((z, i) => {
     const el = pick(z.sel); if (!el) throw new Error('zone ' + z.id);
@@ -214,9 +294,11 @@ async () => {
 """
 
 
-def scope_css(css):
-    """CSS de la page, rangé sous .mini : variables sur .mini, html/body et @media retirés."""
+def scope_css(css, rename=None):
+    """CSS de la page, rangé sous .mini : variables sur .mini, html/body et @media retirés, classes renommées."""
     out, i = [], 0
+    for a, b in (rename or {}).items():
+        css = re.sub(r"\." + a + r"(?![\w-])", "." + b, css)
     css = re.sub(r"/\*.*?\*/", "", css, flags=re.S)
     while i < len(css):
         j = css.find("{", i)
@@ -376,7 +458,7 @@ def rule(z, spec):
 
 
 def page_html(name, P, snap, zones):
-    css = scope_css(snap["css"])
+    css = scope_css(snap["css"], P.get("rename"))
     data = [{k: z[k] for k in ("id", "side", "name", "field", "desc")} | {"parts": [p["text"] for p in z["parts"]], "rule": r} for z, r in zones]
     anatomy = "window.ANATOMY = { native: 1320, zones: " + json.dumps(data, ensure_ascii=False, indent=1).replace("</", "<\\/") + " };"
     return f"""<title>{P['title']}</title>
@@ -457,7 +539,7 @@ def main():
                 page.wait_for_timeout(600)
                 spec = [{"id": z["id"], "name": z["name"], "sel": z["sel"], "parts": [{"sel": p["sel"], "at": p.get("at"), "sk": p["sk"]} for p in z["parts"]],
                          "first": z.get("first"), "others": z.get("others")} for z in P["zones"]]
-                page.evaluate(ANNOTATE, spec)
+                page.evaluate(ANNOTATE, [spec, P.get("rename", {})])
                 page.evaluate("() => { document.querySelector('.wrap').id = 'mini'; }")
                 measured = page.evaluate(extract)
                 snap = page.evaluate(FREEZE)

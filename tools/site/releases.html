@@ -217,6 +217,19 @@ footer a { color: var(--label); text-decoration: none; }
     document.querySelectorAll("[data-i18n-label]").forEach(function (e) { e.setAttribute("aria-label", t(e.getAttribute("data-i18n-label"))); });
     document.querySelectorAll(".lang .chip").forEach(function (b) { b.setAttribute("aria-pressed", b.getAttribute("data-lang") === lang ? "true" : "false"); });
 
+    // « Dot Steam 0.2.0 » -> { "Dot Steam": "0.2.0" }
+    function versions(r) {
+      var o = {};
+      (r && r.components || []).forEach(function (c) { var m = /^(.*\S)\s+(\S+)$/.exec(c); if (m) o[m[1]] = m[2]; });
+      return o;
+    }
+    function changed(r, prev) {
+      var before = versions(prev);
+      return (r.components || []).filter(function (c) {
+        var m = /^(.*\S)\s+(\S+)$/.exec(c);
+        return !prev || !m || before[m[1]] !== m[2];
+      });
+    }
     var feed = document.getElementById("feed"), toc = document.getElementById("toc");
     feed.innerHTML = ""; toc.innerHTML = "";
     var firstTag = DATA.filter(function (r) { return r.version !== "next"; })[0];
@@ -230,9 +243,12 @@ footer a { color: var(--label); text-decoration: none; }
       if (next) head.appendChild(el("span", "badge next", t("next")));
       art.appendChild(head);
       art.appendChild(el("h2", "", tr(r.title)));
-      if (r.components && r.components.length) {
+      // seulement les composants modifiés depuis la version précédente (nouveau composant ou autre version) ;
+      // releases.json garde la liste complète de ce que contient chaque version
+      var changedComps = changed(r, DATA[i + 1]);
+      if (changedComps.length) {
         var comps = el("ul", "comps"); comps.setAttribute("aria-label", "Versions");
-        r.components.forEach(function (c) { comps.appendChild(el("li", "", c)); });
+        changedComps.forEach(function (c) { comps.appendChild(el("li", "", c)); });
         art.appendChild(comps);
       }
       [["new", "--new"], ["changed", "--changed"], ["fixed", "--fixed"]].forEach(function (k) {

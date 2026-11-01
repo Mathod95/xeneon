@@ -70,6 +70,10 @@
           "en": "Dot Page 2.0: « ● DOT HUB » header, Dot Hub shown as a card (pictogram, status, version), modules renamed « The dots » as fully clickable cards with their version, module name under the Xeneon Edge now clickable"
         },
         {
+          "fr": "Dot Release : sous le titre d'une version, seuls les composants modifiés depuis la version précédente sont affichés",
+          "en": "Dot Release: under a version title, only the components changed since the previous version are shown"
+        },
+        {
           "fr": "Page Dot Companion 2.0 : vidéo de la page de réglages (ajout de Dot Clock avec « + » puis quelques réglages), Dot Companion en carte avec ce qu'il fait en 2 × 2 et l'installation en 4 étapes, roadmap du plus récent au plus ancien avec la confidentialité détaillée",
           "en": "Dot Companion page 2.0: video of the settings page (adding Dot Clock with \"+\" then a few settings), Dot Companion as a card with what it does in 2 × 2 and setup in 4 steps, roadmap from newest to oldest with privacy details"
         },

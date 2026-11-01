@@ -498,8 +498,8 @@ def main():
         (out / "index.html").write_text(document((DESIGN / (name + ".html")).read_text(encoding="utf-8")), encoding="utf-8")
         for f in DESIGN_FILES:
             shutil.copy(DESIGN / f, out / f)
-    # pages actuelles (docs/design/edge/, générées par tools/design_edge.py) : Dot Page et Dot Companion
-    for name in ("homePage", "subPage"):
+    # pages actuelles (docs/design/edge/, générées par tools/design_edge.py) : Dot Page, Dot Companion et Dot Release
+    for name in ("homePage", "subPage", "releasePage"):
         src = DESIGN / "edge" / (name + ".html")
         if not src.is_file():
             continue
