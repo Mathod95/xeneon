@@ -1,0 +1,80 @@
+/*
+ * Dot GitHub : le rendu (scène en pixels réels de l'emplacement), partagé par la maquette de référence,
+ * Dot Page et, plus tard, le module. Tout est rangé sous .dot-github.
+ */
+.dot-github { position: relative; overflow: hidden; background: #080808; --accent: #10b981; --lit: #f2f0e9; --label: #b8b6b0; --unlit: #1c1c1c; --fail: #ed403b; --run: #f5b942; font-family: "Fira Code", Consolas, monospace; font-variant-ligatures: none; color: var(--lit); }
+.dot-github.xl { width: 2536px; height: 696px; }
+.dot-github.l { width: 1688px; height: 696px; }
+.dot-github.m { width: 840px; height: 696px; }
+.dot-github.s { width: 840px; height: 344px; }
+.dot-github > * { position: absolute; }
+.dot-github [hidden] { display: none !important; }
+.dot-github button { font-family: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.dot-github button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.dot-github .lbl { margin: 0; white-space: nowrap; font-size: 18px; line-height: 24px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); }
+.dot-github .val { margin: 0; white-space: nowrap; font-size: 26px; letter-spacing: .06em; color: var(--lit); text-transform: uppercase; }
+.dot-github .warn { color: var(--fail) !important; }
+.dot-github .head { left: 56px; right: 56px; top: 30px; height: 60px; display: flex; align-items: center; gap: 14px; }
+.dot-github.xl .head { top: 26px; }  /* libellé « ● DOT … » à 56 / 51 et 80 / 44, comme Dot Clock */
+.dot-github .head .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); }
+.dot-github .head .grow { flex: 1; }
+.dot-github .back { height: 60px; padding: 0 24px; border-radius: 999px; border: 2px solid #2a2a2a; background: transparent; color: var(--lit); font-size: 18px; letter-spacing: .2em; text-transform: uppercase; }
+.dot-github canvas { display: block; }
+
+/* graphe de contributions et statistiques */
+.dot-github .graph { display: grid; gap: 0; }
+.dot-github .stats { display: flex; align-items: flex-end; gap: 56px; }
+.dot-github .stats .big { display: grid; gap: 12px; }
+.dot-github .stats .kv { display: grid; gap: 4px; }
+
+/* onglets et lignes */
+.dot-github .panel { display: grid; gap: 14px; align-content: start; }
+.dot-github .tabs { display: flex; gap: 10px; }
+.dot-github .tab { height: 60px; padding: 0 22px; border-radius: 999px; border: 2px solid #2a2a2a; background: transparent; color: var(--label); font-size: 18px; letter-spacing: .14em; text-transform: uppercase; display: inline-flex; align-items: center; gap: 12px; }
+.dot-github .tab.on { border-color: var(--lit); color: var(--lit); }
+.dot-github .tab .n { color: var(--lit); }
+.dot-github .rows { display: grid; gap: 4px; }
+.dot-github .row { display: grid; grid-template-columns: 16px minmax(0, 1fr) auto; gap: 4px 20px; align-items: center; min-height: 84px; padding: 8px 18px; border-radius: 14px; border: 2px solid transparent; background: transparent; color: var(--lit); text-align: left; width: 100%; }
+.dot-github .row.hit { border-color: #2f2f2f; background: #0d0d0d; }
+.dot-github .row .st { width: 16px; height: 16px; border-radius: 50%; background: var(--label); }
+.dot-github .row .st.ok { background: var(--accent); }
+.dot-github .row .st.fail { background: var(--fail); }
+.dot-github .row .st.run { background: var(--run); animation: dg-pulse 1.2s ease-in-out infinite; }
+.dot-github .row .st.info { background: var(--lit); }
+@keyframes dg-pulse { 50% { opacity: .25; } }
+@media (prefers-reduced-motion: reduce) { .dot-github .row .st.run { animation: none; } }
+.dot-github .row .txt { display: grid; gap: 2px; min-width: 0; }
+.dot-github .row .t { font-size: 24px; letter-spacing: .02em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dot-github .row .m { overflow: hidden; text-overflow: ellipsis; }
+.dot-github .row .r { text-align: right; display: grid; gap: 2px; justify-items: end; }
+
+/* compteurs (M) */
+.dot-github .counters { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.dot-github .counter { display: grid; gap: 14px; justify-items: start; padding: 22px 24px; border-radius: 16px; border: 2px solid #2a2a2a; background: transparent; color: var(--lit); text-align: left; }
+
+/* S */
+.dot-github .side { display: grid; gap: 18px; }
+.dot-github .side div { display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+.dot-github .side .v { display: inline-flex; align-items: center; gap: 12px; }
+.dot-github .side i { width: 14px; height: 14px; border-radius: 50%; display: inline-block; }
+
+.dot-github .toast { left: 50%; bottom: 28px; transform: translateX(-50%); padding: 14px 26px; border-radius: 999px; background: #161616; border: 2px solid #2f2f2f; }
+
+/* XL */
+.dot-github.xl .graph { left: 56px; top: 116px; }
+.dot-github.xl .stats { left: 126px; top: 420px; }
+.dot-github.xl .panel { left: 1790px; right: 40px; top: 108px; }
+/* L */
+.dot-github.l .graph { left: 56px; top: 116px; }
+.dot-github.l .stats { left: 126px; top: 420px; gap: 44px; }
+.dot-github.l .panel { left: 1100px; right: 40px; top: 108px; }
+/* M */
+.dot-github.m .counters { left: 40px; right: 40px; top: 112px; }
+.dot-github.m .graph { left: 56px; top: 352px; }
+.dot-github.m .foot { left: 126px; top: 616px; }
+.dot-github.m .panel { left: 32px; right: 32px; top: 108px; }
+/* S */
+.dot-github.s .top { left: 40px; top: 32px; }
+.dot-github.s .graph { left: 40px; top: 84px; }
+.dot-github.s .bottom { left: 40px; top: 284px; }
+.dot-github.s .side { left: 640px; right: 40px; top: 84px; }

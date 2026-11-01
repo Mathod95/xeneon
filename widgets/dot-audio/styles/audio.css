@@ -1,0 +1,121 @@
+/*
+ * Dot Audio : le rendu (scène en pixels réels de l'emplacement), partagé par la maquette de référence,
+ * Dot Page et, plus tard, le module servi par Dot Companion. Tout est rangé sous .dot-audio.
+ */
+.dot-audio { position: relative; overflow: hidden; background: #080808; --accent: #10b981; --lit: #f2f0e9; --label: #b8b6b0; --unlit: #1c1c1c; --alert: #ed403b; font-family: "Fira Code", Consolas, monospace; font-variant-ligatures: none; }
+.dot-audio.xl { width: 2536px; height: 696px; }
+.dot-audio.l { width: 1688px; height: 696px; }
+.dot-audio.m { width: 840px; height: 696px; }
+.dot-audio.s { width: 840px; height: 344px; }
+.dot-audio > * { position: absolute; }
+.dot-audio p { margin: 0; }
+.dot-audio canvas { display: block; }
+.dot-audio button { font-family: inherit; -webkit-tap-highlight-color: transparent; }
+.dot-audio [hidden] { display: none !important; }
+.dot-audio .w-lbl { white-space: nowrap; font-size: 18px; line-height: 24px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); }
+.dot-audio .w-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); }
+.dot-audio.playing .w-dot { animation: da-pulse 1.6s ease-in-out infinite; }
+@keyframes da-pulse { 50% { opacity: .3; } }
+@media (prefers-reduced-motion: reduce) { .dot-audio.playing .w-dot { animation: none; } }
+.dot-audio .ell { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-transform: uppercase; }
+
+/* libellé « ● DOT AUDIO » : même place et même taille partout */
+.dot-audio .w-dot { left: 56px; top: 51px; }
+.dot-audio .w-name { left: 80px; top: 44px; }
+.dot-audio .w-state { right: 56px; top: 44px; }
+.dot-audio.micoff .w-state { color: var(--alert); }
+
+/* boutons */
+.dot-audio .dev { padding: 14px 0; margin: -14px 0; border: 0; background: transparent; cursor: pointer; font-size: 18px; line-height: 24px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); white-space: nowrap; max-width: 100%; overflow: hidden; text-overflow: ellipsis; text-align: left; }
+.dot-audio .dev b { font-weight: 400; color: var(--lit); }
+.dot-audio .rb { display: grid; place-items: center; padding: 0; border-radius: 50%; border: 2px solid #2a2a2a; background: transparent; color: var(--lit); cursor: pointer; }
+.dot-audio .rb svg { width: 40%; height: 40%; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.dot-audio .rb.off { background: var(--alert); border-color: var(--alert); color: #fff; }
+.dot-audio .rb.fill { background: var(--lit); border-color: var(--lit); color: #080808; }
+.dot-audio .rb.fill svg { fill: currentColor; stroke: none; }
+.dot-audio .rb:active { transform: scale(.96); }
+.dot-audio .dev:focus-visible, .dot-audio .rb:focus-visible, .dot-audio .tab:focus-visible, .dot-audio .fd:focus-visible, .dot-audio .row:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+/* sortie */
+.dot-audio .w-out .digits { margin-top: 24px; }
+.dot-audio .w-out .vb { margin-top: 30px; touch-action: none; cursor: pointer; }
+.dot-audio .w-out .spk { position: absolute; right: 0; top: 76px; width: 96px; height: 96px; }
+
+/* micro : bouton rond, anneau de niveau en direct */
+.dot-audio .w-mic { display: flex; align-items: center; gap: 32px; }
+.dot-audio .w-mic .ring { position: relative; flex: none; }
+.dot-audio .w-mic .ring canvas { position: absolute; inset: 0; pointer-events: none; }
+.dot-audio .w-mic .ring .rb { position: absolute; inset: 22%; width: auto; height: auto; }
+.dot-audio .w-mic .tx { min-width: 0; }
+.dot-audio .w-mic .st { margin-top: 10px; font-size: 28px; line-height: 36px; letter-spacing: .1em; text-transform: uppercase; color: var(--lit); }
+.dot-audio .w-mic .st.off { color: var(--alert); }
+.dot-audio .w-mic .hint { margin-top: 4px; font-size: 18px; line-height: 24px; letter-spacing: .1em; text-transform: uppercase; color: var(--label); opacity: .6; }
+
+/* mixeur et égaliseur */
+.dot-audio .tabs { display: flex; align-items: center; gap: 40px; height: 24px; }
+.dot-audio .tab { margin: -18px 0; padding: 18px 0; border: 0; background: transparent; cursor: pointer; font-size: 18px; line-height: 24px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); opacity: .5; }
+.dot-audio .tab[aria-selected="true"] { color: var(--lit); opacity: 1; }
+.dot-audio .tabs .grow { flex: 1; }
+.dot-audio .tabs .dev { opacity: 1; }
+.dot-audio .chs { display: flex; margin-top: 28px; }
+.dot-audio .ch { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; }
+.dot-audio .ch .v { font-size: 26px; line-height: 32px; color: var(--lit); font-variant-numeric: tabular-nums; }
+.dot-audio .ch.muted .v { color: var(--label); opacity: .45; }
+.dot-audio .fd { margin-top: 12px; padding: 0; border: 0; background: transparent; cursor: ns-resize; touch-action: none; }
+.dot-audio .ch .n { margin-top: 14px; max-width: 100%; font-size: 18px; line-height: 24px; letter-spacing: .1em; color: var(--label); }
+.dot-audio .ch .mb { margin-top: 14px; width: 56px; height: 56px; }
+
+/* lecture en cours (plugin iCUE Media) */
+.dot-audio .w-np .t { margin-top: 26px; font-weight: 500; font-size: 36px; line-height: 46px; color: var(--lit); }
+.dot-audio .w-np .a { margin-top: 4px; font-size: 22px; line-height: 30px; letter-spacing: .08em; color: var(--label); }
+.dot-audio .w-np .ctls { position: absolute; left: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-content: space-between; }
+.dot-audio .w-np .rb { width: 88px; height: 88px; }
+.dot-audio .w-np .rb.fill { width: 112px; height: 112px; }
+
+/* choix des périphériques */
+.dot-audio .w-pick { inset: 0; background: rgba(8, 8, 8, .97); display: grid; grid-template-columns: 1fr 1fr; gap: 64px; padding: 112px 56px 48px; }
+.dot-audio .w-pick .col { min-width: 0; }
+.dot-audio .row { display: flex; align-items: center; gap: 18px; width: 100%; padding: 16px 0; border: 0; border-bottom: 2px solid #1d1d1d; background: transparent; cursor: pointer; text-align: left; font-size: 26px; line-height: 34px; letter-spacing: .06em; text-transform: uppercase; color: var(--label); }
+.dot-audio .row i { width: 14px; height: 14px; border-radius: 50%; background: var(--unlit); flex: none; }
+.dot-audio .row.on { color: var(--lit); }
+.dot-audio .row.on i { background: var(--accent); }
+.dot-audio .row span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dot-audio .w-pick .close { position: absolute; right: 56px; top: 92px; width: 72px; height: 72px; }
+
+/* XL : sortie et micro, mixeur, lecture en cours */
+.dot-audio.xl .w-out { left: 56px; top: 112px; width: 560px; }
+.dot-audio.xl .w-mic { left: 56px; top: 472px; width: 560px; }
+.dot-audio.xl .w-mix { left: 704px; top: 112px; width: 1112px; height: 536px; }
+.dot-audio.xl .w-np { left: 1900px; top: 112px; width: 580px; height: 536px; }
+
+/* L : sortie et micro, mixeur */
+.dot-audio.l .w-out { left: 56px; top: 112px; width: 560px; }
+.dot-audio.l .w-mic { left: 56px; top: 472px; width: 560px; }
+.dot-audio.l .w-mix { left: 704px; top: 112px; width: 928px; height: 536px; }
+.dot-audio.l .w-np { display: none; }
+
+/* M : sortie, micro à droite, mixeur court en bas */
+.dot-audio.m .w-out { left: 56px; top: 104px; width: 728px; }
+.dot-audio.m .w-out .digits { margin-top: 20px; }
+.dot-audio.m .w-out .vb { margin-top: 24px; }
+.dot-audio.m .w-out .spk { right: 152px; top: 64px; width: 104px; height: 104px; }
+.dot-audio.m .w-mic { right: 40px; top: 152px; }
+.dot-audio.m .w-mic .tx { display: none; }
+.dot-audio.m .w-mix { left: 56px; top: 376px; width: 728px; height: 280px; }
+.dot-audio.m .chs { margin-top: 18px; }
+.dot-audio.m .ch .v { font-size: 20px; line-height: 26px; }
+.dot-audio.m .fd { margin-top: 6px; }
+.dot-audio.m .ch .n { margin-top: 8px; font-size: 15px; line-height: 20px; }
+.dot-audio.m .ch .mb { margin-top: 8px; width: 44px; height: 44px; }
+.dot-audio.m .w-np { display: none; }
+
+/* S : sortie et micro, sans libellés */
+.dot-audio.s .w-dot, .dot-audio.s .w-name, .dot-audio.s .w-state, .dot-audio.s .w-out .dev, .dot-audio.s .w-mix, .dot-audio.s .w-np, .dot-audio.s .w-mic .tx { display: none; }
+.dot-audio.s .w-out { left: 48px; top: 40px; width: 744px; }
+.dot-audio.s .w-out .digits { margin-top: 0; }
+.dot-audio.s .w-out .vb { margin-top: 30px; }
+.dot-audio.s .w-out .spk { right: 176px; top: 0; width: 112px; height: 112px; }
+.dot-audio.s .w-mic { right: 32px; top: 22px; }
+.dot-audio.s .w-pick { padding: 40px 48px; gap: 40px; }
+.dot-audio.s .w-pick .close { top: 24px; right: 32px; }
+.dot-audio.s .row { font-size: 20px; line-height: 26px; padding: 10px 0; }

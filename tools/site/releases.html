@@ -167,12 +167,12 @@ footer a { color: var(--label); text-decoration: none; }
       months: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
     }
   };
-  var lang = "fr";
+  var lang = "en";
   try {
     var q = new URLSearchParams(location.search).get("lang");
-    lang = q === "en" || q === "fr" ? q : localStorage.getItem("dotpage-lang") || ((navigator.language || "fr").slice(0, 2) === "fr" ? "fr" : "en");
-  } catch (e) { lang = (navigator.language || "fr").slice(0, 2) === "fr" ? "fr" : "en"; }
-  if (!STR[lang]) lang = "fr";
+    lang = q === "en" || q === "fr" ? q : localStorage.getItem("dotpage-lang") || ((navigator.language || "en").slice(0, 2) === "fr" ? "fr" : "en"); // français pour un navigateur en français, anglais sinon
+  } catch (e) { lang = (navigator.language || "en").slice(0, 2) === "fr" ? "fr" : "en"; }
+  if (!STR[lang]) lang = "en";
   function t(k) { return STR[lang][k]; }
   function tr(o) { return o && (o[lang] || o.fr) || ""; }
   function date(s) {

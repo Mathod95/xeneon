@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<!-- Maquette de référence du Dot Spotify (artefact de revue de design). Ouvrir dans un navigateur. -->
+<!-- Maquette de référence du Dot Spotify. Elle charge le rendu du module (styles/spotify.css, scripts/spotify.js) : la base pointe sur le dossier du module. -->
+<base href="../">
 <style>body { margin: 0; }</style>
 </head>
 <body>
@@ -13,6 +14,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap">
+<link rel="stylesheet" href="styles/spotify.css">
+<script src="scripts/spotify.js"></script>
 <style>
 /* Layout : maquette de référence en taille réelle (choix S, M, L, XL) avec ses réglages, puis tableau des choix. Même univers que Dot Clock, un seul thème sombre. */
 :root {
@@ -89,80 +92,8 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
 .frame.s { width: calc(840 / 2536 * 100%); aspect-ratio: 840 / 344; }
 @media (max-width: 700px) { .frame.l, .frame.m, .frame.s { width: 100%; } }
 
-/* ---------- le widget : scène en pixels réels de l'emplacement ---------- */
-.stage { position: absolute; left: 0; top: 0; transform-origin: 0 0; background: #080808; --accent: #10b981; --lit: #f2f0e9; --label: #b8b6b0; --unlit: #1c1c1c; }
-.stage.xl { width: 2536px; height: 696px; }
-.stage.l { width: 1688px; height: 696px; }
-.stage.m { width: 840px; height: 696px; }
-.stage.s { width: 840px; height: 344px; }
-.stage > * { position: absolute; }
-.w-lbl { margin: 0; white-space: nowrap; font-family: "Fira Code", Consolas, monospace; font-variant-ligatures: none; font-size: 18px; line-height: 24px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); }
-.w-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); }
-.stage.playing .w-dot { animation: pulse 1.6s ease-in-out infinite; }
-@keyframes pulse { 50% { opacity: .3; } }
-@media (prefers-reduced-motion: reduce) { .stage.playing .w-dot { animation: none; } }
-.w-meta { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
-.w-title, .w-artist, .w-album { margin: 0; font-family: "Fira Code", Consolas, monospace; font-variant-ligatures: none; text-transform: uppercase; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.w-title { font-weight: 500; color: var(--lit); letter-spacing: .02em; }
-.w-artist { color: var(--label); letter-spacing: .08em; }
-.w-album { color: var(--label); opacity: .65; letter-spacing: .08em; }
-.w-ctls { display: flex; align-items: center; }
-.ctl { display: grid; place-items: center; padding: 0; border-radius: 50%; border: 2px solid #2a2a2a; background: transparent; color: var(--lit); cursor: pointer; }
-.ctl svg { width: 38%; height: 38%; fill: currentColor; }
-.ctl.play { background: var(--lit); border-color: var(--lit); color: #080808; }
-.ctl.play svg { width: 34%; height: 34%; }
-.ctl:active { transform: scale(.96); }
-.stage.idle .ctl { opacity: .3; pointer-events: none; }
-
-/* XL : pochette à gauche sous le libellé, texte au centre, commandes à droite */
-.stage.xl .w-cover { left: 56px; top: 100px; width: 548px; height: 548px; }
-.stage.xl .w-dot { left: 56px; top: 51px; }
-.stage.xl .w-name { left: 80px; top: 44px; }
-.stage.xl .w-state { right: 56px; top: 44px; }
-.stage.xl .w-meta { left: 704px; top: 262px; width: 1180px; }
-.stage.xl .w-title { font-size: 64px; line-height: 80px; }
-.stage.xl .w-artist { font-size: 28px; line-height: 36px; }
-.stage.xl .w-album { font-size: 22px; line-height: 28px; }
-.stage.xl .w-ctls { right: 56px; top: 264px; gap: 32px; }
-.stage.xl .ctl { width: 112px; height: 112px; }
-.stage.xl .ctl.play { width: 168px; height: 168px; }
-.stage.xl .w-ctls { top: 264px; }
-
-/* L : pochette à gauche, texte puis commandes en dessous */
-.stage.l .w-cover { left: 48px; top: 48px; width: 600px; height: 600px; }
-.stage.l .w-dot { left: 704px; top: 59px; }
-.stage.l .w-name { left: 728px; top: 52px; }
-.stage.l .w-state { right: 56px; top: 52px; }
-.stage.l .w-meta { left: 704px; top: 176px; width: 928px; }
-.stage.l .w-title { font-size: 56px; line-height: 70px; }
-.stage.l .w-artist { font-size: 26px; line-height: 34px; }
-.stage.l .w-album { font-size: 22px; line-height: 28px; }
-.stage.l .w-ctls { left: 704px; bottom: 48px; gap: 28px; }
-.stage.l .ctl { width: 96px; height: 96px; }
-.stage.l .ctl.play { width: 136px; height: 136px; }
-
-/* M : pochette et texte côte à côte, commandes centrées en bas */
-.stage.m .w-dot { left: 56px; top: 51px; }
-.stage.m .w-name { left: 80px; top: 44px; }
-.stage.m .w-state { right: 56px; top: 44px; }
-.stage.m .w-cover { left: 56px; top: 100px; width: 320px; height: 320px; }
-.stage.m .w-meta { left: 408px; top: 108px; width: 376px; gap: 12px; }
-.stage.m .w-title { font-size: 36px; line-height: 46px; white-space: normal; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; }
-.stage.m .w-artist { font-size: 22px; line-height: 28px; }
-.stage.m .w-album { font-size: 18px; line-height: 24px; }
-.stage.m .w-ctls { left: 0; right: 0; bottom: 64px; justify-content: center; gap: 40px; }
-.stage.m .ctl { width: 104px; height: 104px; }
-.stage.m .ctl.play { width: 144px; height: 144px; }
-
-/* S : pochette, titre et commandes, sans libellés */
-.stage.s .w-dot, .stage.s .w-name, .stage.s .w-state, .stage.s .w-album { display: none; }
-.stage.s .w-cover { left: 48px; top: 48px; width: 248px; height: 248px; }
-.stage.s .w-meta { left: 336px; top: 52px; width: 456px; gap: 8px; }
-.stage.s .w-title { font-size: 36px; line-height: 46px; }
-.stage.s .w-artist { font-size: 20px; line-height: 26px; }
-.stage.s .w-ctls { left: 336px; bottom: 48px; gap: 24px; }
-.stage.s .ctl { width: 80px; height: 80px; }
-.stage.s .ctl.play { width: 104px; height: 104px; }
+/* ---------- l'écran : le rendu vient de styles/spotify.css (classe .dot-spotify), ici seulement sa place dans le cadre */
+.stage { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
 </style>
 
 <div class="wrap">
@@ -182,22 +113,7 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
       <button type="button" class="preset" data-size="xl" aria-pressed="true">XL · 2536 × 696</button>
     </div>
     <div class="frame xl" id="frame">
-      <div class="stage xl playing" id="stage">
-        <canvas class="w-cover" id="cover" aria-label="Pochette en trame de points"></canvas>
-        <span class="w-dot"></span>
-        <p class="w-lbl w-name">DOT SPOTIFY</p>
-        <p class="w-lbl w-state" id="state">PLAYING</p>
-        <div class="w-meta">
-          <p class="w-title" id="title">Neon Grid</p>
-          <p class="w-artist" id="artist">The Pixels</p>
-          <p class="w-album" id="album">Low Resolution</p>
-        </div>
-        <div class="w-ctls">
-          <button type="button" class="ctl" id="prevBtn" aria-label="Previous track"><svg viewBox="0 0 24 24"><path d="M5 4h3v16H5zM20 4v16L9 12z"/></svg></button>
-          <button type="button" class="ctl play" id="playBtn" aria-label="Play / pause"><svg viewBox="0 0 24 24" id="playIcon"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg></button>
-          <button type="button" class="ctl" id="nextBtn" aria-label="Next track"><svg viewBox="0 0 24 24"><path d="M16 4h3v16h-3zM4 4v16l11-8z"/></svg></button>
-        </div>
-      </div>
+      <div class="stage" id="stage"></div>
     </div>
     <div class="settings" aria-label="Réglages iCUE simulés">
       <div class="grp" role="radiogroup" aria-label="Exemple">
@@ -256,140 +172,41 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
 </div>
 
 <script>
+// Habillage de la maquette : tailles, réglages simulés. Le rendu de l'écran est celui du module (DotSpotify.mount).
 (function () {
   "use strict";
   function v(id) { return document.getElementById(id); }
-  var SIZES = {
-    xl: { w: 2536, h: 696, cover: 548, tag: "XL 2536 × 696 px", note: "Pochette à gauche, titre au centre, commandes à droite." },
-    l: { w: 1688, h: 696, cover: 600, tag: "L 1688 × 696 px", note: "Pochette à gauche, texte puis commandes en dessous." },
-    m: { w: 840, h: 696, cover: 320, tag: "M 840 × 696 px", note: "Pochette et texte côte à côte, commandes centrées en bas." },
-    s: { w: 840, h: 344, cover: 248, tag: "S 840 × 344 px", note: "Pochette, titre, artiste et commandes, sans libellés." }
+  function val(name) { return document.querySelector("input[name=" + name + "]:checked").value; }
+  var NOTES = {
+    xl: { tag: "XL 2536 × 696 px", note: "Pochette à gauche, titre au centre, commandes à droite." },
+    l: { tag: "L 1688 × 696 px", note: "Pochette à gauche, texte puis commandes en dessous." },
+    m: { tag: "M 840 × 696 px", note: "Pochette et texte côte à côte, commandes centrées en bas." },
+    s: { tag: "S 840 × 344 px", note: "Pochette, titre, artiste et commandes, sans libellés." }
   };
-  var size = "xl";
-  var frame = v("frame"), stage = v("stage");
-
-  function fit() { stage.style.transform = "scale(" + frame.clientWidth / SIZES[size].w + ")"; }
+  var size = "xl", frame = v("frame"), stage = v("stage");
+  function settings() {
+    return { sample: val("sample"), coverStyle: val("coverStyle"), dotSize: val("dotSize"), showUnlit: v("showUnlit").checked, showAlbum: v("showAlbum").checked,
+      accent: v("accentColor").value, lit: v("litColor").value, unlit: v("unlitColor").value, label: v("labelColor").value };
+  }
+  // le bouton lecture / pause de l'écran coche l'exemple correspondant
+  var sp = DotSpotify.mount(stage, { size: size, settings: settings, onState: function (st) { document.querySelector("input[name=sample][value=" + st + "]").checked = true; } });
+  function fit() { stage.style.transform = "scale(" + frame.clientWidth / DotSpotify.slots[size][0] + ")"; }
   if (window.ResizeObserver) new ResizeObserver(fit).observe(frame); else window.addEventListener("resize", fit);
 
-  // ---------- pochettes d'exemple, dessinées à la main (aucune vraie pochette)
-  function makeCover(paint) { var c = document.createElement("canvas"); c.width = c.height = 256; paint(c.getContext("2d")); return c; }
-  var TRACKS = [
-    { title: "Neon Grid", artist: "The Pixels", album: "Low Resolution", art: makeCover(function (g) {
-      var bg = g.createLinearGradient(0, 0, 256, 256); bg.addColorStop(0, "#1b1446"); bg.addColorStop(1, "#4a1d5e");
-      g.fillStyle = bg; g.fillRect(0, 0, 256, 256);
-      var sun = g.createRadialGradient(96, 104, 6, 96, 104, 86); sun.addColorStop(0, "#ffd38a"); sun.addColorStop(.55, "#ff6a5c"); sun.addColorStop(1, "rgba(255,80,90,0)");
-      g.fillStyle = sun; g.beginPath(); g.arc(96, 104, 86, 0, Math.PI * 2); g.fill();
-      var moon = g.createRadialGradient(194, 186, 2, 194, 186, 44); moon.addColorStop(0, "#9ff3e4"); moon.addColorStop(1, "rgba(60,200,190,0)");
-      g.fillStyle = moon; g.beginPath(); g.arc(194, 186, 44, 0, Math.PI * 2); g.fill();
-    }) },
-    { title: "Analog Dreams Under a Very Long Summer Sky", artist: "Mira Lane", album: "Tape Hiss", art: makeCover(function (g) {
-      var bg = g.createLinearGradient(0, 0, 0, 256); bg.addColorStop(0, "#f3c98b"); bg.addColorStop(1, "#c4553a");
-      g.fillStyle = bg; g.fillRect(0, 0, 256, 256);
-      g.fillStyle = "#fff4d6"; g.beginPath(); g.arc(128, 120, 58, 0, Math.PI * 2); g.fill();
-      g.fillStyle = "#3b1f2b";
-      for (var i = 0; i < 6; i++) g.fillRect(0, 150 + i * 18, 256, 8 - i);
-    }) },
-    { title: "Low Tide", artist: "Harbor Lights", album: "Undertow", art: makeCover(function (g) {
-      var bg = g.createLinearGradient(0, 0, 0, 256); bg.addColorStop(0, "#0d2b45"); bg.addColorStop(1, "#1c6e8c");
-      g.fillStyle = bg; g.fillRect(0, 0, 256, 256);
-      for (var k = 0; k < 5; k++) {
-        g.strokeStyle = "rgba(180,235,255," + (0.85 - k * 0.15) + ")"; g.lineWidth = 10 - k;
-        g.beginPath();
-        for (var x = 0; x <= 256; x += 4) { var y = 70 + k * 38 + Math.sin(x / 26 + k) * 14; if (x === 0) g.moveTo(x, y); else g.lineTo(x, y); }
-        g.stroke();
-      }
-    }) }
-  ];
-  var track = 0;
-
-  // ---------- trame de points
-  function drawCover(state, s) {
-    var cv = v("cover"), px = SIZES[size].cover, dpr = 2;
-    cv.width = px * dpr; cv.height = px * dpr;
-    var ctx = cv.getContext("2d");
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    ctx.clearRect(0, 0, px, px);
-    var pitch = parseInt(document.querySelector("input[name=dotSize]:checked").value, 10) * (px / 600 > 0.5 ? 1 : 0.75);
-    var n = Math.floor(px / pitch), off = (px - n * pitch) / 2 + pitch / 2, maxR = pitch * 0.46;
-    var data = null;
-    if (state !== "idle") {
-      var sm = document.createElement("canvas"); sm.width = sm.height = n;
-      var sg = sm.getContext("2d"); sg.imageSmoothingQuality = "high";
-      sg.drawImage(TRACKS[track].art, 0, 0, n, n);
-      data = sg.getImageData(0, 0, n, n).data;
-    }
-    var color = document.querySelector("input[name=coverStyle]:checked").value === "color";
-    // niveaux automatiques : on étire la luminosité de la pochette sur toute la plage, pour que les pochettes sombres restent lisibles
-    var lo = 1, hi = 0;
-    if (data) for (var q = 0; q < data.length; q += 4) {
-      var lq = (0.2126 * data[q] + 0.7152 * data[q + 1] + 0.0722 * data[q + 2]) / 255;
-      if (lq < lo) lo = lq; if (lq > hi) hi = lq;
-    }
-    var span = Math.max(hi - lo, 0.2);
-    for (var yy = 0; yy < n; yy++) for (var xx = 0; xx < n; xx++) {
-      var cx = off + xx * pitch, cy = off + yy * pitch;
-      if (s.unlit) { ctx.fillStyle = s.unlit; ctx.beginPath(); ctx.arc(cx, cy, maxR, 0, Math.PI * 2); ctx.fill(); }
-      if (!data) continue;
-      var i = (yy * n + xx) * 4, r = data[i], g = data[i + 1], b = data[i + 2];
-      var lum = Math.min(1, Math.max(0, ((0.2126 * r + 0.7152 * g + 0.0722 * b) / 255 - lo) / span));
-      var rad = color ? maxR * (0.35 + 0.65 * Math.pow(lum, 0.7)) : maxR * Math.pow(lum, 0.9);
-      if (rad < 0.6) continue;
-      ctx.fillStyle = color ? "rgb(" + r + "," + g + "," + b + ")" : s.lit;
-      ctx.beginPath(); ctx.arc(cx, cy, rad, 0, Math.PI * 2); ctx.fill();
-    }
-  }
-
-  var PLAY = '<path d="M7 4v16l13-8z"/>', PAUSE = '<path d="M6 4h4v16H6zM14 4h4v16h-4z"/>';
-
-  function render() {
-    var state = document.querySelector("input[name=sample]:checked").value;
-    var s = {
-      lit: v("litColor").value,
-      unlit: v("showUnlit").checked ? v("unlitColor").value : null,
-      accent: v("accentColor").value,
-      label: v("labelColor").value
-    };
-    stage.className = "stage " + size + " " + state;
-    stage.style.setProperty("--accent", s.accent);
-    stage.style.setProperty("--lit", s.lit);
-    stage.style.setProperty("--label", s.label);
-    var t = TRACKS[track];
-    v("title").textContent = state === "idle" ? "Nothing playing" : t.title;
-    v("artist").textContent = state === "idle" ? "Start playback on your PC" : t.artist;
-    v("album").textContent = t.album;
-    v("album").hidden = state === "idle" || !v("showAlbum").checked;
-    v("state").textContent = { playing: "PLAYING", paused: "PAUSED", idle: "IDLE" }[state];
-    v("playIcon").innerHTML = state === "playing" ? PAUSE : PLAY;
-    drawCover(state, s);
-  }
-
-  // ---------- interactions de la maquette
-  function setSample(val) { v({ playing: "sPlaying", paused: "sPaused", idle: "sIdle" }[val]).checked = true; render(); }
-  v("playBtn").addEventListener("click", function () {
-    setSample(document.querySelector("input[name=sample]:checked").value === "playing" ? "paused" : "playing");
-  });
-  v("nextBtn").addEventListener("click", function () { track = (track + 1) % TRACKS.length; render(); });
-  v("prevBtn").addEventListener("click", function () { track = (track + TRACKS.length - 1) % TRACKS.length; render(); });
-
-  ["sPlaying", "sPaused", "sIdle", "cMono", "cColor", "dFine", "dMedium", "dCoarse", "showUnlit", "showAlbum", "accentColor", "litColor", "unlitColor", "labelColor"].forEach(function (id) {
-    v(id).addEventListener("input", render);
-    v(id).addEventListener("change", render);
-  });
+  document.querySelectorAll(".settings input").forEach(function (i) { i.addEventListener("input", sp.render); i.addEventListener("change", sp.render); });
   document.querySelectorAll(".preset[data-accent]").forEach(function (b) {
-    b.addEventListener("click", function () { v("accentColor").value = b.getAttribute("data-accent"); render(); });
+    b.addEventListener("click", function () { v("accentColor").value = b.getAttribute("data-accent"); sp.render(); });
   });
   document.querySelectorAll(".sizebar .preset").forEach(function (b) {
     b.addEventListener("click", function () {
       size = b.getAttribute("data-size");
       document.querySelectorAll(".sizebar .preset").forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
       frame.className = "frame " + size;
-      v("sizeTag").textContent = "Version 0.1 · taille réelle " + SIZES[size].tag;
-      v("sizeNote").textContent = SIZES[size].note;
-      render(); fit();
+      v("sizeTag").textContent = "Version 0.1 · taille réelle " + NOTES[size].tag;
+      v("sizeNote").textContent = NOTES[size].note;
+      sp.setSize(size); fit();
     });
   });
-
-  render(); fit();
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(render);
+  fit();
 })();
 </script>

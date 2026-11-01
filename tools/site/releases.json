@@ -70,6 +70,14 @@
           "en": "Dot Page 2.0: « ● DOT HUB » header, Dot Hub shown as a card (pictogram, status, version), modules renamed « The dots » as fully clickable cards with their version, module name under the Xeneon Edge now clickable"
         },
         {
+          "fr": "Page Dot Companion 2.0 : vidéo de la page de réglages (ajout de Dot Clock avec « + » puis quelques réglages), Dot Companion en carte avec ce qu'il fait en 2 × 2 et l'installation en 4 étapes, roadmap du plus récent au plus ancien avec la confidentialité détaillée",
+          "en": "Dot Companion page 2.0: video of the settings page (adding Dot Clock with \"+\" then a few settings), Dot Companion as a card with what it does in 2 × 2 and setup in 4 steps, roadmap from newest to oldest with privacy details"
+        },
+        {
+          "fr": "Dot Page : la Showcase commence par Dot Clock à l'heure réelle (fuseau et date du navigateur), et fait tourner en direct Dot Clock, Dot Audio, Dot Spotify, Dot Bambu Lab, Dot Plex et Dot GitHub (le rendu de chaque module, dans ses propres fichiers, partagé avec sa maquette)",
+          "en": "Dot Page: the Showcase starts with Dot Clock at the real time (browser time zone and date), and runs Dot Clock, Dot Audio, Dot Spotify, Dot Bambu Lab, Dot Plex and Dot GitHub live (each module's own render files, shared with its mockup)"
+        },
+        {
           "fr": "Charte : gabarits homePage, subPage, modulePage et releasePage harmonisés (mêmes Top, Hero et Footer), toutes les valeurs dans les fiches des zones",
           "en": "Design guide: homePage, subPage, modulePage and releasePage templates aligned (same Top, Hero and Footer), every value in the zone cards"
         },

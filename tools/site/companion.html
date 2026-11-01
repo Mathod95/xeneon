@@ -35,7 +35,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outlin
 
 /* en-tête (identique à Dot Page) */
 .top { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
-.brand { display: flex; align-items: center; gap: 10px; font-weight: 700; letter-spacing: .22em; font-size: 15px; text-decoration: none; }
+.brand { display: flex; align-items: center; gap: 10px; height: 42px; font-weight: 700; letter-spacing: .22em; font-size: 15px; color: var(--lit); text-decoration: none; }
 .brand::before { content: ""; width: 12px; height: 12px; border-radius: 50%; background: var(--accent); }
 .topr { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; justify-content: flex-end; }
 .ext { font-family: var(--mono); font-size: 13px; letter-spacing: .16em; text-transform: uppercase; color: var(--label); text-decoration: none; padding: 10px 16px; border: 1px solid var(--line); border-radius: 999px; background: var(--bg); }
@@ -47,8 +47,8 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outlin
 
 /* titre */
 .hero { display: grid; gap: 20px; }
-.hero canvas { display: block; width: 100%; max-width: 760px; height: auto; justify-self: start; }
-.lede { margin: 0; font-family: var(--mono); font-size: clamp(15px, 1.8vw, 19px); color: var(--lit); text-wrap: balance; max-width: 70ch; }
+.hero canvas { display: block; max-width: min(100%, 760px); height: auto; justify-self: start; }
+.lede { margin: 0; font-family: var(--mono); font-size: clamp(15px, 1.8vw, 19px); color: var(--lit); text-wrap: balance; }
 .lede i { font-style: normal; color: var(--accent); padding: 0 .5em; }
 .facts { display: flex; flex-wrap: wrap; gap: 8px 28px; margin: 0; padding: 0; list-style: none; font-family: var(--mono); font-size: 13px; letter-spacing: .18em; text-transform: uppercase; color: var(--label); }
 .facts b { color: var(--accent); font-weight: 500; margin-right: .5em; }
@@ -61,17 +61,52 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outlin
 /* sections */
 .sec { display: grid; gap: 18px; }
 .sec > h2 { margin: 0; font-family: var(--mono); font-weight: 500; font-size: 13px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); }
-.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 270px), 1fr)); gap: 14px; }
-.card { display: grid; gap: 12px; align-content: start; padding: 22px; border: 1px solid var(--line); border-radius: 18px; background: var(--panel); min-width: 0; }
-.card canvas { display: block; width: 56px; height: 56px; }
-.card h3 { margin: 0; font-size: 19px; font-weight: 700; }
-.card p { margin: 0; color: var(--label); font-size: 15px; }
+/* .about : le même bloc que Dot Hub sur Dot Page (haut comme une carte, sur-titres, parties, étapes) */
+.about { display: grid; gap: 22px; padding: clamp(20px, 3vw, 32px); border: 1px solid #262626; border-radius: 20px; background: var(--panel); }
+.about-head { display: flex; align-items: stretch; gap: 16px; }
+.about-head canvas { display: block; flex: none; width: 70px; height: 70px; }
+.about-head .head { display: flex; flex-direction: column; justify-content: space-between; min-width: 0; flex: 1; height: 70px; }
+.about-head h2 { margin: 0; font-family: var(--mono); font-weight: 500; font-size: 28px; line-height: 1.15; letter-spacing: .14em; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.status { display: flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--label); white-space: nowrap; }
+.status::before { content: ""; flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--c); }
+.ver { font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.about-k { margin: 0; font-family: var(--mono); font-size: 12px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); }
+/* les parties en 2 × 2 : pictogramme à gauche, titre en haut, texte dessous qui passe sous le pictogramme */
+.parts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.part { padding: 20px 22px; border: 1px solid var(--line); border-radius: 14px; background: var(--bg); }
+.part canvas { display: block; float: left; width: 70px; height: 70px; margin: 0 16px 6px 0; }
+.part h3 { margin: -3px 0 8px; font-size: 18px; font-weight: 700; line-height: 1.3; }
+.part > p { margin: 0; color: var(--label); font-size: 15px; line-height: 1.6; }
+/* réglages : la page elle-même en haut de l'About, sur toute la largeur, comme l'écran de la Showcase ; le texte juste en dessous */
+.about-lead { margin: 0; font-size: 19px; color: var(--lit); }
+.about-lead b { font-weight: 600; }
+/* .showcase : identique à Dot Page (en-tête, écran dans son cadre, nom en accent dessous) */
+.showcase { display: grid; gap: 16px; }
+.bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 24px; }
+.bar h2 { margin: 0; font-family: var(--mono); font-weight: 500; font-size: 13px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); }
+.hint { margin: 0; color: var(--label); font-size: 14px; }
+.edge { padding: clamp(6px, 1.2%, 18px); border-radius: clamp(10px, 1.6vw, 24px); background: linear-gradient(180deg, #161616, #0b0b0b); border: 1px solid #2a2a2a; box-shadow: 0 40px 80px -40px #000, inset 0 1px 0 #262626; }
+.shot { display: block; }
+.shot video { display: block; width: 100%; height: auto; aspect-ratio: 3 / 2; border-radius: clamp(4px, .8vw, 10px); background: var(--bg); }
+.pager { display: flex; justify-content: center; }
+.where { font-family: var(--mono); font-size: 13px; letter-spacing: .18em; text-transform: uppercase; color: var(--accent); text-decoration: none; }
+.where:hover { color: var(--lit); }
 code { font-family: var(--mono); font-size: .88em; color: var(--lit); background: #161616; border: 1px solid var(--line); border-radius: 6px; padding: 1px 6px; overflow-wrap: anywhere; }
 
-.steps { margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: 12px; counter-reset: st; }
-.steps li { counter-increment: st; display: grid; grid-template-columns: auto 1fr; gap: 14px; align-items: center; padding: 18px 20px; border: 1px solid var(--line); border-radius: 14px; background: var(--panel); color: var(--label); font-size: 15px; }
+.steps { margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: 12px; counter-reset: st; }
+.steps li { counter-increment: st; display: grid; grid-template-columns: auto 1fr; gap: 14px; align-items: center; padding: 16px 18px; border: 1px solid var(--line); border-radius: 14px; color: var(--label); font-size: 15px; }
 .steps li::before { content: counter(st); display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: var(--accent); color: var(--bg); font-family: var(--mono); font-weight: 500; font-size: 14px; }
 .steps b { color: var(--lit); font-weight: 600; }
+/* étapes brèves : un verbe, puis un repère en petit */
+.steps li > span, .steps li > a { display: grid; gap: 2px; }
+.steps small { font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+/* la 1re étape est le téléchargement : toute la carte est le lien, en émeraude */
+.steps li.dl { position: relative; background: var(--accent); border-color: var(--accent); }
+.steps li.dl::before { background: var(--bg); color: var(--accent); }
+.steps li.dl a { color: var(--bg); text-decoration: none; }
+.steps li.dl a::after { content: ""; position: absolute; inset: 0; border-radius: inherit; }
+.steps li.dl b, .steps li.dl small { color: var(--bg); }
+.steps li.dl:hover { filter: brightness(1.1); }
 .note { margin: 0; padding: 16px 20px; border: 1px solid #2a2414; border-radius: 14px; background: #0f0d08; color: var(--label); font-size: 15px; }
 .note b { color: var(--wip); font-weight: 600; }
 
@@ -84,24 +119,29 @@ td:first-child { font-weight: 600; white-space: nowrap; }
 td { color: var(--label); }
 td .tagw { font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--wip); }
 
-.list { margin: 0; padding: 0 0 0 18px; display: grid; gap: 8px; color: var(--label); }
-.list li::marker { color: #3a3a3a; }
-.list b { color: var(--lit); font-weight: 600; }
+.bullets { margin: 0; padding: 0 0 0 18px; display: grid; gap: 8px; color: var(--label); }
+.bullets li::marker { color: #3a3a3a; }
+.bullets b { color: var(--lit); font-weight: 600; }
+/* roadmap : un point fait est allumé, suivi de sa version en capsule (lien vers Dot Release) ; un point à faire est éteint */
+.bullets li.done { color: var(--lit); }
+.bullets li.done::marker { color: var(--accent); }
+.bullets li.todo, .bullets li.todo b { color: var(--muted); }
+.bullets .when { display: inline-block; margin-left: .6em; padding: 1px 10px; border: 1px solid var(--accent); border-radius: 999px; font-family: var(--mono); font-size: 12px; letter-spacing: .1em; color: var(--accent); text-decoration: none; white-space: nowrap; vertical-align: 1px; }
+.bullets .when:hover { background: var(--accent); color: var(--bg); }
 
-footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px 24px; font-family: var(--mono); font-size: 13px; letter-spacing: .24em; text-transform: uppercase; }
-footer .red { color: var(--accent); }
-footer a { color: var(--label); text-decoration: none; }
+.footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px 24px; font-family: var(--mono); font-size: 13px; letter-spacing: .24em; text-transform: uppercase; }
+.footer .red { color: var(--accent); }
+.footer a { color: var(--label); text-decoration: none; }
 </style>
 
 <div class="wrap">
   <div class="top">
-    <a class="brand" href="__HOME__"__HOME_TARGET__>MATHOD</a>
+    <a class="brand" href="__HOME__"__HOME_TARGET__>DOT HUB</a>
     <div class="topr">
       <div class="lang" role="group" aria-label="Language">
         <button type="button" class="chip" data-lang="fr" aria-pressed="false">FR</button>
         <button type="button" class="chip" data-lang="en" aria-pressed="false">EN</button>
       </div>
-      <a class="ext" href="__HOME__"__HOME_TARGET__ data-i18n="back"></a>
       <a class="ext" href="#" aria-current="page">Companion</a>
       <a class="ext" href="__RELEASES__"__RELEASES_TARGET__>Releases</a>
       <a class="ext" href="https://github.com/Mathod95/xeneon" target="_blank" rel="noopener">GitHub ↗</a>
@@ -118,27 +158,34 @@ footer a { color: var(--label); text-decoration: none; }
       <li><b>127.0.0.1</b><span data-i18n="fLocal"></span></li>
       <li><b>0</b><span data-i18n="fAccount"></span></li>
     </ul>
-    <div class="cta">
-      <a class="btn main" href="https://github.com/Mathod95/xeneon/releases/latest" target="_blank" rel="noopener" data-i18n="download"></a>
-      <a class="btn" href="__MOCKUP__"__MOCKUP_TARGET__ data-i18n="mockup"></a>
-      <a class="btn" href="https://github.com/Mathod95/xeneon/tree/main/companion" target="_blank" rel="noopener" data-i18n="source"></a>
-    </div>
   </section>
 
-  <section class="sec" aria-labelledby="whatT">
-    <h2 id="whatT" data-i18n="whatK"></h2>
-    <div class="cards">
-      <div class="card"><canvas data-pic="serve" width="112" height="112" aria-hidden="true"></canvas><h3 data-i18n="w1t"></h3><p data-i18n-html="w1"></p></div>
-      <div class="card"><canvas data-pic="settings" width="112" height="112" aria-hidden="true"></canvas><h3 data-i18n="w2t"></h3><p data-i18n-html="w2"></p></div>
-      <div class="card"><canvas data-pic="power" width="112" height="112" aria-hidden="true"></canvas><h3 data-i18n="w3t"></h3><p data-i18n-html="w3"></p></div>
-      <div class="card"><canvas data-pic="lock" width="112" height="112" aria-hidden="true"></canvas><h3 data-i18n="w4t"></h3><p data-i18n-html="w4"></p></div>
+  <!-- .showcase : comme sur Dot Page, la page de réglages en vidéo dans son cadre, avec son lien dessous -->
+  <section class="showcase" data-i18n-label="setLabel">
+    <div class="bar">
+      <h2 data-i18n="setK"></h2>
+      <p class="hint" data-i18n="setHint"></p>
     </div>
+    <div class="edge"><a class="shot" href="__MOCKUP__"__MOCKUP_TARGET__ aria-label="Page de réglages"><video src="settings.webm" poster="settings.jpg" autoplay muted loop playsinline preload="auto" aria-hidden="true"></video></a></div>
+    <div class="pager"><a class="where" href="__MOCKUP__"__MOCKUP_TARGET__ data-i18n="setOpen"></a></div>
   </section>
 
-  <section class="sec" aria-labelledby="installT">
-    <h2 id="installT" data-i18n="installK"></h2>
+  <section class="about" aria-labelledby="compTitle">
+    <div class="about-head">
+      <canvas data-pic="serve" width="140" height="140" aria-hidden="true"></canvas>
+      <div class="head"><h2 id="compTitle">Dot Companion</h2><span class="status" style="--c: var(--wip)" data-i18n="aStatus"></span><span class="ver">v0.4.0</span></div>
+    </div>
+    <p class="about-lead" data-i18n-html="aboutLead"></p>
+    <p class="about-k" id="whatT" data-i18n="whatK"></p>
+    <div class="parts">
+      <div class="part"><canvas data-pic="serve" width="140" height="140" aria-hidden="true"></canvas><h3 data-i18n="w1t"></h3><p data-i18n-html="w1"></p></div>
+      <div class="part"><canvas data-pic="settings" width="140" height="140" aria-hidden="true"></canvas><h3 data-i18n="w2t"></h3><p data-i18n-html="w2"></p></div>
+      <div class="part"><canvas data-pic="power" width="140" height="140" aria-hidden="true"></canvas><h3 data-i18n="w3t"></h3><p data-i18n-html="w3"></p></div>
+      <div class="part"><canvas data-pic="lock" width="140" height="140" aria-hidden="true"></canvas><h3 data-i18n="w4t"></h3><p data-i18n-html="w4"></p></div>
+    </div>
+    <p class="about-k" id="installT" data-i18n="installK"></p>
     <ol class="steps">
-      <li><span data-i18n-html="s1"></span></li>
+      <li class="dl"><a href="https://github.com/Mathod95/xeneon/releases/latest" target="_blank" rel="noopener" data-i18n-html="s1"></a></li>
       <li><span data-i18n-html="s2"></span></li>
       <li><span data-i18n-html="s3"></span></li>
       <li><span data-i18n-html="s4"></span></li>
@@ -160,27 +207,23 @@ footer a { color: var(--label); text-decoration: none; }
     </div>
   </section>
 
-  <section class="sec" aria-labelledby="privT">
-    <h2 id="privT" data-i18n="privK"></h2>
-    <ul class="list">
-      <li data-i18n-html="p1"></li>
-      <li data-i18n-html="p2"></li>
-      <li data-i18n-html="p3"></li>
-      <li data-i18n-html="p4"></li>
-    </ul>
-  </section>
-
   <section class="sec" aria-labelledby="nextT">
     <h2 id="nextT" data-i18n="nextK"></h2>
-    <ul class="list">
-      <li data-i18n-html="n1"></li>
-      <li data-i18n-html="n2"></li>
-      <li data-i18n-html="n3"></li>
-      <li data-i18n-html="n4"></li>
+    <ul class="bullets">
+      <li class="todo"><span class="txt" data-i18n-html="n4"></span></li>
+      <li class="done"><span class="txt" data-i18n-html="n3"></span> <a class="when" href="__RELEASES__"__RELEASES_TARGET__>0.5.0</a></li>
+      <li class="done"><span class="txt" data-i18n-html="n2"></span> <a class="when" href="__RELEASES__"__RELEASES_TARGET__>0.5.0</a></li>
+      <li class="done"><span class="txt" data-i18n-html="n1"></span> <a class="when" href="__RELEASES__"__RELEASES_TARGET__>0.5.0</a></li>
+      <li class="done"><span class="txt" data-i18n-html="r5"></span> <a class="when" href="__RELEASES__"__RELEASES_TARGET__>0.4.0</a></li>
+      <li class="done"><span class="txt" data-i18n-html="r4"></span> <a class="when" href="__RELEASES__"__RELEASES_TARGET__>0.1.0</a></li>
+      <li class="done"><span class="txt" data-i18n-html="r3"></span> <a class="when" href="__RELEASES__"__RELEASES_TARGET__>0.1.0</a></li>
+      <li class="done"><span class="txt" data-i18n-html="r2"></span> <a class="when" href="__RELEASES__"__RELEASES_TARGET__>0.1.0</a></li>
+      <li class="done"><span class="txt" data-i18n-html="r1"></span> <a class="when" href="__RELEASES__"__RELEASES_TARGET__>0.1.0</a></li>
     </ul>
   </section>
 
-  <footer>
+
+  <footer class="footer">
     <span class="red">For Xeneon Edge · Touch · Dot-matrix</span>
     <a href="https://github.com/Mathod95/xeneon" target="_blank" rel="noopener">Mathod95/xeneon</a>
   </footer>
@@ -194,17 +237,18 @@ footer a { color: var(--label); text-decoration: none; }
       lede: "Le programme Windows qui fait marcher Dot Hub<i>●</i>local, gratuit, sans compte.",
       back: "← Dot Page", fVersion: "version", fLocal: "seulement sur ton PC", fAccount: "compte à créer",
       download: "Télécharger ↗", mockup: "Maquette →", source: "Code source ↗",
-      whatK: "Ce qu'il fait",
-      w1t: "Il sert Dot Hub", w1: "Dot Hub, le widget posé dans iCUE, n'affiche que ce que le compagnon lui envoie : l'accueil, puis le module choisi (Dot Clock, Dot Steam…). Sans compagnon lancé, Dot Hub n'affiche rien.",
-      w2t: "Il garde les réglages", w2: "Une page de réglages dans le navigateur du PC (bouton ⚙ SETTINGS de l'accueil) : l'Edge en direct, une page par module ajouté avec ses options, les couleurs communes à tous les modules. Tout est enregistré dans <code>%APPDATA%\\Xeneon\\config.json</code>.",
-      w3t: "Il fait ce qu'un widget ne peut pas", w3: "Un widget iCUE ne voit pas le PC. Le compagnon, si : il lit les fichiers de Steam, lance les jeux, et demain règlera le son de Windows ou parlera à Discord, Plex et Home Assistant.",
-      w4t: "Il garde tes secrets", w4: "Clés d'API et jetons sont chiffrés sur le PC avec la protection de Windows (DPAPI), masqués dans la page de réglages et jamais renvoyés en clair.",
+      whatK: "Ce qu'il fait", aStatus: "en cours",
+      w1: "Dot Hub, le widget posé dans iCUE, n'affiche que ce que le compagnon lui envoie: l'accueil, puis le dot choisi d'un toucher. Les dots sont intégrés au compagnon, et les capteurs, FPS et lecture en cours d'iCUE leur sont transmis. Sans lui, Dot Hub attend.", w2: "Le bouton ⚙ SETTINGS ouvre une page dans le navigateur du PC: l'Edge en direct, les options de chaque dot, les couleurs communes à tous. Un changement fait d'un côté apparaît de l'autre en quelques secondes, et tout tient dans un seul fichier.", w3: "Un widget iCUE ne voit pas le PC. Le compagnon, si: il lit les fichiers de Steam (jeux installés, téléchargements, jaquettes) et lance un jeu d'un toucher. Bientôt, il réglera le son de Windows et parlera à Discord, Plex ou Home Assistant.", w4: "Il n'écoute que sur ton PC et refuse les pages qui se font passer pour lui. Ni statistiques ni compte: il ne sort sur Internet que pour une fonction que tu utilises. Clés et jetons sont chiffrés (DPAPI) et jamais renvoyés en clair.",
+      w1t: "Il sert Dot Hub", 
+      w2t: "Il garde les réglages", 
+      w3t: "Il fait ce qu'un widget ne peut pas", 
+      w4t: "Il protège tes données", 
       installK: "Installer",
-      s1: "<b>Télécharge</b> <code>dot-companion.exe</code> depuis la dernière release.",
-      s2: "<b>Lance-le</b> : une petite fenêtre indique qu'il est prêt. Garde-la ouverte.",
-      s3: "<b>Ajoute Dot Hub</b> sur l'Edge dans iCUE (fichier <code>.icuewidget</code> de la même release).",
-      s4: "<b>Ajoute un module</b> d'un toucher sur « + » (sur l'Edge ou dans ⚙ SETTINGS), règle-le en le voyant en direct.",
-      smart: "<b>Avertissement de Windows au premier lancement</b> : l'exe n'est pas encore signé, SmartScreen le signale comme inconnu. Clique sur « Informations complémentaires » puis « Exécuter quand même ». Une version signée est à l'étude.",
+      s1: "<b>Télécharger ↗</b><small>l'app et le widget</small>",
+      s2: "<b>Lancer Dot Companion</b><small>sur le PC</small>",
+      s3: "<b>Ajouter Dot Hub</b><small>sur l'Edge, dans iCUE</small>",
+      s4: "<b>Ajouter tes dots</b><small>d'un toucher sur +</small>",
+      smart: "<b>Au premier lancement</b> : SmartScreen bloque l'exe, pas encore signé. Clique sur « Informations complémentaires » puis « Exécuter quand même ».",
       modsK: "Ce qu'il utilise, module par module",
       thModule: "Module", thUses: "Sur le PC", thNet: "Sur Internet",
       clockUses: "L'heure et le fuseau du PC.", clockNet: "Rien.",
@@ -212,31 +256,33 @@ footer a { color: var(--label); text-decoration: none; }
       steamNet: "Les jaquettes absentes du cache de Steam (images publiques du magasin). Les amis et le statut seulement si tu donnes une clé d'API Steam.",
       otherMods: "Les autres modules", otherUses: "Chaque module codé ajoutera sa ligne ici : ce qu'il lit sur le PC et ce qu'il demande sur Internet.", soon: "À venir",
       privK: "Confidentialité",
-      p1: "<b>N'écoute que sur ton PC</b> (<code>127.0.0.1:47800</code>) : invisible depuis le réseau local et depuis Internet.",
-      p2: "<b>Refuse les pages qui se font passer pour lui</b> : une requête dont l'en-tête <code>Host</code> n'est pas <code>127.0.0.1:47800</code> ou <code>localhost:47800</code> est rejetée.",
-      p3: "<b>Aucune statistique, aucun compte</b> : il ne contacte Internet que pour une fonction que tu utilises (images et amis de Dot Steam).",
-      p4: "<b>Tes données restent dans un seul fichier</b>, <code>%APPDATA%\\Xeneon\\config.json</code> ; les secrets y sont chiffrés.",
-      nextK: "La suite · à valider",
-      n1: "<b>Icône dans la zone de notification</b> à la place de la fenêtre, avec un menu : ouvrir les réglages, identifier les Dot Hub, quitter.",
+      nextK: "Roadmap", setK: "Sur le PC", setLabel: "Aperçu de la page de réglages", setHint: "⚙ SETTINGS, sur l'Edge, ouvre la page de réglages dans ton navigateur.", aboutLead: "Dot Companion tourne sur ton PC, à côté d'iCUE: Dot Hub lui demande tout ce qu'il affiche.", setOpen: "Voir la page de réglages →",
+      r1: "<b>N'écoute que sur ton PC</b> (<code>127.0.0.1:47800</code>): invisible depuis le réseau local et depuis Internet.",
+      r2: "<b>Refuse les pages qui se font passer pour lui</b>: une requête dont l'en-tête <code>Host</code> n'est pas <code>127.0.0.1:47800</code> ou <code>localhost:47800</code> est rejetée.",
+      r3: "<b>Aucune statistique, aucun compte</b>: il ne contacte Internet que pour une fonction que tu utilises (images et amis de Dot Steam).",
+      r4: "<b>Tes données restent dans un seul fichier</b>, <code>%APPDATA%\\Xeneon\\config.json</code>.",
+      r5: "<b>Clés d'API et jetons chiffrés</b> avec la protection de Windows (DPAPI), masqués dans les réglages, jamais renvoyés en clair.",
+      n1: "<b>Icône dans la zone de notification</b> à la place de la fenêtre, avec un menu: ouvrir les réglages, identifier les Dot Hub, quitter.",
       n2: "<b>Démarrage avec Windows</b>, activé par défaut et désactivable.",
-      n3: "<b>Mise à jour depuis l'app</b> : une nouvelle release s'affiche dans le menu et dans les réglages, un toucher la télécharge, la vérifie et l'installe.",
+      n3: "<b>Mise à jour depuis l'app</b>: une nouvelle release s'affiche dans le menu et dans les réglages, un toucher la télécharge, la vérifie et l'installe.",
       n4: "<b>Exe signé</b>, pour ne plus avoir l'avertissement de Windows."
     },
     en: {
       lede: "The Windows app that runs Dot Hub<i>●</i>local, free, no account.",
       back: "← Dot Page", fVersion: "version", fLocal: "on your PC only", fAccount: "account to create",
       download: "Download ↗", mockup: "Mockup →", source: "Source code ↗",
-      whatK: "What it does",
-      w1t: "It serves Dot Hub", w1: "Dot Hub, the widget you place in iCUE, only shows what the companion sends it: the home screen, then the module you pick (Dot Clock, Dot Steam…). Without the companion running, Dot Hub shows nothing.",
-      w2t: "It keeps the settings", w2: "A settings page in your PC browser (⚙ SETTINGS button on the home screen): the Edge live, one page per added module with its options, colors shared by every module. Everything is saved in <code>%APPDATA%\\Xeneon\\config.json</code>.",
-      w3t: "It does what a widget cannot", w3: "An iCUE widget cannot see your PC. The companion can: it reads Steam files, launches games, and later will control the Windows sound or talk to Discord, Plex and Home Assistant.",
-      w4t: "It keeps your secrets", w4: "API keys and tokens are encrypted on the PC with Windows protection (DPAPI), masked in the settings page and never sent back in clear.",
+      whatK: "What it does", aStatus: "in progress",
+      w1: "Dot Hub, the widget you place in iCUE, only shows what the companion sends it: the home screen, then the dot you tap. The dots are built into the companion, and iCUE sensors, FPS and now playing are passed on to them. Without it, Dot Hub waits.", w2: "The ⚙ SETTINGS button opens a page in your PC browser: the Edge live, each dot's options, colors shared by all. A change made on one side shows up on the other within seconds, and everything fits in a single file.", w3: "An iCUE widget cannot see your PC. The companion can: it reads Steam files (installed games, downloads, covers) and launches a game with a tap. Soon it will control Windows sound and talk to Discord, Plex or Home Assistant.", w4: "It only listens on your PC and rejects pages pretending to be it. No analytics, no account: it only goes online for a feature you use. Keys and tokens are encrypted (DPAPI) and never sent back in clear.",
+      w1t: "It serves Dot Hub", 
+      w2t: "It keeps the settings", 
+      w3t: "It does what a widget cannot", 
+      w4t: "It protects your data", 
       installK: "Install",
-      s1: "<b>Download</b> <code>dot-companion.exe</code> from the latest release.",
-      s2: "<b>Run it</b>: a small window says it is ready. Keep it open.",
-      s3: "<b>Add Dot Hub</b> to your Edge in iCUE (the <code>.icuewidget</code> file from the same release).",
-      s4: "<b>Add a module</b> with a tap on « + » (on the Edge or in ⚙ SETTINGS), set it up while you watch it live.",
-      smart: "<b>Windows warning on first launch</b>: the exe is not signed yet, so SmartScreen flags it as unknown. Click \"More info\" then \"Run anyway\". A signed version is being looked into.",
+      s1: "<b>Download ↗</b><small>the app and the widget</small>",
+      s2: "<b>Run Dot Companion</b><small>on your PC</small>",
+      s3: "<b>Add Dot Hub</b><small>to your Edge, in iCUE</small>",
+      s4: "<b>Add your dots</b><small>tap +</small>",
+      smart: "<b>Windows warning on first launch</b>: the exe is not signed yet, so SmartScreen flags it as unknown. Click \"More info\" then \"Run anyway\".",
       modsK: "What it uses, module by module",
       thModule: "Module", thUses: "On the PC", thNet: "On the Internet",
       clockUses: "The PC time and time zone.", clockNet: "Nothing.",
@@ -244,23 +290,24 @@ footer a { color: var(--label); text-decoration: none; }
       steamNet: "Covers missing from the Steam cache (public store images). Friends and status only if you give a Steam API key.",
       otherMods: "Other modules", otherUses: "Each module, once coded, adds its line here: what it reads on the PC and what it asks the Internet for.", soon: "Coming",
       privK: "Privacy",
-      p1: "<b>Listens on your PC only</b> (<code>127.0.0.1:47800</code>): invisible from your local network and from the Internet.",
-      p2: "<b>Rejects pages pretending to be it</b>: a request whose <code>Host</code> header is not <code>127.0.0.1:47800</code> or <code>localhost:47800</code> is refused.",
-      p3: "<b>No analytics, no account</b>: it only reaches the Internet for a feature you use (Dot Steam covers and friends).",
-      p4: "<b>Your data stays in one file</b>, <code>%APPDATA%\\Xeneon\\config.json</code>; secrets are encrypted there.",
-      nextK: "What's next · to be decided",
+      nextK: "Roadmap", setK: "On your PC", setLabel: "Settings page preview", setHint: "⚙ SETTINGS on the Edge opens the settings page in your browser.", aboutLead: "Dot Companion runs on your PC, next to iCUE: Dot Hub asks it for everything it shows.", setOpen: "See the settings page →",
+      r1: "<b>Listens on your PC only</b> (<code>127.0.0.1:47800</code>): invisible from your local network and from the Internet.",
+      r2: "<b>Rejects pages pretending to be it</b>: a request whose <code>Host</code> header is not <code>127.0.0.1:47800</code> or <code>localhost:47800</code> is refused.",
+      r3: "<b>No analytics, no account</b>: it only reaches the Internet for a feature you use (Dot Steam covers and friends).",
+      r4: "<b>Your data stays in one file</b>, <code>%APPDATA%\\Xeneon\\config.json</code>.",
+      r5: "<b>API keys and tokens encrypted</b> with Windows protection (DPAPI), masked in the settings, never sent back in clear.",
       n1: "<b>Notification area icon</b> instead of the window, with a menu: open settings, identify Dot Hubs, quit.",
       n2: "<b>Start with Windows</b>, on by default, can be turned off.",
       n3: "<b>Update from the app</b>: a new release shows up in the menu and in the settings, one tap downloads, checks and installs it.",
       n4: "<b>Signed exe</b>, so the Windows warning goes away."
     }
   };
-  var lang = "fr";
+  var lang = "en";
   try {
     var q = new URLSearchParams(location.search).get("lang");
-    lang = q === "en" || q === "fr" ? q : localStorage.getItem("dotpage-lang") || ((navigator.language || "fr").slice(0, 2) === "fr" ? "fr" : "en");
-  } catch (e) { lang = (navigator.language || "fr").slice(0, 2) === "fr" ? "fr" : "en"; }
-  if (!STR[lang]) lang = "fr";
+    lang = q === "en" || q === "fr" ? q : localStorage.getItem("dotpage-lang") || ((navigator.language || "en").slice(0, 2) === "fr" ? "fr" : "en"); // français pour un navigateur en français, anglais sinon
+  } catch (e) { lang = (navigator.language || "en").slice(0, 2) === "fr" ? "fr" : "en"; }
+  if (!STR[lang]) lang = "en";
   function t(k) { return STR[lang][k]; }
 
   // titre COMPANION en points (police 5 × 7 de Dot Page)
@@ -280,7 +327,10 @@ footer a { color: var(--label); text-decoration: none; }
       for (var c = 0; c < g[0].length; c++) cols.push(g.map(function (r) { return r[c] === "#"; }));
       if (i < text.length - 1) cols.push([false, false, false, false, false, false, false]);
     });
-    var pad = 1, total = cols.length + pad * 2, rows = 7 + pad * 2, pitch = cv.width / total, r = pitch * 0.36;
+    var pad = 1, total = cols.length + pad * 2, rows = 7 + pad * 2;
+    // points tous les 14 px : la largeur du titre suit le texte (canvas en double résolution)
+    cv.width = total * 14 * 2; cv.style.width = total * 14 + "px";
+    var pitch = cv.width / total, r = pitch * 0.36;
     cv.height = Math.round(rows * pitch);
     ctx.clearRect(0, 0, cv.width, cv.height);
     for (var x = 0; x < total; x++) for (var y = 0; y < rows; y++) {
@@ -312,6 +362,7 @@ footer a { color: var(--label); text-decoration: none; }
     document.documentElement.lang = lang;
     document.querySelectorAll("[data-i18n]").forEach(function (e) { e.textContent = t(e.getAttribute("data-i18n")); });
     document.querySelectorAll("[data-i18n-html]").forEach(function (e) { e.innerHTML = t(e.getAttribute("data-i18n-html")); });
+    document.querySelectorAll("[data-i18n-label]").forEach(function (e) { e.setAttribute("aria-label", t(e.getAttribute("data-i18n-label"))); });
     document.querySelectorAll(".lang .chip").forEach(function (b) { b.setAttribute("aria-pressed", b.getAttribute("data-lang") === lang ? "true" : "false"); });
   }
   document.querySelectorAll(".lang .chip").forEach(function (b) {
@@ -320,6 +371,9 @@ footer a { color: var(--label); text-decoration: none; }
 
   drawTitle("COMPANION");
   drawPics();
+  var calm = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  // vidéo des réglages : pas de lecture automatique si le système demande moins d'animations
+  if (calm) document.querySelectorAll(".shot video").forEach(function (v) { v.removeAttribute("autoplay"); v.pause(); });
   render();
 })();
 </script>

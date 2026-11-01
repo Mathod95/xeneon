@@ -1,0 +1,116 @@
+/*
+ * Dot Bambu Lab : le rendu (scène en pixels réels de l'emplacement), partagé par la maquette de référence,
+ * Dot Page et, plus tard, le module. Tout est rangé sous .dot-bambulab.
+ */
+.dot-bambulab { position: relative; overflow: hidden; background: #080808; --accent: #10b981; --lit: #f2f0e9; --label: #b8b6b0; --unlit: #1c1c1c; --alert: #ed403b; font-family: "Fira Code", Consolas, monospace; font-variant-ligatures: none; }
+.dot-bambulab.xl { width: 2536px; height: 696px; }
+.dot-bambulab.l { width: 1688px; height: 696px; }
+.dot-bambulab.m { width: 840px; height: 696px; }
+.dot-bambulab.s { width: 840px; height: 344px; }
+.dot-bambulab > * { position: absolute; }
+.dot-bambulab [hidden] { display: none !important; }
+.dot-bambulab p { margin: 0; }
+.dot-bambulab canvas { display: block; }
+.dot-bambulab .w-lbl { white-space: nowrap; font-size: 18px; line-height: 24px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); }
+.dot-bambulab .w-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); }
+.dot-bambulab.printing .w-dot { animation: dbl-pulse 1.6s ease-in-out infinite; }
+.dot-bambulab.error .w-dot { background: var(--alert); }
+@keyframes dbl-pulse { 50% { opacity: .3; } }
+@media (prefers-reduced-motion: reduce) { .dot-bambulab.printing .w-dot { animation: none; } }
+.dot-bambulab .ell { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-transform: uppercase; }
+
+/* libellé « ● DOT BAMBU LAB » : même place et même taille partout */
+.dot-bambulab .w-dot { left: 56px; top: 51px; }
+.dot-bambulab .w-name { left: 80px; top: 44px; }
+.dot-bambulab .w-state { right: 56px; top: 44px; }
+.dot-bambulab.error .w-state { color: var(--alert); }
+
+/* progression : pourcentage en gros points, barre, fichier, couches, temps */
+.dot-bambulab .w-prog { display: flex; flex-direction: column; }
+.dot-bambulab .w-prog .bar { margin-top: 36px; }
+.dot-bambulab .w-prog .file { margin-top: 28px; font-weight: 500; color: var(--lit); font-size: 44px; line-height: 54px; letter-spacing: .02em; }
+.dot-bambulab .w-prog .info { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 4px 28px; font-size: 24px; line-height: 32px; letter-spacing: .08em; text-transform: uppercase; color: var(--label); white-space: nowrap; }
+.dot-bambulab .w-prog .info .left { color: var(--lit); }
+.dot-bambulab .w-prog .alert { margin-top: 10px; color: var(--alert); font-size: 24px; line-height: 32px; letter-spacing: .08em; text-transform: uppercase; }
+.dot-bambulab .w-prog .big { font-weight: 500; color: var(--lit); font-size: 96px; line-height: 112px; letter-spacing: .02em; text-transform: uppercase; }
+.dot-bambulab .w-prog .sub { margin-top: 12px; color: var(--label); font-size: 24px; line-height: 32px; letter-spacing: .08em; text-transform: uppercase; }
+
+/* températures */
+.dot-bambulab .w-temps { display: flex; }
+.dot-bambulab .tmp { min-width: 0; }
+.dot-bambulab .tmp .k { font-size: 18px; line-height: 24px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); }
+.dot-bambulab .tmp .v { margin-top: 6px; white-space: nowrap; color: var(--lit); font-size: 64px; line-height: 76px; font-variant-numeric: tabular-nums; }
+.dot-bambulab .tmp .v small { font-size: 26px; color: var(--label); margin-left: 10px; letter-spacing: .04em; }
+.dot-bambulab .tmp .hb { margin-top: 10px; }
+
+/* AMS : une bobine par emplacement, remplie selon le reste */
+.dot-bambulab .w-ams { display: flex; flex-direction: column; }
+.dot-bambulab .w-ams .slots { display: flex; margin-top: 24px; }
+.dot-bambulab .spool-slot { min-width: 0; display: flex; flex-direction: column; align-items: center; text-align: center; }
+.dot-bambulab .spool-slot .ty { margin-top: 14px; color: var(--lit); font-size: 22px; line-height: 28px; letter-spacing: .06em; }
+.dot-bambulab .spool-slot .re { text-transform: uppercase; color: var(--label); font-size: 18px; line-height: 24px; letter-spacing: .1em; }
+.dot-bambulab .spool-slot.on .re { color: var(--accent); }
+
+/* commandes */
+.dot-bambulab .w-ctls { display: flex; align-items: center; }
+.dot-bambulab .ctl { position: relative; display: grid; place-items: center; padding: 0; border-radius: 50%; border: 2px solid #2a2a2a; background: transparent; color: var(--lit); cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.dot-bambulab .ctl svg { width: 38%; height: 38%; fill: currentColor; }
+.dot-bambulab .ctl.main { background: var(--lit); border-color: var(--lit); color: #080808; }
+.dot-bambulab .ctl.main svg { width: 34%; height: 34%; }
+.dot-bambulab .ctl:active { transform: scale(.96); }
+.dot-bambulab .ctl:disabled { opacity: .3; cursor: default; }
+.dot-bambulab .ctl.lamp.on { border-color: var(--accent); color: var(--accent); }
+.dot-bambulab .ctl .ring { position: absolute; inset: -2px; border-radius: 50%; background: conic-gradient(var(--alert) calc(var(--p, 0) * 1turn), transparent 0); -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 6px), #000 calc(100% - 5px)); mask: radial-gradient(farthest-side, transparent calc(100% - 6px), #000 calc(100% - 5px)); pointer-events: none; }
+.dot-bambulab .ctl:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.dot-bambulab .w-hint { font-size: 18px; line-height: 24px; letter-spacing: .14em; text-transform: uppercase; color: var(--label); opacity: .6; white-space: nowrap; }
+
+/* XL : progression, températures, AMS et commandes côte à côte */
+.dot-bambulab.xl .w-prog { left: 56px; top: 112px; width: 900px; }
+.dot-bambulab.xl .w-temps { left: 1040px; top: 112px; width: 460px; height: 536px; flex-direction: column; justify-content: space-between; }
+.dot-bambulab.xl .w-ams { left: 1600px; top: 112px; width: 880px; }
+.dot-bambulab.xl .w-ams .slots { gap: 32px; }
+.dot-bambulab.xl .w-ctls { right: 56px; bottom: 48px; gap: 32px; }
+.dot-bambulab.xl .ctl { width: 112px; height: 112px; }
+.dot-bambulab.xl .ctl.main { width: 136px; height: 136px; }
+.dot-bambulab.xl .w-hint { left: 1600px; bottom: 104px; }
+
+/* L : progression à gauche ; températures, AMS et commandes à droite */
+.dot-bambulab.l .w-prog { left: 56px; top: 112px; width: 760px; }
+.dot-bambulab.l .w-prog .file { font-size: 40px; line-height: 50px; }
+.dot-bambulab.l .w-temps { left: 880px; top: 112px; width: 752px; gap: 32px; }
+.dot-bambulab.l .tmp { flex: 1; }
+.dot-bambulab.l .tmp .v { font-size: 48px; line-height: 60px; }
+.dot-bambulab.l .tmp .v small { font-size: 22px; }
+.dot-bambulab.l .w-ams { left: 880px; top: 296px; width: 752px; }
+.dot-bambulab.l .w-ams .slots { gap: 24px; margin-top: 16px; }
+.dot-bambulab.l .w-ctls { right: 56px; bottom: 48px; gap: 24px; }
+.dot-bambulab.l .ctl { width: 96px; height: 96px; }
+.dot-bambulab.l .ctl.main { width: 112px; height: 112px; }
+.dot-bambulab.l .w-hint { left: 880px; bottom: 90px; }
+
+/* M : progression et températures, commandes en bas */
+.dot-bambulab.m .w-prog { left: 56px; top: 104px; width: 728px; }
+.dot-bambulab.m .w-prog .bar { margin-top: 26px; }
+.dot-bambulab.m .w-prog .file { margin-top: 20px; font-size: 34px; line-height: 44px; }
+.dot-bambulab.m .w-prog .info, .dot-bambulab.m .w-prog .alert, .dot-bambulab.m .w-prog .sub { font-size: 20px; line-height: 28px; }
+.dot-bambulab.m .w-prog .big { font-size: 64px; line-height: 80px; }
+.dot-bambulab.m .w-temps { left: 56px; top: 432px; width: 728px; gap: 24px; }
+.dot-bambulab.m .tmp { flex: 1; }
+.dot-bambulab.m .tmp .v { font-size: 40px; line-height: 50px; }
+.dot-bambulab.m .tmp .v small { font-size: 18px; margin-left: 6px; }
+.dot-bambulab.m .tmp .hb { display: none; }
+.dot-bambulab.m .w-ams, .dot-bambulab.m .w-hint { display: none; }
+.dot-bambulab.m .w-ctls { right: 56px; bottom: 40px; gap: 24px; }
+.dot-bambulab.m .ctl { width: 88px; height: 88px; }
+.dot-bambulab.m .ctl.main { width: 104px; height: 104px; }
+
+/* S : progression seule, sans libellés ni commandes */
+.dot-bambulab.s .w-dot, .dot-bambulab.s .w-name, .dot-bambulab.s .w-state, .dot-bambulab.s .w-ams, .dot-bambulab.s .w-ctls, .dot-bambulab.s .w-hint, .dot-bambulab.s .w-temps { display: none; }
+.dot-bambulab.s .w-prog { left: 48px; top: 48px; width: 744px; }
+.dot-bambulab.s .w-prog .bar { margin-top: 22px; }
+.dot-bambulab.s .w-prog .file { margin-top: 18px; font-size: 32px; line-height: 40px; }
+.dot-bambulab.s .w-prog .info, .dot-bambulab.s .w-prog .alert, .dot-bambulab.s .w-prog .sub { margin-top: 6px; font-size: 20px; line-height: 28px; }
+.dot-bambulab.s .w-prog .big { font-size: 56px; line-height: 68px; }
+.dot-bambulab.s .w-mini { right: 48px; top: 56px; text-align: right; font-size: 22px; line-height: 34px; letter-spacing: .1em; color: var(--label); white-space: nowrap; }
+.dot-bambulab.s .w-mini b { color: var(--lit); font-weight: 400; }
+.dot-bambulab:not(.s) .w-mini { display: none; }

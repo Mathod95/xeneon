@@ -17,6 +17,7 @@ la page Dot Companion ; --companion-mockup DOSSIER pour la maquette de Dot Compa
 """
 import argparse
 import base64
+import http.server
 import json
 import pathlib
 import re
@@ -122,6 +123,164 @@ def previews(slugs):
     return out
 
 
+class QuietHandler(http.server.SimpleHTTPRequestHandler):
+    """Serveur de fichiers local sans journal (captures de la maquette de Dot Companion)."""
+    def log_message(self, *args):
+        pass
+
+
+def settings_shot(mockup_dir):
+    """Capture de la page de réglages seule (l'iframe de la vue « Réglages · navigateur » de la maquette de Dot Companion), en JPEG. None si Playwright manque."""
+    try:
+        from playwright.sync_api import sync_playwright
+    except ImportError:
+        return None
+    import functools, threading
+    # la maquette charge la page de réglages dans une iframe : il faut un vrai serveur, pas file://
+    handler = functools.partial(QuietHandler, directory=str(mockup_dir))
+    srv = http.server.ThreadingHTTPServer(("127.0.0.1", 0), handler)
+    threading.Thread(target=srv.serve_forever, daemon=True).start()
+    try:
+        with sync_playwright() as p:
+            browser = p.chromium.launch()
+            page = browser.new_page(viewport={"width": 1440, "height": 1200})
+            page.goto("http://127.0.0.1:%d/" % srv.server_address[1])
+            page.wait_for_timeout(2000)
+            # la page seule, sans la barre du navigateur simulé
+            shot = page.locator("#settingsFrame").screenshot(type="jpeg", quality=85)
+            browser.close()
+    finally:
+        srv.shutdown()
+    return shot
+
+
+# vidéo de la page de réglages pour Dot Companion : le pointeur ajoute une page avec « + », choisit Dot Clock et la règle.
+# Enregistrée dans la maquette de Dot Companion (vraie page de réglages, API simulée), en temps réel, puis encodée en WebM
+# (VP9) avec le ffmpeg fourni par Playwright. Gardée dans .cache/ tant que la maquette et ses fichiers ne changent pas.
+DEMO_VERSION = "1"
+DEMO_SIZE = (1200, 800)
+DEMO_FPS = 25
+DEMO_CURSOR = """
+(function () {
+  var c = document.createElement("div");
+  c.innerHTML = '<svg width="22" height="30" viewBox="0 0 22 30"><path d="M1.5 1.5 L1.5 24 L7.2 18.6 L11 27.5 L15 25.8 L11.3 17 L19 17 Z" fill="#f2f0e9" stroke="#080808" stroke-width="1.6" stroke-linejoin="round"/></svg>';
+  c.style.cssText = "position:fixed;left:0;top:0;z-index:99999;pointer-events:none;transition:transform .9s cubic-bezier(.45,0,.2,1)";
+  document.body.appendChild(c);
+  var st = document.createElement("style");
+  st.textContent = ".demoRing{position:fixed;z-index:99998;pointer-events:none;width:34px;height:34px;margin:-17px 0 0 -17px;border:2px solid #10B981;border-radius:50%;animation:demoRing .55s ease-out forwards}@keyframes demoRing{from{transform:scale(.3);opacity:1}to{transform:scale(1.4);opacity:0}}";
+  document.head.appendChild(st);
+  window.demoMove = function (x, y, ms) { c.style.transitionDuration = ms + "ms"; c.style.transform = "translate(" + x + "px," + y + "px)"; };
+  window.demoRing = function (x, y) { var r = document.createElement("div"); r.className = "demoRing"; r.style.left = x + "px"; r.style.top = y + "px"; document.body.appendChild(r); setTimeout(function () { r.remove(); }, 700); };
+  // la page de réglages seule, en plein cadre
+  document.getElementById("settingsFrame").style.cssText = "position:fixed;left:0;top:0;width:100vw;height:100vh;z-index:9999;border:0;margin:0;border-radius:0";
+})();
+"""
+
+
+def ffmpeg_path():
+    """Le ffmpeg installé avec Playwright (il sait lire du MJPEG et écrire du WebM VP9), sinon celui du système."""
+    import glob, os
+    base = os.environ.get("PLAYWRIGHT_BROWSERS_PATH") or os.path.expanduser("~/.cache/ms-playwright")
+    for f in sorted(glob.glob(os.path.join(base, "ffmpeg-*", "ffmpeg-*"))):
+        if os.access(f, os.X_OK) and not f.endswith(".txt"):
+            return f
+    return shutil.which("ffmpeg")
+
+
+def settings_demo(mockup_dir):
+    """(vidéo WebM, première image JPEG) du parcours dans la page de réglages, ou None (Playwright ou ffmpeg absent, parcours cassé)."""
+    import hashlib
+    h = hashlib.sha256((DEMO_VERSION + DEMO_CURSOR).encode())
+    for f in sorted(pathlib.Path(mockup_dir).rglob("*")):
+        if f.is_file():
+            h.update(str(f.relative_to(mockup_dir)).encode()); h.update(f.read_bytes())
+    cache = ROOT / ".cache" / "settings-demo"
+    key = h.hexdigest()[:16]
+    if (cache / (key + ".webm")).exists() and (cache / (key + ".jpg")).exists():
+        return (cache / (key + ".webm")).read_bytes(), (cache / (key + ".jpg")).read_bytes()
+    ff = ffmpeg_path()
+    try:
+        from playwright.sync_api import sync_playwright
+    except ImportError:
+        return None
+    if not ff:
+        return None
+    import functools, threading
+    handler = functools.partial(QuietHandler, directory=str(mockup_dir))
+    srv = http.server.ThreadingHTTPServer(("127.0.0.1", 0), handler)
+    threading.Thread(target=srv.serve_forever, daemon=True).start()
+    W, H = DEMO_SIZE
+    frames = []
+    try:
+        with sync_playwright() as pw:
+            browser = pw.chromium.launch()
+            ctx = browser.new_context(viewport={"width": W, "height": H})
+            page = ctx.new_page()
+            page.goto("http://127.0.0.1:%d/" % srv.server_address[1])
+            page.wait_for_timeout(2000)
+            page.evaluate(DEMO_CURSOR)
+            page.wait_for_timeout(800)
+            frame = page.locator("#settingsFrame").content_frame
+            doc = [f for f in page.frames if f != page.main_frame][0]
+            wait = page.wait_for_timeout
+
+            def scroll(js_top, smooth=True):
+                y = doc.evaluate("() => " + js_top)
+                doc.evaluate("([y, s]) => scrollTo({ top: y, behavior: s ? 'smooth' : 'instant' })", [y, smooth])
+
+            def go(loc, after, ms=900):
+                b = loc.bounding_box()
+                x, y = b["x"] + b["width"] / 2, b["y"] + b["height"] / 2
+                page.evaluate("([x, y, ms]) => demoMove(x, y, ms)", [x, y, ms])
+                wait(ms + 120)
+                page.mouse.move(x, y)
+                page.evaluate("([x, y]) => demoRing(x, y)", [x, y])
+                page.mouse.click(x, y)
+                wait(after)
+
+            # départ : la carte DOT HUB en vue, le pointeur en bas à droite
+            scroll("document.querySelector('.card.hub').getBoundingClientRect().top + scrollY - 24", False)
+            page.evaluate("([x, y]) => demoMove(x, y, 0)", [W * 0.8, H * 0.85])
+            wait(400)
+            cdp = ctx.new_cdp_session(page)
+
+            def on_frame(e):
+                frames.append((e["metadata"]["timestamp"], e["data"]))
+                cdp.send("Page.screencastFrameAck", {"sessionId": e["sessionId"]})
+            cdp.on("Page.screencastFrame", on_frame)
+            cdp.send("Page.startScreencast", {"format": "jpeg", "quality": 92, "maxWidth": W, "maxHeight": H})
+            wait(700)
+            go(frame.frame_locator(".card.hub iframe").locator(".tile.add"), 900)
+            scroll("(function (c) { return c[c.length - 1].getBoundingClientRect().top + scrollY - 24; })(document.querySelectorAll('.card.page'))")
+            wait(1000)
+            pick = frame.frame_locator(".card.page iframe").first
+            go(pick.locator(".pickbtn"), 800)
+            go(pick.get_by_text("DOT CLOCK"), 1600)
+            scroll("1e5")
+            wait(1100)
+            opts = frame.locator(".card.page .settings")
+            go(opts.locator("label", has_text="12 h"), 1300)
+            go(opts.locator("label", has_text="Thin"), 1300)
+            go(opts.locator(".preset", has_text="Rouge A"), 1300)
+            go(opts.locator("label", has_text="Show seconds"), 2200)
+            cdp.send("Page.stopScreencast")
+            browser.close()
+    except Exception as e:  # parcours cassé (maquette changée) : on garde l'image fixe
+        print("vidéo des réglages non générée :", e)
+        return None
+    finally:
+        srv.shutdown()
+    if not frames:
+        return None
+    cache.mkdir(parents=True, exist_ok=True)
+    out = cache / (key + ".webm")
+    if not encode_webm(ff, frames, out, crf="28"):
+        return None
+    frames.sort()
+    (cache / (key + ".jpg")).write_bytes(base64.b64decode(frames[0][1]))
+    return out.read_bytes(), (cache / (key + ".jpg")).read_bytes()
+
+
 # maquette de Dot Companion : companion/mockups/reference.html (base = racine du dépôt), avec les fichiers qu'elle charge
 COMPANION_MOCKUP = ROOT / "companion" / "mockups" / "reference.html"
 COMPANION_FILES = [
@@ -166,8 +325,66 @@ def releases(urls, target, title):
     return links(page.replace("__DATA__", data).replace("__TITLE__", title), urls, target)
 
 
+# vidéo WebM à partir d'images horodatées (vidéo des réglages de Dot Companion)
+def encode_webm(ff, frames, out, crop=None, fps=25, crf="32"):
+    """Images JPEG horodatées (temps réel) -> WebM VP9 à cadence fixe. True si le fichier est écrit."""
+    import subprocess
+    frames = sorted(frames)
+    t0, t1 = frames[0][0], frames[-1][0]
+    vf = ["-vf", "crop=%d:%d:%d:%d" % crop] if crop else []
+    cmd = [ff, "-y", "-loglevel", "error", "-f", "image2pipe", "-c:v", "mjpeg", "-framerate", str(fps), "-i", "pipe:0", *vf,
+           "-c:v", "libvpx-vp9", "-crf", crf, "-b:v", "0", "-deadline", "good", "-cpu-used", "4", "-row-mt", "1",
+           "-pix_fmt", "yuv420p", str(out)]
+    proc = subprocess.Popen(cmd, stdin=subprocess.PIPE)
+    i = 0
+    for k in range(int((t1 - t0) * fps) + 1):
+        t = t0 + k / fps
+        while i + 1 < len(frames) and frames[i + 1][0] <= t:
+            i += 1
+        proc.stdin.write(base64.b64decode(frames[i][1]))
+    proc.stdin.close()
+    return proc.wait() == 0 and pathlib.Path(out).exists()
+
+
+
+# rendus en direct dans la Showcase de Dot Page : le module expose window.<Nom>.mount(scène, { size, settings, animate })
+# dans scripts/<fichier>.js, avec ses styles rangés sous .dot-<fichier> dans styles/<fichier>.css (une seule source avec la
+# maquette). Dot Page les intègre dans la page ; ailleurs, la capture fixe.
+LIVE_MODULES = {
+    "dot-clock": ("clock", "DotClock", ["font"]),   # police à points chargée avant le rendu
+    "dot-audio": ("audio", "DotAudio"),
+    "dot-spotify": ("spotify", "DotSpotify"),
+    "dot-bambulab": ("bambulab", "DotBambuLab"),
+    "dot-plex": ("plex", "DotPlex"),
+    "dot-github": ("github", "DotGitHub"),
+}
+
+
+def live_modules():
+    """({slug: {global, css}}, scripts concaténés) des modules rendus en direct sur Dot Page."""
+    meta, js = {}, []
+    for slug, entry in LIVE_MODULES.items():
+        name, glob, deps = (entry + ([],))[:3]
+        base = ROOT / "widgets" / slug
+        css, scripts = base / "styles" / (name + ".css"), [base / "scripts" / (d + ".js") for d in deps + [name]]
+        if css.is_file() and all(f.is_file() for f in scripts):
+            # les @font-face ne marchent pas dans un Shadow DOM : Dot Page charge déjà Fira Code
+            text = re.sub(r"@font-face\s*\{[^}]*\}\s*", "", css.read_text(encoding="utf-8"))
+            meta[slug] = {"global": glob, "css": text}
+            js.extend(f.read_text(encoding="utf-8") for f in scripts)
+    return meta, "\n".join(js)
+
 def companion(urls, target, title):
     return links(COMPANION_TEMPLATE.read_text(encoding="utf-8").replace("__TITLE__", title), urls, target)
+
+
+def settings_media(mockup_dir):
+    """{nom de fichier: contenu} de la page de réglages montrée par Dot Companion : vidéo et image d'attente, ou capture seule."""
+    demo = settings_demo(mockup_dir)
+    if demo:
+        return {"settings.webm": demo[0], "settings.jpg": demo[1]}
+    shot = settings_shot(mockup_dir)
+    return {"settings.jpg": shot} if shot else {}
 
 
 def document(full):
@@ -184,8 +401,11 @@ def home(base, title, shots, urls=None, rel_target=""):
     urls = urls or {"RELEASES": "releases/", "COMPANION": "companion/"}
     data = json.dumps(widgets(), ensure_ascii=False).replace("</", "<\\/")
     prev = json.dumps(shots).replace("</", "<\\/")
+    meta, live_js = live_modules()
+    live = json.dumps(meta, ensure_ascii=False).replace("</", "<\\/")
     page = TEMPLATE.read_text(encoding="utf-8")
-    page = (page.replace("__DATA__", data).replace("__PREVIEWS__", prev)
+    page = (page.replace("__DATA__", data).replace("__PREVIEWS__", prev).replace("__LIVE__", live)
+            .replace("__LIVE_JS__", live_js.replace("</script", "<\\/script"))
             .replace("__BASE__", base).replace("__TITLE__", title))
     return links(page, urls, rel_target)
 
@@ -203,7 +423,16 @@ def main():
     if args.releases_fragment:
         pathlib.Path(args.releases_fragment).write_text(releases(art, BLANK, "Dot Release"), encoding="utf-8")
     if args.companion_fragment:
-        pathlib.Path(args.companion_fragment).write_text(companion(art, BLANK, "Dot Companion"), encoding="utf-8")
+        # artefact d'un seul fichier : la vidéo et son image d'attente intégrées dans la page
+        import tempfile
+        page = companion(art, BLANK, "Dot Companion")
+        with tempfile.TemporaryDirectory() as tmp:
+            companion_mockup(pathlib.Path(tmp) / "m")
+            media = settings_media(pathlib.Path(tmp) / "m")
+        for name, mime in (("settings.webm", "video/webm"), ("settings.jpg", "image/jpeg")):
+            if name in media:
+                page = page.replace('"' + name + '"', '"data:' + mime + ";base64," + base64.b64encode(media[name]).decode() + '"')
+        pathlib.Path(args.companion_fragment).write_text(page, encoding="utf-8")
     if args.companion_mockup:
         companion_mockup(pathlib.Path(args.companion_mockup))
     if (args.releases_fragment or args.companion_fragment or args.companion_mockup) and not args.fragment:
@@ -213,7 +442,8 @@ def main():
     shots = previews(slugs)
 
     if args.fragment:
-        uris = {k: "data:image/jpeg;base64," + base64.b64encode(v).decode() for k, v in shots.items()}
+        # les modules rendus en direct n'ont pas besoin de leur capture dans la page
+        uris = {k: "data:image/jpeg;base64," + base64.b64encode(v).decode() for k, v in shots.items() if k not in live_modules()[0]}
         pathlib.Path(args.fragment).write_text(home(LIVE, "Dot Page", uris, art, BLANK), encoding="utf-8")
         return
 
@@ -258,11 +488,24 @@ def main():
     (SITE / "releases" / "index.html").write_text(document(releases(sub, "", "Releases · Dot Hub")), encoding="utf-8")
     (SITE / "companion").mkdir()
     (SITE / "companion" / "index.html").write_text(document(companion(sub, "", "Dot Companion · Dot Hub")), encoding="utf-8")
+    # la page de réglages en vidéo (sinon une capture fixe)
+    for name, data in settings_media(SITE / "dot-companion").items():
+        (SITE / "companion" / name).write_bytes(data)
     # charte, anatomie de chaque type de page (le fichier du dépôt et ses deux fichiers communs sont aussi ceux de l'artefact)
     for name in DESIGN_PAGES:
         out = SITE / "design" / name.lower()
         out.mkdir(parents=True)
         (out / "index.html").write_text(document((DESIGN / (name + ".html")).read_text(encoding="utf-8")), encoding="utf-8")
+        for f in DESIGN_FILES:
+            shutil.copy(DESIGN / f, out / f)
+    # pages actuelles (docs/design/edge/, générées par tools/design_edge.py) : Dot Page et Dot Companion
+    for name in ("homePage", "subPage"):
+        src = DESIGN / "edge" / (name + ".html")
+        if not src.is_file():
+            continue
+        out = SITE / "design" / "edge" / name.lower()
+        out.mkdir(parents=True)
+        (out / "index.html").write_text(document(src.read_text(encoding="utf-8").replace('"../anatomy.', '"anatomy.')), encoding="utf-8")
         for f in DESIGN_FILES:
             shutil.copy(DESIGN / f, out / f)
     print(f"{len(widgets())} widget(s), {count} maquette(s) -> {SITE}")

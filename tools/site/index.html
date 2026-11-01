@@ -116,7 +116,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outlin
 @media (prefers-reduced-motion: reduce) { .strip { transition: none; } }
 .pg { position: relative; width: 2560px; height: 720px; flex: none; }
 .slot { position: absolute; left: 12px; top: 12px; width: 2536px; height: 696px; background: #080808; border-radius: 12px; overflow: hidden; font-family: var(--mono); font-variant-ligatures: none; color: var(--lit); }
-.slot img { display: block; width: 2536px; height: 696px; -webkit-user-drag: none; }
+.slot img, .slot .live-view { display: block; position: relative; width: 2536px; height: 696px; -webkit-user-drag: none; }
 .slot .lbl { margin: 0; font-size: 18px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); white-space: nowrap; }
 .dh-head { position: absolute; left: 56px; right: 56px; top: 26px; height: 60px; display: flex; align-items: center; gap: 14px; }
 .dh-head::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--accent); }
@@ -228,6 +228,10 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outlin
 
 <script id="data" type="application/json">__DATA__</script>
 <script id="previews" type="application/json">__PREVIEWS__</script>
+<script id="live" type="application/json">__LIVE__</script>
+<script>
+__LIVE_JS__
+</script>
 <script>
 (function () {
   "use strict";
@@ -283,12 +287,12 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outlin
       kind: { wip: "in progress", spec: "specified", design: "in design", idea: "idea" }
     }
   };
-  var lang = "fr";
+  var lang = "en";
   try {
     var q = new URLSearchParams(location.search).get("lang");
-    lang = q === "en" || q === "fr" ? q : localStorage.getItem("dotpage-lang") || ((navigator.language || "fr").slice(0, 2) === "fr" ? "fr" : "en");
-  } catch (e) { lang = (navigator.language || "fr").slice(0, 2) === "fr" ? "fr" : "en"; }
-  if (!STR[lang]) lang = "fr";
+    lang = q === "en" || q === "fr" ? q : localStorage.getItem("dotpage-lang") || ((navigator.language || "en").slice(0, 2) === "fr" ? "fr" : "en"); // français pour un navigateur en français, anglais sinon
+  } catch (e) { lang = (navigator.language || "en").slice(0, 2) === "fr" ? "fr" : "en"; }
+  if (!STR[lang]) lang = "en";
   function t(k) { return STR[lang][k]; }
   function desc(w) { return lang === "en" && w.desc_en ? w.desc_en : w.desc; }
   function statusText(w) {
@@ -430,7 +434,29 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outlin
 
   // ---------- la Xeneon Edge
   var SHOTS = JSON.parse(document.getElementById("previews").textContent);
-  var PAGES = WIDGETS.filter(function (w) { return w.mockup && w.slug !== "dot-home" && w.slug !== "dot-hub"; });
+  // rendus en direct : le module lui-même (scripts/<nom>.js), dans un conteneur isolé (Shadow DOM) pour que ses styles
+  // et ceux de la page ne se mélangent pas ; il ne s'anime que sur la vue affichée. Les autres vues gardent leur capture.
+  var LIVE = JSON.parse(document.getElementById("live").textContent), mounted = {};
+  var still = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function liveView(w) {
+    var M = LIVE[w.slug], api = M && window[M.global];
+    if (!api || !document.body.attachShadow) return null;
+    var host = el("div", "live-view"), root = host.attachShadow({ mode: "open" });
+    var st = document.createElement("style"); st.textContent = M.css; root.appendChild(st);
+    var stage = document.createElement("div"); root.appendChild(stage);
+    try { mounted[w.slug] = api.mount(stage, { size: "xl", animate: false }); } catch (e) { return null; }
+    host.setAttribute("role", "img"); host.setAttribute("aria-label", w.name + t("alt"));
+    return host;
+  }
+  // vue affichée : le module s'anime ; un module sans animate (Dot Clock) est redessiné chaque seconde
+  function liveOn(m, on) {
+    if (m.animate) { m.animate(!still && on); return; }
+    clearInterval(m.tick); m.tick = null;
+    if (on) { m.render(); m.tick = setInterval(m.render, 1000); }
+  }
+  // Dot Clock en premier : il donne l'heure réelle du navigateur
+  var PAGES = WIDGETS.filter(function (w) { return w.mockup && w.slug !== "dot-home" && w.slug !== "dot-hub"; })
+    .sort(function (a, b) { return (b.slug === "dot-clock") - (a.slug === "dot-clock"); });
   var cur = 0, strip = document.getElementById("strip"), screen = document.getElementById("screen"), native = document.getElementById("native");
   function fitEdge() { native.style.transform = "scale(" + screen.clientWidth / 2560 + ")"; }
   if (window.ResizeObserver) new ResizeObserver(fitEdge).observe(screen); else window.addEventListener("resize", fitEdge);
@@ -456,9 +482,10 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outlin
     strip.appendChild(home);
     PAGES.forEach(function (w) {
       var pg = el("div", "pg"), sl = el("div", "slot");
-      if (SHOTS[w.slug]) {
-        var img = el("img"); img.src = SHOTS[w.slug]; img.alt = w.name + t("alt"); img.draggable = false;
-        sl.appendChild(img);
+      var lv = liveView(w);
+      if (lv) sl.appendChild(lv);
+      else if (SHOTS[w.slug]) {
+        var img = el("img"); img.src = SHOTS[w.slug]; img.alt = w.name + t("alt"); img.draggable = false; sl.appendChild(img);
       } else {
         var a = el("a", "ph"); a.href = BASE + w.slug + "/";
         a.appendChild(pic(w.slug, "#f2f0e9")); a.appendChild(el("p", "lbl", w.name + t("openMock")));
@@ -476,6 +503,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outlin
   function go(i) {
     cur = Math.max(0, Math.min(PAGES.length, i));
     strip.style.transform = "translateX(" + (-cur * 2560) + "px)";
+    PAGES.forEach(function (p, k) { var m = mounted[p.slug]; if (m) liveOn(m, k + 1 === cur); });
     document.querySelectorAll("#dots button").forEach(function (d, k) { d.setAttribute("aria-current", k === cur ? "true" : "false"); });
     var w = PAGES[cur - 1];
     var where = document.getElementById("where");

@@ -1,0 +1,78 @@
+/*
+ * Dot Spotify : le rendu (scène en pixels réels de l'emplacement), partagé par la maquette de référence,
+ * Dot Page et, plus tard, le module. Tout est rangé sous .dot-spotify.
+ */
+.dot-spotify { position: relative; overflow: hidden; background: #080808; --accent: #10b981; --lit: #f2f0e9; --label: #b8b6b0; --unlit: #1c1c1c; }
+.dot-spotify.xl { width: 2536px; height: 696px; }
+.dot-spotify.l { width: 1688px; height: 696px; }
+.dot-spotify.m { width: 840px; height: 696px; }
+.dot-spotify.s { width: 840px; height: 344px; }
+.dot-spotify > * { position: absolute; }
+.dot-spotify [hidden] { display: none !important; }
+.dot-spotify .w-lbl { margin: 0; white-space: nowrap; font-family: "Fira Code", Consolas, monospace; font-variant-ligatures: none; font-size: 18px; line-height: 24px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); }
+.dot-spotify .w-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); }
+.dot-spotify.playing .w-dot { animation: ds-pulse 1.6s ease-in-out infinite; }
+@keyframes ds-pulse { 50% { opacity: .3; } }
+@media (prefers-reduced-motion: reduce) { .dot-spotify.playing .w-dot { animation: none; } }
+.dot-spotify .w-meta { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.dot-spotify .w-title, .dot-spotify .w-artist, .dot-spotify .w-album { margin: 0; font-family: "Fira Code", Consolas, monospace; font-variant-ligatures: none; text-transform: uppercase; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dot-spotify .w-title { font-weight: 500; color: var(--lit); letter-spacing: .02em; }
+.dot-spotify .w-artist { color: var(--label); letter-spacing: .08em; }
+.dot-spotify .w-album { color: var(--label); opacity: .65; letter-spacing: .08em; }
+.dot-spotify .w-ctls { display: flex; align-items: center; }
+.dot-spotify .ctl { display: grid; place-items: center; padding: 0; border-radius: 50%; border: 2px solid #2a2a2a; background: transparent; color: var(--lit); cursor: pointer; }
+.dot-spotify .ctl svg { width: 38%; height: 38%; fill: currentColor; }
+.dot-spotify .ctl.play { background: var(--lit); border-color: var(--lit); color: #080808; }
+.dot-spotify .ctl.play svg { width: 34%; height: 34%; }
+.dot-spotify .ctl:active { transform: scale(.96); }
+.dot-spotify.idle .ctl { opacity: .3; pointer-events: none; }
+
+/* XL : pochette à gauche sous le libellé, texte au centre, commandes à droite */
+.dot-spotify.xl .w-cover { left: 56px; top: 100px; width: 548px; height: 548px; }
+.dot-spotify.xl .w-dot { left: 56px; top: 51px; }
+.dot-spotify.xl .w-name { left: 80px; top: 44px; }
+.dot-spotify.xl .w-state { right: 56px; top: 44px; }
+.dot-spotify.xl .w-meta { left: 704px; top: 262px; width: 1180px; }
+.dot-spotify.xl .w-title { font-size: 64px; line-height: 80px; }
+.dot-spotify.xl .w-artist { font-size: 28px; line-height: 36px; }
+.dot-spotify.xl .w-album { font-size: 22px; line-height: 28px; }
+.dot-spotify.xl .w-ctls { right: 56px; top: 264px; gap: 32px; }
+.dot-spotify.xl .ctl { width: 112px; height: 112px; }
+.dot-spotify.xl .ctl.play { width: 168px; height: 168px; }
+.dot-spotify.xl .w-ctls { top: 264px; }
+
+/* L : pochette à gauche, texte puis commandes en dessous */
+.dot-spotify.l .w-cover { left: 48px; top: 48px; width: 600px; height: 600px; }
+.dot-spotify.l .w-dot { left: 704px; top: 59px; }
+.dot-spotify.l .w-name { left: 728px; top: 52px; }
+.dot-spotify.l .w-state { right: 56px; top: 52px; }
+.dot-spotify.l .w-meta { left: 704px; top: 176px; width: 928px; }
+.dot-spotify.l .w-title { font-size: 56px; line-height: 70px; }
+.dot-spotify.l .w-artist { font-size: 26px; line-height: 34px; }
+.dot-spotify.l .w-album { font-size: 22px; line-height: 28px; }
+.dot-spotify.l .w-ctls { left: 704px; bottom: 48px; gap: 28px; }
+.dot-spotify.l .ctl { width: 96px; height: 96px; }
+.dot-spotify.l .ctl.play { width: 136px; height: 136px; }
+
+/* M : pochette et texte côte à côte, commandes centrées en bas */
+.dot-spotify.m .w-dot { left: 56px; top: 51px; }
+.dot-spotify.m .w-name { left: 80px; top: 44px; }
+.dot-spotify.m .w-state { right: 56px; top: 44px; }
+.dot-spotify.m .w-cover { left: 56px; top: 100px; width: 320px; height: 320px; }
+.dot-spotify.m .w-meta { left: 408px; top: 108px; width: 376px; gap: 12px; }
+.dot-spotify.m .w-title { font-size: 36px; line-height: 46px; white-space: normal; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; }
+.dot-spotify.m .w-artist { font-size: 22px; line-height: 28px; }
+.dot-spotify.m .w-album { font-size: 18px; line-height: 24px; }
+.dot-spotify.m .w-ctls { left: 0; right: 0; bottom: 64px; justify-content: center; gap: 40px; }
+.dot-spotify.m .ctl { width: 104px; height: 104px; }
+.dot-spotify.m .ctl.play { width: 144px; height: 144px; }
+
+/* S : pochette, titre et commandes, sans libellés */
+.dot-spotify.s .w-dot, .dot-spotify.s .w-name, .dot-spotify.s .w-state, .dot-spotify.s .w-album { display: none; }
+.dot-spotify.s .w-cover { left: 48px; top: 48px; width: 248px; height: 248px; }
+.dot-spotify.s .w-meta { left: 336px; top: 52px; width: 456px; gap: 8px; }
+.dot-spotify.s .w-title { font-size: 36px; line-height: 46px; }
+.dot-spotify.s .w-artist { font-size: 20px; line-height: 26px; }
+.dot-spotify.s .w-ctls { left: 336px; bottom: 48px; gap: 24px; }
+.dot-spotify.s .ctl { width: 80px; height: 80px; }
+.dot-spotify.s .ctl.play { width: 104px; height: 104px; }

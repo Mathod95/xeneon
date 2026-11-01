@@ -110,6 +110,13 @@
     drawTitle(cv, cv.dataset.title, cv.hasAttribute("data-accent-last"), cv.dataset.lit);
   });
 
+  // pages actuelles (docs/design/edge/) : chaque canvas porte son image figée (data-img)
+  document.querySelectorAll("canvas[data-img]").forEach(function (cv) {
+    var im = new Image();
+    im.onload = function () { cv.getContext("2d").drawImage(im, 0, 0, cv.width, cv.height); };
+    im.src = cv.dataset.img;
+  });
+
   // pictogrammes 7 × 7 génériques
   var PICS = {
     a: ["#######", "#.....#", "#.###.#", "#.#.#.#", "#.###.#", "#.....#", "#######"],
