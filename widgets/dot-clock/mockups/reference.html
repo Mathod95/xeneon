@@ -12,7 +12,6 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&family=IBM+Plex+Sans:wght@400;500;600&family=Open+Sans:wght@400;700&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap">
 <!-- Le widget lui-même : mêmes fichiers que sur l'Edge (widgets/dot-clock/styles et scripts) -->
 <link rel="stylesheet" href="styles/clock.css">
@@ -28,8 +27,8 @@
   --muted: #8c8c8c;
   --accent: #e5484d;
   --brand: #10b981;
-  --mono: "IBM Plex Mono", "Cascadia Mono", Consolas, monospace;
-  --sans: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --mono: "Fira Code", "Cascadia Mono", Consolas, monospace;
+  --sans: "Segoe UI", Selawik, system-ui, sans-serif;
   color-scheme: dark;
 }
 * { box-sizing: border-box; }
@@ -40,27 +39,29 @@ html { scrollbar-gutter: stable; }
 body { background-image: radial-gradient(circle, #161616 1.2px, transparent 1.6px); background-size: 22px 22px; }
 body {
   font-family: var(--sans);
-  font-size: 15px;
+  font-size: 16px;
   line-height: 1.55;
-  padding-block: 40px 72px;
+  padding-block: 28px 64px;
   padding-left: max(16px, env(safe-area-inset-left, 0px));
   padding-right: max(16px, env(safe-area-inset-right, 0px));
 }
-.wrap { max-width: 1480px; margin: 0 auto; display: grid; gap: 40px; }
+.wrap { max-width: 1240px; margin: 0 auto; display: grid; gap: 48px; }  /* socle du site : 1240 px, 48 px entre les zones */
 
-header { display: grid; gap: 10px; }
-.eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); display: flex; align-items: center; gap: 10px; }
-.eyebrow::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
-h1 { font-family: var(--mono); font-weight: 500; font-size: clamp(28px, 4vw, 44px); line-height: 1.1; margin: 0; letter-spacing: -.01em; text-wrap: balance; }
 
+/* Hero (gabarit modulePage, zone 2) : le nom du module en texte et sa version en capsule, l'accroche, puis les faits (classes page-… : certaines maquettes ont déjà .hero ou .facts dans leur écran) */
+.page-hero { display: grid; gap: 10px; }
+.page-hero-head { display: flex; align-items: flex-end; flex-wrap: wrap; gap: 10px 16px; }
+.page-title { font-family: "Fira Code", "Cascadia Mono", Consolas, monospace; font-weight: 500; font-size: 70px; line-height: 1.1; margin: 0; letter-spacing: -.01em; color: #e6e6e6; }
+/* version de la maquette, en capsule (comme les versions de la Roadmap de Dot Companion), son bas posé sur la ligne de base du titre */
+.mver { display: inline-block; margin-bottom: 16px; padding: 1px 10px; border: 1px solid #10b981; border-radius: 999px; font-family: "Fira Code", "Cascadia Mono", Consolas, monospace; font-size: 12px; letter-spacing: .1em; color: #10b981; white-space: nowrap; }
+.page-lede { margin: 0; max-width: none; color: var(--muted); font-size: 15px; }
+.page-facts { display: flex; flex-wrap: wrap; gap: 8px 28px; margin: 0; padding: 0; list-style: none; font-family: "Fira Code", "Cascadia Mono", Consolas, monospace; font-size: 13px; letter-spacing: .18em; text-transform: uppercase; color: #b8b6b0; }
+.page-facts b { color: #10b981; font-weight: 500; margin-right: .5em; }
 figure { margin: 0; display: grid; gap: 12px; min-width: 0; }
-.tag { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
-.tag b { color: var(--text); font-weight: 500; font-size: 14px; }
-figcaption { color: var(--muted); font-size: 14px; }
 
 /* tableau des choix */
 .diff-head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; }
-h2 { font-family: var(--mono); font-weight: 500; font-size: 13px; letter-spacing: .14em; text-transform: uppercase; margin: 0; }
+h2 { font-family: var(--mono); font-weight: 500; font-size: 13px; letter-spacing: .2em; text-transform: uppercase; color: #b8b6b0; margin: 0; }  /* titres de section comme sur le site */
 .hint { color: var(--muted); font-size: 14px; margin: 0; }
 .table-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; }
 table { width: 100%; border-collapse: collapse; min-width: 640px; }
@@ -72,6 +73,10 @@ td:nth-child(2) { font-weight: 500; width: 15em; }
 tr.todo td:nth-child(3) { color: var(--muted); }
 .sw { display: inline-block; width: 12px; height: 12px; border-radius: 50%; vertical-align: -1px; margin-right: 6px; border: 1px solid var(--line); }
 code { font-family: var(--mono); font-size: 13px; color: var(--text); }
+/* pied de page, le même que sur les pages du site */
+.footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px 24px; font-family: var(--mono); font-size: 13px; letter-spacing: .24em; text-transform: uppercase; }
+.footer .red { color: #10b981; }
+.footer a { color: #b8b6b0; text-decoration: none; }
 
 /* réglages simulés */
 .settings { display: flex; flex-wrap: wrap; gap: 12px 28px; align-items: center; padding: 14px 16px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); }
@@ -107,9 +112,6 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
 .c-motto { right: 263px; top: 852px; font-size: 13px; }
 
 /* tailles réelles S, M, L : même échelle que XL pour garder les proportions */
-.sizebar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; }
-.sizebar > span { font-family: var(--mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-right: 6px; }
-.sizebar .preset[aria-pressed="true"] { background: var(--text); color: #0a0a0a; border-color: var(--text); }
 .view-s, .view-m { width: calc(840 / 2536 * 100%); }
 .view-l { width: calc(1688 / 2536 * 100%); }
 .view-xl { width: 100%; }
@@ -124,6 +126,11 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
 
 /* taille réelle XL : 2536 × 696, le widget seul */
 .frame-xl { aspect-ratio: 2536 / 696; background: #080808; }
+/* écran XL : le même que la Showcase de Dot Page (3.3) : le boîtier de l'Edge, l'écran 2560 × 720 sur fond noir,
+   et l'emplacement XL 2536 × 696 à 12 px du bord, où le module s'affiche à l'échelle */
+.edge { padding: clamp(6px, 1.2%, 18px); border-radius: clamp(10px, 1.6vw, 24px); background: linear-gradient(180deg, #161616, #0b0b0b); border: 1px solid #2a2a2a; box-shadow: 0 40px 80px -40px #000, inset 0 1px 0 #262626; }
+.screen { position: relative; aspect-ratio: 2560 / 720; max-width: 100%; overflow: hidden; border-radius: clamp(3px, .5vw, 8px); background: #000; }
+.screen > .frame-xl { position: absolute; left: calc(12 / 2560 * 100%); top: calc(12 / 720 * 100%); width: calc(2536 / 2560 * 100%); height: calc(696 / 720 * 100%); aspect-ratio: auto; border: 0; border-radius: .473% / 1.724%; background: #080808; }
 .stage-xl { width: 2536px; height: 696px; background: #080808; }
 .x-lbl { font-family: "Fira Code", Consolas, monospace; font-variant-ligatures: none; font-size: 18px; line-height: 24px; letter-spacing: .2em; color: var(--c-label); }
 .x-cdot { position: absolute; width: 10px; height: 10px; border-radius: 50%; left: 56px; top: 51px; background: var(--c-accent); }
@@ -134,24 +141,19 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
 </style>
 
 <div class="wrap">
-  <header>
-    <div class="eyebrow">Widget iCUE · CORSAIR XENEON EDGE</div>
-    <h1>Dot Clock</h1>
-  </header>
+  <section class="page-hero">
+    <div class="page-hero-head"><h1 class="page-title">Dot Clock</h1><span class="mver">v1.0</span></div>
+    <p class="page-lede">Maquette validée, codée en S, M, L et XL. Une grande horloge dot-matrix : heures et minutes en gros points, deux-points et secondes en couleur d'accent, date et fuseau horaire. Elle lit l'heure du PC (ou d'un autre fuseau), sans connexion ni plugin.</p>
+    <ul class="page-facts"><li><b>16</b>réglages</li><li><b>4</b>tailles</li><li><b>Non</b>connexion externe</li></ul>
+  </section>
 
   <figure>
-    <div class="tag"><b>Maquette de référence</b><span id="sizeTag">Version 1.0 · taille réelle XL 2536 × 696 px</span></div>
-    <div class="sizebar" role="radiogroup" aria-label="Taille du widget">
-      <span>Widget size</span>
-      <button type="button" class="preset" data-size="s" aria-pressed="false">S · 840 × 344</button>
-      <button type="button" class="preset" data-size="m" aria-pressed="false">M · 840 × 696</button>
-      <button type="button" class="preset" data-size="l" aria-pressed="false">L · 1688 × 696</button>
-      <button type="button" class="preset" data-size="xl" aria-pressed="true">XL · 2536 × 696</button>
-    </div>
     <div class="view view-xl" data-view="xl">
-      <div class="frame frame-xl" id="frame">
-        <div id="stage"></div>
-      </div>
+      <div class="edge"><div class="screen">
+        <div class="frame frame-xl" id="frame">
+          <div id="stage"></div>
+        </div>
+      </div></div>
     </div>
     <div class="view view-s" data-view="s" hidden>
       <div class="frame frame-s" id="frameS">
@@ -222,7 +224,6 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
       <label id="dateCustomWrap" hidden>Custom date format <input type="text" id="dateCustom" value="WWW, MMMM DD, YYYY" maxlength="40" spellcheck="false"></label>
       <p class="legend">Repères du format libre : <code>YYYY</code> 2026 · <code>YY</code> 26 · <code>MMMM</code> SEPTEMBER · <code>MMM</code> SEP · <code>MM</code> 09 · <code>M</code> 9 · <code>DD</code> 21 · <code>D</code> 21 · <code>WWWW</code> MONDAY · <code>WWW</code> MON. Majuscules ou minuscules, au choix.</p>
     </div>
-    <figcaption><span id="sizeNote">Le widget seul, tel qu'il occupe un emplacement XL de l'Edge.</span> Libellés à 18 px, date à 22 px, à l'échelle de l'XL pour toutes les tailles. En 12 h, AM ou PM s'affiche en petits points au-dessus ou en dessous des secondes, dans la couleur des points allumés.</figcaption>
   </figure>
 
   <section style="display:grid;gap:14px">
@@ -257,6 +258,11 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
       </table>
     </div>
   </section>
+
+  <footer class="footer">
+    <span class="red">For Xeneon Edge · Touch · Dot-matrix</span>
+    <a href="https://github.com/Mathod95/xeneon" target="_blank" rel="noopener">Mathod95/xeneon</a>
+  </footer>
 </div>
 
 <script>
@@ -320,22 +326,6 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
   });
   document.querySelectorAll(".preset[data-fmt]").forEach(function (b) {
     b.addEventListener("click", function () { v("dateFormat").value = b.getAttribute("data-fmt"); render(); });
-  });
-  var SIZES = {
-    s: { tag: "S 840 × 344 px", note: "L'heure seule en grand, la date et le fuseau en bas, sans « DOT CLOCK » ni devise." },
-    m: { tag: "M 840 × 696 px", note: "HH:MM sur toute la largeur, les secondes (et AM/PM) centrées en dessous." },
-    l: { tag: "L 1688 × 696 px", note: "Même disposition que XL, sur une largeur réduite." },
-    xl: { tag: "XL 2536 × 696 px", note: "Le widget seul, tel qu'il occupe un emplacement XL de l'Edge." }
-  };
-  document.querySelectorAll(".sizebar .preset").forEach(function (b) {
-    b.addEventListener("click", function () {
-      var size = b.getAttribute("data-size");
-      document.querySelectorAll(".sizebar .preset").forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
-      document.querySelectorAll(".view").forEach(function (el) { el.hidden = el.getAttribute("data-view") !== size; });
-      v("sizeTag").textContent = "Version 1.0 · taille réelle " + SIZES[size].tag;
-      v("sizeNote").textContent = SIZES[size].note;
-      render();
-    });
   });
 
   render();

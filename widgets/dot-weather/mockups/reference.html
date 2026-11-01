@@ -11,7 +11,6 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap">
 <style>
 /* Layout : maquette de référence en taille réelle (choix S, M, L, XL) avec ses réglages, puis tableau des choix. Même univers que Dot Clock, un seul thème sombre. */
@@ -22,8 +21,8 @@
   --text: #e6e6e6;
   --muted: #8c8c8c;
   --brand: #10b981;
-  --mono: "IBM Plex Mono", "Cascadia Mono", Consolas, monospace;
-  --sans: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --mono: "Fira Code", "Cascadia Mono", Consolas, monospace;
+  --sans: "Segoe UI", Selawik, system-ui, sans-serif;
   color-scheme: dark;
 }
 * { box-sizing: border-box; }
@@ -34,16 +33,14 @@ html { scrollbar-gutter: stable; }
 body { background-image: radial-gradient(circle, #161616 1.2px, transparent 1.6px); background-size: 22px 22px; }
 body {
   font-family: var(--sans);
-  font-size: 15px;
+  font-size: 16px;
   line-height: 1.55;
-  padding-block: 40px 72px;
+  padding-block: 28px 64px;
   padding-left: max(16px, env(safe-area-inset-left, 0px));
   padding-right: max(16px, env(safe-area-inset-right, 0px));
 }
-.wrap { max-width: 1480px; margin: 0 auto; display: grid; gap: 40px; }
+.wrap { max-width: 1240px; margin: 0 auto; display: grid; gap: 48px; }  /* socle du site : 1240 px, 48 px entre les zones */
 header { display: grid; gap: 10px; }
-.eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); display: flex; align-items: center; gap: 10px; }
-.eyebrow::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--brand); }
 h1 { font-family: var(--mono); font-weight: 500; font-size: clamp(28px, 4vw, 44px); line-height: 1.1; margin: 0; letter-spacing: -.01em; }
 .lede { color: var(--muted); max-width: 72ch; margin: 0; }
 
@@ -54,7 +51,7 @@ figcaption { color: var(--muted); font-size: 14px; }
 
 /* tableau */
 .diff-head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; }
-h2 { font-family: var(--mono); font-weight: 500; font-size: 13px; letter-spacing: .14em; text-transform: uppercase; margin: 0; }
+h2 { font-family: var(--mono); font-weight: 500; font-size: 13px; letter-spacing: .2em; text-transform: uppercase; color: #b8b6b0; margin: 0; }  /* titres de section comme sur le site */
 .hint { color: var(--muted); font-size: 14px; margin: 0; }
 .table-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; }
 table { width: 100%; border-collapse: collapse; min-width: 640px; }
@@ -148,27 +145,39 @@ canvas { display: block; }
 .stage.s .meta-s { right: 40px; top: 40px; display: grid; gap: 14px; justify-items: end; }
 /* vue détail d'un jour */
 .stage .detail-chart { left: 56px; right: 56px; top: 120px; }
+/* Hero (gabarit modulePage, zone 2) : le nom du module en texte et la version de la maquette en capsule, l'accroche, puis les faits */
+.page-hero { display: grid; gap: 10px; }
+.page-hero-head { display: flex; align-items: flex-end; flex-wrap: wrap; gap: 10px 16px; }
+.page-title { font-family: "Fira Code", "Cascadia Mono", Consolas, monospace; font-weight: 500; font-size: 70px; line-height: 1.1; margin: 0; letter-spacing: -.01em; color: #e6e6e6; }
+/* version en capsule (comme les versions de la Roadmap de Dot Companion), son bas posé sur la ligne de base du titre */
+.mver { display: inline-block; margin-bottom: 16px; padding: 1px 10px; border: 1px solid #10b981; border-radius: 999px; font-family: "Fira Code", "Cascadia Mono", Consolas, monospace; font-size: 12px; letter-spacing: .1em; color: #10b981; white-space: nowrap; }
+.page-lede { margin: 0; max-width: none; color: var(--muted); font-size: 15px; }
+.page-facts { display: flex; flex-wrap: wrap; gap: 8px 28px; margin: 0; padding: 0; list-style: none; font-family: "Fira Code", "Cascadia Mono", Consolas, monospace; font-size: 13px; letter-spacing: .18em; text-transform: uppercase; color: #b8b6b0; }
+.page-facts b { color: #10b981; font-weight: 500; margin-right: .5em; }
+/* écran XL : le même que la Showcase de Dot Page (3.3) : le boîtier de l'Edge, l'écran 2560 × 720 sur fond noir,
+   et l'emplacement XL 2536 × 696 à 12 px du bord, où le module s'affiche à l'échelle */
+.edge { padding: clamp(6px, 1.2%, 18px); border-radius: clamp(10px, 1.6vw, 24px); background: linear-gradient(180deg, #161616, #0b0b0b); border: 1px solid #2a2a2a; box-shadow: 0 40px 80px -40px #000, inset 0 1px 0 #262626; }
+.screen { position: relative; aspect-ratio: 2560 / 720; max-width: 100%; overflow: hidden; border-radius: clamp(3px, .5vw, 8px); background: #000; }
+.screen > #frame { position: absolute; left: calc(12 / 2560 * 100%); top: calc(12 / 720 * 100%); width: calc(2536 / 2560 * 100%); height: calc(696 / 720 * 100%); max-width: none; aspect-ratio: auto; margin: 0; border: 0; border-radius: .473% / 1.724%; background: #080808; }
+/* pied de page, le même que sur les pages du site */
+.footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px 24px; font-family: "Fira Code", "Cascadia Mono", Consolas, monospace; font-size: 13px; letter-spacing: .24em; text-transform: uppercase; }
+.footer .red { color: #10b981; }
+.footer a { color: #b8b6b0; text-decoration: none; }
 </style>
 
 <div class="wrap">
-  <header>
-    <div class="eyebrow">Widget iCUE · CORSAIR XENEON EDGE</div>
-    <h1>Dot Weather</h1>
-    <p class="lede">Proposition v0.1, à valider dans le tableau. Météo actuelle, courbe heure par heure et prévisions sur 5 jours, avec Open-Meteo, sans compte ni compagnon. Les pictogrammes et la température sont en points. Toutes les valeurs sont fictives.</p>
-  </header>
+  <section class="page-hero">
+    <div class="page-hero-head"><h1 class="page-title">Dot Weather</h1><span class="mver">v0.1</span></div>
+    <p class="page-lede">Proposition v0.1, à valider dans le tableau. Météo actuelle, courbe heure par heure et prévisions sur 5 jours, avec Open-Meteo, sans compte ni compagnon. Les pictogrammes et la température sont en points. Toutes les valeurs sont fictives.</p>
+    <ul class="page-facts"><li><b>9</b>réglages</li><li><b>4</b>tailles</li><li><b>Oui</b>connexion externe</li></ul>
+  </section>
 
   <figure>
-    <div class="tag"><b>Maquette de référence</b><span id="sizeTag">Version 0.1 · taille réelle XL 2536 × 696 px</span></div>
-    <div class="sizebar" role="radiogroup" aria-label="Taille du widget">
-      <span>Widget size</span>
-      <button type="button" class="preset" data-size="s" aria-pressed="false">S · 840 × 344</button>
-      <button type="button" class="preset" data-size="m" aria-pressed="false">M · 840 × 696</button>
-      <button type="button" class="preset" data-size="l" aria-pressed="false">L · 1688 × 696</button>
-      <button type="button" class="preset" data-size="xl" aria-pressed="true">XL · 2536 × 696</button>
-    </div>
-    <div class="frame xl" id="frame">
-      <div class="stage xl" id="stage"></div>
-    </div>
+    <div class="edge"><div class="screen">
+      <div class="frame xl" id="frame">
+        <div class="stage xl" id="stage"></div>
+      </div>
+    </div></div>
     <div class="settings" aria-label="Réglages iCUE simulés">
       <label>Location <input type="text" id="city" value="PARIS" maxlength="24" spellcheck="false"></label>
       <div class="grp" role="radiogroup" aria-label="Exemple">
@@ -197,7 +206,6 @@ canvas { display: block; }
       <button type="button" class="preset" data-accent="#10b981"><i style="background:#10b981"></i>Émeraude</button>
       <button type="button" class="preset" data-accent="#ed403b"><i style="background:#ed403b"></i>Rouge A</button>
     </div>
-    <figcaption><span id="sizeNote">Météo actuelle à gauche, courbe heure par heure au centre, 5 jours à droite.</span> Touche un jour : en XL, la courbe passe à ce jour ; dans les autres tailles, une vue détail s'ouvre, avec BACK pour revenir.</figcaption>
   </figure>
 
   <section style="display:grid;gap:14px">
@@ -224,6 +232,10 @@ canvas { display: block; }
       </table>
     </div>
   </section>
+  <footer class="footer">
+    <span class="red">For Xeneon Edge · Touch · Dot-matrix</span>
+    <a href="https://github.com/Mathod95/xeneon" target="_blank" rel="noopener">Mathod95/xeneon</a>
+  </footer>
 </div>
 
 <script>

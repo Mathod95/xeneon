@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fiches de la charte pour les vraies pages du site : docs/design/edge/homePage.html (Dot Page), subPage.html (Dot Companion) et releasePage.html (Dot Release).
+"""Fiches de la charte pour les vraies pages du site : docs/design/edge/homePage.html (Dot Page), subPage.html (Dot Companion) et releasePage.html (Dot Release) et modulePage.html (la maquette Dot Clock).
 
 Les gabarits de docs/design/ restent la vue générale ; ces fiches montrent les pages telles qu'elles sont, avec leurs
 textes et leurs valeurs. La vraie vue est la page elle-même, figée (son HTML et son CSS, les canvas en images, la
@@ -162,7 +162,7 @@ PAGES = {
     },
     "releasePage": {
         "path": "releases/", "title": "Dot Release · anatomie", "h1": "Anatomie de Dot Release",
-        "lead": "Dot Release telle qu'elle est aujourd'hui (<code>tools/site/releases.html</code>, données <code>releases.json</code>), la releasePage du site. La vraie vue est la page elle-même, figée ; chaque valeur est mesurée sur la page. En-tête repris de la charte le 1er novembre 2026 ; le pied de page n'a pas encore la classe .footer. La version générale est le gabarit releasePage (<code>docs/design/releasePage.html</code>).",
+        "lead": "Dot Release telle qu'elle est aujourd'hui (<code>tools/site/releases.html</code>, données <code>releases.json</code>), la releasePage du site. La vraie vue est la page elle-même, figée ; chaque valeur est mesurée sur la page. En-tête et pied de page repris de la charte le 1er novembre 2026. La version générale est le gabarit releasePage (<code>docs/design/releasePage.html</code>).",
         "name": "Dot Release", "tag": "releasePage · page actuelle",
         "sub": "Ce que chaque zone contient sur Dot Release, et ses valeurs mesurées sur la page (en français, sur un écran de PC). Une version = un tag, plus « next » pour ce qui est sur main sans tag.",
         "rename": {"badge": "r-badge"},
@@ -219,13 +219,57 @@ PAGES = {
                  {"sel": [".toc li", 0], "at": "r", "sk": "entrée à l'écran", "text": "L'entrée de la version à l'écran: point et numéro allumés.", "note": "Point #10B981 (aria-current)"},
                  {"sel": [".toc li", 1], "at": "r", "sk": "entrée", "text": "Une autre entrée: numéro, puis date · titre en petit.", "note": "Point #2A2A2A"},
              ]},
-            {"id": "footer", "side": "R", "name": "Footer", "field": "footer", "sel": ["footer", 0],
-             "desc": "Le slogan à gauche, le lien vers le dépôt à droite. Ici sans la classe .footer des autres pages.",
-             "_": "Slogan à gauche, lien à droite, dernière zone de la page",
+            dict(footer(7, "R")),
+        ],
+    },
+    "modulePage": {
+        "path": "dot-clock/",
+        "title": "Maquette Dot Clock · anatomie", "h1": "Anatomie d'une maquette: Dot Clock",
+        "lead": "La maquette de référence de Dot Clock telle qu'elle est aujourd'hui (<code>widgets/dot-clock/mockups/reference.html</code>), une modulePage. Dot Clock est le repère du projet (libellé « ● DOT … », couleurs, réglages). La vraie vue est la page elle-même, figée à l'heure de la génération ; chaque valeur est mesurée sur la page. La version générale est le gabarit modulePage (<code>docs/design/modulePage.html</code>).",
+        "name": "Dot Clock", "tag": "modulePage · page actuelle",
+        "sub": "Ce que chaque zone contient sur la maquette Dot Clock, et ses valeurs mesurées sur la page (sur un écran de PC). La maquette est en français, sur le socle du site (1240 px, 48 px entre les zones) ; l'écran du module, lui, est en anglais.",
+        "drop": [".view-s", ".view-m", ".view-l"],
+        "zones": [
+            dict(TOP, desc="Le même en-tête que Dot Page, Dot Companion et Dot Release, ajouté à chaque maquette par build_site.py (une seule source pour les 19 maquettes, styles rangés sous .site-top). Aucun bouton allumé: une maquette n'est pas une page du menu."),
+            {"id": "hero", "side": "R", "name": "Hero", "field": ".page-hero", "sel": [".page-hero", 0],
+             "desc": "Le Hero du gabarit modulePage: le nom du module en texte avec la version de la maquette en capsule, l'accroche, puis les faits. Pas de sur-titre ni de grand titre en points.",
+             "_": "Calé à gauche, 48 px sous l'en-tête",
              "parts": [
-                 {"sel": ["footer .red", 0], "sk": "slogan", "text": "Le slogan « For Xeneon Edge · Touch · Dot-matrix », en accent."},
-                 {"sel": ["footer a", 0], "sk": "Mathod95/xeneon", "text": "Le lien Mathod95/xeneon, vers la page GitHub du projet."},
+                 {"sel": [".page-hero-head", 0], "at": "r", "sk": "nom du module", "text": "Le titre « Dot Clock », en texte (Fira Code 70 px), suivi de la version (2.2) sur la même ligne."},
+                 {"sel": [".mver", 0], "at": "o-r", "sk": "version", "text": "La version de la maquette, en capsule à côté du titre, son bas posé sur la ligne de base du titre, comme les versions de la Roadmap de Dot Companion.", "note": "Bord et texte #10B981, 16 px au-dessus du bas du titre"},
+                 {"sel": [".page-lede", 0], "at": "r", "sk": "accroche", "text": "L'accroche: l'état de la maquette, ce que fait le module, d'où viennent ses données."},
+                 {"sel": [".page-facts", 0], "at": "r", "sk": "faits ×3", "text": "Les faits: le nombre de réglages, de tailles, et s'il faut une connexion externe.", "note": "Valeur en accent #10B981, .5em après la valeur"},
              ]},
+            {"id": "edge", "side": "L", "name": "Écran XL", "field": ".view-xl .edge", "sel": [".view-xl", 0],
+             "desc": "Le module lui-même, à la taille de l'emplacement XL (2536 × 696) réduite à la largeur de la page: c'est le rendu de scripts/clock.js, celui que sert le compagnon. Les heures et minutes en points, les secondes en petits points en accent.",
+             "parts": [
+                 {"sel": [".view-xl .edge", 0], "at": "tl", "sk": "écran Xeneon Edge 2560 × 720", "text": "L'écran Xeneon Edge (<code>.edge</code>), le même que la Showcase de Dot Page (3.3): le boîtier, l'écran 2560 × 720 sur fond noir et l'emplacement XL 2536 × 696 à 12 px du bord, où le module s'affiche à l'échelle ; ici l'heure en points (police grasse, 2 points par trait).", "note": "Écran au format 2560 × 720, fond #000 ; emplacement XL 2536 × 696 à 12 / 12 px, fond #080808, arrondi 12 px à l'échelle. Libellé « ● DOT CLOCK » à 56 / 51 px (point) et 80 / 44 px (texte), comme dans tous les modules"},
+                 {"sel": ["#frame .dc-name", 0], "at": "o-r", "sk": "● DOT CLOCK", "text": "Le libellé « ● DOT CLOCK », au même endroit dans tous les modules ; le toucher ramène à l'accueil de Dot Hub."},
+                 {"sel": ["#frame .dc-tz", 0], "at": "o-l", "sk": "fuseau", "text": "Le fuseau (ville, abréviation, décalage ou texte libre)."},
+                 {"sel": ["#frame .dc-date", 0], "at": "t", "sk": "date", "text": "La date, au format choisi."},
+                 {"sel": ["#frame .dc-footer", 0], "at": "t", "sk": "texte du bas", "text": "Le texte du bas (« MADE BY MATHOD & CLAUDE »), vide pour le masquer."},
+             ]},
+            {"id": "settings", "side": "R", "name": "Réglages simulés", "field": ".settings", "sel": [".settings", 0],
+             "desc": "Les réglages du module sous les noms de ses propriétés iCUE (en anglais): les quatre couleurs communes, puis ceux de Dot Clock. Toucher un réglage change l'écran au-dessus.",
+             "parts": [
+                 {"sel": [".settings > label", 0], "sk": "case à cocher", "text": "Une case à cocher (Show unlit dots, Show seconds…)."},
+                 {"sel": [".settings > label", 1], "sk": "couleur", "text": "Une couleur (Unlit, Lit, Accent, Label color)."},
+                 {"sel": [".settings > label", 7], "sk": "liste", "text": "Une liste déroulante (Time zone label, Date format)."},
+                 {"sel": [".settings > label", 9], "sk": "texte", "text": "Un champ de texte (Footer text)."},
+                 {"sel": [".settings .preset", 0], "sk": "accent proposé", "text": "Une couleur d'accent proposée (Émeraude, Rouge A)."},
+                 {"sel": [".settings .grp", 0], "sk": "choix", "text": "Un groupe de choix (Clock format, Exemple, AM/PM position, Dot font)."},
+                 {"sel": [".settings .legend", 0], "at": "r", "sk": "aide", "text": "L'aide des formats de date (YYYY, MMMM, WWW…)."},
+             ]},
+            {"id": "table", "side": "L", "name": "Choix de design", "field": "section table", "sel": [".wrap > section:not(.page-hero)", 0],
+             "desc": "Une ligne par décision, numérotée: l'élément et le choix retenu.",
+             "parts": [
+                 {"sel": [".diff-head h2", 0], "at": "o-r", "sk": "titre", "text": "Le titre « Choix de design »."},
+                 {"sel": [".diff-head .hint", 0], "at": "o-l", "sk": "aide", "text": "L'aide: « Complété au fur et à mesure »."},
+                 {"sel": ["thead", 0], "at": "r", "sk": "en-têtes", "text": "Les en-têtes: #, Élément, Choix retenu."},
+                 {"sel": ["tbody tr", 0], "at": "r", "sk": "décision", "text": "Une décision: son numéro, l'élément, le choix retenu."},
+             ],
+             "others": ["tbody tr", "décision"]},
+            dict(footer(6, "R")),
         ],
     },
 }
@@ -242,11 +286,31 @@ ANNOTATE = """
   Object.entries(rename || {}).forEach(([a, b]) => document.querySelectorAll('.' + a).forEach(e => e.classList.replace(a, b)));
   document.querySelectorAll('h1#title').forEach(h => h.remove());    // titre caché pour les lecteurs d'écran
   spec.forEach((z, i) => {
+    // zone faite de plusieurs voisins (ex. le repère et les tailles d'une maquette) : on les regroupe
+    if (z.group) {
+      const els = z.group.map(g => document.querySelector(g)), w = document.createElement('div'), ps = getComputedStyle(els[0].parentElement);
+      w.className = 'zone-group'; w.style.cssText = 'display:grid;gap:' + ps.rowGap;
+      els[0].before(w); els.forEach(e => w.appendChild(e));
+    }
     const el = pick(z.sel); if (!el) throw new Error('zone ' + z.id);
     el.dataset.zone = z.id; el.dataset.name = z.name;
     const b = document.createElement('span'); b.className = 'badge'; b.textContent = i + 1; el.prepend(b);
     (z.parts || []).forEach((p, j) => {
-      const e = pick(p.sel); if (!e) throw new Error('élément ' + (i + 1) + '.' + (j + 1));
+      let e = pick(p.sel); if (!e) throw new Error('élément ' + (i + 1) + '.' + (j + 1));
+      // canvas, image, vidéo : la pastille ne peut pas s'afficher dedans ; on les enveloppe, à la même place
+      if (/^(CANVAS|IMG|VIDEO)$/.test(e.tagName)) {
+        const cs = getComputedStyle(e), w = document.createElement('span'), wide = p.at === 'r';
+        if (wide) {
+          // pastille au bord droit de la zone, comme les éléments voisins : l'enveloppe prend toute la largeur,
+          // le dessin garde sa place dedans (centré s'il l'était)
+          w.style.cssText = 'position:relative;display:block;line-height:0;margin:' + cs.margin;
+          e.style.margin = cs.justifySelf === 'center' ? '0 auto' : '0';
+        } else {
+          w.style.cssText = 'position:relative;display:block;flex:none;width:fit-content;max-width:100%;line-height:0;justify-self:' + cs.justifySelf + ';align-self:' + cs.alignSelf + ';margin:' + cs.margin;
+          e.style.margin = '0';
+        }
+        e.replaceWith(w); w.appendChild(e); e = w;
+      }
       e.dataset.part = (i + 1) + '.' + (j + 1); if (p.at) e.dataset.partAt = p.at; e.dataset.sk = p.sk;
     });
     if (z.first) pick([z.first, 0]).classList.add('first');
@@ -256,8 +320,9 @@ ANNOTATE = """
 """
 
 FREEZE = """
-async () => {
+async (drop) => {
   const wrap = document.querySelector('.wrap');
+  (drop || []).forEach(sel => wrap.querySelectorAll(sel).forEach(e => e.remove()));
   // la Showcase de Dot Page : seulement la première vue (l'accueil de Dot Hub)
   const strip = document.getElementById('strip');
   if (strip) { [...strip.children].slice(1).forEach(p => p.remove()); strip.style.transform = 'translateX(0px)'; }
@@ -279,7 +344,11 @@ async () => {
   wrap.querySelectorAll('a, button').forEach(e => e.setAttribute('tabindex', '-1'));
   wrap.querySelectorAll('[id]').forEach(e => e.removeAttribute('id'));
   wrap.className = 'pw'; wrap.removeAttribute('id');
-  return { html: wrap.outerHTML, css: document.querySelector('head style, style').textContent };
+  // le CSS de toutes les feuilles de la page (styles en ligne et fichiers du module), et ses polices Google
+  let css = '';
+  for (const sh of document.styleSheets) { try { for (const r of sh.cssRules) css += r.cssText + '\\n'; } catch (e) {} }
+  const fonts = [...document.querySelectorAll('link[rel=stylesheet]')].map(l => l.href).filter(h => h.startsWith('https://fonts.googleapis.com/'));
+  return { html: wrap.outerHTML, css: css, fonts: [...new Set(fonts)] };
 }
 """
 
@@ -301,14 +370,19 @@ def scope_css(css, rename=None):
             k += 1
         body = css[j:k]
         i = k
-        if sel.startswith("@media"):
-            continue
+        if sel.startswith("@media") or sel.startswith("@font-face"):
+            continue   # @media dépend de la fenêtre, pas de la page réduite ; les polices sont chargées par la fiche
         if sel.startswith("@"):
             out.append(sel + " " + body)
             continue
+        names = [x.strip() for x in sel.split(",")]
+        if "body" in names:
+            # du corps de la page, on garde la police et la couleur du texte, posées sur la page réduite
+            keep = [d.strip() for d in body.strip("{} ").split(";") if d.strip().split(":")[0].strip() in ("font-family", "font-size", "line-height", "color")]
+            if keep:
+                out.append(".mini .pw { " + "; ".join(keep) + "; }")
         sels = []
-        for s in sel.split(","):
-            s = s.strip()
+        for s in names:
             if s in ("html", "body"):
                 continue
             if s == ":root":
@@ -449,14 +523,15 @@ def rule(z, spec):
 
 def page_html(name, P, snap, zones):
     css = scope_css(snap["css"], P.get("rename"))
+    fonts = "".join(f'<link rel="stylesheet" href="{h}">\n' for h in snap.get("fonts", []) if "Fira+Code" not in h)
     data = [{k: z[k] for k in ("id", "side", "name", "field", "desc")} | {"parts": [p["text"] for p in z["parts"]], "rule": r} for z, r in zones]
-    anatomy = "window.ANATOMY = { native: 1320, zones: " + json.dumps(data, ensure_ascii=False, indent=1).replace("</", "<\\/") + " };"
+    anatomy = "window.ANATOMY = { native: " + str(P.get("native", 1320)) + ", zones: " + json.dumps(data, ensure_ascii=False, indent=1).replace("</", "<\\/") + " };"
     return f"""<title>{P['title']}</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap">
-<link rel="stylesheet" href="../anatomy.css">
+{fonts}<link rel="stylesheet" href="../anatomy.css">
 <!-- Généré par tools/design_edge.py depuis la page construite (site/{P['path']}) : ne pas modifier à la main. -->
 <style>
 /* CSS de la page, rangé sous .mini */
@@ -522,17 +597,17 @@ def main():
         with sync_playwright() as pw:
             browser = pw.chromium.launch()
             for name, P in PAGES.items():
-                page = browser.new_page(viewport={"width": 1400, "height": 1000})
+                page = browser.new_page(viewport={"width": P.get("viewport", 1400), "height": 1000})
                 page.goto("http://127.0.0.1:%d/%s?lang=fr" % (srv.server_address[1], P["path"]))
                 page.wait_for_timeout(1500)
                 page.evaluate("() => { const b = document.getElementById('homeBtn'); if (b) b.click(); }")
                 page.wait_for_timeout(600)
-                spec = [{"id": z["id"], "name": z["name"], "sel": z["sel"], "parts": [{"sel": p["sel"], "at": p.get("at"), "sk": p["sk"]} for p in z["parts"]],
+                spec = [{"id": z["id"], "name": z["name"], "sel": z["sel"], "group": z.get("group"), "parts": [{"sel": p["sel"], "at": p.get("at"), "sk": p["sk"]} for p in z["parts"]],
                          "first": z.get("first"), "others": z.get("others")} for z in P["zones"]]
                 page.evaluate(ANNOTATE, [spec, P.get("rename", {})])
                 page.evaluate("() => { document.querySelector('.wrap').id = 'mini'; }")
                 measured = page.evaluate(extract)
-                snap = page.evaluate(FREEZE)
+                snap = page.evaluate(FREEZE, P.get("drop", []))
                 page.close()
                 zones = [(z, rule(m, z)) for z, m in zip(P["zones"], measured)]
                 (OUT / (name + ".html")).write_text(page_html(name, P, snap, zones), encoding="utf-8")

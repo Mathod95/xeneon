@@ -50,7 +50,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outlin
 
 /* titre */
 .hero { display: grid; gap: 18px; }
-.hero canvas { display: block; width: 100%; max-width: 620px; height: auto; justify-self: start; }
+.hero canvas { display: block; max-width: min(100%, 760px); height: auto; justify-self: start; }
 .lede { margin: 0; font-family: var(--mono); font-size: clamp(15px, 1.8vw, 19px); color: var(--lit); text-wrap: balance; }
 .lede i { font-style: normal; color: var(--accent); padding: 0 .5em; }
 
@@ -80,7 +80,7 @@ code { font-family: var(--mono); font-size: .88em; color: var(--lit); background
 .rel-foot a:hover { color: var(--lit); }
 
 .side { position: sticky; top: 24px; display: grid; gap: 12px; }
-.side h2 { margin: 0; font-family: var(--mono); font-weight: 500; font-size: 12px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); }
+.side h2 { margin: 0; font-family: var(--mono); font-weight: 500; font-size: 13px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); }
 .toc { margin: 0; padding: 0; list-style: none; display: grid; gap: 2px; border-left: 1px solid var(--line); }
 .toc a { display: grid; grid-template-columns: auto 1fr; gap: 2px 12px; align-items: center; padding: 8px 12px; margin-left: -1px; border-left: 2px solid transparent; text-decoration: none; color: var(--label); }
 .toc a::before { content: ""; grid-row: span 2; width: 8px; height: 8px; border-radius: 50%; background: #2a2a2a; }
@@ -102,9 +102,9 @@ code { font-family: var(--mono); font-size: .88em; color: var(--lit); background
   .toc .d { display: none; }
 }
 
-footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px 24px; font-family: var(--mono); font-size: 13px; letter-spacing: .24em; text-transform: uppercase; }
-footer .red { color: var(--accent); }
-footer a { color: var(--label); text-decoration: none; }
+.footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px 24px; font-family: var(--mono); font-size: 13px; letter-spacing: .24em; text-transform: uppercase; }
+.footer .red { color: var(--accent); }
+.footer a { color: var(--label); text-decoration: none; }
 </style>
 
 <div class="wrap">
@@ -135,7 +135,7 @@ footer a { color: var(--label); text-decoration: none; }
     </aside>
   </div>
 
-  <footer>
+  <footer class="footer">
     <span class="red">For Xeneon Edge · Touch · Dot-matrix</span>
     <a href="https://github.com/Mathod95/xeneon" target="_blank" rel="noopener">Mathod95/xeneon</a>
   </footer>
@@ -199,7 +199,10 @@ footer a { color: var(--label); text-decoration: none; }
       for (var c = 0; c < g[0].length; c++) cols.push(g.map(function (r) { return r[c] === "#"; }));
       if (i < text.length - 1) cols.push([false, false, false, false, false, false, false]);
     });
-    var pad = 1, total = cols.length + pad * 2, rows = 7 + pad * 2, pitch = cv.width / total, r = pitch * 0.36;
+    var pad = 1, total = cols.length + pad * 2, rows = 7 + pad * 2;
+    // points tous les 14 px, comme Dot Companion : la largeur suit la longueur du mot (canvas en double résolution)
+    cv.width = total * 14 * 2; cv.style.width = total * 14 + "px";
+    var pitch = cv.width / total, r = pitch * 0.36;
     cv.height = Math.round(rows * pitch);
     ctx.clearRect(0, 0, cv.width, cv.height);
     for (var x = 0; x < total; x++) for (var y = 0; y < rows; y++) {

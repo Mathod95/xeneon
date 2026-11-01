@@ -12,7 +12,6 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
 <style>
 /* Layout : maquette de référence (la vraie page de réglages dans une fenêtre de navigateur, la zone de notification), puis tableau des choix. Un seul thème sombre, fond en points de Dot Page. */
 :root {
@@ -22,8 +21,8 @@
   --text: #e6e6e6;
   --muted: #8c8c8c;
   --brand: #10b981;
-  --mono: "IBM Plex Mono", "Cascadia Mono", Consolas, monospace;
-  --sans: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --mono: "Fira Code", "Cascadia Mono", Consolas, monospace;
+  --sans: "Segoe UI", Selawik, system-ui, sans-serif;
   color-scheme: dark;
 }
 * { box-sizing: border-box; }
@@ -32,11 +31,9 @@ html, body { background: var(--page); color: var(--text); }
 html { scrollbar-gutter: stable; }
 /* fond en points, le même que Dot Page */
 body { background-image: radial-gradient(circle, #161616 1.2px, transparent 1.6px); background-size: 22px 22px; }
-body { font-family: var(--sans); font-size: 15px; line-height: 1.55; padding-block: 40px 72px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
-.wrap { max-width: 1480px; margin: 0 auto; display: grid; gap: 40px; }
+body { font-family: var(--sans); font-size: 16px; line-height: 1.55; padding-block: 28px 64px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.wrap { max-width: 1240px; margin: 0 auto; display: grid; gap: 48px; }  /* socle du site : 1240 px, 48 px entre les zones */
 header { display: grid; gap: 10px; }
-.eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); display: flex; align-items: center; gap: 10px; }
-.eyebrow::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--brand); }
 h1 { font-family: var(--mono); font-weight: 500; font-size: clamp(28px, 4vw, 44px); line-height: 1.1; margin: 0; letter-spacing: -.01em; }
 .lede { color: var(--muted); margin: 0; }
 figure { margin: 0; display: grid; gap: 12px; min-width: 0; }
@@ -80,7 +77,7 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
 
 /* tableau des choix */
 .diff-head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; }
-h2 { font-family: var(--mono); font-weight: 500; font-size: 13px; letter-spacing: .14em; text-transform: uppercase; margin: 0; }
+h2 { font-family: var(--mono); font-weight: 500; font-size: 13px; letter-spacing: .2em; text-transform: uppercase; color: #b8b6b0; margin: 0; }  /* titres de section comme sur le site */
 .hint { color: var(--muted); font-size: 14px; margin: 0; }
 .table-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; }
 table { width: 100%; border-collapse: collapse; min-width: 640px; }
@@ -100,18 +97,30 @@ tr.todo td:nth-child(3) { color: var(--muted); }
 .idea-box ul { margin: 0; padding-left: 18px; display: grid; gap: 8px; color: var(--muted); font-size: 14px; }
 .idea-box b, .idea-steps b { color: var(--text); font-weight: 500; }
 .idea-steps { margin: 0; padding-left: 22px; display: grid; gap: 6px; color: var(--muted); font-size: 14px; }
+/* Hero (gabarit modulePage, zone 2) : le nom du module en texte et la version de la maquette en capsule, l'accroche, puis les faits */
+.page-hero { display: grid; gap: 10px; }
+.page-hero-head { display: flex; align-items: flex-end; flex-wrap: wrap; gap: 10px 16px; }
+.page-title { font-family: "Fira Code", "Cascadia Mono", Consolas, monospace; font-weight: 500; font-size: 70px; line-height: 1.1; margin: 0; letter-spacing: -.01em; color: #e6e6e6; }
+/* version en capsule (comme les versions de la Roadmap de Dot Companion), son bas posé sur la ligne de base du titre */
+.mver { display: inline-block; margin-bottom: 16px; padding: 1px 10px; border: 1px solid #10b981; border-radius: 999px; font-family: "Fira Code", "Cascadia Mono", Consolas, monospace; font-size: 12px; letter-spacing: .1em; color: #10b981; white-space: nowrap; }
+.page-lede { margin: 0; max-width: none; color: var(--muted); font-size: 15px; }
+.page-facts { display: flex; flex-wrap: wrap; gap: 8px 28px; margin: 0; padding: 0; list-style: none; font-family: "Fira Code", "Cascadia Mono", Consolas, monospace; font-size: 13px; letter-spacing: .18em; text-transform: uppercase; color: #b8b6b0; }
+.page-facts b { color: #10b981; font-weight: 500; margin-right: .5em; }
+/* pied de page, le même que sur les pages du site */
+.footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px 24px; font-family: "Fira Code", "Cascadia Mono", Consolas, monospace; font-size: 13px; letter-spacing: .24em; text-transform: uppercase; }
+.footer .red { color: #10b981; }
+.footer a { color: #b8b6b0; text-decoration: none; }
 </style>
 
 <div class="wrap">
-  <header>
-    <div class="eyebrow">Programme Windows · Dot Hub</div>
-    <h1>Dot Companion</h1>
-    <p class="lede">Le programme qui tourne sur le PC et fait marcher Dot Hub : il sert les modules à l'Edge et garde leurs réglages. La vue « Réglages » charge la vraie page du compagnon (<code>companion/web/settings.html</code>) et les vrais réglages des modules (balises <code>x-icue-property</code> de chaque <code>index.html</code>), avec des Dot Hub d'exemple à la place du compagnon.</p>
-  </header>
+  <section class="page-hero">
+    <div class="page-hero-head"><h1 class="page-title">Dot Companion</h1><span class="mver">v0.2</span></div>
+    <p class="page-lede">Le programme qui tourne sur le PC et fait marcher Dot Hub : il sert les modules à l'Edge et garde leurs réglages. La vue « Réglages » charge la vraie page du compagnon (<code>companion/web/settings.html</code>) et les vrais réglages des modules (balises <code>x-icue-property</code> de chaque <code>index.html</code>), avec des Dot Hub d'exemple à la place du compagnon.</p>
+    <ul class="page-facts"><li><b>2</b>vues</li><li><b>0.5.0</b>Dot Companion</li><li><b>Oui</b>connexion externe</li></ul>
+  </section>
 
   <figure>
-    <div class="tag"><b>Maquette de référence</b><span>Version 0.2 · Dot Companion 0.5.0</span></div>
-    <div class="views" role="group" aria-label="Vue">
+        <div class="views" role="group" aria-label="Vue">
       <button type="button" class="view" data-view="settings" aria-pressed="true">Réglages · navigateur</button>
       <button type="button" class="view" data-view="tray" aria-pressed="false">Zone de notification · 0.5.0</button>
     </div>
@@ -141,7 +150,6 @@ tr.todo td:nth-child(3) { color: var(--muted); }
     </div>
 
     <p class="toast" id="toast" aria-live="polite"></p>
-    <figcaption id="viewNote"></figcaption>
   </figure>
 
   <section class="idea" aria-labelledby="ideaTitle">
@@ -205,6 +213,10 @@ tr.todo td:nth-child(3) { color: var(--muted); }
       </table>
     </div>
   </section>
+  <footer class="footer">
+    <span class="red">For Xeneon Edge · Touch · Dot-matrix</span>
+    <a href="https://github.com/Mathod95/xeneon" target="_blank" rel="noopener">Mathod95/xeneon</a>
+  </footer>
 </div>
 
 <script>
@@ -359,14 +371,9 @@ tr.todo td:nth-child(3) { color: var(--muted); }
   });
 
   // ---------- vues
-  var NOTES = {
-    settings: "La vraie page de réglages : la carte DOT HUB (toujours là) montre l'accueil en direct, avec une tuile par module ajouté et une carte « + ». Toucher « + » ajoute une page : toucher « DOT », choisir un module, il tourne en direct avec ses réglages dessous. Les couleurs communes s'appliquent partout.",
-    tray: "Depuis 0.5.0 : plus de fenêtre, une icône en points dans la zone de notification. Ici, un clic sur l'icône ouvre ou ferme le menu ; sur le PC, clic gauche ouvre les réglages, clic droit le menu."
-  };
   function show(view) {
     document.querySelectorAll(".view").forEach(function (b) { b.setAttribute("aria-pressed", b.getAttribute("data-view") === view ? "true" : "false"); });
     v("vSettings").hidden = view !== "settings"; v("vTray").hidden = view !== "tray";
-    v("viewNote").textContent = NOTES[view];
   }
   document.querySelectorAll(".view").forEach(function (b) { b.addEventListener("click", function () { show(b.getAttribute("data-view")); }); });
   show("settings");

@@ -70,6 +70,10 @@
           "en": "Dot Page 2.0: « ● DOT HUB » header, Dot Hub shown as a card (pictogram, status, version), modules renamed « The dots » as fully clickable cards with their version, module name under the Xeneon Edge now clickable"
         },
         {
+          "fr": "Maquettes : même en-tête et même pied de page que le site, même socle (1240 px, Segoe UI et Fira Code), titre avec la version en capsule, accroche et faits, écran dans le boîtier de la Xeneon Edge comme sur Dot Page ; Dot Release : titre en points comme Dot Companion",
+          "en": "Mockups: same header and footer as the site, same base (1240 px, Segoe UI and Fira Code), title with the version in a capsule, lede and facts, screen in the Xeneon Edge bezel as on Dot Page; Dot Release: dotted title like Dot Companion"
+        },
+        {
           "fr": "Dot Release : sous le titre d'une version, seuls les composants modifiés depuis la version précédente sont affichés",
           "en": "Dot Release: under a version title, only the components changed since the previous version are shown"
         },

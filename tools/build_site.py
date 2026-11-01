@@ -117,8 +117,10 @@ def previews(slugs):
             page.wait_for_timeout(300)
             if not page.evaluate(SHOT_JS):
                 continue
-            stage = page.locator("#stage")
-            out[slug] = stage.screenshot(type="jpeg", quality=88)
+            # l'emplacement XL exactement (2536 × 696) : dans le boîtier de l'Edge, sa position tombe entre deux pixels
+            b = page.locator("#stage").bounding_box()
+            out[slug] = page.screenshot(type="jpeg", quality=88, full_page=True,
+                                        clip={"x": round(b["x"]), "y": round(b["y"]), "width": 2536, "height": 696})
         browser.close()
     return out
 
@@ -281,6 +283,57 @@ def settings_demo(mockup_dir):
     return out.read_bytes(), (cache / (key + ".jpg")).read_bytes()
 
 
+# en-tête du site en haut de chaque maquette (modulePage) : le même que Dot Page, Dot Companion et Dot Release,
+# ajouté par le build (une seule source pour les 19 maquettes). Styles rangés sous .site-top pour ne pas se mêler
+# à ceux des maquettes ; aucun bouton allumé (une maquette n'est pas une page du menu).
+SITE_TOP = """
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap">
+<style>
+.site-top { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; font-family: "Segoe UI", Selawik, system-ui, sans-serif; font-size: 16px; line-height: 1.55; color: #f2f0e9; }
+.site-top .brand { display: flex; align-items: center; gap: 10px; height: 42px; font-weight: 700; letter-spacing: .22em; font-size: 15px; color: #f2f0e9; text-decoration: none; }
+.site-top .brand::before { content: ""; width: 12px; height: 12px; border-radius: 50%; background: #10b981; }
+.site-top .topr { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; justify-content: flex-end; }
+.site-top .ext { font-family: "Fira Code", "Cascadia Mono", Consolas, monospace; font-size: 13px; line-height: 1.55; letter-spacing: .16em; text-transform: uppercase; color: #b8b6b0; text-decoration: none; padding: 10px 16px; border: 1px solid #1f1f1f; border-radius: 999px; background: #080808; }
+.site-top .ext:hover { color: #f2f0e9; border-color: #333; }
+.site-top .lang { display: flex; gap: 4px; padding: 4px; border: 1px solid #1f1f1f; border-radius: 999px; background: #080808; }
+.site-top .chip { height: auto; margin: 0; font-family: "Fira Code", "Cascadia Mono", Consolas, monospace; font-size: 12px; font-weight: 400; line-height: normal; letter-spacing: .16em; text-transform: uppercase; padding: 6px 12px; border-radius: 999px; border: 0; background: #080808; color: #b8b6b0; cursor: pointer; overflow: visible; white-space: nowrap; }
+.site-top .chip[aria-pressed="true"] { background: #f2f0e9; color: #080808; border: 0; }
+.site-top a:focus-visible, .site-top button:focus-visible { outline: 2px solid #10b981; outline-offset: 3px; }
+</style>
+<div class="top site-top">
+  <a class="brand" href="__HOME__">DOT HUB</a>
+  <div class="topr">
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" class="chip" data-lang="fr" aria-pressed="false">FR</button>
+      <button type="button" class="chip" data-lang="en" aria-pressed="false">EN</button>
+    </div>
+    <a class="ext" href="__COMPANION__">Companion</a>
+    <a class="ext" href="__RELEASES__">Releases</a>
+    <a class="ext" href="https://github.com/Mathod95/xeneon" target="_blank" rel="noopener">GitHub ↗</a>
+  </div>
+</div>
+<script>
+(function () {
+  // même choix de langue que le site (gardé dans le navigateur) ; la maquette elle-même reste en français
+  var chips = document.querySelectorAll(".site-top .chip"), lang;
+  try { lang = localStorage.getItem("dotpage-lang"); } catch (e) {}
+  lang = lang || ((navigator.language || "en").slice(0, 2) === "fr" ? "fr" : "en");
+  function show() { chips.forEach(function (b) { b.setAttribute("aria-pressed", b.getAttribute("data-lang") === lang ? "true" : "false"); }); }
+  chips.forEach(function (b) { b.addEventListener("click", function () { lang = b.getAttribute("data-lang"); try { localStorage.setItem("dotpage-lang", lang); } catch (e) {} show(); }); });
+  show();
+})();
+</script>
+"""
+
+
+def with_site_top(html, urls):
+    """La maquette avec l'en-tête du site en haut de sa page (juste après <div class="wrap">)."""
+    top = SITE_TOP
+    for k, v in urls.items():
+        top = top.replace("__" + k + "__", v)
+    return html.replace('<div class="wrap">', '<div class="wrap">' + top, 1)
+
+
 # maquette de Dot Companion : companion/mockups/reference.html (base = racine du dépôt), avec les fichiers qu'elle charge
 COMPANION_MOCKUP = ROOT / "companion" / "mockups" / "reference.html"
 COMPANION_FILES = [
@@ -302,6 +355,7 @@ def companion_mockup(out):
     out.mkdir(parents=True, exist_ok=True)
     html = COMPANION_MOCKUP.read_text(encoding="utf-8")
     html = html.replace('<base href="../../">\n', "").replace('<base href="../../">', "")
+    html = with_site_top(html, {"HOME": "../", "COMPANION": "../companion/", "RELEASES": "../releases/"})
     (out / "index.html").write_text(html, encoding="utf-8")
     for f in COMPANION_FILES:
         dst = out / f
@@ -474,6 +528,7 @@ def main():
                 if src.is_dir():
                     shutil.copytree(src, SITE / slug / dep / sub, dirs_exist_ok=True)
             html = html.replace('"../../' + dep + "/", '"' + dep + "/")
+        html = with_site_top(html, {"HOME": "../", "COMPANION": "../companion/", "RELEASES": "../releases/"})
         (SITE / slug / "index.html").write_text(html, encoding="utf-8")
         if slug in shots:
             (SITE / slug / "preview.jpg").write_bytes(shots[slug])
@@ -499,7 +554,7 @@ def main():
         for f in DESIGN_FILES:
             shutil.copy(DESIGN / f, out / f)
     # pages actuelles (docs/design/edge/, générées par tools/design_edge.py) : Dot Page, Dot Companion et Dot Release
-    for name in ("homePage", "subPage", "releasePage"):
+    for name in ("homePage", "subPage", "releasePage", "modulePage"):
         src = DESIGN / "edge" / (name + ".html")
         if not src.is_file():
             continue
