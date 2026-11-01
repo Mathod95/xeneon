@@ -27,9 +27,9 @@
 .mini a { color: inherit; }
 .mini a:focus-visible, .mini button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 .mini .top { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
-.mini .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; letter-spacing: .22em; font-size: 15px; text-decoration: none; }
+.mini .brand { display: flex; align-items: center; gap: 10px; height: 42px; font-weight: 700; letter-spacing: .22em; font-size: 15px; color: var(--lit); text-decoration: none; }
 .mini .brand::before { content: ""; width: 12px; height: 12px; border-radius: 50%; background: var(--accent); }
-.mini .topr { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.mini .topr { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; justify-content: flex-end; }
 .mini .ext { font-family: var(--mono); font-size: 13px; letter-spacing: .16em; text-transform: uppercase; color: var(--label); text-decoration: none; padding: 10px 16px; border: 1px solid var(--line); border-radius: 999px; background: var(--bg); }
 .mini .ext:hover { color: var(--lit); border-color: #333; }
 .mini .ext[aria-current="page"] { color: var(--bg); background: var(--lit); border-color: var(--lit); }
@@ -89,7 +89,7 @@
 
   <div class="a-head">
     <h1>Anatomie de Dot Release</h1>
-    <p class="a-lead">Dot Release telle qu'elle est aujourd'hui (<code>tools/site/releases.html</code>, données <code>releases.json</code>), la releasePage du site. La vraie vue est la page elle-même, figée ; chaque valeur est mesurée sur la page. Elle n'a pas encore été reprise d'après la charte (marque MATHOD, bouton « ← Dot Page », pied de page sans classe). La version générale est le gabarit releasePage (<code>docs/design/releasePage.html</code>).</p>
+    <p class="a-lead">Dot Release telle qu'elle est aujourd'hui (<code>tools/site/releases.html</code>, données <code>releases.json</code>), la releasePage du site. La vraie vue est la page elle-même, figée ; chaque valeur est mesurée sur la page. En-tête repris de la charte le 1er novembre 2026 ; le pied de page n'a pas encore la classe .footer. La version générale est le gabarit releasePage (<code>docs/design/releasePage.html</code>).</p>
   </div>
 
   <div class="a-bar">
@@ -107,16 +107,15 @@
       <div class="mini" id="mini" aria-hidden="true">
         <div class="pw">
   <div class="top" data-zone="header" data-name="Top"><span class="badge">1</span>
-    <a class="brand" href="../" data-part="1" data-sk="marque" tabindex="-1">MATHOD</a>
+    <a class="brand" href="../" data-part="1" data-sk="marque" tabindex="-1">DOT HUB</a>
     <div class="topr">
       <div class="lang" role="group" aria-label="Language" data-part="2" data-sk="FR / EN">
         <button type="button" class="chip" data-lang="fr" aria-pressed="true" tabindex="-1">FR</button>
         <button type="button" class="chip" data-lang="en" aria-pressed="false" tabindex="-1">EN</button>
       </div>
-      <a class="ext" href="../" data-i18n="back" data-part="3" data-sk="← Dot Page" tabindex="-1">← Dot Page</a>
-      <a class="ext" href="../companion/" data-part="4" data-sk="Companion" tabindex="-1">Companion</a>
-      <a class="ext" href="#" aria-current="page" data-part="5" data-sk="Releases" tabindex="-1">Releases</a>
-      <a class="ext" href="https://github.com/Mathod95/xeneon" target="_blank" rel="noopener" data-part="6" data-sk="GitHub ↗" tabindex="-1">GitHub ↗</a>
+      <a class="ext" href="../companion/" data-part="3" data-sk="Companion" tabindex="-1">Companion</a>
+      <a class="ext" href="#" aria-current="page" data-part="4" data-sk="Releases" tabindex="-1">Releases</a>
+      <a class="ext" href="https://github.com/Mathod95/xeneon" target="_blank" rel="noopener" data-part="5" data-sk="GitHub ↗" tabindex="-1">GitHub ↗</a>
     </div>
   </div>
 
@@ -160,16 +159,15 @@ window.ANATOMY = { native: 1320, zones: [
   "side": "L",
   "name": "Top",
   "field": ".top",
-  "desc": "L'ancien en-tête: la marque « ● MATHOD » et un bouton « ← Dot Page » en plus. Releases est allumé: c'est la page en cours. À reprendre comme sur Dot Page et Dot Companion.",
+  "desc": "Le même sur toutes les pages, toujours dans cet ordre. Releases est allumé: c'est la page en cours.",
   "parts": [
-   "La marque « ● MATHOD » (« ● DOT HUB » sur les autres pages), lien vers Dot Page.",
-   "Le choix de langue FR / EN.",
-   "« ← Dot Page », retour à l'accueil (absent des autres pages).",
+   "La marque « ● DOT HUB » à gauche, lien vers Dot Page.",
+   "Le choix de langue FR / EN. Français si le navigateur est en français, anglais sinon ; le choix est gardé dans le navigateur.",
    "Companion, lien vers la page Dot Companion.",
-   "Releases, allumé (page en cours).",
-   "GitHub ↗, lien vers le dépôt (nouvel onglet)."
+   "Releases, lien vers Dot Release.",
+   "GitHub ↗, lien vers le dépôt Mathod95/xeneon (nouvel onglet)."
   ],
-  "rule": "<b>Valeurs:<\/b><br><b>Ensemble<\/b> en ligne, écart 16 px; répartis aux deux bouts. Rangée de 42 px, la marque à gauche, le reste à droite, tout centré verticalement<br><b>1.1<\/b> <code>a.brand<\/code>: Segoe UI 15 px, interligne 23,3 px, gras, espacement .22em, #F2F0E9, précédé d'un point de 12 px #10B981, en ligne, écart 10 px<br><b>1.2<\/b> <code>div.lang<\/code>: marge 4 px, bord 1 px #1F1F1F, arrondi 999 px, fond #080808, en ligne, écart 4 px, 98 × 38 px · <code>button.chip<\/code>: Fira Code 12 px, interligne normal, espacement .16em, capitales, #080808, centré, marge 6 × 12 px, arrondi 999 px, fond #F2F0E9. Langue choisie en pastille pleine #F2F0E9, texte #080808<br><b>1.3<\/b> <code>a.ext<\/code>: Fira Code 13 px, interligne 20,2 px, espacement .16em, capitales, #B8B6B0, marge 10 × 16 px, bord 1 px #1F1F1F, arrondi 999 px, fond #080808, 135 × 42 px<br><b>1.4<\/b> <code>a.ext<\/code>: Fira Code 13 px, interligne 20,2 px, espacement .16em, capitales, #B8B6B0, marge 10 × 16 px, bord 1 px #1F1F1F, arrondi 999 px, fond #080808, 125 × 42 px. Survol: texte #F2F0E9, bord #333<br><b>1.5<\/b> <code>a.ext<\/code>: Fira Code 13 px, interligne 20,2 px, espacement .16em, capitales, #080808, marge 10 × 16 px, bord 1 px #F2F0E9, arrondi 999 px, fond #F2F0E9, 115 × 42 px. Pastille pleine #F2F0E9, texte #080808 (aria-current)<br><b>1.6<\/b> <code>a.ext<\/code>: Fira Code 13 px, interligne 20,2 px, espacement .16em, capitales, #B8B6B0, marge 10 × 16 px, bord 1 px #1F1F1F, arrondi 999 px, fond #080808, 114 × 42 px"
+  "rule": "<b>Valeurs:<\/b><br><b>Ensemble<\/b> en ligne, écart 16 px; répartis aux deux bouts. Rangée de 42 px, la marque à gauche, le reste à droite, tout centré verticalement<br><b>1.1<\/b> <code>a.brand<\/code>: Segoe UI 15 px, interligne 23,3 px, gras, espacement .22em, #F2F0E9, précédé d'un point de 12 px #10B981, en ligne, écart 10 px. Lien vers Dot Page<br><b>1.2<\/b> <code>div.lang<\/code>: marge 4 px, bord 1 px #1F1F1F, arrondi 999 px, fond #080808, en ligne, écart 4 px, 98 × 38 px · <code>button.chip<\/code>: Fira Code 12 px, interligne normal, espacement .16em, capitales, #080808, centré, marge 6 × 12 px, arrondi 999 px, fond #F2F0E9. Langue choisie en pastille pleine #F2F0E9, texte #080808<br><b>1.3<\/b> <code>a.ext<\/code>: Fira Code 13 px, interligne 20,2 px, espacement .16em, capitales, #B8B6B0, marge 10 × 16 px, bord 1 px #1F1F1F, arrondi 999 px, fond #080808, 125 × 42 px. Survol: texte #F2F0E9, bord #333. Page en cours: pastille pleine #F2F0E9, texte #080808 (aria-current)<br><b>1.4<\/b> <code>a.ext<\/code>: Fira Code 13 px, interligne 20,2 px, espacement .16em, capitales, #080808, marge 10 × 16 px, bord 1 px #F2F0E9, arrondi 999 px, fond #F2F0E9, 115 × 42 px. Comme 1.3<br><b>1.5<\/b> <code>a.ext<\/code>: Fira Code 13 px, interligne 20,2 px, espacement .16em, capitales, #B8B6B0, marge 10 × 16 px, bord 1 px #1F1F1F, arrondi 999 px, fond #080808, 114 × 42 px. Comme 1.3, ouvre le dépôt dans un nouvel onglet"
  },
  {
   "id": "hero",
