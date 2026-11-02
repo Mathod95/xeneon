@@ -45,9 +45,11 @@
 
 /* AMS : une bobine par emplacement, remplie selon le reste */
 .dot-bambulab .w-ams { display: flex; flex-direction: column; }
+.dot-bambulab .w-ams .ams-head { display: flex; justify-content: space-between; gap: 24px; }
 .dot-bambulab .w-ams .slots { display: flex; margin-top: 24px; }
 .dot-bambulab .spool-slot { min-width: 0; display: flex; flex-direction: column; align-items: center; text-align: center; }
 .dot-bambulab .spool-slot .ty { margin-top: 14px; color: var(--lit); font-size: 22px; line-height: 28px; letter-spacing: .06em; }
+.dot-bambulab .spool-slot .cn { min-height: 24px; color: var(--label); font-size: 18px; line-height: 24px; letter-spacing: .1em; text-transform: uppercase; }
 .dot-bambulab .spool-slot .re { text-transform: uppercase; color: var(--label); font-size: 18px; line-height: 24px; letter-spacing: .1em; }
 .dot-bambulab .spool-slot.on .re { color: var(--accent); }
 

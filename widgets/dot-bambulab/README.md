@@ -11,7 +11,7 @@ La référence visuelle est [`mockups/reference.html`](mockups/reference.html) (
 ## Données
 
 - Dot Companion se connecte à l’imprimante en MQTT sur TLS (port `8883`, utilisateur `bblp`, mot de passe = code d’accès LAN), sujet `device/<numéro de série>/report`. Une demande `pushall` au démarrage donne l’état complet.
-- Champs utilisés : `gcode_state`, `mc_percent`, `mc_remaining_time`, `layer_num`, `total_layer_num`, `subtask_name`, températures buse, plateau et chambre (X1C), vitesse, données AMS (`tray_color`, `tray_type`, `remain`), erreurs HMS.
+- Champs utilisés : `gcode_state`, `mc_percent`, `mc_remaining_time`, `layer_num`, `total_layer_num`, `subtask_name`, températures buse, plateau et chambre (X1C), vitesse, données AMS (`tray_color`, `tray_type`, `remain`, `humidity_raw`, `humidity`, `temp`), erreurs HMS.
 - Commandes envoyées sur `device/<numéro de série>/request` : pause, reprise, stop, lampe de la chambre.
 - Adresse IP, numéro de série et code d’accès restent sur le PC, dans la configuration du compagnon.
 

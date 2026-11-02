@@ -37,8 +37,8 @@
           "en": "Dot Companion: settings page redone, live DOT HUB card and one page per added module, Global settings card"
         },
         {
-          "fr": "Dot Bambu Lab : module codé (XL), l'imprimante 3D en réseau local (MQTT sur TLS) : progression, températures, AMS, erreurs, lampe, pause, reprise et arrêt ; adresse IP, numéro de série et code d'accès (chiffré) dans la page de réglages du compagnon",
-          "en": "Dot Bambu Lab: module coded (XL), your 3D printer on the local network (MQTT over TLS): progress, temperatures, AMS, errors, light, pause, resume and stop; IP address, serial number and access code (encrypted) in the companion settings page"
+          "fr": "Dot Bambu Lab : module codé (XL), l'imprimante 3D en réseau local (MQTT sur TLS) : progression, températures, AMS (couleur et nom du filament, reste, humidité), erreurs, lampe, pause, reprise et arrêt ; adresse IP, numéro de série et code d'accès (chiffré) dans la page de réglages du compagnon",
+          "en": "Dot Bambu Lab: module coded (XL), your 3D printer on the local network (MQTT over TLS): progress, temperatures, AMS (filament color and name, remaining, humidity), errors, light, pause, resume and stop; IP address, serial number and access code (encrypted) in the companion settings page"
         },
         {
           "fr": "Dot Steam : réglage Cover render, quatre rendus des jaquettes (Dots, Solid dots, Fine dots, image derrière une grille de points à l'opacité réglable)",

@@ -324,6 +324,12 @@ fn build(g: &Printer, serial: &str) -> Value {
     let (ams, tray) = ams(p);
     out["ams"] = ams;
     out["tray"] = tray;
+    // humidité de l'AMS : en % sur les firmwares récents (humidity_raw), sinon un niveau de 1 à 5 ; température
+    if let Some(unit) = first_ams(p) {
+        out["amsHumidity"] = json!(num_of(unit, "humidity_raw").filter(|h| *h > 0.0));
+        out["amsHumidityLevel"] = json!(num_of(unit, "humidity").filter(|h| *h >= 1.0 && *h <= 5.0));
+        out["amsTemp"] = json!(num_of(unit, "temp").filter(|t| *t > 0.0));
+    }
     if state == "error" {
         out["error"] = json!(error_message(p, print_error));
     }
@@ -343,6 +349,11 @@ fn light_on(p: &Map<String, Value>) -> bool {
         .and_then(Value::as_array)
         .map(|l| l.iter().any(|x| x.get("node").and_then(Value::as_str) == Some("chamber_light") && x.get("mode").and_then(Value::as_str) == Some("on")))
         .unwrap_or(false)
+}
+
+/// Le premier AMS du rapport.
+fn first_ams(p: &Map<String, Value>) -> Option<&Map<String, Value>> {
+    p.get("ams")?.get("ams")?.as_array()?.first()?.as_object()
 }
 
 /// Emplacements de l'AMS (le premier AMS) et emplacement en cours.
@@ -449,7 +460,7 @@ mod tests {
                 "subtask_name": "Desk_hook_v3", "nozzle_temper": 218.6, "nozzle_target_temper": 220, "bed_temper": 59.8, "bed_target_temper": 60,
                 "cooling_fan_speed": "15", "spd_lvl": 2, "print_error": 0,
                 "lights_report": [{ "node": "chamber_light", "mode": "on" }],
-                "ams": { "tray_now": "1", "ams": [{ "id": "0", "tray": [
+                "ams": { "tray_now": "1", "ams": [{ "id": "0", "humidity": "4", "humidity_raw": "41", "temp": "26.4", "tray": [
                     { "id": "0", "tray_type": "PLA", "tray_color": "000000FF", "remain": 90 },
                     { "id": "1", "tray_type": "PETG", "tray_color": "FF6A00FF", "remain": -1 },
                     { "id": "2" }, { "id": "3", "tray_type": "PLA", "tray_color": "FFFFFFFF", "remain": 40 } ] }] } } }),
@@ -469,6 +480,9 @@ mod tests {
         assert_eq!(s["ams"][1]["remain"], Value::Null);
         assert_eq!(s["ams"][2], json!({}));
         assert_eq!(s["ams"][3]["remain"], 0.4);
+        assert_eq!(s["amsHumidity"], 41.0);
+        assert_eq!(s["amsHumidityLevel"], 4.0);
+        assert_eq!(s["amsTemp"], 26.4);
     }
 
     #[test]

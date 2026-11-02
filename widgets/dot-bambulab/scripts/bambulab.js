@@ -35,7 +35,7 @@
 		'<p class="w-mini" data-k="mini"></p>' +
 		'<div class="w-temps" data-k="temps"></div>' +
 		'<div class="w-ams" data-k="ams">' +
-			'<p class="w-lbl" data-k="amsLbl">AMS · 4 SLOTS</p>' +
+			'<div class="ams-head"><p class="w-lbl" data-k="amsLbl">AMS · 4 SLOTS</p><p class="w-lbl" data-k="amsHum"></p></div>' +
 			'<div class="slots" data-k="slots"></div>' +
 		'</div>' +
 		'<p class="w-hint" data-k="hint">Hold ■ to stop</p>' +
@@ -91,24 +91,40 @@
 		}
 		return cv;
 	}
-	// bobine : disque de points, rempli depuis le bas selon le reste
-	function spool(px, color, remain, active, c) {
+	// bobine : disque de points, rempli depuis le bas selon le reste ; le contour garde toujours la couleur du filament
+	// (en accent pour la bobine en cours), pour qu'on la voie même presque vide. Filament trop sombre pour le fond :
+	// points de sa vraie couleur, cerclés de gris.
+	function spool(px, color, remain, active, c, empty) {
 		var cv = document.createElement("canvas"), dpr = 2;
 		cv.width = px * dpr; cv.height = px * dpr; cv.style.width = px + "px"; cv.style.height = px + "px";
 		var ctx = cv.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-		// filament trop sombre pour se voir sur le fond : éclairci
-		var rgb = parseInt(color.slice(1), 16), lumi = (0.2126 * (rgb >> 16) + 0.7152 * (rgb >> 8 & 255) + 0.0722 * (rgb & 255)) / 255;
-		if (lumi < 0.22) color = "#5a5a5a";
+		var off = c.unlit || "#1c1c1c", dark = !empty && lumi(color) < 0.22;
 		var pitch = px / 15, R = px / 2 - pitch / 2, hub = R * 0.28;
 		for (var y = 0; y < 15; y++) for (var x = 0; x < 15; x++) {
 			var cx = x * pitch + pitch / 2, cy = y * pitch + pitch / 2, d = Math.hypot(cx - px / 2, cy - px / 2);
-			if (d > R + 0.5) continue;
+			if (d > R + 0.5 || d < hub) continue;
 			var rim = d > R - pitch * 0.9, filled = (15 - y) / 15 <= remain + 0.001;
-			var col = d < hub ? null : rim ? (active ? c.accent : (c.unlit || "#1c1c1c")) : filled ? color : (c.unlit || "#1c1c1c");
-			if (!col) continue;
+			var col = rim ? (active ? c.accent : empty ? off : color) : filled && !empty ? color : off;
 			ctx.fillStyle = col; ctx.beginPath(); ctx.arc(cx, cy, pitch * 0.4, 0, Math.PI * 2); ctx.fill();
+			if (dark && col === color) { ctx.lineWidth = 1.2; ctx.strokeStyle = "#6a6a6a"; ctx.stroke(); }
 		}
 		return cv;
+	}
+	function lumi(hex) { var rgb = parseInt(String(hex).slice(1), 16) || 0; return (0.2126 * (rgb >> 16) + 0.7152 * (rgb >> 8 & 255) + 0.0722 * (rgb & 255)) / 255; }
+	// nom de la couleur d'un filament (Bambu Lab n'envoie que le code) : la plus proche de cette liste
+	var NAMES = [["Black", "#000000"], ["White", "#ffffff"], ["Gray", "#8a8a8a"], ["Silver", "#c4c4c4"], ["Red", "#d42a2a"], ["Orange", "#f07a1a"],
+		["Yellow", "#f2d21a"], ["Gold", "#c8a03c"], ["Beige", "#e6d6b0"], ["Brown", "#7a4a28"], ["Green", "#2aa042"], ["Lime", "#9ad21e"],
+		["Teal", "#1a9a96"], ["Cyan", "#28c8e0"], ["Blue", "#2a62d6"], ["Navy", "#1c2a62"], ["Purple", "#7a3ac0"], ["Pink", "#f08ab4"], ["Magenta", "#d0209c"]];
+	function colorName(hex) {
+		var v = parseInt(String(hex).slice(1), 16);
+		if (isNaN(v)) return "";
+		var r = v >> 16, g = v >> 8 & 255, b = v & 255, best = "", bd = 1e9;
+		NAMES.forEach(function (n) {
+			var w = parseInt(n[1].slice(1), 16), dr = r - (w >> 16), dg = g - (w >> 8 & 255), db = b - (w & 255);
+			var dist = 2 * dr * dr + 4 * dg * dg + 3 * db * db;
+			if (dist < bd) { bd = dist; best = n[0]; }
+		});
+		return best;
 	}
 	function dur(min) { var h = Math.floor(min / 60), m = min % 60; return (h ? h + "h " : "") + m + "m"; }
 	function clock(ms) { var d = new Date(ms); return (d.getHours() < 10 ? "0" : "") + d.getHours() + ":" + (d.getMinutes() < 10 ? "0" : "") + d.getMinutes(); }
@@ -132,7 +148,7 @@
 		var active = sample === "printing" || sample === "paused" || sample === "error";
 		var st = { state: sample, model: model, light: light, file: JOB.file, pct: sample === "finished" ? 100 : JOB.pct, layer: JOB.layer, layers: JOB.layers,
 			left: JOB.left, speed: JOB.speed, duration: 192, nozzle: { v: active ? 219 : 27, t: active ? 220 : 0 }, bed: { v: active ? 61 : 25, t: active ? 65 : 0 },
-			ams: AMS, tray: active ? 2 : null, error: sample === "error" ? "Filament ran out · AMS slot 2" : null, last: { file: "Cable_clip_x8.3mf", ago: "2h ago" } };
+			ams: AMS, tray: active ? 2 : null, amsHumidity: 41, amsTemp: 26, error: sample === "error" ? "Filament ran out · AMS slot 2" : null, last: { file: "Cable_clip_x8.3mf", ago: "2h ago" } };
 		if (model === "X1C") st.chamber = active ? 38 : 24; else st.fan = active ? 80 : 0;
 		return st;
 	}
@@ -219,12 +235,16 @@
 			var ams = v("ams"), slots = v("slots"), trays = st.ams || []; slots.innerHTML = "";
 			ams.hidden = state === "offline" || !s.showAms || !Z.spool || !trays.length;
 			v("amsLbl").textContent = (model === "A1" || model === "A1 mini" ? "AMS lite" : "AMS") + " · " + trays.length + " slots";
+			var hum = st.amsHumidity != null ? "Humidity " + Math.round(st.amsHumidity) + " %" : st.amsHumidityLevel != null ? "Humidity level " + st.amsHumidityLevel + " / 5" : "";
+			v("amsHum").textContent = hum + (hum && st.amsTemp != null ? " · " + Math.round(st.amsTemp) + "°" : "");
 			if (!ams.hidden) trays.forEach(function (a, i) {
 				var on = active && i === st.tray, empty = !a || !a.type;
 				var sl = el("div", "spool-slot" + (on ? " on" : ""));
 				sl.style.width = (Z.spool + 24) + "px";
-				sl.appendChild(spool(Z.spool, empty ? "#1c1c1c" : a.color || "#5a5a5a", empty || a.remain == null ? 0 : a.remain, on, c));
+				var color = empty ? "#1c1c1c" : a.color || "#8a8a8a";
+				sl.appendChild(spool(Z.spool, color, empty || a.remain == null ? 0 : a.remain, on, c, empty));
 				sl.appendChild(el("p", "ty ell", empty ? "Empty" : a.type));
+				sl.appendChild(el("p", "cn ell", empty || !a.color ? "" : a.name || colorName(a.color)));
 				sl.appendChild(el("p", "re", on ? "▶ In use" : empty || a.remain == null ? "--" : Math.round(a.remain * 100) + "%"));
 				slots.appendChild(sl);
 			});
