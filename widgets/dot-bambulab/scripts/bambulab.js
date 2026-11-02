@@ -5,10 +5,11 @@
  *
  *   var bl = DotBambuLab.mount(stage, { size: "xl", settings: function () { … },
  *     state: function () { … },              // module : l'état de l'imprimante envoyé par le compagnon (voir demo())
- *     onCommand: function (cmd) { … } });    // module : light, pause, resume, stop
+ *     onCommand: function (cmd) { … },       // module : light, pause, resume, stop
+ *     camera: function () { … } });          // module : adresse de la dernière image de la caméra (sans elle, pas de bouton caméra)
  *   bl.render();          // quand un réglage ou l'état change
  *   bl.setSize("m");      // S, M, L ou XL
- *   bl.animate(false);    // arrête la mise à jour de l'heure de fin (vue cachée)
+ *   bl.animate(false);    // arrête la mise à jour de l'heure de fin et de la caméra (vue cachée)
  *
  * `stage` reçoit la classe .dot-bambulab et la taille de l'emplacement. Réglages (tous facultatifs) :
  * showAms, showUnlit, accent, lit, unlit, label ; dans la maquette et sur Dot Page, sans `state`, sample
@@ -38,8 +39,13 @@
 			'<div class="ams-head"><p class="w-lbl" data-k="amsLbl">AMS · 4 SLOTS</p><p class="w-lbl" data-k="amsHum"></p></div>' +
 			'<div class="slots" data-k="slots"></div>' +
 		'</div>' +
+		'<div class="w-cam" data-k="cam" hidden>' +
+			'<div class="view" data-k="camView"></div>' +
+			'<div class="cap"><p class="w-lbl live"><span></span>Camera · 1 fps</p><p class="w-lbl">Tap to close</p></div>' +
+		'</div>' +
 		'<p class="w-hint" data-k="hint">Hold ■ to stop</p>' +
 		'<div class="w-ctls">' +
+			'<button type="button" class="ctl" data-k="camBtn" aria-label="Camera"><svg viewBox="0 0 24 24"><path d="M3 7h4l2-3h6l2 3h4v13H3zm9 11a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9zm0-2.2a2.3 2.3 0 1 1 0-4.6 2.3 2.3 0 0 1 0 4.6z" fill-rule="evenodd"/></svg></button>' +
 			'<button type="button" class="ctl lamp" data-k="lampBtn" aria-label="Chamber light"><svg viewBox="0 0 24 24"><path d="M9 21h6v-1.5H9zM12 2a7 7 0 0 0-4 12.7V18h8v-3.3A7 7 0 0 0 12 2z"/></svg></button>' +
 			'<button type="button" class="ctl main" data-k="pauseBtn" aria-label="Pause / resume"><svg viewBox="0 0 24 24" data-k="pauseIcon"></svg></button>' +
 			'<button type="button" class="ctl" data-k="stopBtn" aria-label="Stop print (hold)"><svg viewBox="0 0 24 24"><path d="M5 5h14v14H5z"/></svg><span class="ring" data-k="ring"></span></button>' +
@@ -153,6 +159,49 @@
 		return st;
 	}
 
+	// caméra de la maquette et de Dot Page : l'intérieur de l'imprimante dessiné (plateau, pièce, tête), une image
+	// par seconde comme la vraie caméra du P1S. Sur l'Edge, l'image vient du compagnon.
+	function demoCamera(cv, st, light, tick) {
+		var W = 840, H = 472, dpr = 2, ctx = cv.getContext("2d");
+		cv.width = W * dpr; cv.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+		var on = light !== false, k = on ? 1 : 0.28, printing = st.state === "printing";
+		function shade(hex, f) { var v = parseInt(hex.slice(1), 16), r = (v >> 16) * f * k, g = (v >> 8 & 255) * f * k, b = (v & 255) * f * k; return "rgb(" + (r | 0) + "," + (g | 0) + "," + (b | 0) + ")"; }
+		// fond de la chambre, éclairé par le haut
+		var bg = ctx.createLinearGradient(0, 0, 0, H); bg.addColorStop(0, shade("#2e2c28", 1)); bg.addColorStop(0.6, shade("#141413", 1)); bg.addColorStop(1, shade("#0a0a0a", 1));
+		ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+		ctx.fillStyle = shade("#1a1918", 1); ctx.fillRect(0, 0, 70, H); ctx.fillRect(W - 70, 0, 70, H);
+		// plateau en perspective
+		var top = 268, bot = H + 30;
+		ctx.beginPath(); ctx.moveTo(170, top); ctx.lineTo(W - 170, top); ctx.lineTo(W + 80, bot); ctx.lineTo(-80, bot); ctx.closePath();
+		var pl = ctx.createLinearGradient(0, top, 0, bot); pl.addColorStop(0, shade("#3a332a", 1)); pl.addColorStop(1, shade("#5a4c3a", 1));
+		ctx.fillStyle = pl; ctx.fill();
+		ctx.strokeStyle = shade("#6a5a44", 0.6); ctx.lineWidth = 1;
+		for (var i = 1; i < 8; i++) { var f = i / 8, y = top + (bot - top) * f * f; ctx.beginPath(); ctx.moveTo(170 - 250 * f * f, y); ctx.lineTo(W - 170 + 250 * f * f, y); ctx.stroke(); }
+		// pièce imprimée, de la couleur du filament en cours, haute selon l'avancement
+		var tray = (st.ams || [])[st.tray != null ? st.tray : 2] || {}, fil = tray.color || "#e9862b";
+		var done = st.state === "idle" || st.state === "offline" ? 0 : st.state === "finished" ? 1 : (st.pct || 0) / 100;
+		var bx = W / 2 - 120, by = 360, bw = 240, bh = 150 * done;
+		if (bh > 1) {
+			ctx.fillStyle = shade(fil, 0.62); ctx.fillRect(bx, by - bh, bw, bh);
+			ctx.fillStyle = shade(fil, 0.9); ctx.beginPath(); ctx.moveTo(bx, by - bh); ctx.lineTo(bx + 34, by - bh - 22); ctx.lineTo(bx + bw + 34, by - bh - 22); ctx.lineTo(bx + bw, by - bh); ctx.closePath(); ctx.fill();
+			ctx.fillStyle = shade(fil, 0.42); ctx.beginPath(); ctx.moveTo(bx + bw, by); ctx.lineTo(bx + bw + 34, by - 22); ctx.lineTo(bx + bw + 34, by - bh - 22); ctx.lineTo(bx + bw, by - bh); ctx.closePath(); ctx.fill();
+			ctx.strokeStyle = "rgba(0,0,0,.18)"; for (var l = by - 3; l > by - bh; l -= 3) { ctx.beginPath(); ctx.moveTo(bx, l); ctx.lineTo(bx + bw, l); ctx.stroke(); }
+		}
+		// tête d'impression sur son axe : elle avance d'une image à l'autre pendant l'impression, rangée à gauche sinon
+		var hx = printing ? bx + 20 + ((tick * 67) % 220) : 120, hy = Math.min(by - bh - 30, 250);
+		if (!printing) hy = 96;
+		ctx.fillStyle = shade("#3c3c3c", 1); ctx.fillRect(0, hy - 64, W, 16);
+		ctx.fillStyle = shade("#262626", 1); ctx.fillRect(hx - 62, hy - 92, 124, 84);
+		ctx.fillStyle = shade("#343434", 1); ctx.fillRect(hx - 62, hy - 92, 124, 10);
+		ctx.fillStyle = shade("#9a9a9a", 1); ctx.beginPath(); ctx.moveTo(hx - 10, hy - 8); ctx.lineTo(hx + 10, hy - 8); ctx.lineTo(hx + 2, hy + 6); ctx.lineTo(hx - 2, hy + 6); ctx.closePath(); ctx.fill();
+		if (printing && on) { ctx.fillStyle = "rgba(255,170,90,.5)"; ctx.beginPath(); ctx.arc(hx, hy + 7, 3, 0, Math.PI * 2); ctx.fill(); }
+		// vignettage et grain de la caméra
+		var vg = ctx.createRadialGradient(W / 2, H / 2, H * 0.3, W / 2, H / 2, W * 0.62); vg.addColorStop(0, "rgba(0,0,0,0)"); vg.addColorStop(1, "rgba(0,0,0,.55)");
+		ctx.fillStyle = vg; ctx.fillRect(0, 0, W, H);
+		var seed = tick * 97 + 13;
+		for (var n = 0; n < 900; n++) { seed = (seed * 16807) % 2147483647; var x = seed % W; seed = (seed * 16807) % 2147483647; var y2 = seed % H; ctx.fillStyle = n % 2 ? "rgba(255,255,255,.05)" : "rgba(0,0,0,.18)"; ctx.fillRect(x, y2, 1.5, 1.5); }
+	}
+
 	function mount(stage, opts) {
 		opts = opts || {};
 		var size = SLOTS[opts.size] ? opts.size : "xl";
@@ -165,6 +214,8 @@
 		function v(k) { return stage.querySelector('[data-k="' + k + '"]'); }
 		// maquette : l'exemple choisi, modifié par les boutons de l'écran
 		var lamp = true, override = null, sample = null, st = null;
+		// caméra : ouverte par le bouton ou un toucher sur la progression, fermée par un toucher sur l'image
+		var camSrc = real ? opts.camera : function () { return "demo"; }, camOpen = false, camTick = 0, camTimer = null;
 
 		function current(s) {
 			if (real) return opts.state() || { state: "offline", hint: "Connecting to the printer…" };
@@ -256,7 +307,37 @@
 			v("lampBtn").disabled = state === "offline";
 			v("lampBtn").classList.toggle("on", !!st.light && state !== "offline");
 			v("pauseIcon").innerHTML = state === "printing" ? '<path d="M6 4h4v16H6zM14 4h4v16h-4z"/>' : '<path d="M7 4v16l13-8z"/>';
-			v("hint").hidden = !canPause;
+			v("hint").hidden = !canPause || camOpen;
+
+			// caméra (XL : à la place des températures et de l'AMS ; les commandes restent là)
+			var camOk = !!camSrc && state !== "offline" && size === "xl";
+			if (!camOk) camOpen = false;
+			v("camBtn").hidden = !camSrc || size !== "xl";
+			v("camBtn").disabled = !camOk;
+			v("camBtn").classList.toggle("on", camOpen);
+			stage.classList.toggle("cam-open", camOpen);
+			v("cam").hidden = !camOpen;
+			if (camOpen) frame();
+		}
+
+		function frame() {
+			var view = v("camView");
+			if (!real) {
+				var cv = view.querySelector("canvas") || view.appendChild(document.createElement("canvas"));
+				demoCamera(cv, st, lamp, camTick);
+				return;
+			}
+			var url = camSrc();
+			if (!url) return;
+			var img = view.querySelector("img");
+			if (!img) { img = document.createElement("img"); img.alt = ""; view.appendChild(img); }
+			// nouvelle image seulement quand la précédente est arrivée
+			if (!img.dataset.busy) { img.dataset.busy = "1"; img.onload = img.onerror = function () { delete img.dataset.busy; }; img.src = url + (url.indexOf("?") < 0 ? "?" : "&") + "t=" + Date.now(); }
+		}
+		function camera(open) {
+			camOpen = open; clearInterval(camTimer); camTimer = null;
+			if (open) camTimer = setInterval(function () { camTick++; if (camOpen) frame(); }, 1000);
+			render();
 		}
 
 		// boutons : sur l'Edge, une commande pour le compagnon ; dans la maquette, l'exemple change
@@ -268,6 +349,9 @@
 		}
 		v("pauseBtn").addEventListener("click", function () { if (st) command(st.state === "printing" ? "pause" : "resume"); });
 		v("lampBtn").addEventListener("click", function () { command("light"); });
+		v("camBtn").addEventListener("click", function () { camera(!camOpen); });
+		v("prog").addEventListener("click", function () { if (!v("camBtn").hidden && !v("camBtn").disabled) camera(!camOpen); });
+		v("cam").addEventListener("click", function () { camera(false); });
 		// stop : garder le doigt 2 s
 		var hold = null, t0 = 0;
 		function cancelHold() { if (hold) cancelAnimationFrame(hold); hold = null; v("ring").style.setProperty("--p", 0); }
@@ -285,7 +369,7 @@
 
 		// heure de fin : recalculée toutes les 30 s
 		var timer = null;
-		function animate(on) { clearInterval(timer); timer = on ? setInterval(render, 30000) : null; }
+		function animate(on) { clearInterval(timer); timer = on ? setInterval(render, 30000) : null; if (!on && camOpen) camera(false); }
 
 		function setSize(s) {
 			size = SLOTS[s] ? s : "xl";

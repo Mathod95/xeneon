@@ -83,6 +83,10 @@
       ],
       "site": [
         {
+          "fr": "Dot Bambu Lab : maquette, vue caméra proposée (bouton caméra ou toucher sur la progression, l'image remplace températures et AMS)",
+          "en": "Dot Bambu Lab: mockup, proposed camera view (camera button or tap on the progress, the picture replaces temperatures and AMS)"
+        },
+        {
           "fr": "Dot Glucose : maquette, glycémie en direct d'un capteur FreeStyle Libre (valeur et tendance en points, courbe des dernières heures, temps dans la cible), par LibreLinkUp",
           "en": "Dot Glucose: mockup, live glucose from a FreeStyle Libre sensor (value and trend in dots, graph of the last hours, time in range), through LibreLinkUp"
         },

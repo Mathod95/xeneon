@@ -64,6 +64,16 @@
 .dot-bambulab .ctl.lamp.on { border-color: var(--accent); color: var(--accent); }
 .dot-bambulab .ctl .ring { position: absolute; inset: -2px; border-radius: 50%; background: conic-gradient(var(--alert) calc(var(--p, 0) * 1turn), transparent 0); -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 6px), #000 calc(100% - 5px)); mask: radial-gradient(farthest-side, transparent calc(100% - 6px), #000 calc(100% - 5px)); pointer-events: none; }
 .dot-bambulab .ctl:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.dot-bambulab .ctl.on:not(.main) { border-color: var(--accent); color: var(--accent); }
+
+/* caméra : la dernière image, une par seconde ; un toucher la ferme */
+.dot-bambulab .w-prog, .dot-bambulab .w-cam { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.dot-bambulab.offline .w-prog { cursor: default; }
+.dot-bambulab .w-cam .view { position: relative; overflow: hidden; border-radius: 12px; background: #000; }
+.dot-bambulab .w-cam .view canvas, .dot-bambulab .w-cam .view img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.dot-bambulab .w-cam .cap { display: flex; justify-content: space-between; margin-top: 16px; }
+.dot-bambulab .w-cam .live span { display: inline-block; width: 10px; height: 10px; margin-right: 14px; border-radius: 50%; background: var(--accent); vertical-align: 2px; animation: dbl-pulse 1.6s ease-in-out infinite; }
+.dot-bambulab.cam-open .w-temps, .dot-bambulab.cam-open .w-ams { display: none; }
 .dot-bambulab .w-hint { font-size: 18px; line-height: 24px; letter-spacing: .14em; text-transform: uppercase; color: var(--label); opacity: .6; white-space: nowrap; }
 
 /* XL : progression, températures, AMS et commandes côte à côte */
@@ -75,6 +85,8 @@
 .dot-bambulab.xl .ctl { width: 112px; height: 112px; }
 .dot-bambulab.xl .ctl.main { width: 136px; height: 136px; }
 .dot-bambulab.xl .w-hint { left: 1600px; bottom: 104px; }
+.dot-bambulab.xl .w-cam { left: 1040px; top: 112px; width: 840px; }
+.dot-bambulab.xl .w-cam .view { width: 840px; height: 472px; }
 
 /* L : progression à gauche ; températures, AMS et commandes à droite */
 .dot-bambulab.l .w-prog { left: 56px; top: 112px; width: 760px; }
