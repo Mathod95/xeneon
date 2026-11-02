@@ -171,35 +171,35 @@
 	function demo() {
 		var areas = [{ id: "living", name: "Living room" }, { id: "kitchen", name: "Kitchen" }, { id: "bedroom", name: "Bedroom" }, { id: "office", name: "Office" }, { id: "entrance", name: "Entrance" }];
 		var E = [
-			{ id: "light.ceiling", type: "light", name: "Ceiling", area: "living", on: true, lvl: 0.8, color: true, white: true, mode: "color", rgb: "#ffb35c", kelvin: 2700 },
-			{ id: "light.desk", type: "light", name: "Desk light", area: "office", on: true, lvl: 0.65, color: true, white: true, mode: "color", rgb: "#ff6fd8", kelvin: 4000 },
-			{ id: "light.bed_lamp", type: "light", name: "Bed lamp", area: "bedroom", on: false, lvl: 0.3, color: true, white: true, mode: "white", rgb: "#ffb35c", kelvin: 2700 },
+			{ id: "light.ceiling", dev: "hue_ceiling", type: "light", name: "Ceiling", area: "living", on: true, lvl: 0.8, color: true, white: true, mode: "color", rgb: "#ffb35c", kelvin: 2700 },
+			{ id: "light.desk", dev: "desk_lamp", type: "light", name: "Desk light", area: "office", on: true, lvl: 0.65, color: true, white: true, mode: "color", rgb: "#ff6fd8", kelvin: 4000 },
+			{ id: "light.bed_lamp", dev: "bed_lamp", type: "light", name: "Bed lamp", area: "bedroom", on: false, lvl: 0.3, color: true, white: true, mode: "white", rgb: "#ffb35c", kelvin: 2700 },
 			{ id: "light.floor", type: "light", name: "Floor lamp", area: "living", on: false, lvl: 0.5, color: false, white: true, mode: "white", kelvin: 2700 },
 			{ id: "light.spots", type: "light", name: "Spots", area: "kitchen", on: true, lvl: 1, color: false, white: true, mode: "white", kelvin: 4000 },
 			{ id: "light.porch", type: "light", name: "Porch", area: "entrance", on: false, lvl: 1, color: false, white: false },
 			{ id: "light.living_room", type: "light", name: "Living room lights", area: "living", on: true, lvl: 0.8, color: true, white: true, mode: "color", rgb: "#ffb35c", kelvin: 2700, members: 2, membersOn: 1 },
-			{ id: "th:bedroom", type: "th", name: "Bedroom sensor", area: "bedroom", temp: 19.8, hum: 52 },
-			{ id: "th:sofa", type: "th", name: "Sofa sensor", area: "living", temp: 21.4, hum: 47 },
+			{ id: "th:bedroom", dev: "aqara_bedroom", type: "th", name: "Bedroom sensor", area: "bedroom", temp: 19.8, hum: 52 },
+			{ id: "th:sofa", dev: "aqara_sofa", type: "th", name: "Sofa sensor", area: "living", temp: 21.4, hum: 47 },
 			{ id: "automation.good_night", type: "auto", name: "Good night", on: true, last: "22:40" },
 			{ id: "automation.movie_mode", type: "auto", name: "Movie mode", on: true, last: "yesterday" },
 			{ id: "automation.leave_home", type: "auto", name: "Leave home", on: false, last: "08:12" },
-			{ id: "climate.living", type: "climate", name: "Thermostat", area: "living", cur: 21.4, target: 22, action: "heating", min: 7, max: 30, step: 0.5 },
-			{ id: "lock.front_door", type: "lock", name: "Front door", area: "entrance", on: true },
-			{ id: "cover.living_blinds", type: "cover", name: "Blinds", area: "living", lvl: 0.6 },
-			{ id: "cover.bedroom_blinds", type: "cover", name: "Blinds", area: "bedroom", lvl: 0 },
+			{ id: "climate.living", dev: "netatmo", type: "climate", name: "Thermostat", area: "living", cur: 21.4, target: 22, action: "heating", min: 7, max: 30, step: 0.5 },
+			{ id: "lock.front_door", dev: "nuki", type: "lock", name: "Front door", area: "entrance", on: true },
+			{ id: "cover.living_blinds", dev: "living_blinds", type: "cover", name: "Blinds", area: "living", lvl: 0.6 },
+			{ id: "cover.bedroom_blinds", dev: "bedroom_blinds", type: "cover", name: "Blinds", area: "bedroom", lvl: 0 },
 			{ id: "scene.movie_night", type: "scene", name: "Movie night", area: "living" },
-			{ id: "sensor.power", type: "power", name: "Power", area: "kitchen", value: 412, unit: "W" },
-			{ id: "switch.coffee", type: "plug", name: "Coffee machine", area: "kitchen", on: false },
-			{ id: "switch.tv", type: "plug", name: "TV", area: "living", on: true },
+			{ id: "sensor.power", dev: "coffee_plug", type: "power", name: "Power", area: "kitchen", value: 412, unit: "W" },
+			{ id: "switch.coffee", dev: "coffee_plug", type: "plug", name: "Coffee machine", area: "kitchen", on: false },
+			{ id: "switch.tv", dev: "tv", type: "plug", name: "TV", area: "living", on: true },
 			{ id: "switch.monitor", type: "plug", name: "Monitor", area: "office", on: true },
-			{ id: "sensor.co2", type: "sensor", name: "CO₂", area: "office", value: 640, unit: "ppm", dc: "carbon_dioxide" },
-			{ id: "sensor.bedroom_temperature", type: "sensor", name: "Bedroom temperature", area: "bedroom", value: 19.8, unit: "°C", dc: "temperature" },
-			{ id: "sensor.bedroom_humidity", type: "sensor", name: "Bedroom humidity", area: "bedroom", value: 52, unit: "%", dc: "humidity" },
-			{ id: "binary_sensor.front_door", type: "binary", name: "Front door contact", area: "entrance", on: false, dc: "door" },
-			{ id: "binary_sensor.hall_motion", type: "binary", name: "Hall motion", area: "entrance", on: true, dc: "motion" },
+			{ id: "sensor.co2", dev: "airthings", type: "sensor", name: "CO₂", area: "office", value: 640, unit: "ppm", dc: "carbon_dioxide" },
+			{ id: "sensor.bedroom_temperature", dev: "aqara_bedroom", type: "sensor", name: "Bedroom temperature", area: "bedroom", value: 19.8, unit: "°C", dc: "temperature" },
+			{ id: "sensor.bedroom_humidity", dev: "aqara_bedroom", type: "sensor", name: "Bedroom humidity", area: "bedroom", value: 52, unit: "%", dc: "humidity" },
+			{ id: "binary_sensor.front_door", dev: "nuki", type: "binary", name: "Front door contact", area: "entrance", on: false, dc: "door" },
+			{ id: "binary_sensor.hall_motion", dev: "hall_motion", type: "binary", name: "Hall motion", area: "entrance", on: true, dc: "motion" },
 			{ id: "person.alex", type: "state", name: "Alex", value: "home" },
 			{ id: "weather.home", type: "state", name: "Forecast", value: "partlycloudy" },
-			{ id: "media_player.living_tv", type: "state", name: "Living room TV", area: "living", value: "playing" },
+			{ id: "media_player.living_tv", dev: "tv", type: "state", name: "Living room TV", area: "living", value: "playing" },
 			{ id: "sensor.washing_machine", type: "state", name: "Washing machine", area: "kitchen", value: "running" }
 		];
 		var U = [
@@ -211,7 +211,9 @@
 			{ name: "Frigate", st: "err" }, { name: "Music Assistant", st: "stop" }, { name: "Mosquitto broker", st: "ok" }, { name: "Zigbee2MQTT", st: "ok" },
 			{ name: "Node-RED", st: "ok" }, { name: "ESPHome", st: "ok" }, { name: "Philips Hue", st: "ok" }, { name: "Spotify", st: "ok" }
 		];
-		return { state: "online", demo: true, areas: areas, entities: E, updates: U, services: S };
+		var DV = [["hue_ceiling", "Hue ceiling"], ["desk_lamp", "Desk lamp"], ["bed_lamp", "Bed lamp"], ["aqara_bedroom", "Bedroom sensor"], ["aqara_sofa", "Sofa sensor"], ["netatmo", "Netatmo thermostat"], ["nuki", "Nuki smart lock"], ["coffee_plug", "Coffee plug"], ["tv", "Living room TV"], ["airthings", "Airthings Wave"], ["living_blinds", "Living room blinds"], ["bedroom_blinds", "Bedroom blinds"], ["hall_motion", "Hall motion sensor"]];
+		var devices = DV.map(function (d) { return { id: d[0], name: d[1] }; });
+		return { state: "online", demo: true, areas: areas, devices: devices, entities: E, updates: U, services: S };
 	}
 
 	// un appel appliqué tout de suite à l'état (exemple, ou en attendant la réponse de Home Assistant)
@@ -502,7 +504,7 @@
 		function entities() { return (st && st.entities) || []; }
 		function catalog() {
 			var k = {};
-			entities().forEach(function (e) { k[e.id] = { e: e, name: e.name, kind: e.type === "th" ? KIND.th : domainName(e.id), area: e.area, sizes: SIZES[e.type] || [3] }; });
+			entities().forEach(function (e) { k[e.id] = { e: e, name: e.name, kind: e.type === "th" ? KIND.th : domainName(e.id), area: e.area, dev: e.dev || "", sizes: SIZES[e.type] || [3] }; });
 			if (st && st.updates) k["list:update"] = { list: "update", name: "Updates", kind: "List", sizes: SIZES.list };
 			if (st && st.services && st.services.length) k["list:services"] = { list: "services", name: "Services", kind: "List", sizes: SIZES.list };
 			return k;
@@ -630,21 +632,33 @@
 			// colonne 1 : l'entité
 			var c1 = el("div", "f-col f-ent"), search = el("input", "f-in");
 			c1.appendChild(el("p", "f-lbl", "Entity"));
-			search.type = "text"; search.placeholder = "Search name, room or entity id"; search.value = form.q; search.spellcheck = false;
+			search.type = "text"; search.placeholder = "Search name, device, room or entity id"; search.value = form.q; search.spellcheck = false;
 			c1.appendChild(search);
 			var list = el("div", "f-list"); c1.appendChild(list); body.appendChild(c1);
 			var c2 = el("div", "f-col f-card"), c3 = el("div", "f-col f-show"), c4 = el("div", "f-col f-prev");
 			body.appendChild(c2); body.appendChild(c3); body.appendChild(c4);
 
 			var used = layout().map(function (it) { return it.key; });
+			// la liste, rangée par appareil (ceux qui ont une entité dans l'onglet d'abord), puis les entités sans appareil
+			// et les listes ; la recherche porte aussi sur le nom de l'appareil
+			var devName = {};
+			((st && st.devices) || []).forEach(function (d) { devName[d.id] = d.name; });
 			function rows() {
 				list.innerHTML = "";
 				var q = form.q.toLowerCase().trim(), keys = Object.keys(cat).filter(function (key) {
 					if (!q) return true;
 					var it = cat[key];
-					return (it.name + " " + key + " " + it.kind + " " + areaName(st, it.area)).toLowerCase().indexOf(q) >= 0;
+					return (it.name + " " + key + " " + it.kind + " " + areaName(st, it.area) + " " + (devName[it.dev] || "")).toLowerCase().indexOf(q) >= 0;
 				});
-				var here = keys.filter(function (key) { return tab !== "fav" && cat[key].area === tab; }), rest = keys.filter(function (key) { return here.indexOf(key) < 0; });
+				var groups = {}, order = [];
+				keys.forEach(function (key) {
+					var it = cat[key], g = it.list ? "~lists" : it.dev && devName[it.dev] ? it.dev : "~other";
+					if (!groups[g]) { groups[g] = []; order.push(g); }
+					groups[g].push(key);
+				});
+				var inTab = function (g) { return tab !== "fav" && groups[g].some(function (key) { return cat[key].area === tab; }) ? 0 : 1; };
+				var rank = function (g) { return g === "~lists" ? 3 : g === "~other" ? 2 : inTab(g); };
+				order.sort(function (a, b) { return rank(a) - rank(b) || String(devName[a] || "").toLowerCase().localeCompare(String(devName[b] || "").toLowerCase()); });
 				function row(key) {
 					var it = cat[key], r = el("button", "f-row" + (key === form.key ? " on" : "")), who = el("span", "f-who");
 					r.type = "button";
@@ -660,8 +674,14 @@
 					});
 					list.appendChild(r);
 				}
-				if (here.length) { list.appendChild(el("p", "pk-sep", areaName(st, tab))); here.forEach(row); if (rest.length) list.appendChild(el("p", "pk-sep", "Everything else")); }
-				rest.forEach(row);
+				order.forEach(function (g) {
+					var ks = groups[g].sort(function (a, b) { return (cat[a].e && cat[a].e.type === "th" ? 0 : 1) - (cat[b].e && cat[b].e.type === "th" ? 0 : 1) || cat[a].name.toLowerCase().localeCompare(cat[b].name.toLowerCase()); });
+					var sep = el("p", "pk-sep f-dev", g === "~lists" ? "Lists" : g === "~other" ? "Without device" : devName[g]);
+					var room = g.charAt(0) !== "~" && areaName(st, cat[ks[0]].area);
+					if (room) sep.appendChild(el("span", "", " · " + room));
+					list.appendChild(sep);
+					ks.forEach(row);
+				});
 				if (!keys.length) list.appendChild(el("p", "pk-none", "No entity found"));
 			}
 			search.addEventListener("input", function () { form.q = search.value; rows(); });

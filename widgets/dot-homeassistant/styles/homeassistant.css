@@ -96,7 +96,11 @@
 .dha-stage .f-in:focus { border-color: var(--accent); }
 .dha-stage .f-in::placeholder { color: #4a4a4a; }
 .dha-stage .f-list { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 4px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: #2a2a2a transparent; }
-.dha-stage .f-list .pk-sep { margin: 8px 0 2px; }
+.dha-stage .f-list .pk-sep { flex: none; margin: 8px 0 2px; }
+/* nom de l'appareil en titre de section, sa pièce à côté ; ses entités dessous, en retrait */
+.dha-stage .f-list .f-dev { margin-top: 14px; color: var(--lit); opacity: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dha-stage .f-list .f-dev span { color: var(--label); opacity: .6; }
+.dha-stage .f-list .f-row { margin-left: 14px; }
 .dha-stage .f-row { flex: none; display: flex; align-items: center; gap: 18px; padding: 8px 14px; border: 2px solid transparent; border-radius: 12px; background: transparent; color: inherit; text-align: left; cursor: pointer; }
 .dha-stage .f-row:hover { background: #0d0d0d; }
 .dha-stage .f-row.on { border-color: var(--accent); background: #0d0d0d; }

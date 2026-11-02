@@ -2,7 +2,7 @@
 //!
 //! - adresse (`http://homeassistant.local:8123`) et jeton d'accès longue durée (profil Home Assistant → Sécurité),
 //!   le jeton chiffré dans la configuration du compagnon, jamais envoyé au module ;
-//! - `GET /api/states` toutes les 2 s ; pièces et appareils (pour réunir température et humidité d'un même capteur)
+//! - `GET /api/states` toutes les 2 s ; pièces et appareils (liste rangée par appareil, température et humidité d'un même capteur réunies)
 //!   par `POST /api/template` et intégrations par `GET /api/config/config_entries/entry`, toutes les 60 s ;
 //! - les commandes passent par `POST /api/services/<domaine>/<service>`, limitées à une liste (voir `allowed`) ;
 //! - les requêtes passent par curl (fourni avec Windows), le jeton par l'entrée standard, jamais sur la ligne de commande ;
@@ -91,14 +91,15 @@ fn home(t: &Target) -> Shared {
     h
 }
 
-/// Pièces de Home Assistant et capteurs de température / humidité avec leur appareil, en une requête de modèle.
-const TEMPLATE: &str = "{%- set ns = namespace(a=[], d=[]) -%}\
+/// Pièces de Home Assistant, et appareil de chaque entité ([entity_id, device_id, nom de l'appareil]), en une requête
+/// de modèle. La liste des appareils est écrite élément par élément (une concaténation de listes Jinja serait lente
+/// avec des milliers d'entités) et finit par `null`.
+const TEMPLATE: &str = "{%- set ns = namespace(a=[]) -%}\
 {%- for a in areas() -%}{%- set ns.a = ns.a + [{'id': a, 'name': area_name(a), 'e': area_entities(a)}] -%}{%- endfor -%}\
-{%- for s in states.sensor -%}{%- if s.attributes.device_class in ['temperature', 'humidity'] -%}\
-{%- set d = device_id(s.entity_id) -%}{%- if d -%}\
-{%- set ns.d = ns.d + [[s.entity_id, d, device_attr(d, 'name_by_user') or device_attr(d, 'name') or '']] -%}\
-{%- endif -%}{%- endif -%}{%- endfor -%}\
-{{ {'areas': ns.a, 'dev': ns.d} | tojson }}";
+{\"areas\": {{ ns.a | tojson }}, \"dev\": [\
+{%- for s in states -%}{%- set d = device_id(s.entity_id) -%}{%- if d -%}\
+{{ [s.entity_id, d, device_attr(d, 'name_by_user') or device_attr(d, 'name') or ''] | tojson }},\
+{%- endif -%}{%- endfor -%}null]}";
 
 /// Le fil d'un Home Assistant : états toutes les 2 s, pièces et intégrations toutes les 60 s.
 fn run(base: &str, token: &str, h: Shared) {
@@ -260,6 +261,14 @@ pub fn build(states: &[Value], areas: &[Value], devices: &[Value], entries: &[Va
     }
     let area = |id: &str| area_of.get(id).cloned().unwrap_or_default();
 
+    // appareil de chaque entité : (id, nom) ; la liste du formulaire d'une carte est rangée par appareil
+    let mut dev_of: HashMap<&str, (&str, &str)> = HashMap::new();
+    for d in devices {
+        if let (Some(eid), Some(dev)) = (d[0].as_str(), d[1].as_str()) {
+            dev_of.insert(eid, (dev, d[2].as_str().unwrap_or("")));
+        }
+    }
+
     // capteurs de température et d'humidité d'un même appareil : une seule carte
     let mut th: Vec<(String, String, Option<String>, Option<String>)> = vec![]; // (appareil, nom, température, humidité)
     for d in devices {
@@ -286,7 +295,7 @@ pub fn build(states: &[Value], areas: &[Value], devices: &[Value], entries: &[Va
         let num = |id: &Option<String>| id.as_ref().and_then(|i| by_id.get(i.as_str())).and_then(|s| s["state"].as_str()).and_then(|x| x.parse::<f64>().ok());
         let ts = by_id[t.as_str()];
         let name = if dname.is_empty() { name_of(ts) } else { dname.clone() };
-        out.push(json!({ "id": format!("th:{dev}"), "type": "th", "name": name, "area": area(t), "temp": num(&Some(t.clone())).map(round1), "hum": num(hm).map(f64::round), "tempUnit": attr(ts, "unit_of_measurement").and_then(Value::as_str).unwrap_or("°C") }));
+        out.push(json!({ "id": format!("th:{dev}"), "type": "th", "dev": dev, "name": name, "area": area(t), "temp": num(&Some(t.clone())).map(round1), "hum": num(hm).map(f64::round), "tempUnit": attr(ts, "unit_of_measurement").and_then(Value::as_str).unwrap_or("°C") }));
     }
 
     let mut updates = vec![];
@@ -296,6 +305,9 @@ pub fn build(states: &[Value], areas: &[Value], devices: &[Value], entries: &[Va
         let (domain, _) = id.split_once('.').unwrap_or(("", ""));
         let na = st == "unavailable" || st == "unknown";
         let mut e = json!({ "id": id, "name": name_of(s), "area": area(id) });
+        if let Some((dev, _)) = dev_of.get(id) {
+            e["dev"] = json!(dev);
+        }
         if na {
             e["na"] = json!(true);
         }
@@ -409,7 +421,19 @@ pub fn build(states: &[Value], areas: &[Value], devices: &[Value], entries: &[Va
         _ => 2,
     });
 
-    json!({ "state": "online", "areas": area_list, "entities": out, "updates": updates, "services": services })
+    // appareils qui ont au moins une entité
+    let mut dev_list: Vec<Value> = vec![];
+    for e in &out {
+        let Some(dev) = e["dev"].as_str() else { continue };
+        if dev_list.iter().any(|d| d["id"] == dev) {
+            continue;
+        }
+        let name = dev_of.values().find(|x| x.0 == dev).map(|x| x.1).filter(|n| !n.is_empty()).unwrap_or(dev);
+        dev_list.push(json!({ "id": dev, "name": name }));
+    }
+    dev_list.sort_by(|a, b| a["name"].as_str().unwrap_or("").to_lowercase().cmp(&b["name"].as_str().unwrap_or("").to_lowercase()));
+
+    json!({ "state": "online", "areas": area_list, "devices": dev_list, "entities": out, "updates": updates, "services": services })
 }
 
 // ---------------------------------------------------------------- commandes
@@ -490,7 +514,7 @@ mod tests {
             s("zone.home", "0", json!({ "friendly_name": "Home" })),
         ];
         let areas = vec![json!({ "id": "living", "name": "Living room", "e": ["light.ceiling", "climate.living"] })];
-        let devices = vec![json!(["sensor.bed_t", "dev1", "Bedroom sensor"]), json!(["sensor.bed_h", "dev1", "Bedroom sensor"])];
+        let devices = vec![json!(["sensor.bed_t", "dev1", "Bedroom sensor"]), json!(["sensor.bed_h", "dev1", "Bedroom sensor"]), json!(["light.ceiling", "dev2", "Hue ceiling"]), Value::Null];
         let entries = vec![json!({ "title": "Hue", "state": "loaded", "disabled_by": null }), json!({ "title": "Frigate", "state": "setup_error", "disabled_by": null }), json!({ "title": "Old", "state": "loaded", "disabled_by": "user" })];
         let v = build(&states, &areas, &devices, &entries);
         let e = |id: &str| v["entities"].as_array().unwrap().iter().find(|x| x["id"] == id).cloned().unwrap_or(Value::Null);
@@ -510,6 +534,9 @@ mod tests {
         assert_eq!(e("binary_sensor.door")["dc"], json!("door"));
         assert_eq!(e("person.alex")["value"], json!("home"));
         assert!(e("zone.home").is_null());
+        assert_eq!(e("light.ceiling")["dev"], json!("dev2"));
+        assert_eq!(e("th:dev1")["dev"], json!("dev1"));
+        assert_eq!(v["devices"], json!([{ "id": "dev1", "name": "Bedroom sensor" }, { "id": "dev2", "name": "Hue ceiling" }]));
         assert_eq!(e("climate.living")["cur"], json!(21.4));
         assert_eq!(e("lock.front")["on"], json!(true));
         assert_eq!(e("switch.tv")["na"], json!(true));
