@@ -83,6 +83,10 @@
       ],
       "site": [
         {
+          "fr": "Dot Home Assistant : maquette, écran en grille (6 × 6 en XL, cartes petite, moyenne et haute) rempli avec mises à jour et services",
+          "en": "Dot Home Assistant: mockup, screen as a grid (6 × 6 in XL, small, medium and tall cards) filled with updates and services"
+        },
+        {
           "fr": "Dot Bambu Lab : maquette, vue caméra proposée (bouton caméra ou toucher sur la progression, l'image remplace températures et AMS) et Roadmap",
           "en": "Dot Bambu Lab: mockup, proposed camera view (camera button or tap on the progress, the picture replaces temperatures and AMS) and roadmap"
         },

@@ -63,10 +63,13 @@ h2 { font-family: var(--mono); font-weight: 500; font-size: 13px; letter-spacing
 .cbox canvas { display: block; }
 .cbox button { font-family: inherit; -webkit-tap-highlight-color: transparent; }
 .cbox .in > .tile { width: 100%; height: 100%; }
-/* maquette : une colonne par type de carte (3 lumières empilées, 2 capteurs empilés) */
-.stage .ccol { grid-row: 1 / -1; display: flex; flex-direction: column; gap: 20px; min-width: 0; }
-.stage .ccol .cbox { width: 100%; flex: none; }
-.stage .ccol .cbox .in { position: static; width: 100%; }
+/* grille de placement (XL : 6 colonnes × 6 rangées de 67 px, 20 px d'écart) : une lumière prend 2 rangées (153 px),
+   une carte 3 (240 px), une liste 6 (500 px) ; chaque carte a sa colonne et sa rangée */
+.stage .grid.cells { grid-template-rows: repeat(6, minmax(0, 1fr)); }
+.stage .grid.cells > .cbox { min-width: 0; min-height: 0; }
+.stage .grid.cells > .cbox > .in { position: static; width: 100%; height: 100%; }
+.stage .guide { display: grid; gap: 20px; pointer-events: none; }
+.stage .guide i { border: 2px dashed #262626; border-radius: 18px; }
 /* nouvelles cartes (lumière, capteur) : même cadre que les tuiles */
 .cbox .in.card { padding: 22px 24px; display: flex; flex-direction: column; justify-content: space-between; border: 2px solid #1d1d1d; border-radius: 18px; cursor: pointer; user-select: none; touch-action: none; }
 .cbox .in.card.ro { cursor: default; }
@@ -190,11 +193,13 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
 /* XL : 6 × 2 tuiles */
 .stage.xl .tabs { left: 56px; top: 100px; width: 2424px; }
 .stage.xl .grid { left: 56px; top: 148px; width: 2424px; height: 500px; grid-template-columns: repeat(6, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(0, 1fr)); }
+.stage.xl .guide { left: 56px; top: 148px; width: 2424px; height: 500px; grid-template-columns: repeat(6, minmax(0, 1fr)); grid-template-rows: repeat(6, minmax(0, 1fr)); }
 .stage.xl .w-empty { left: 56px; top: 100px; width: 2424px; height: 548px; }
 
 /* L : 4 × 2 tuiles */
 .stage.l .tabs { left: 56px; top: 100px; width: 1576px; }
 .stage.l .grid { left: 56px; top: 148px; width: 1576px; height: 500px; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(0, 1fr)); }
+.stage.l .guide { left: 56px; top: 148px; width: 1576px; height: 500px; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-template-rows: repeat(6, minmax(0, 1fr)); }
 .stage.l .w-empty { left: 56px; top: 100px; width: 1576px; height: 548px; }
 
 /* M : 2 × 3 tuiles en ligne (pictogramme à gauche) */
@@ -259,6 +264,7 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
           <p class="w-lbl w-name" data-hub-home>DOT HOME ASSISTANT</p>
           <p class="w-lbl w-state" id="state">HOME · 6 ON</p>
           <div class="tabs" role="tablist" aria-label="Pièces" id="tabs"></div>
+          <div class="guide" id="guide" hidden></div>
           <div class="grid" id="grid"></div>
           <div class="w-empty" id="empty" hidden><p class="big">Home Assistant offline</p><p class="sm">Check URL and token in Dot Companion</p></div>
         </div>
@@ -271,6 +277,7 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
         <label><input type="radio" name="sample" value="offline"> Offline</label>
       </div>
       <label><input type="checkbox" id="showTabs" checked> Show rooms</label>
+      <label><input type="checkbox" id="showGrid"> Grille</label>
       <label><input type="checkbox" id="showUnlit" checked> Show unlit dots</label>
       <label>Accent color <input type="color" id="accentColor" value="#10b981"></label>
       <label>Lit dot color <input type="color" id="litColor" value="#f2f0e9"></label>
@@ -331,11 +338,13 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
           <tr class="todo"><td>7</td><td>Couleurs</td><td>Couleurs communes de la carte « Paramètres globaux » de Dot Companion. Bleu Home Assistant <code>#18BCF2</code> proposé comme accent.</td></tr>
           <tr class="todo"><td>8</td><td>Hors ligne</td><td>« HOME ASSISTANT OFFLINE » et « CHECK URL AND TOKEN IN DOT COMPANION », point du libellé en rouge. Jamais d'état inventé.</td></tr>
           <tr class="todo"><td>9</td><td>Plus de tuiles que de places</td><td>Les premières de la pièce s'affichent ; à étudier : pages avec des points de page en bas à droite.</td></tr>
-          <tr class="todo"><td>10</td><td>Tailles</td><td><b>XL</b> : pièces en onglets, 6 × 2 tuiles.<br><b>L</b> : pièces en onglets, 4 × 2 tuiles.<br><b>M</b> : pièces en onglets, 2 × 3 tuiles en ligne (pictogramme à gauche).<br><b>S</b> : 4 tuiles favorites, sans libellés ni onglets.</td></tr>
+          <tr class="todo"><td>10</td><td>Tailles</td><td><b>XL</b> : pièces en onglets, grille de 6 colonnes × 6 rangées (point 15).<br><b>L</b> : pièces en onglets, grille de 4 colonnes × 6 rangées.<br><b>M</b> : pièces en onglets, 2 × 3 tuiles en ligne (pictogramme à gauche).<br><b>S</b> : 4 tuiles favorites, sans libellés ni onglets.</td></tr>
           <tr class="todo"><td>11</td><td>Groupes de lumières</td><td>Une carte comme celle d'une lumière, pour plusieurs lumières : nom du groupe, « 1 / 2 ON » sous le nom, barre = intensité moyenne. Un toucher allume ou éteint tout le groupe, la barre et les deux boutons règlent toutes les lumières. Groupes de Home Assistant (entité <code>light</code> qui contient d'autres lumières), ou groupes faits dans les réglages du compagnon.</td></tr>
           <tr class="todo"><td>12</td><td>Automatisations</td><td>Entités <code>automation.*</code> : un toucher la lance (<code>automation.trigger</code>), « RUNNING… » en accent puis l'heure du dernier lancement (<code>last_triggered</code>). Une automatisation désactivée est grisée. Les scripts (<code>script.*</code>) et les scènes pourront utiliser la même carte.</td></tr>
           <tr class="todo"><td>13</td><td>Mises à jour</td><td>Entités <code>update.*</code> : Home Assistant Core, OS, modules complémentaires, HACS, firmwares des appareils. Une ligne par mise à jour : nom, version disponible. Garder le doigt 1 s sur une ligne l'installe (<code>update.install</code>), la barre se remplit pendant l'appui. Rien à installer : « UP TO DATE ».</td></tr>
           <tr class="todo"><td>14</td><td>Services</td><td>Modules complémentaires (API Supervisor : démarré, arrêté) et intégrations (<code>config_entries</code> : chargée, erreur). Point en accent = en marche, rouge = erreur, gris = arrêté. Les modules complémentaires n'existent qu'avec Home Assistant OS ou Supervised.</td></tr>
+          <tr class="todo"><td>15</td><td>Grille</td><td>L'écran est une grille : en XL, 6 colonnes de 387 px et 6 rangées de 67 px, 20 px d'écart (case « Grille » des réglages simulés pour la voir). Trois tailles de carte, qui tombent juste sur les rangées : <b>petite</b> 1 × 2 (153 px : lumière, groupe de lumières), <b>moyenne</b> 1 × 3 (240 px : capteur, automatisation, thermostat, serrure, autres entités), <b>haute</b> 1 × 6 (500 px : mises à jour, services). Une colonne se remplit avec 3 petites, 2 moyennes ou 1 haute. Plus tard, une carte large (2 × 3) pour une courbe ou une caméra.</td></tr>
+          <tr class="todo"><td>16</td><td>Placement</td><td>Dans la page de réglages du compagnon, l'écran en direct avec la grille : « + » sur une case libre pour choisir l'entité et la taille de sa carte, glisser une carte pour la déplacer, la retirer. Les places (colonne, rangée, taille) sont gardées dans la configuration de la page Dot Hub ; l'Edge ne fait que les afficher. Chaque onglet (pièce ou Favorites) a sa propre disposition ; sans disposition, les cartes se rangent d'elles-mêmes, une colonne après l'autre. Dans la maquette, Favorites montre une disposition complète : 3 lumières, 2 capteurs, 2 automatisations, thermostat et serrure, mises à jour, services.</td></tr>
         </tbody>
       </table>
     </div>
@@ -777,20 +786,36 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
     if (offline) { drawCards(c); return; }
     grid.style.top = showTabs ? "" : (size === "s" ? "24px" : "100px");
     grid.style.height = showTabs ? "" : (size === "s" ? "296px" : "548px");
-    // maquette : une colonne de lumières (3 empilées) et une colonne de capteurs (2 empilés), en XL et L
+    // XL et L : les cartes posées dans la grille (6 rangées ; 6 colonnes en XL, 4 en L), une colonne après l'autre.
+    // Favorites : lumières, capteurs, automatisations, autres entités, puis mises à jour et services en pleine hauteur.
+    // Plus tard, l'utilisateur choisira lui-même la carte, sa taille et sa place dans les réglages du compagnon.
+    var guide = v("guide"); guide.innerHTML = ""; guide.hidden = true;
+    grid.classList.toggle("cells", size === "xl" || size === "l");
     if (size === "xl" || size === "l") {
+      var COLS = size === "xl" ? 6 : 4, ROWS = 6;
       var inRoom = function (x) { return room === "fav" ? x.fav : x.room === room; };
-      var colL = el("div", "ccol"), colS = el("div", "ccol");
-      E.filter(function (e) { return e.type === "light" && inRoom(e); }).slice(0, 3).forEach(function (e) {
-        var b = el("div", "cbox"), inn = el("div", "in"); b.style.height = inn.style.height = LIGHT_H + "px";
-        b.appendChild(inn); colL.appendChild(b); colorsOn(inn, c); lightCard(inn, e, c);
+      var cards = [];
+      E.filter(function (e) { return e.type === "light" && inRoom(e); }).slice(0, 3).forEach(function (e) { cards.push({ h: 2, draw: function (inn) { lightCard(inn, e, c); } }); });
+      SENSORS.filter(inRoom).slice(0, 2).forEach(function (d) { cards.push({ h: 3, draw: function (inn) { sensorCard(inn, d, c); } }); });
+      if (room === "fav") AUTOS.slice(0, 2).forEach(function (a) { cards.push({ h: 3, draw: function (inn) { autoCard(inn, a, c); } }); });
+      E.filter(function (e) { return e.type !== "light" && !(e.type === "sensor" && e.unit === "°") && inRoom(e); })
+        .slice(0, room === "fav" ? 2 : 12).forEach(function (e) { cards.push({ h: 3, draw: function (inn) { otherCard(inn, e, c); } }); });
+      if (room === "fav") ["update", "services"].forEach(function (k) { cards.push({ h: 6, draw: function (inn) { listCard(inn, k, c); } }); });
+      // une colonne après l'autre : une carte qui ne tient plus dans la colonne passe à la suivante
+      var col = 1, row = 1;
+      cards.forEach(function (k) {
+        if (row + k.h - 1 > ROWS) { col++; row = 1; }
+        if (col > COLS) return;
+        var b = el("div", "cbox"), inn = el("div", "in");
+        b.style.gridColumn = col; b.style.gridRow = row + " / span " + k.h;
+        b.appendChild(inn); grid.appendChild(b); colorsOn(inn, c); k.draw(inn);
+        row += k.h;
       });
-      SENSORS.filter(inRoom).slice(0, 2).forEach(function (d) {
-        var b = el("div", "cbox"), inn = el("div", "in"); b.style.height = inn.style.height = CARD_H + "px";
-        b.appendChild(inn); colS.appendChild(b); colorsOn(inn, c); sensorCard(inn, d, c);
-      });
-      if (colL.children.length) grid.appendChild(colL);
-      if (colS.children.length) grid.appendChild(colS);
+      if (v("showGrid").checked) {
+        guide.hidden = false;
+        guide.style.top = grid.style.top; guide.style.height = grid.style.height;
+        for (var gi = 0; gi < COLS * ROWS; gi++) guide.appendChild(el("i"));
+      }
     }
     drawCards(c);
   }
