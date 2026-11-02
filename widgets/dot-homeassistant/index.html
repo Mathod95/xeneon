@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Dot Home Assistant</title>
+
+		<meta name="x-icue-property" content="haUrl" data-label="'Home Assistant URL (e.g. http://homeassistant.local:8123)'" data-type="textfield" data-default="''" />
+		<meta name="x-icue-property" content="haToken" data-label="'Long-lived access token (kept encrypted on this PC)'" data-type="textfield" data-default="''" />
+		<meta name="x-icue-property" content="showRooms" data-label="'Show rooms'" data-type="switch" data-default="true" />
+		<meta name="x-icue-property" content="showUnlitDots" data-label="'Show unlit dots'" data-type="switch" data-default="true" />
+		<meta name="x-icue-property" content="haLayout" data-label="'Card layout'" data-type="textfield" data-default="''" data-hidden="true" />
+
+		<meta name="x-icue-property" content="dotAccentColor" data-label="'Accent color'" data-type="color" data-default="'#10B981'" />
+		<meta name="x-icue-property" content="litDotColor" data-label="'Lit dot color'" data-type="color" data-default="'#F2F0E9'" />
+		<meta name="x-icue-property" content="unlitDotColor" data-label="'Unlit dot color'" data-type="color" data-default="'#1C1C1C'" />
+		<meta name="x-icue-property" content="labelColor" data-label="'Label color'" data-type="color" data-default="'#B8B6B0'" />
+
+		<link rel="stylesheet" href="styles/homeassistant.css" />
+		<link rel="stylesheet" href="styles/main.css" />
+	</head>
+	<body>
+		<div id="stage"></div>
+		<script src="scripts/sizes.js"></script>
+		<script src="scripts/homeassistant.js"></script>
+		<script src="scripts/widget.js"></script>
+	</body>
+</html>

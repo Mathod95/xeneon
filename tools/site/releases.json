@@ -5,15 +5,16 @@
       "version": "next",
       "date": "2026-10-30",
       "title": {
-        "fr": "Pages et Dot Bambu Lab",
-        "en": "Pages and Dot Bambu Lab"
+        "fr": "Pages, Dot Bambu Lab et Dot Home Assistant",
+        "en": "Pages, Dot Bambu Lab and Dot Home Assistant"
       },
       "components": [
         "Dot Hub 0.4.0",
         "Dot Companion 0.5.0",
         "Dot Clock 0.1.3",
         "Dot Steam 0.2.0",
-        "Dot Bambu Lab 0.1.0"
+        "Dot Bambu Lab 0.1.0",
+        "Dot Home Assistant 0.1.0"
       ],
       "new": [
         {
@@ -39,6 +40,10 @@
         {
           "fr": "Dot Bambu Lab : module codé (XL), l'imprimante 3D en réseau local (MQTT sur TLS) : progression, températures, AMS (couleur et nom du filament, reste, humidité), erreurs, lampe, pause, reprise et arrêt ; adresse IP, numéro de série et code d'accès (chiffré) dans la page de réglages du compagnon",
           "en": "Dot Bambu Lab: module coded (XL), your 3D printer on the local network (MQTT over TLS): progress, temperatures, AMS (filament color and name, remaining, humidity), errors, light, pause, resume and stop; IP address, serial number and access code (encrypted) in the companion settings page"
+        },
+        {
+          "fr": "Dot Home Assistant : module codé (XL), la maison par l'API de Home Assistant (adresse et jeton chiffré dans la page de réglages du compagnon) : lumières (intensité, couleur, blanc), groupes, température et humidité, thermostat, volets, serrure (garder le doigt 1 s), interrupteurs, scènes, automatisations, mises à jour à installer, état des intégrations ; un onglet par pièce, cartes posées sur une grille qu'on arrange dans l'aperçu de la page de réglages",
+          "en": "Dot Home Assistant: module coded (XL), your home through the Home Assistant API (URL and encrypted token in the companion settings page): lights (brightness, color, white), groups, temperature and humidity, thermostat, covers, lock (hold 1 s), switches, scenes, automations, updates to install, integration status; one tab per room, cards placed on a grid you arrange in the settings page preview"
         },
         {
           "fr": "Dot Steam : réglage Cover render, quatre rendus des jaquettes (Dots, Solid dots, Fine dots, image derrière une grille de points à l'opacité réglable)",

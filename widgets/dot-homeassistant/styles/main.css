@@ -1,0 +1,4 @@
+/* Dot Home Assistant : page du module. Le rendu et ses styles sont dans homeassistant.js et homeassistant.css. */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 100%; height: 100%; overflow: hidden; background: #080808; user-select: none; }
+#stage { position: absolute; left: 0; top: 0; transform-origin: 0 0; }

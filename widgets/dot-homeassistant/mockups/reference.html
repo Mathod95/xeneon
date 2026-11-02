@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<!-- Maquette de référence du Dot Home Assistant (artefact de revue de design). Ouvrir dans un navigateur. -->
+<!-- Maquette de référence du Dot Home Assistant. Elle charge le rendu du module (styles/homeassistant.css, scripts/homeassistant.js) : la base pointe sur le dossier du module. -->
+<base href="../">
 <style>body { margin: 0; }</style>
 </head>
 <body>
@@ -12,6 +13,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap">
+<link rel="stylesheet" href="styles/homeassistant.css">
+<script src="scripts/homeassistant.js"></script>
 <style>
 /* Layout : maquette de référence en taille réelle (choix S, M, L, XL) avec ses réglages, puis tableau des choix. Même univers que Dot Clock, un seul thème sombre. */
 :root {
@@ -53,93 +56,12 @@ figcaption { color: var(--muted); font-size: 14px; }
 .diff-head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; }
 h2 { font-family: var(--mono); font-weight: 500; font-size: 13px; letter-spacing: .2em; text-transform: uppercase; color: #b8b6b0; margin: 0; }  /* titres de section comme sur le site */
 .hint { color: var(--muted); font-size: 14px; margin: 0; }
-/* section Cartes : les cartes à la même échelle que la maquette (pixels de l'XL × largeur du cadre / 2536) */
+/* section Cartes : chaque carte du rendu du module (DotHomeAssistant.card), à la même échelle que l'écran */
 .cgroup { display: grid; gap: 10px; }
-.cgrid { display: grid; gap: calc(20px * var(--k, .5)); justify-content: start; }
-.cgrid.c3, .cgrid.c2 { grid-template-columns: repeat(auto-fill, calc(387px * var(--k, .5))); }
+.cgrid { display: flex; flex-wrap: wrap; gap: calc(20px * var(--k, .5)); }
 .cbox { position: relative; }
-.cbox .in { position: absolute; left: 0; top: 0; width: 387px; height: 240px; transform-origin: 0 0; font-family: "Fira Code", Consolas, monospace; font-variant-ligatures: none; color: var(--lit); --accent: #10b981; --lit: #f2f0e9; --label: #b8b6b0; --unlit: #1c1c1c; --c-lit: var(--lit); --c-label: var(--label); --c-accent: var(--accent); }
-.cbox p { margin: 0; }
-.cbox canvas { display: block; }
-.cbox button { font-family: inherit; -webkit-tap-highlight-color: transparent; }
-.cbox .in > .tile { width: 100%; height: 100%; }
-/* grille de placement (XL : 6 colonnes × 6 rangées de 67 px, 20 px d'écart) : une lumière prend 2 rangées (153 px),
-   une carte 3 (240 px), une liste 6 (500 px) ; chaque carte a sa colonne et sa rangée */
-.stage .grid.cells { grid-template-rows: repeat(6, minmax(0, 1fr)); }
-.stage .grid.cells > .cbox { position: relative; min-width: 0; min-height: 0; }
+.cbox > .dot-homeassistant { position: absolute; left: 0; top: 0; transform-origin: 0 0; transform: scale(var(--k, .5)); }
 td .ok { color: #10b981; font-size: 13px; white-space: nowrap; }
-.stage .grid.cells > .cbox > .in { position: static; width: 100%; height: 100%; }
-.stage .guide { display: grid; gap: 20px; pointer-events: none; }
-.stage .guide i { position: relative; border: 2px dashed #262626; border-radius: 18px; }
-/* édition (simule la page de réglages du compagnon) : glisser une carte, S / M / L, ×, « + » sur une case libre */
-.stage.editing .guide { pointer-events: auto; z-index: 0; }
-.stage.editing .grid { z-index: 1; pointer-events: none; }
-.stage.editing .grid > .cbox { pointer-events: auto; position: relative; }
-.stage.editing .grid .in { pointer-events: none; opacity: .55; }
-.stage .guide .add { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; border-radius: 16px; background: transparent; color: #3a3a3a; font-size: 34px; line-height: 1; cursor: pointer; }
-.stage .guide .add:hover, .stage .guide .add:active { color: var(--accent); background: #0d0d0d; }
-.stage .ed { position: absolute; inset: 0; border: 2px dashed var(--accent); border-radius: 18px; cursor: grab; touch-action: none; }
-.stage .cbox.drag { z-index: 5; }
-.stage .cbox.drag .ed { cursor: grabbing; background: rgba(16, 185, 129, .06); }
-.stage .cbox.bad .ed { border-color: #ed403b; }
-.stage .ed button { position: absolute; width: 60px; height: 60px; border-radius: 50%; border: 2px solid #2a2a2a; background: #080808; color: var(--lit); font-size: 22px; letter-spacing: .1em; cursor: pointer; }
-.stage .ed .ed-x { top: 8px; right: 8px; font-size: 30px; }
-.stage .ed .ed-sz { bottom: 8px; right: 8px; color: var(--accent); border-color: var(--accent); }
-.stage .ed [hidden] { display: none; }
-.stage .picker { left: 56px; top: 148px; width: 2424px; height: 500px; z-index: 6; display: flex; flex-direction: column; gap: 20px; padding: 24px 28px; box-sizing: border-box; border: 2px solid var(--accent); border-radius: 18px; background: #080808; }
-.stage .picker .pk-head { position: static; display: flex; justify-content: space-between; align-items: center; }
-.stage .picker .pk-cancel { height: 60px; padding: 0 28px; border-radius: 30px; border: 2px solid #2a2a2a; background: transparent; color: var(--lit); font-size: 18px; letter-spacing: .2em; text-transform: uppercase; cursor: pointer; }
-.stage .picker .pk-list { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px 28px; overflow: hidden; align-content: start; }
-.stage .picker .pk-row { display: flex; align-items: center; gap: 10px; min-width: 0; }
-.stage .picker .pk-who { flex: 1; min-width: 0; }
-.stage .picker .pk-nm { font-size: 22px; line-height: 28px; color: var(--lit); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.stage .picker .pk-k { font-size: 16px; line-height: 22px; letter-spacing: .12em; text-transform: uppercase; color: var(--label); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.stage .picker .pk-sz { flex: none; width: 60px; height: 60px; border-radius: 50%; border: 2px solid var(--accent); background: transparent; color: var(--accent); font-size: 22px; cursor: pointer; }
-.stage .picker .pk-sz:disabled { border-color: #2a2a2a; color: #3a3a3a; cursor: default; }
-/* nouvelles cartes (lumière, capteur) : même cadre que les tuiles */
-.cbox .in.card { padding: 22px 24px; display: flex; flex-direction: column; justify-content: space-between; border: 2px solid #1d1d1d; border-radius: 18px; cursor: pointer; user-select: none; touch-action: none; }
-.cbox .in.card.ro { cursor: default; }
-.cbox .in.card:active:not(.ro) { border-color: var(--accent); background: #0d0d0d; }
-/* texte calé en haut du pictogramme, pas centré */
-.c-head { display: flex; align-items: flex-start; gap: 22px; min-width: 0; }
-.c-head canvas { flex: none; }
-.c-who { min-width: 0; margin-top: -4px; } /* Fira Code 24 px : haut des lettres hautes (l, d) au niveau du haut des points */
-.c-nm { font-size: 24px; line-height: 30px; letter-spacing: .06em; color: var(--c-lit); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.c-ar { margin-top: 4px; font-size: 18px; line-height: 24px; letter-spacing: .12em; text-transform: uppercase; color: var(--c-label); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-/* valeurs du capteur : un seul bloc centré dans la largeur de la carte */
-.c-vals { display: flex; justify-content: center; gap: 56px; }
-.c-v { text-align: center; } /* chaque valeur centrée sur son libellé */
-/* listes (mises à jour, services) : une ligne par élément, sous l'en-tête */
-.c-list { flex: 1; display: flex; flex-direction: column; gap: 6px; margin-top: 22px; min-height: 0; overflow: hidden; }
-.c-li { position: relative; display: flex; align-items: center; gap: 14px; height: 36px; padding: 0 2px; font-size: 18px; line-height: 24px; letter-spacing: .06em; color: var(--c-lit); border-radius: 8px; }
-.c-li .n { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.c-li .r { flex: none; white-space: nowrap; font-size: 16px; letter-spacing: .1em; text-transform: uppercase; color: var(--c-label); font-variant-numeric: tabular-nums; }
-.c-li .r.up { color: var(--c-accent); }
-.c-li i { flex: none; width: 12px; height: 12px; border-radius: 50%; background: var(--c-label); opacity: .5; }
-.c-li i.ok { background: var(--c-accent); opacity: 1; }
-.c-li i.err { background: #ed403b; opacity: 1; }
-.c-li .r.err { color: #ed403b; }
-.c-li.hold { cursor: pointer; touch-action: none; }
-.c-li .fill { position: absolute; left: 0; bottom: -2px; }
-.c-more { margin-top: auto; font-size: 16px; letter-spacing: .14em; text-transform: uppercase; color: var(--c-label); }
-.c-ar.go, .c-v .k.go { color: var(--c-accent); }
-/* thermostat : deux valeurs, un peu plus serrées pour tenir dans 339 px */
-.c-vals.tight { gap: 28px; }
-.c-vals.tight .val { font-size: 42px; }
-.c-st { font-size: 20px; line-height: 24px; letter-spacing: .12em; text-transform: uppercase; color: var(--c-label); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.c-st.go { color: var(--c-accent); }
-/* lumière : deux boutons en points (3 × 3, croix allumée, angles éteints) à droite du pictogramme,
-   l'un au-dessus de l'autre avec une rangée de points vide entre les deux : 3 + 1 + 3 = 7 rangées, la hauteur du pictogramme */
-.c-head .c-who { flex: 1; }
-.c-btns { flex: none; display: flex; flex-direction: column; gap: 12px; }
-.c-btn { display: block; padding: 6px; margin: -6px; border: 0; border-radius: 10px; background: transparent; cursor: pointer; }
-.c-btn canvas { display: block; }
-.c-btn:active canvas { filter: brightness(1.3); }
-.c-btn:focus-visible { outline: 2px solid var(--brand); outline-offset: -2px; }
-.c-v .val { font-size: 48px; line-height: 56px; color: var(--c-lit); white-space: nowrap; font-variant-numeric: tabular-nums; }
-.c-v .val small { font-size: 22px; color: var(--c-label); margin-left: 6px; letter-spacing: .06em; }
-.c-v .k { font-size: 18px; line-height: 24px; letter-spacing: .12em; text-transform: uppercase; color: var(--c-label); }
-.table-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; }
 table { width: 100%; border-collapse: collapse; min-width: 640px; }
 th, td { text-align: left; padding: 14px 16px; vertical-align: top; border-bottom: 1px solid var(--line); }
 tr:last-child td { border-bottom: 0; }
@@ -171,90 +93,8 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
 .frame.s { width: calc(840 / 2536 * 100%); aspect-ratio: 840 / 344; }
 @media (max-width: 700px) { .frame.l, .frame.m, .frame.s { width: 100%; } }
 
-/* ---------- le widget : scène en pixels réels de l'emplacement ---------- */
-.stage { position: absolute; left: 0; top: 0; transform-origin: 0 0; background: #080808; --accent: #10b981; --lit: #f2f0e9; --label: #b8b6b0; --unlit: #1c1c1c; font-family: "Fira Code", Consolas, monospace; font-variant-ligatures: none; }
-.stage.xl { width: 2536px; height: 696px; }
-.stage.l { width: 1688px; height: 696px; }
-.stage.m { width: 840px; height: 696px; }
-.stage.s { width: 840px; height: 344px; }
-.stage > * { position: absolute; }
-.stage p { margin: 0; }
-.stage canvas { display: block; }
-.stage button { font-family: inherit; -webkit-tap-highlight-color: transparent; }
-.w-lbl { white-space: nowrap; font-size: 18px; line-height: 24px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); }
-.w-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); }
-.ell { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-transform: uppercase; }
-
-/* libellé « ● DOT HOME ASSISTANT » : même place et même taille partout */
-.w-dot { left: 56px; top: 51px; }
-.w-name { left: 80px; top: 44px; }
-.w-state { right: 56px; top: 44px; }
-.stage.offline .w-dot { background: #ed403b; }
-
-/* pièces */
-.tabs { display: flex; gap: 40px; height: 24px; overflow: hidden; }
-.tab { margin: -18px 0; padding: 18px 0; border: 0; background: transparent; cursor: pointer; font-size: 18px; line-height: 24px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); opacity: .5; white-space: nowrap; }
-.tab[aria-selected="true"] { color: var(--lit); opacity: 1; }
-.tab:focus-visible, .tile:focus-visible, .pm button:focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; }
-
-/* tuiles */
-.grid { display: grid; gap: 20px; }
-.tile { position: relative; display: flex; flex-direction: column; justify-content: space-between; min-width: 0; min-height: 0; padding: 22px 24px; border: 2px solid #1d1d1d; border-radius: 18px; background: transparent; color: var(--lit); text-align: left; cursor: pointer; user-select: none; touch-action: none; }
-.tile.ro { cursor: default; }
-.tile:active:not(.ro), .tile.flash { border-color: var(--accent); background: #0d0d0d; }
-.tile .tx { min-width: 0; }
-.tile .nm { font-size: 22px; line-height: 28px; letter-spacing: .06em; color: var(--lit); }
-.tile .stt { margin-top: 2px; font-size: 20px; line-height: 26px; letter-spacing: .1em; text-transform: uppercase; color: var(--label); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.tile.on .stt { color: var(--accent); }
-.tile .val { font-size: 48px; line-height: 56px; color: var(--lit); white-space: nowrap; font-variant-numeric: tabular-nums; }
-.tile .val small { font-size: 22px; color: var(--label); margin-left: 6px; letter-spacing: .06em; }
-.tile .lvl { margin-top: 12px; height: 12px; }
-.pm { position: absolute; top: 18px; right: 18px; display: flex; gap: 12px; }
-.pm button { width: 64px; height: 64px; border-radius: 50%; border: 2px solid #2a2a2a; background: transparent; color: var(--lit); font-size: 30px; line-height: 1; cursor: pointer; padding: 0; }
-.pm button:active { border-color: var(--accent); }
-.w-empty { display: flex; flex-direction: column; justify-content: center; gap: 14px; }
-.w-empty .big { font-weight: 500; color: var(--lit); font-size: 64px; line-height: 80px; letter-spacing: .02em; text-transform: uppercase; }
-.w-empty .sm { color: var(--label); font-size: 24px; line-height: 32px; letter-spacing: .08em; text-transform: uppercase; }
-
-/* XL : 6 × 2 tuiles */
-.stage.xl .tabs { left: 56px; top: 100px; width: 2424px; }
-.stage.xl .grid { left: 56px; top: 148px; width: 2424px; height: 500px; grid-template-columns: repeat(6, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(0, 1fr)); }
-.stage.xl .guide { left: 56px; top: 148px; width: 2424px; height: 500px; grid-template-columns: repeat(6, minmax(0, 1fr)); grid-template-rows: repeat(6, minmax(0, 1fr)); }
-.stage.xl .w-empty { left: 56px; top: 100px; width: 2424px; height: 548px; }
-
-/* L : 4 × 2 tuiles */
-.stage.l .tabs { left: 56px; top: 100px; width: 1576px; }
-.stage.l .grid { left: 56px; top: 148px; width: 1576px; height: 500px; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(0, 1fr)); }
-.stage.l .guide { left: 56px; top: 148px; width: 1576px; height: 500px; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-template-rows: repeat(6, minmax(0, 1fr)); }
-.stage.l .w-empty { left: 56px; top: 100px; width: 1576px; height: 548px; }
-
-/* M : 2 × 3 tuiles en ligne (pictogramme à gauche) */
-.stage.m .tabs { left: 56px; top: 100px; width: 728px; gap: 32px; }
-.stage.m .grid { left: 56px; top: 148px; width: 728px; height: 500px; gap: 16px; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: repeat(3, minmax(0, 1fr)); }
-.stage.m .tile { flex-direction: row; align-items: center; justify-content: flex-start; gap: 18px; padding: 14px 18px; }
-.stage.m .tile .tx { flex: 1; }
-.stage.m .tile .nm { font-size: 20px; line-height: 26px; }
-.stage.m .tile .stt { font-size: 18px; line-height: 24px; }
-.stage.m .tile .val { font-size: 30px; line-height: 36px; }
-.stage.m .tile .val small { font-size: 16px; }
-.stage.m .tile .lvl { margin-top: 8px; height: 10px; }
-.stage.m .pm { position: static; flex-direction: column-reverse; gap: 8px; }
-.stage.m .pm button { width: 50px; height: 50px; font-size: 24px; }
-.stage.m .w-empty { left: 56px; top: 100px; width: 728px; height: 548px; }
-
-/* S : 4 tuiles favorites, sans libellés ni pièces */
-.stage.s .w-dot, .stage.s .w-name, .stage.s .w-state, .stage.s .tabs { display: none; }
-.stage.s .grid { left: 24px; top: 24px; width: 792px; height: 296px; gap: 14px; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-template-rows: 1fr; }
-.stage.s .tile { padding: 18px; }
-.stage.s .tile .nm { font-size: 18px; line-height: 24px; letter-spacing: .04em; }
-.stage.s .tile .stt { font-size: 16px; line-height: 22px; }
-.stage.s .tile .val { font-size: 34px; line-height: 42px; }
-.stage.s .tile .val small { font-size: 16px; }
-.stage.s .pm { top: 14px; right: 14px; gap: 8px; }
-.stage.s .pm button { width: 48px; height: 48px; font-size: 22px; }
-.stage.s .w-empty { left: 48px; top: 48px; width: 744px; height: 248px; }
-.stage.s .w-empty .big { font-size: 44px; line-height: 56px; }
-.stage.s .w-empty .sm { font-size: 20px; line-height: 28px; }
+/* ---------- le widget : le rendu du module (styles/homeassistant.css), à l'échelle du cadre ---------- */
+.stage { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
 /* Hero (gabarit modulePage, zone 2) : le nom du module en texte et la version de la maquette en capsule, l'accroche, puis les faits */
 .page-hero { display: grid; gap: 10px; }
 .page-hero-head { display: flex; align-items: flex-end; flex-wrap: wrap; gap: 10px 16px; }
@@ -278,23 +118,14 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
 <div class="wrap">
   <section class="page-hero">
     <div class="page-hero-head"><h1 class="page-title">Dot Home Assistant</h1><span class="mver">v0.1</span></div>
-    <p class="page-lede">Première proposition, à valider point par point dans le tableau. Pilotage de la maison depuis l'Edge : une tuile par entité Home Assistant, rangées par pièce, dans la charte du Dot Clock. Les pièces, les appareils et les valeurs sont des exemples fictifs.</p>
-    <ul class="page-facts"><li><b>7</b>réglages</li><li><b>4</b>tailles</li><li><b>Non</b>connexion externe</li></ul>
+    <p class="page-lede">Codé en XL, sur le rendu du module : ce qui tourne ici est ce qui tourne sur l'Edge. Pilotage de la maison depuis l'Edge : une carte par entité Home Assistant, posée sur une grille, un onglet par pièce. Les pièces, les appareils et les valeurs sont des exemples fictifs.</p>
+    <ul class="page-facts"><li><b>8</b>réglages</li><li><b>4</b>tailles</li><li><b>Non</b>connexion externe</li></ul>
   </section>
 
   <figure>
     <div class="edge"><div class="screen">
       <div class="frame xl" id="frame">
-        <div class="stage xl" id="stage">
-          <span class="w-dot"></span>
-          <p class="w-lbl w-name" data-hub-home>DOT HOME ASSISTANT</p>
-          <p class="w-lbl w-state" id="state">HOME · 6 ON</p>
-          <div class="tabs" role="tablist" aria-label="Pièces" id="tabs"></div>
-          <div class="guide" id="guide" hidden></div>
-          <div class="grid" id="grid"></div>
-          <div class="picker" id="picker" hidden></div>
-          <div class="w-empty" id="empty" hidden><p class="big">Home Assistant offline</p><p class="sm">Check URL and token in Dot Companion</p></div>
-        </div>
+        <div class="stage" id="stage"></div>
       </div>
     </div></div>
     <div class="settings" aria-label="Réglages simulés">
@@ -359,7 +190,7 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
         <thead><tr><th>#</th><th>Élément</th><th>Proposition</th></tr></thead>
         <tbody>
           <tr><td>1</td><td>Module</td><td>Module de Dot Hub servi par Dot Companion (<code>/m/homeassistant/</code>). Pas de widget iCUE autonome.</td></tr>
-          <tr class="todo"><td>2</td><td>Données</td><td>Le compagnon ouvre l'API WebSocket de Home Assistant (<code>ws://&lt;adresse&gt;:8123/api/websocket</code>) avec un jeton d'accès longue durée, s'abonne aux changements d'état et appelle les services (<code>light.turn_on</code>, <code>climate.set_temperature</code>…). Adresse et jeton se règlent dans la page de réglages du compagnon et restent sur le PC ; le module ne voit jamais le jeton.</td></tr>
+          <tr class="todo"><td>2</td><td>Données</td><td>Le compagnon lit l'API REST de Home Assistant avec un jeton d'accès longue durée : états toutes les 2 s (<code>/api/states</code>), pièces et appareils toutes les 60 s (<code>/api/template</code>), et appelle les services (<code>light.turn_on</code>, <code>climate.set_temperature</code>…, liste fermée). Adresse et jeton (chiffré) se règlent dans la page de réglages du compagnon et restent sur le PC ; le module ne voit jamais le jeton. Codé le 2 novembre 2026 ; l'API WebSocket (changements instantanés) pourra venir plus tard.</td></tr>
           <tr class="todo"><td>3</td><td>Choix des tuiles</td><td>Dans les réglages du compagnon : les entités à afficher, dans l'ordre voulu. Les pièces viennent des zones de Home Assistant. L'onglet « Favorites » montre une sélection, c'est aussi la seule vue en S.</td></tr>
           <tr class="todo"><td>4</td><td>Tuiles</td><td>Pictogramme 7 × 7 points (allumé en accent quand l'appareil marche), nom, état. Lumière : un toucher allume ou éteint, la barre de points règle l'intensité en glissant. Prise : marche / arrêt. Volet : ouvrir / fermer, position en %. Thermostat : température actuelle en grand, consigne avec − et + (consigne seule en S, faute de place). Capteur : valeur seule, sans action. Scène : un toucher la lance.</td></tr>
           <tr class="todo"><td>5</td><td>Sécurité</td><td>Serrure : garder le doigt 1 s pour verrouiller ou déverrouiller, la barre se remplit pendant l'appui. Même règle à prévoir pour les alarmes et les portes de garage.</td></tr>
@@ -385,597 +216,58 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
 </div>
 
 <script>
+// Habillage de la maquette : réglages simulés, section Cartes. Le rendu de l'écran est celui du module (DotHomeAssistant.mount).
 (function () {
   "use strict";
   function v(id) { return document.getElementById(id); }
-  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; }
   function val(name) { return document.querySelector("input[name=" + name + "]:checked").value; }
-  var SIZES = {
-    xl: { w: 2536, h: 696, slots: 12, pitch: 12, bar: 12, tag: "XL 2536 × 696 px", note: "Pièces en onglets, 12 tuiles." },
-    l: { w: 1688, h: 696, slots: 8, pitch: 11, bar: 12, tag: "L 1688 × 696 px", note: "Pièces en onglets, 8 tuiles." },
-    m: { w: 840, h: 696, slots: 6, pitch: 8, bar: 10, tag: "M 840 × 696 px", note: "Pièces en onglets, 6 tuiles en ligne." },
-    s: { w: 840, h: 344, slots: 4, pitch: 8, bar: 10, tag: "S 840 × 344 px", note: "4 tuiles favorites, sans libellés ni onglets." }
-  };
-  var size = "xl", room = "fav";
-  var frame = v("frame"), stage = v("stage");
-
-  function fit() { stage.style.transform = "scale(" + frame.clientWidth / SIZES[size].w + ")"; }
+  var frame = v("frame"), stage = v("stage"), layout = "";
+  var D = DotHomeAssistant.demo(), OFF = { state: "offline", hint: "Check URL and token in Dot Companion" };
+  function settings() {
+    return { showTabs: v("showTabs").checked, showUnlit: v("showUnlit").checked, grid: v("showGrid").checked, layout: layout,
+      accent: v("accentColor").value, lit: v("litColor").value, unlit: v("unlitColor").value, label: v("labelColor").value };
+  }
+  // l'exemple tourne comme le module : les touchers le modifient ; « Édition » simule la page de réglages du compagnon
+  var ha = DotHomeAssistant.mount(stage, { size: "xl", settings: settings,
+    state: function () { return val("sample") === "offline" ? OFF : D; },
+    edit: function () { return v("editMode").checked; },
+    onLayout: function (json) { layout = json; } });
+  function fit() { stage.style.transform = "scale(" + frame.clientWidth / DotHomeAssistant.slots.xl[0] + ")"; scaleCards(); }
   if (window.ResizeObserver) new ResizeObserver(fit).observe(frame); else window.addEventListener("resize", fit);
 
-  // pictogrammes 7 × 7 points
-  var PICS = {
-    light: ["..###..", ".#...#.", "#.....#", "#.....#", ".#...#.", "..###..", "..###.."],
-    plug: [".#...#.", ".#...#.", "#######", "#.....#", "#.....#", ".#####.", "...#..."],
-    climate: ["...#...", "..#.#..", "..#.#..", "..###..", ".#####.", ".#####.", "..###.."],
-    cover: ["#######", ".......", "#######", ".......", "#######", ".......", "#######"],
-    lock: ["..###..", ".#...#.", ".#...#.", "#######", "###.###", "###.###", "#######"],
-    sensor: [".......", "#......", "##...#.", "#.#.#.#", "#..#...", "#......", "#######"],
-    power: ["....##.", "...##..", "..##...", ".#####.", "...##..", "..##...", ".##...."],
-    scene: ["...#...", "...#...", "#######", ".#####.", "..###..", ".##.##.", "#.....#"],
-    group: [".......", ".#...#.", "#.#.#.#", "#.#.#.#", ".#...#.", ".#...#.", "......."],
-    auto: ["..#....", "..##...", "..###..", "..####.", "..###..", "..##...", "..#...."],
-    update: ["...#...", "...#...", ".#.#.#.", "..###..", "...#...", "#.....#", "#######"],
-    services: ["#######", "#.....#", "#######", ".......", "#######", "#.....#", "#######"]
+  // section Cartes : chaque carte seule, à la même échelle que l'écran
+  var CARDS = {
+    cLights: [["light.ceiling", 2], ["light.desk", 2], ["light.bed_lamp", 2]],
+    cSensors: [["th:bedroom", 3], ["th:sofa", 3]],
+    cGroups: [["light.living_room", 2]],
+    cAutos: [["automation.good_night", 3], ["automation.movie_mode", 3], ["automation.leave_home", 3]],
+    cLists: [["list:update", 6], ["list:services", 6]],
+    cOthers: [["climate.living", 3], ["lock.front_door", 3], ["cover.living_blinds", 3], ["scene.movie_night", 3], ["sensor.power", 3], ["switch.coffee", 3], ["sensor.co2", 3]]
   };
-  var ROOMS = [
-    { id: "fav", name: "Favorites" }, { id: "living", name: "Living room" }, { id: "kitchen", name: "Kitchen" },
-    { id: "bedroom", name: "Bedroom" }, { id: "office", name: "Office" }, { id: "entrance", name: "Entrance" }
-  ];
-  var E = [
-    { id: 1, room: "living", fav: 1, type: "light", name: "Ceiling", on: true, lvl: 0.8 },
-    { id: 2, room: "living", fav: 1, type: "climate", name: "Thermostat", cur: 21.4, target: 22, mode: "Heat" },
-    { id: 3, room: "office", fav: 1, type: "light", name: "Desk light", on: true, lvl: 0.65 },
-    { id: 4, room: "entrance", fav: 1, type: "lock", name: "Front door", on: true },
-    { id: 5, room: "living", fav: 1, type: "cover", name: "Blinds", lvl: 0.6 },
-    { id: 6, room: "living", fav: 1, type: "scene", name: "Movie night" },
-    { id: 7, room: "kitchen", fav: 1, type: "power", name: "Power", value: 412, unit: "W" },
-    { id: 8, room: "kitchen", fav: 1, type: "plug", name: "Coffee machine", on: false },
-    { id: 9, room: "office", fav: 1, type: "sensor", name: "CO₂", value: 640, unit: "ppm" },
-    { id: 10, room: "bedroom", fav: 1, type: "light", name: "Bed lamp", on: false, lvl: 0.3 },
-    { id: 11, room: "living", fav: 1, type: "plug", name: "TV", on: true },
-    { id: 12, room: "bedroom", fav: 1, type: "sensor", name: "Temperature", value: 19.8, unit: "°" },
-    { id: 13, room: "living", type: "light", name: "Floor lamp", on: false, lvl: 0.5 },
-    { id: 14, room: "kitchen", type: "light", name: "Spots", on: true, lvl: 1 },
-    { id: 15, room: "bedroom", type: "cover", name: "Blinds", lvl: 0 },
-    { id: 16, room: "office", type: "plug", name: "Monitor", on: true },
-    { id: 17, room: "entrance", type: "light", name: "Porch", on: false, lvl: 1 }
-  ];
-
-  function colors() {
-    return { lit: v("litColor").value, unlit: v("showUnlit").checked ? v("unlitColor").value : null, accent: v("accentColor").value, label: v("labelColor").value };
-  }
-  function pic(key, on, pitch, c) {
-    var g = PICS[key], cv = document.createElement("canvas"), dpr = 2, w = 7 * pitch;
-    cv.width = w * dpr; cv.height = w * dpr; cv.style.width = w + "px"; cv.style.height = w + "px";
-    var ctx = cv.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    for (var y = 0; y < 7; y++) for (var x = 0; x < 7; x++) {
-      var col = g[y][x] === "#" ? (on ? c.accent : c.lit) : c.unlit;
-      if (!col) continue;
-      ctx.globalAlpha = g[y][x] === "#" && !on ? 0.55 : 1;
-      ctx.fillStyle = col; ctx.beginPath(); ctx.arc(x * pitch + pitch / 2, y * pitch + pitch / 2, pitch * 0.38, 0, Math.PI * 2); ctx.fill();
-    }
-    return cv;
-  }
-  function bar(w, frac, pitch, c, on) {
-    var cv = document.createElement("canvas"), dpr = 2, n = Math.max(1, Math.floor(w / pitch)), h = pitch;
-    cv.width = w * dpr; cv.height = h * dpr; cv.style.width = w + "px"; cv.style.height = h + "px";
-    var ctx = cv.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    var k = Math.round(n * frac);
-    for (var i = 0; i < n; i++) {
-      ctx.fillStyle = i < k ? (on ? c.accent : c.label) : (c.unlit || "#1c1c1c");
-      ctx.beginPath(); ctx.arc(i * pitch + pitch / 2, h / 2, pitch * 0.36, 0, Math.PI * 2); ctx.fill();
-    }
-    return cv;
-  }
-  function isOn(e) { return e.type === "light" || e.type === "plug" ? e.on : e.type === "cover" ? e.lvl > 0 : e.type === "climate" ? e.cur < e.target : e.type === "lock" ? e.on : false; }
-  function stateText(e) {
-    switch (e.type) {
-      case "light": return e.on ? "On · " + Math.round(e.lvl * 100) + "%" : "Off";
-      case "plug": return e.on ? "On" : "Off";
-      case "cover": return e.lvl === 0 ? "Closed" : e.lvl === 1 ? "Open" : "Open · " + Math.round(e.lvl * 100) + "%";
-      case "lock": return e.holding ? "Hold…" : e.on ? "Locked" : "Unlocked";
-      case "climate": return size === "m" || size === "s" ? "→ " + e.target.toFixed(1) + "°" : "Target " + e.target.toFixed(1) + "° · " + (e.cur < e.target ? "Heating" : "Idle");
-      case "scene": return "Tap to run";
-      default: return "";
-    }
-  }
-
-  function tileWidth(tile) { return tile.querySelector(".tx").clientWidth; }
-
-  function build(e, c, Z) {
-    var t = el("button", "tile" + (isOn(e) ? " on" : "") + (e.type === "sensor" || e.type === "power" ? " ro" : "")); t.type = "button";
-    t.setAttribute("aria-label", e.name);
-    t.appendChild(pic(e.type, isOn(e), Z.pitch, c));
-    var tx = el("div", "tx");
-    if (e.type === "climate") { var cv = el("p", "val", e.cur.toFixed(1) + "°"); tx.appendChild(cv); }
-    if (e.type === "sensor" || e.type === "power") { var sv = el("p", "val", String(e.value)); sv.appendChild(el("small", "", e.unit === "°" ? "°C" : e.unit)); tx.appendChild(sv); }
-    tx.appendChild(el("p", "nm ell", e.name));
-    var st = stateText(e); if (st) tx.appendChild(el("p", "stt", st));
-    var needsBar = e.type === "light" || e.type === "cover" || e.type === "lock";
-    if (needsBar) { var lv = el("div", "lvl"); tx.appendChild(lv); }
-    t.appendChild(tx);
-    if (e.type === "climate") {
-      var pm = el("div", "pm"), minus = el("button", "", "−"), plus = el("button", "", "+");
-      minus.type = plus.type = "button"; minus.setAttribute("aria-label", "Lower target"); plus.setAttribute("aria-label", "Raise target");
-      minus.addEventListener("click", function (ev) { ev.stopPropagation(); e.target = Math.max(7, e.target - 0.5); render(); });
-      plus.addEventListener("click", function (ev) { ev.stopPropagation(); e.target = Math.min(30, e.target + 0.5); render(); });
-      pm.appendChild(minus); pm.appendChild(plus);
-      if (size !== "s") t.appendChild(pm);
-    }
-    wire(t, e);
-    return t;
-  }
-  function drawBars(t, e, c, Z) {
-    var lv = t.querySelector(".lvl"); if (!lv) return;
-    lv.innerHTML = "";
-    var w = lv.clientWidth || tileWidth(t);
-    var frac = e.type === "lock" ? (e.hold || 0) : e.lvl;
-    lv.appendChild(bar(w, frac, Z.bar, c, e.type === "lock" ? true : e.type === "cover" ? true : e.on));
-    // serrure : la barre n'apparaît que pendant l'appui
-    if (e.type === "lock") lv.style.visibility = e.hold ? "visible" : "hidden";
-  }
-
-  function wire(t, e) {
-    if (e.type === "light") {
-      var lvEl = function () { return t.querySelector(".lvl"); };
-      var dragging = false, moved = false;
-      t.addEventListener("pointerdown", function (ev) {
-        var r = lvEl().getBoundingClientRect();
-        if (ev.clientY >= r.top - 20 && ev.clientY <= r.bottom + 20) { dragging = true; moved = false; t.setPointerCapture(ev.pointerId); setLvl(ev); }
+  function drawCards() {
+    Object.keys(CARDS).forEach(function (id) {
+      var g = v(id); g.innerHTML = "";
+      CARDS[id].forEach(function (x) {
+        var b = document.createElement("div"), cardEl = DotHomeAssistant.card(x[0], x[1], settings());
+        b.className = "cbox"; b.dataset.h = x[1];
+        b.appendChild(cardEl); g.appendChild(b);
       });
-      t.addEventListener("pointermove", function (ev) { if (dragging) { moved = true; setLvl(ev); } });
-      t.addEventListener("pointerup", function () { if (dragging) { dragging = false; render(); } });
-      t.addEventListener("click", function () { if (moved) { moved = false; return; } if (!dragging) { e.on = !e.on; render(); } });
-      var setLvl = function (ev) {
-        var r = lvEl().getBoundingClientRect();
-        e.lvl = Math.max(0.05, Math.min(1, (ev.clientX - r.left) / r.width)); e.on = true; moved = true; render();
-      };
-    } else if (e.type === "plug") {
-      t.addEventListener("click", function () { e.on = !e.on; render(); });
-    } else if (e.type === "cover") {
-      t.addEventListener("click", function () { e.lvl = e.lvl > 0 ? 0 : 1; render(); });
-    } else if (e.type === "scene") {
-      t.addEventListener("click", function () { t.classList.add("flash"); setTimeout(function () { t.classList.remove("flash"); }, 600); });
-    } else if (e.type === "lock") {
-      var raf = null, t0 = 0;
-      var stop = function () { if (raf) cancelAnimationFrame(raf); raf = null; if (e.holding) { e.holding = false; e.hold = 0; render(); } };
-      t.addEventListener("pointerdown", function (ev) {
-        ev.preventDefault(); t0 = performance.now(); e.holding = true;
-        (function step(now) {
-          e.hold = Math.min(1, (now - t0) / 1000);
-          var bt = document.querySelector('.tile[data-id="' + e.id + '"]');
-          if (bt) { var s = bt.querySelector(".stt"); if (s) s.textContent = "Hold…"; drawBars(bt, e, colors(), SIZES[size]); }
-          if (e.hold >= 1) { raf = null; e.holding = false; e.hold = 0; e.on = !e.on; render(); return; }
-          raf = requestAnimationFrame(step);
-        })(t0);
-      });
-      ["pointerup", "pointerleave", "pointercancel"].forEach(function (n) { t.addEventListener(n, stop); });
-    }
-  }
-
-  // cartes à dessiner : lumière (nom, pièce, barre d'intensité) et capteur (nom, pièce, température et humidité), en taille réelle XL
-  function roomName(id) { return (ROOMS.filter(function (r) { return r.id === id; })[0] || {}).name || ""; }
-  // état propre à chaque lumière : couleur, blanc
-  E.forEach(function (e, i) { if (e.type === "light") { e.color = i % 6; e.kelvin = i % 3; e.mode = i % 2 ? "white" : "color"; } });
-  var GROUPS = [
-    { name: "Living room", rooms: ["living"] },
-    { name: "All lights", rooms: null }
-  ];
-  var AUTOS = [
-    { name: "Good night", last: "22:40" },
-    { name: "Movie mode", last: "yesterday" },
-    { name: "Leave home", last: "08:12", off: true }
-  ];
-  var UPDATES = [
-    { name: "Home Assistant Core", ver: "2026.11.0" },
-    { name: "Home Assistant OS", ver: "17.1" },
-    { name: "Zigbee2MQTT", ver: "2.4.0" },
-    { name: "ESPHome", ver: "2026.10.3" },
-    { name: "HACS", ver: "2.1.0" },
-    { name: "Hue bridge firmware", ver: "1972004020" }
-  ];
-  var SERVICES = [
-    { name: "Mosquitto broker", st: "ok" }, { name: "Zigbee2MQTT", st: "ok" }, { name: "Node-RED", st: "ok" },
-    { name: "ESPHome", st: "ok" }, { name: "Frigate", st: "err" }, { name: "Music Assistant", st: "stop" },
-    { name: "Philips Hue", st: "ok" }, { name: "Spotify", st: "ok" }
-  ];
-  var SENSORS = [
-    { name: "Bedroom sensor", room: "bedroom", fav: 1, temp: 19.8, hum: 52 },
-    { name: "Sofa sensor", room: "living", fav: 1, temp: 21.4, hum: 47 }
-  ];
-  // exemples : couleurs proposées au toucher du bouton couleur, blancs au toucher du bouton température
-  var LIGHT_COLORS = ["#ffb35c", "#ff5a4e", "#ff6fd8", "#8b7bff", "#4fa3ff", "#3fe0a0"];
-  var KELVINS = [["2700 K", "#ffb46b"], ["4000 K", "#ffe2bd"], ["6500 K", "#e9efff"]];
-  // bouton en points 3 × 3 : croix allumée (5 points), angles éteints
-  function cross(color, alpha, pitch, c, g) {
-    g = g || [".#.", "###", ".#."];
-    var cv = document.createElement("canvas"), dpr = 2, w = 3 * pitch;
-    cv.width = w * dpr; cv.height = w * dpr; cv.style.width = w + "px"; cv.style.height = w + "px";
-    var ctx = cv.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    for (var y = 0; y < 3; y++) for (var x = 0; x < 3; x++) {
-      var lit = g[y][x] === "#", col = lit ? color : c.unlit;
-      if (!col) continue;
-      ctx.globalAlpha = lit ? alpha : 1; ctx.fillStyle = col;
-      ctx.beginPath(); ctx.arc(x * pitch + pitch / 2, y * pitch + pitch / 2, pitch * 0.38, 0, Math.PI * 2); ctx.fill();
-    }
-    return cv;
-  }
-  // hauteur d'une carte en XL : tuile 240 px (2 rangées) ; lumière 153 px, pour en empiler 3 dans les 500 px de la grille ((500 − 2 × 20) / 3)
-  var CARD_W = 387, CARD_H = 240, LIGHT_H = (500 - 2 * 20) / 3;
-  function box(grid, h) {
-    var b = el("div", "cbox"), inn = el("div", "in");
-    h = h || CARD_H; b.style.height = "calc(" + h + "px * var(--k, .5))"; inn.style.height = h + "px";
-    b.appendChild(inn); grid.appendChild(b); return inn;
-  }
-  function colorsOn(inn, c) {
-    inn.style.setProperty("--accent", c.accent); inn.style.setProperty("--lit", c.lit); inn.style.setProperty("--label", c.label);
-  }
-  function head(kind, on, name, area, c) {
-    var h = el("div", "c-head");
-    h.appendChild(pic(kind, on, SIZES.xl.pitch, c));
-    var who = el("div", "c-who"); who.appendChild(el("p", "c-nm", name)); who.appendChild(el("p", "c-ar", area));
-    h.appendChild(who);
-    return h;
-  }
-  function lightCard(inn, d, c) {
-    inn.className = "in card"; inn.setAttribute("role", "button"); inn.setAttribute("aria-label", d.name + (d.on ? " · on" : " · off"));
-    var h = head(d.members ? "group" : "light", d.on, d.name, d.area || roomName(d.room), c), white = d.mode === "white", btns = el("div", "c-btns");
-    var colorBtn = el("button", "c-btn"), tempBtn = el("button", "c-btn");
-    colorBtn.type = tempBtn.type = "button";
-    colorBtn.setAttribute("aria-label", "Color"); colorBtn.setAttribute("aria-pressed", white ? "false" : "true");
-    tempBtn.setAttribute("aria-label", "White temperature · " + KELVINS[d.kelvin][0]); tempBtn.setAttribute("aria-pressed", white ? "true" : "false");
-    colorBtn.appendChild(cross(LIGHT_COLORS[d.color], white ? 0.4 : 1, SIZES.xl.pitch, c));
-    tempBtn.appendChild(cross(KELVINS[d.kelvin][1], white ? 1 : 0.4, SIZES.xl.pitch, c));
-    var done = function () { if (d.apply) d.apply(); render(); };
-    colorBtn.addEventListener("click", function (ev) { ev.stopPropagation(); if (d.mode === "white") d.mode = "color"; else d.color = (d.color + 1) % LIGHT_COLORS.length; d.on = true; done(); });
-    tempBtn.addEventListener("click", function (ev) { ev.stopPropagation(); if (d.mode !== "white") d.mode = "white"; else d.kelvin = (d.kelvin + 1) % KELVINS.length; d.on = true; done(); });
-    btns.appendChild(colorBtn); btns.appendChild(tempBtn); h.appendChild(btns); inn.appendChild(h);
-    var b = bar(387 - 48, d.lvl, SIZES.xl.bar, c, d.on); inn.appendChild(b);
-    inn.addEventListener("click", function (ev) {
-      // toucher sur la barre (± 20 px) : intensité ; ailleurs : allumer ou éteindre
-      var r = b.getBoundingClientRect(), pad = 20 * r.height / SIZES.xl.bar;
-      if (ev.clientY >= r.top - pad && ev.clientY <= r.bottom + pad) { d.lvl = Math.max(0.05, Math.min(1, (ev.clientX - r.left) / r.width)); d.on = true; }
-      else d.on = !d.on;
-      done();
     });
-  }
-  // groupe : vu comme une seule lumière (allumé si une lumière l'est, intensité moyenne) ; chaque réglage s'applique à toutes
-  function groupOf(g) {
-    var m = E.filter(function (e) { return e.type === "light" && (!g.rooms || g.rooms.indexOf(e.room) >= 0); });
-    var lit = m.filter(function (e) { return e.on; }), first = lit[0] || m[0];
-    var d = { name: g.name, members: m, on: lit.length > 0, color: first.color, kelvin: first.kelvin, mode: first.mode,
-      lvl: (lit.length ? lit : m).reduce(function (a, e) { return a + e.lvl; }, 0) / (lit.length || m.length),
-      area: lit.length + " / " + m.length + " on" };
-    d.apply = function () { m.forEach(function (e) { e.on = d.on; e.lvl = d.lvl; e.color = d.color; e.kelvin = d.kelvin; e.mode = d.mode; }); };
-    return d;
-  }
-  function autoCard(inn, a, c) {
-    inn.className = "in card" + (a.off ? " ro" : ""); inn.setAttribute("role", "button"); inn.setAttribute("aria-label", "Run " + a.name);
-    var running = a.running && Date.now() - a.running < 1500;
-    var h = head("auto", running, a.name, a.off ? "Disabled" : running ? "Running…" : "Ran · " + a.last, c);
-    if (running) h.querySelector(".c-ar").classList.add("go");
-    if (a.off) h.style.opacity = .45;
-    inn.appendChild(h);
-    if (!a.off) inn.addEventListener("click", function () {
-      a.running = Date.now(); render();
-      setTimeout(function () { a.last = "now"; render(); }, 1600);
-    });
-  }
-  function listCard(inn, kind, c) {
-    inn.className = "in card ro"; inn.style.justifyContent = "flex-start";
-    var ups = UPDATES.filter(function (u) { return !u.done; });
-    var bad = SERVICES.filter(function (x) { return x.st !== "ok"; }).length;
-    inn.appendChild(head(kind, kind === "update" ? ups.length > 0 : bad === 0, kind === "update" ? "Updates" : "Services",
-      kind === "update" ? (ups.length ? ups.length + " available" : "Up to date") : (SERVICES.length - bad) + " / " + SERVICES.length + " running", c));
-    var list = el("div", "c-list"), max = 8;
-    if (kind === "update") {
-      ups.slice(0, max).forEach(function (u) {
-        var li = el("div", "c-li hold"); li.setAttribute("role", "button"); li.setAttribute("aria-label", "Hold to install " + u.name);
-        li.appendChild(el("span", "n", u.name)); li.appendChild(el("span", "r up", u.installing ? "Installing…" : u.ver));
-        // garder le doigt 1 s : installer
-        var raf = null, t0 = 0, fill = el("div", "fill"); li.appendChild(fill);
-        var stop = function () { if (raf) cancelAnimationFrame(raf); raf = null; fill.innerHTML = ""; };
-        li.addEventListener("pointerdown", function (ev) {
-          ev.preventDefault(); t0 = performance.now();
-          (function step(now) {
-            var p = Math.min(1, (now - t0) / 1000); fill.innerHTML = ""; fill.appendChild(bar(387 - 48, p, 6, c, true));
-            if (p >= 1) { raf = null; u.installing = true; render(); setTimeout(function () { u.done = true; render(); }, 2500); return; }
-            raf = requestAnimationFrame(step);
-          })(t0);
-        });
-        ["pointerup", "pointerleave", "pointercancel"].forEach(function (n) { li.addEventListener(n, stop); });
-        list.appendChild(li);
-      });
-      if (!ups.length) list.appendChild(el("p", "c-more", "Nothing to install"));
-      else if (ups.length > max) list.appendChild(el("p", "c-more", "+ " + (ups.length - max) + " more"));
-      else list.appendChild(el("p", "c-more", "Hold a line 1 s to install"));
-    } else {
-      SERVICES.slice(0, max).forEach(function (x) {
-        var li = el("div", "c-li"); li.appendChild(el("i", x.st === "ok" ? "ok" : x.st === "err" ? "err" : ""));
-        li.appendChild(el("span", "n", x.name));
-        li.appendChild(el("span", "r" + (x.st === "err" ? " err" : ""), x.st === "ok" ? "Running" : x.st === "err" ? "Error" : "Stopped"));
-        list.appendChild(li);
-      });
-    }
-    inn.appendChild(list);
-  }
-  // autres entités : pictogramme, nom, pièce · état ; dessous, ce qui sert (barre, valeurs) sur toute la largeur
-  function otherCard(inn, e, c) {
-    var on = isOn(e);
-    var ro = e.type === "sensor" || e.type === "power";
-    inn.className = "in card" + (ro ? " ro" : ""); if (!ro) inn.setAttribute("role", "button"); inn.setAttribute("aria-label", e.name);
-    var h = head(e.type, on || !!e.flash, e.name, roomName(e.room), c);
-    inn.appendChild(h);
-    // état en bas de la carte, sur toute la largeur (prise, scène, serrure)
-    var stateRow = function (text, hot) { var p0 = el("p", "c-st" + (hot ? " go" : ""), text); inn.appendChild(p0); return p0; };
-    if (e.type === "climate") {
-      // + au-dessus, − en dessous : boutons 3 × 3 comme ceux des lumières
-      var btns = el("div", "c-btns"), plus = el("button", "c-btn"), minus = el("button", "c-btn");
-      plus.type = minus.type = "button"; plus.setAttribute("aria-label", "Raise target"); minus.setAttribute("aria-label", "Lower target");
-      plus.appendChild(cross(c.lit, 1, SIZES.xl.pitch, c)); minus.appendChild(cross(c.lit, 1, SIZES.xl.pitch, c, ["...", "###", "..."]));
-      plus.addEventListener("click", function (ev) { ev.stopPropagation(); e.target = Math.min(30, e.target + 0.5); render(); });
-      minus.addEventListener("click", function (ev) { ev.stopPropagation(); e.target = Math.max(7, e.target - 0.5); render(); });
-      btns.appendChild(plus); btns.appendChild(minus); h.appendChild(btns);
-    }
-    if (e.type === "climate" || e.type === "sensor" || e.type === "power") {
-      var vals = el("div", "c-vals" + (e.type === "climate" ? " tight" : "")), items = e.type === "climate"
-        ? [[e.cur.toFixed(1), "°C", "Current"], [e.target.toFixed(1), "°C", "Target"]]
-        : [[String(e.value), e.unit, e.type === "power" ? "Power" : e.name]];
-      items.forEach(function (x, i) {
-        var v0 = el("div", "c-v"), vp = el("p", "val", x[0]); vp.appendChild(el("small", "", x[1]));
-        var k = el("p", "k", x[2]);
-        if (e.type === "climate" && i === 1 && on) k.classList.add("go");
-        v0.appendChild(vp); v0.appendChild(k); vals.appendChild(v0);
-      });
-      inn.appendChild(vals);
-    }
-    if (e.type === "cover") {
-      var b = bar(387 - 48, e.lvl, SIZES.xl.bar, c, true); inn.appendChild(b);
-      inn.addEventListener("click", function (ev) {
-        var r = b.getBoundingClientRect(), pad = 20 * r.height / SIZES.xl.bar;
-        if (ev.clientY >= r.top - pad && ev.clientY <= r.bottom + pad) e.lvl = Math.round(Math.max(0, Math.min(1, (ev.clientX - r.left) / r.width)) * 10) / 10;
-        else e.lvl = e.lvl > 0 ? 0 : 1;
-        render();
-      });
-    }
-    if (e.type === "lock") {
-      // garder le doigt 1 s : la barre se remplit, puis verrouille ou déverrouille
-      var lb = el("div"), lt = stateRow(e.on ? "Locked · hold 1 s" : "Unlocked · hold 1 s", e.on);
-      inn.insertBefore(lb, lt); lb.style.display = "none";
-      var raf = null, t0 = 0;
-      var stop = function () { if (raf) cancelAnimationFrame(raf); raf = null; if (e.holding) { e.holding = false; e.hold = 0; render(); } };
-      inn.addEventListener("pointerdown", function (ev) {
-        ev.preventDefault(); t0 = performance.now(); e.holding = true;
-        (function step(now) {
-          e.hold = Math.min(1, (now - t0) / 1000);
-          lt.style.display = "none"; lb.style.display = "";
-          lb.innerHTML = ""; lb.appendChild(bar(387 - 48, e.hold, SIZES.xl.bar, c, true));
-          if (e.hold >= 1) { raf = null; e.holding = false; e.hold = 0; e.on = !e.on; render(); return; }
-          raf = requestAnimationFrame(step);
-        })(t0);
-      });
-      ["pointerup", "pointerleave", "pointercancel"].forEach(function (n) { inn.addEventListener(n, stop); });
-    }
-    if (e.type === "plug") { stateRow(e.on ? "On" : "Off", e.on); inn.addEventListener("click", function () { e.on = !e.on; render(); }); }
-    if (e.type === "scene") stateRow(e.flash ? "Activated" : "Tap to run", !!e.flash);
-    if (e.type === "scene") inn.addEventListener("click", function () { e.flash = true; render(); setTimeout(function () { e.flash = false; render(); }, 1500); });
-  }
-  function sensorCard(inn, d, c) {
-    inn.className = "in card ro";
-    inn.appendChild(head("climate", false, d.name, roomName(d.room), c));
-    var vals = el("div", "c-vals");
-    [[d.temp.toFixed(1), "°C", "Temperature"], [String(d.hum), "%", "Humidity"]].forEach(function (x) {
-      var v0 = el("div", "c-v"), vp = el("p", "val", x[0]); vp.appendChild(el("small", "", x[1]));
-      v0.appendChild(vp); v0.appendChild(el("p", "k", x[2])); vals.appendChild(v0);
-    });
-    inn.appendChild(vals);
-  }
-  function drawCards(c) {
-    var gL = v("cLights"), gS = v("cSensors"), gO = v("cOthers"), gG = v("cGroups"), gA = v("cAutos"), gT = v("cLists");
-    gL.innerHTML = ""; gS.innerHTML = ""; gO.innerHTML = ""; gG.innerHTML = ""; gA.innerHTML = ""; gT.innerHTML = "";
-    GROUPS.forEach(function (g) { var inn = box(gG, LIGHT_H); colorsOn(inn, c); lightCard(inn, groupOf(g), c); });
-    AUTOS.forEach(function (a) { var inn = box(gA, CARD_H); colorsOn(inn, c); autoCard(inn, a, c); });
-    ["update", "services"].forEach(function (k) { var inn = box(gT, 500); colorsOn(inn, c); listCard(inn, k, c); });
-    E.filter(function (e) { return e.type === "light"; }).forEach(function (e) { var inn = box(gL, LIGHT_H); colorsOn(inn, c); lightCard(inn, e, c); });
-    SENSORS.forEach(function (d) { var inn = box(gS); colorsOn(inn, c); sensorCard(inn, d, c); });
-    // les autres tuiles de la v0.1 (le capteur de température est remplacé par la carte ci-dessus)
-    // les autres entités, au format des cartes : d'abord les cartes basses (153 px), puis les hautes (240 px)
-    var others = E.filter(function (e) { return e.type !== "light" && !(e.type === "sensor" && e.unit === "°"); });
-    var tall = function (e) { return e.type === "climate" || e.type === "sensor" || e.type === "power"; };
-    others.forEach(function (e) { var inn = box(gO, CARD_H); colorsOn(inn, c); otherCard(inn, e, c); });
     scaleCards();
   }
-  // même échelle que la maquette : largeur du cadre / largeur réelle de l'XL
   function scaleCards() {
-    var k = frame.clientWidth / SIZES[size].w || 0.5;
-    document.querySelector("[aria-labelledby=cardsTitle]").style.setProperty("--k", k);
-    document.querySelectorAll("[aria-labelledby=cardsTitle] .cbox .in").forEach(function (inn) { inn.style.transform = "scale(" + k + ")"; });
-  }
-  if (window.ResizeObserver) new ResizeObserver(scaleCards).observe(frame);
-
-  // ---------------------------------------------------------------- grille et placement
-  // Chaque onglet a sa disposition : des cartes posées sur la grille (colonne, rangée, hauteur en rangées). Sur l'Edge,
-  // elle viendra de la configuration de la page Dot Hub ; on la modifie dans la page de réglages du compagnon,
-  // simulée ici par la case « Édition ». Sans disposition, les cartes se rangent une colonne après l'autre.
-  var ROWS = 6, LAYOUTS = {}, adding = null;
-  var SIZE_NAME = { 2: "Small · 1 × 2", 3: "Medium · 1 × 3", 6: "Tall · 1 × 6" };
-  function catalog(c) {
-    var k = {};
-    E.forEach(function (e) {
-      if (e.type === "light") k["light:" + e.id] = { name: e.name, kind: "Light", room: e.room, fav: e.fav, sizes: [2, 3], draw: function (inn) { lightCard(inn, e, c); } };
-      else if (!(e.type === "sensor" && e.unit === "°")) k["other:" + e.id] = { name: e.name, kind: e.type, room: e.room, fav: e.fav, sizes: [3], draw: function (inn) { otherCard(inn, e, c); } };
-    });
-    SENSORS.forEach(function (d, i) { k["sensor:" + i] = { name: d.name, kind: "Temperature · humidity", room: d.room, fav: d.fav, sizes: [3], draw: function (inn) { sensorCard(inn, d, c); } }; });
-    GROUPS.forEach(function (g, i) { k["group:" + i] = { name: g.name, kind: "Light group", sizes: [2, 3], draw: function (inn) { lightCard(inn, groupOf(g), c); } }; });
-    AUTOS.forEach(function (a, i) { k["auto:" + i] = { name: a.name, kind: "Automation", sizes: [2, 3], draw: function (inn) { autoCard(inn, a, c); } }; });
-    k["list:update"] = { name: "Updates", kind: "List", sizes: [6, 3], draw: function (inn) { listCard(inn, "update", c); } };
-    k["list:services"] = { name: "Services", kind: "List", sizes: [6, 3], draw: function (inn) { listCard(inn, "services", c); } };
-    return k;
-  }
-  // disposition par défaut : Favorites rempli ; une pièce, ses cartes une colonne après l'autre
-  function autoLayout(c) {
-    var COLS = size === "xl" ? 6 : 4, keys = [];
-    var inRoom = function (x) { return room === "fav" ? x.fav : x.room === room; };
-    var all = catalog(c);
-    E.filter(function (e) { return e.type === "light" && inRoom(e); }).slice(0, 3).forEach(function (e) { keys.push(["light:" + e.id, 2]); });
-    SENSORS.forEach(function (d, i) { if (inRoom(d) && keys.filter(function (x) { return x[0].indexOf("sensor") === 0; }).length < 2) keys.push(["sensor:" + i, 3]); });
-    if (room === "fav") keys.push(["auto:0", 3], ["auto:1", 3]);
-    E.filter(function (e) { return e.type !== "light" && all["other:" + e.id] && inRoom(e); }).slice(0, room === "fav" ? 2 : 12).forEach(function (e) { keys.push(["other:" + e.id, 3]); });
-    if (room === "fav") keys.push(["list:update", 6], ["list:services", 6]);
-    var col = 1, row = 1, out = [];
-    keys.forEach(function (k) {
-      if (row + k[1] - 1 > ROWS) { col++; row = 1; }
-      if (col > COLS) return;
-      out.push({ key: k[0], col: col, row: row, h: k[1] }); row += k[1];
-    });
-    return out;
-  }
-  function layoutOf(c) { var id = size + ":" + room; return LAYOUTS[id] || (LAYOUTS[id] = autoLayout(c)); }
-  // la place (colonne, rangée, hauteur) est-elle libre ? (sans compter la carte « skip »)
-  function free(lay, col, row, h, skip) {
-    if (row < 1 || row + h - 1 > ROWS) return false;
-    return !lay.some(function (it) { return it !== skip && it.col === col && it.row < row + h && row < it.row + it.h; });
-  }
-  // une carte en édition : la glisser pour la déplacer, changer sa taille, la retirer
-  function editCard(b, it, lay, COLS) {
-    var ed = el("div", "ed"), x = el("button", "ed-x", "×"), sz = el("button", "ed-sz", it.h === 2 ? "S" : it.h === 3 ? "M" : "L");
-    x.type = sz.type = "button"; x.setAttribute("aria-label", "Remove"); sz.setAttribute("aria-label", "Card size");
-    ed.appendChild(x); ed.appendChild(sz); b.appendChild(ed);
-    x.addEventListener("click", function (ev) { ev.stopPropagation(); lay.splice(lay.indexOf(it), 1); render(); });
-    var sizes = (catalog(colors())[it.key] || {}).sizes || [it.h];
-    sz.hidden = sizes.length < 2;
-    sz.addEventListener("click", function (ev) {
-      ev.stopPropagation();
-      var i = sizes.indexOf(it.h);
-      for (var n = 1; n < sizes.length; n++) { var h = sizes[(i + n) % sizes.length]; if (free(lay, it.col, it.row, h, it)) { it.h = h; break; } }
-      render();
-    });
-    [x, sz].forEach(function (bt) { bt.addEventListener("pointerdown", function (ev) { ev.stopPropagation(); }); });
-    var k = 1, x0 = 0, y0 = 0, drag = false;
-    ed.addEventListener("pointerdown", function (ev) {
-      k = frame.clientWidth / SIZES[size].w; x0 = ev.clientX; y0 = ev.clientY; drag = true;
-      ed.setPointerCapture(ev.pointerId); b.classList.add("drag");
-    });
-    ed.addEventListener("pointermove", function (ev) {
-      if (!drag) return;
-      b.style.transform = "translate(" + (ev.clientX - x0) / k + "px," + (ev.clientY - y0) / k + "px)";
-      var t = target(ev); b.classList.toggle("bad", !free(lay, t.col, t.row, it.h, it));
-    });
-    function target(ev) {
-      var g = v("grid"), cw = (g.clientWidth + 20) / COLS, ch = (g.clientHeight + 20) / ROWS;
-      return { col: Math.max(1, Math.min(COLS, it.col + Math.round((ev.clientX - x0) / k / cw))), row: it.row + Math.round((ev.clientY - y0) / k / ch) };
-    }
-    function end(ev) {
-      if (!drag) return; drag = false;
-      var t = target(ev);
-      if (free(lay, t.col, t.row, it.h, it)) { it.col = t.col; it.row = t.row; }
-      render();
-    }
-    ed.addEventListener("pointerup", end);
-    ed.addEventListener("pointercancel", function () { drag = false; render(); });
-  }
-  // « + » sur une case libre : choisir l'entité et la taille de sa carte
-  function openPicker(pk, lay, c) {
-    pk.hidden = false;
-    var all = catalog(c), used = lay.map(function (it) { return it.key; });
-    var hd = el("div", "pk-head");
-    hd.appendChild(el("p", "w-lbl", "Add a card · column " + adding.col + " · row " + adding.row));
-    var cancel = el("button", "pk-cancel", "Cancel"); cancel.type = "button";
-    cancel.addEventListener("click", function () { adding = null; render(); });
-    hd.appendChild(cancel); pk.appendChild(hd);
-    var list = el("div", "pk-list");
-    Object.keys(all).filter(function (key) { return used.indexOf(key) < 0; }).forEach(function (key) {
-      var it = all[key], row = el("div", "pk-row");
-      var who = el("div", "pk-who"); who.appendChild(el("p", "pk-nm", it.name)); who.appendChild(el("p", "pk-k", it.kind + (it.room ? " · " + roomName(it.room) : "")));
-      row.appendChild(who);
-      it.sizes.slice().sort().forEach(function (h) {
-        var bt = el("button", "pk-sz", h === 2 ? "S" : h === 3 ? "M" : "L"); bt.type = "button"; bt.title = SIZE_NAME[h];
-        bt.disabled = !free(lay, adding.col, adding.row, h);
-        bt.addEventListener("click", function () { lay.push({ key: key, col: adding.col, row: adding.row, h: h }); adding = null; render(); });
-        row.appendChild(bt);
-      });
-      list.appendChild(row);
-    });
-    pk.appendChild(list);
+    var k = frame.clientWidth / DotHomeAssistant.slots.xl[0] || 0.5;
+    var sec = document.querySelector("[aria-labelledby=cardsTitle]"); sec.style.setProperty("--k", k);
+    sec.querySelectorAll(".cbox").forEach(function (b) { var h = +b.dataset.h; b.style.width = 387 * k + "px"; b.style.height = (h * (400 / 6 + 20) - 20) * k + "px"; });
   }
 
-  function render() {
-    var c = colors(), Z = SIZES[size], offline = val("sample") === "offline";
-    stage.style.setProperty("--accent", c.accent);
-    stage.style.setProperty("--lit", c.lit);
-    stage.style.setProperty("--label", c.label);
-    stage.className = "stage " + size + (offline ? " offline" : "");
-    var onCount = E.filter(function (e) { return (e.type === "light" || e.type === "plug") && e.on; }).length;
-    v("state").textContent = offline ? "HOME · OFFLINE" : "HOME · " + onCount + " ON";
-    var showTabs = v("showTabs").checked && size !== "s";
-    if (!showTabs) room = "fav";
-    var tabs = v("tabs"); tabs.innerHTML = ""; tabs.hidden = offline || !showTabs;
-    ROOMS.forEach(function (r) {
-      var b = el("button", "tab", r.name); b.type = "button"; b.setAttribute("role", "tab");
-      b.setAttribute("aria-selected", r.id === room ? "true" : "false");
-      b.addEventListener("click", function () { room = r.id; render(); });
-      tabs.appendChild(b);
-    });
-    var grid = v("grid"); grid.innerHTML = ""; grid.hidden = offline;
-    v("empty").hidden = !offline;
-    if (offline) { drawCards(c); return; }
-    grid.style.top = showTabs ? "" : (size === "s" ? "24px" : "100px");
-    grid.style.height = showTabs ? "" : (size === "s" ? "296px" : "548px");
-    // XL et L : les cartes posées dans la grille (6 rangées ; 6 colonnes en XL, 4 en L), une colonne après l'autre.
-    // Favorites : lumières, capteurs, automatisations, autres entités, puis mises à jour et services en pleine hauteur.
-    // Plus tard, l'utilisateur choisira lui-même la carte, sa taille et sa place dans les réglages du compagnon.
-    var guide = v("guide"); guide.innerHTML = ""; guide.hidden = true;
-    var picker = v("picker"); picker.innerHTML = ""; picker.hidden = true;
-    var editing = v("editMode").checked && (size === "xl" || size === "l");
-    stage.classList.toggle("editing", editing);
-    grid.classList.toggle("cells", size === "xl" || size === "l");
-    if (size === "xl" || size === "l") {
-      var COLS = size === "xl" ? 6 : 4, lay = layoutOf(c);
-      lay.forEach(function (it) {
-        var k = catalog(c)[it.key]; if (!k) return;
-        var b = el("div", "cbox"), inn = el("div", "in");
-        b.style.gridColumn = it.col; b.style.gridRow = it.row + " / span " + it.h;
-        b.appendChild(inn); grid.appendChild(b); colorsOn(inn, c); k.draw(inn);
-        if (editing) editCard(b, it, lay, COLS);
-      });
-      if (v("showGrid").checked || editing) {
-        guide.hidden = false;
-        guide.style.top = grid.style.top; guide.style.height = grid.style.height;
-        for (var r = 1; r <= ROWS; r++) for (var q = 1; q <= COLS; q++) {
-          var cell = el("i");
-          if (editing && free(lay, q, r, 1)) {
-            cell.className = "free";
-            var add = el("button", "add", "+"); add.type = "button"; add.setAttribute("aria-label", "Add a card");
-            (function (q, r) { add.addEventListener("click", function () { adding = { col: q, row: r }; render(); }); })(q, r);
-            cell.appendChild(add);
-          }
-          guide.appendChild(cell);
-        }
-      }
-      if (editing && adding) openPicker(picker, lay, c);
-    }
-    drawCards(c);
-  }
-
+  function render() { ha.render(); drawCards(); }
   document.querySelectorAll(".settings input").forEach(function (i) { i.addEventListener("input", render); i.addEventListener("change", render); });
-  v("editMode").addEventListener("change", function () { adding = null; });
-  v("resetLayout").addEventListener("click", function () { LAYOUTS = {}; adding = null; render(); });
   document.querySelectorAll(".preset[data-accent]").forEach(function (b) {
     b.addEventListener("click", function () { v("accentColor").value = b.getAttribute("data-accent"); render(); });
   });
-  document.querySelectorAll(".sizebar .preset").forEach(function (b) {
-    b.addEventListener("click", function () {
-      size = b.getAttribute("data-size");
-      document.querySelectorAll(".sizebar .preset").forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
-      frame.className = "frame " + size;
-      v("sizeTag").textContent = "Version 0.1 · taille réelle " + SIZES[size].tag;
-      v("sizeNote").textContent = SIZES[size].note;
-      render(); fit();
-    });
-  });
-
-  render(); fit();
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(render);
+  v("resetLayout").addEventListener("click", function () { ha.resetLayout(); });
+  drawCards(); fit();
 })();
 </script>
 </body>

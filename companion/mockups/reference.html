@@ -228,7 +228,7 @@ tr.todo td:nth-child(3) { color: var(--muted); }
   // ---------- Dot Hub d'exemple : la place du compagnon
   var now = Date.now();
   var STATE = {
-    modules: [{ id: "clock", name: "Dot Clock" }, { id: "steam", name: "Dot Steam" }, { id: "bambulab", name: "Dot Bambu Lab" }],
+    modules: [{ id: "clock", name: "Dot Clock" }, { id: "steam", name: "Dot Steam" }, { id: "bambulab", name: "Dot Bambu Lab" }, { id: "homeassistant", name: "Dot Home Assistant" }],
     // un Dot Hub posé dans iCUE, sur l'accueil ; pas encore de page (la carte DOT HUB n'a que « + »)
     instances: { "c0rs41r-edge-a1b2": { name: "", page: null, last_seen: now - 40000, version: 1, identify: 0 } },
     pages: [], nextPage: 1,
@@ -253,6 +253,22 @@ tr.todo td:nth-child(3) { color: var(--muted); }
       state: "printing", model: "P1S", pct: 42, layer: 88, layers: 240, left: 131, file: "Desk_hook_v3", speed: "Standard",
       nozzle: { v: 219, t: 220 }, bed: { v: 60, t: 60 }, fan: 100, light: true, tray: 0,
       ams: [{ type: "PLA", color: "#000000", remain: 0.9 }, { type: "PLA", color: "#ffffff", remain: 0.4 }, { type: "PETG", color: "#ff6a00", remain: null }, {}]
+    };
+  }
+  // maison d'exemple pour l'aperçu de Dot Home Assistant (même format que homeassistant::state de main.rs)
+  function homeassistantState() {
+    return {
+      state: "online", areas: [{ id: "living", name: "Living room" }, { id: "bedroom", name: "Bedroom" }],
+      entities: [
+        { id: "light.ceiling", type: "light", name: "Ceiling", area: "living", on: true, lvl: 0.8, color: true, white: true, mode: "color", rgb: "#ffb35c", kelvin: 2700 },
+        { id: "light.bed_lamp", type: "light", name: "Bed lamp", area: "bedroom", on: false, lvl: 0.3, color: false, white: true, mode: "white", kelvin: 2700 },
+        { id: "th:bedroom", type: "th", name: "Bedroom sensor", area: "bedroom", temp: 19.8, hum: 52 },
+        { id: "climate.living", type: "climate", name: "Thermostat", area: "living", cur: 21.4, target: 22, action: "heating", min: 7, max: 30, step: 0.5 },
+        { id: "lock.front_door", type: "lock", name: "Front door", area: "", on: true },
+        { id: "automation.good_night", type: "auto", name: "Good night", on: true, last: new Date(Date.now() - 36e5).toISOString() }
+      ],
+      updates: [{ id: "update.core", name: "Home Assistant Core", ver: "2026.11.1" }],
+      services: [{ name: "Frigate", st: "err" }, { name: "Philips Hue", st: "ok" }, { name: "Zigbee2MQTT", st: "ok" }]
     };
   }
   var toastTimer = null;
@@ -298,6 +314,8 @@ tr.todo td:nth-child(3) { color: var(--muted); }
     if (path === "/api/bambulab/state") return json(bambulabState());
     var bcmd = /^\/api\/bambulab\/(light|pause|resume|stop)$/.exec(path);
     if (bcmd && m === "POST") { toast({ light: "La lampe de l'imprimante s'allumerait ou s'éteindrait", pause: "L'impression se mettrait en pause", resume: "L'impression reprendrait", stop: "L'impression serait annulée" }[bcmd[1]]); return json({ ok: true }); }
+    if (path === "/api/homeassistant/state") return json(homeassistantState());
+    if (path === "/api/homeassistant/call" && m === "POST") { toast("Home Assistant recevrait " + (body ? body.domain + "." + body.service + " · " + body.entity : "la commande")); return json({ ok: true }); }
     if (path === "/api/startup" && m === "GET") return json({ supported: true, enabled: STATE.startup });
     if (path === "/api/startup" && m === "PUT") { STATE.startup = !!(body && body.enabled); toast(STATE.startup ? "Dot Companion démarrera avec Windows" : "Dot Companion ne démarrera plus avec Windows"); return json({ ok: true, supported: true, enabled: STATE.startup }); }
     if (path === "/api/health") return json({ ok: true, version: "0.5.0" });
@@ -329,9 +347,10 @@ tr.todo td:nth-child(3) { color: var(--muted); }
       fetch("widgets/dot-clock/index.html").then(function (r) { return r.text(); }),
       fetch("widgets/dot-steam/index.html").then(function (r) { return r.text(); }),
       fetch("companion/web/home.html").then(function (r) { return r.text(); }),
-      fetch("widgets/dot-bambulab/index.html").then(function (r) { return r.text(); })
+      fetch("widgets/dot-bambulab/index.html").then(function (r) { return r.text(); }),
+      fetch("widgets/dot-homeassistant/index.html").then(function (r) { return r.text(); })
     ]).then(function (res) {
-      PAGES.clock = res[1]; PAGES.steam = res[2]; PAGES.home = res[3]; PAGES.bambulab = res[4];
+      PAGES.clock = res[1]; PAGES.steam = res[2]; PAGES.home = res[3]; PAGES.bambulab = res[4]; PAGES.homeassistant = res[5];
       var fonts = new URL("widgets/dot-clock/resources/fonts/", ROOT).href;
       var html = res[0].replace(/url\("\/m\/clock\/resources\/fonts\//g, 'url("' + fonts)
         .replace("<head>", "<head><script>window.fetch = function (u, o) { return parent.__dotCompanionApi(u, o); }; window.__dotPreviewFrame = function (f, uid, inst, opts) { parent.__dotCompanionPreview(f, uid, inst, opts); };<\/script>");

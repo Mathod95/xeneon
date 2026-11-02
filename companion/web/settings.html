@@ -88,6 +88,8 @@ a { color: var(--accent); }
 			var doc = new DOMParser().parseFromString(html, "text/html"), props = {}, groups = [];
 			doc.querySelectorAll('meta[name="x-icue-property"]').forEach(function (m) {
 				var key = m.getAttribute("content");
+				// réglage tenu par le module lui-même (ex. disposition des cartes de Dot Home Assistant) : pas de champ
+				if (m.getAttribute("data-hidden") === "true") return;
 				props[key] = {
 					key: key, type: m.getAttribute("data-type"),
 					label: lit(m.getAttribute("data-label") || "''") || key,
@@ -236,6 +238,14 @@ a { color: var(--accent); }
 			card.frame.contentWindow.postMessage({ type: "dot-preview", settings: card.settings, theme: THEME }, "*");
 		});
 	}
+	// un module modifie l'un de ses réglages depuis son aperçu (ex. cartes déplacées dans Dot Home Assistant)
+	window.addEventListener("message", function (e) {
+		var d = e.data || {};
+		if (d.type !== "dot-set" || typeof d.key !== "string" || SECRET.test(d.key) || THEME_KEYS.indexOf(d.key) >= 0) return;
+		var card = PREVIEW.cards.filter(function (c) { return c.frame && c.frame.contentWindow === e.source; })[0];
+		if (!card || !card.id) return;
+		card.settings[d.key] = d.value; savePage(card);
+	});
 	// réglages d'une page : l'aperçu suit tout de suite, l'enregistrement part 250 ms plus tard
 	function savePage(card) {
 		if (!card.id) return;

@@ -7,6 +7,7 @@
 //! - ouvre la page de réglages dans le navigateur du PC quand on touche SETTINGS sur l'Edge ;
 //! - module Steam (Dot Steam) : jeux, téléchargements, jeu en cours, amis, lancement (voir `steam.rs`) ;
 //! - module Bambu Lab (Dot Bambu Lab) : imprimante 3D en réseau local, MQTT sur TLS (voir `bambulab.rs`) ;
+//! - module Home Assistant (Dot Home Assistant) : la maison, par l'API REST de Home Assistant (voir `homeassistant.rs`) ;
 //! - garde les secrets des modules (clés d'API) chiffrés avec DPAPI sous Windows ;
 //! - garde les pages de Dot Hub (un module ajouté avec « + » et ses réglages, communes à tous les Dot Hub),
 //!   la page affichée par chaque Dot Hub (clé = `uniqueId` iCUE) et les couleurs communes
@@ -28,6 +29,7 @@ use std::time::{SystemTime, UNIX_EPOCH};
 use tiny_http::{Header, Method, Request, Response, Server, StatusCode};
 
 mod bambulab;
+mod homeassistant;
 mod steam;
 #[cfg(any(windows, feature = "check-win"))]
 mod tray;
@@ -40,6 +42,7 @@ static WEB: Dir = include_dir!("$CARGO_MANIFEST_DIR/web");
 static CLOCK: Dir = include_dir!("$CARGO_MANIFEST_DIR/../widgets/dot-clock");
 static STEAM: Dir = include_dir!("$CARGO_MANIFEST_DIR/../widgets/dot-steam");
 static BAMBULAB: Dir = include_dir!("$CARGO_MANIFEST_DIR/../widgets/dot-bambulab");
+static HOMEASSISTANT: Dir = include_dir!("$CARGO_MANIFEST_DIR/../widgets/dot-homeassistant");
 
 struct Module {
     id: &'static str,
@@ -52,6 +55,7 @@ fn modules() -> Vec<Module> {
         Module { id: "clock", name: "Dot Clock", files: &CLOCK },
         Module { id: "steam", name: "Dot Steam", files: &STEAM },
         Module { id: "bambulab", name: "Dot Bambu Lab", files: &BAMBULAB },
+        Module { id: "homeassistant", name: "Dot Home Assistant", files: &HOMEASSISTANT },
     ]
 }
 
@@ -457,6 +461,11 @@ fn handle(mut req: Request, cfg: &mut Config) {
                 let t = bambulab_target(cfg, &url);
                 send_json(req, 200, &bambulab::state(&t))
             }
+            // Dot Home Assistant : entités, pièces, mises à jour et intégrations de la maison d'une page
+            "homeassistant" if seg(2) == "state" => {
+                let t = homeassistant_target(cfg, &url);
+                send_json(req, 200, &homeassistant::state(&t))
+            }
             "update" => send_json(req, 200, &update::status_json()),
             "startup" => send_json(req, 200, &json!({ "supported": startup::supported(), "enabled": startup::enabled() })),
             "theme" => send_json(req, 200, &json!({ "theme": theme_full(cfg), "version": cfg.theme_version, "defaults": THEME_DEFAULTS.iter().map(|(k, v)| (k.to_string(), Value::String(v.to_string()))).collect::<Map<String, Value>>() })),
@@ -640,6 +649,13 @@ fn handle(mut req: Request, cfg: &mut Config) {
             send_json(req, if ok { 200 } else { 400 }, &json!({ "ok": ok }))
         }
 
+        // Dot Home Assistant : appel d'un service (POST /api/homeassistant/call?page=… ou ?uid=…, corps { domain, service, entity, data })
+        (Method::Post, "api") if seg(1) == "homeassistant" && seg(2) == "call" => {
+            let t = homeassistant_target(cfg, &url);
+            let ok = read_json(&mut req, 1 << 14).map(|b| homeassistant::call(&t, &b)).unwrap_or(false);
+            send_json(req, if ok { 200 } else { 400 }, &json!({ "ok": ok }))
+        }
+
         (Method::Delete, "api") if seg(1) == "instance" => {
             cfg.instances.remove(seg(2));
             save_config(cfg);
@@ -662,6 +678,19 @@ fn bambulab_target(cfg: &Config, url: &str) -> bambulab::Target {
         ip: text("printerIp"),
         serial: text("printerSerial").to_uppercase(),
         code: settings.get("printerAccessCode").and_then(Value::as_str).and_then(unseal).unwrap_or_default().trim().to_string(),
+    }
+}
+
+/// Home Assistant d'une page de Dot Hub : ?page=<id>, sinon la page affichée par le Dot Hub ?uid=<uniqueId>.
+fn homeassistant_target(cfg: &Config, url: &str) -> homeassistant::Target {
+    let mut page = query(url, "page");
+    if page.is_empty() {
+        page = cfg.instances.get(&query(url, "uid")).and_then(|i| i.page.clone()).unwrap_or_default();
+    }
+    let settings = cfg.pages.iter().find(|p| p.id == page).map(|p| p.settings.clone()).unwrap_or_default();
+    homeassistant::Target {
+        url: settings.get("haUrl").and_then(Value::as_str).unwrap_or("").trim().to_string(),
+        token: settings.get("haToken").and_then(Value::as_str).and_then(unseal).unwrap_or_default().trim().to_string(),
     }
 }
 
@@ -746,7 +775,7 @@ fn open_url(url: &str) -> bool {
 // ---------------------------------------------------------------- secrets des modules
 
 /// Réglages secrets : jamais renvoyés en clair, gardés chiffrés (DPAPI, liés au compte Windows).
-const SECRET_KEYS: [&str; 2] = ["steamApiKey", "printerAccessCode"];
+const SECRET_KEYS: [&str; 3] = ["steamApiKey", "printerAccessCode", "haToken"];
 const MASK: &str = "••••••••";
 
 fn b64(data: &[u8]) -> String {

@@ -9,6 +9,7 @@ on:
       - "widgets/dot-clock/**"
       - "widgets/dot-steam/**"
       - "widgets/dot-bambulab/**"
+      - "widgets/dot-homeassistant/**"
       - ".github/workflows/companion.yml"
   workflow_dispatch:
 

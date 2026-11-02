@@ -352,6 +352,9 @@ COMPANION_FILES = [
     "widgets/dot-bambulab/index.html",
     "widgets/dot-bambulab/styles",
     "widgets/dot-bambulab/scripts",
+    "widgets/dot-homeassistant/index.html",
+    "widgets/dot-homeassistant/styles",
+    "widgets/dot-homeassistant/scripts",
 ]
 
 
@@ -416,6 +419,7 @@ LIVE_MODULES = {
     "dot-plex": ("plex", "DotPlex"),
     "dot-github": ("github", "DotGitHub"),
     "dot-glucose": ("glucose", "DotGlucose"),
+    "dot-homeassistant": ("homeassistant", "DotHomeAssistant"),
 }
 
 

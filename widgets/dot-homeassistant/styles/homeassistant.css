@@ -1,0 +1,130 @@
+/*
+ * Dot Home Assistant : le rendu (scène en pixels réels de l'emplacement), partagé par la maquette de référence,
+ * Dot Page et le module servi par Dot Companion. Tout est rangé sous .dot-homeassistant ; .dha-stage = l'écran entier,
+ * une carte seule (section Cartes de la maquette) n'a que .dot-homeassistant.
+ */
+.dot-homeassistant { --accent: #10b981; --lit: #f2f0e9; --label: #b8b6b0; --unlit: #1c1c1c; --alert: #ed403b; font-family: "Fira Code", Consolas, monospace; font-variant-ligatures: none; color: var(--lit); }
+.dot-homeassistant p { margin: 0; }
+.dot-homeassistant canvas { display: block; }
+.dot-homeassistant button { font-family: inherit; -webkit-tap-highlight-color: transparent; }
+.dot-homeassistant [hidden] { display: none !important; }
+
+/* ---------------------------------------------------------------- l'écran */
+.dha-stage { position: relative; overflow: hidden; background: #080808; }
+.dha-stage.xl { width: 2536px; height: 696px; }
+.dha-stage.l { width: 1688px; height: 696px; }
+.dha-stage.m { width: 840px; height: 696px; }
+.dha-stage.s { width: 840px; height: 344px; }
+.dha-stage > * { position: absolute; }
+.dha-stage .w-lbl { white-space: nowrap; font-size: 18px; line-height: 24px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); }
+
+/* libellé « ● DOT HOME ASSISTANT » : même place et même taille partout ; à droite, ce qui est allumé */
+.dha-stage .w-dot { left: 56px; top: 51px; width: 10px; height: 10px; border-radius: 50%; background: var(--accent); }
+.dha-stage.offline .w-dot { background: var(--alert); }
+.dha-stage .w-name { left: 80px; top: 44px; }
+.dha-stage .w-state { right: 56px; top: 44px; }
+
+/* onglets : Favorites, puis les pièces de Home Assistant */
+.dha-stage .tabs { left: 56px; top: 100px; display: flex; gap: 44px; overflow: hidden; }
+.dha-stage .tab { margin: -18px 0; padding: 18px 0; border: 0; background: transparent; cursor: pointer; font-size: 18px; line-height: 24px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); opacity: .5; white-space: nowrap; }
+.dha-stage .tab[aria-selected="true"] { color: var(--lit); opacity: 1; }
+.dha-stage .tab:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+/* grille : 6 rangées ; 6 colonnes en XL (387 × 67 px, 20 px d'écart), 4 en L, 2 en M. Une lumière prend 2 rangées
+   (153 px), une carte 3 (240 px), une liste 6 (500 px) ; chaque carte a sa colonne et sa rangée */
+.dha-stage .grid, .dha-stage .guide { left: 56px; top: 148px; height: 500px; display: grid; gap: 20px; grid-template-rows: repeat(6, minmax(0, 1fr)); }
+.dha-stage.notabs .grid, .dha-stage.notabs .guide { top: 100px; height: 548px; }
+.dha-stage.xl .grid, .dha-stage.xl .guide, .dha-stage.xl .tabs { width: 2424px; }
+.dha-stage.xl .grid, .dha-stage.xl .guide { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+.dha-stage.l .grid, .dha-stage.l .guide, .dha-stage.l .tabs { width: 1576px; }
+.dha-stage.l .grid, .dha-stage.l .guide { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.dha-stage.m .grid, .dha-stage.m .guide, .dha-stage.m .tabs { width: 728px; }
+.dha-stage.m .grid, .dha-stage.m .guide { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.dha-stage .grid > .cbox { position: relative; min-width: 0; min-height: 0; }
+.dha-stage .grid > .cbox > .in { width: 100%; height: 100%; }
+.dha-stage .guide { pointer-events: none; }
+.dha-stage .guide i { position: relative; border: 2px dashed #262626; border-radius: 18px; }
+
+/* hors ligne, ou taille sans mise en page */
+.dha-stage .w-empty { left: 56px; top: 100px; width: calc(100% - 112px); height: 548px; display: flex; flex-direction: column; justify-content: center; gap: 14px; }
+.dha-stage .w-empty .big { font-weight: 500; color: var(--lit); font-size: 64px; line-height: 80px; letter-spacing: .02em; text-transform: uppercase; }
+.dha-stage .w-empty .sm { color: var(--label); font-size: 24px; line-height: 32px; letter-spacing: .08em; text-transform: uppercase; }
+.dha-stage.s .w-empty { left: 48px; top: 48px; height: 248px; }
+.dha-stage.s .w-empty .big { font-size: 40px; line-height: 52px; }
+.dha-stage.s .w-dot, .dha-stage.s .w-name, .dha-stage.s .w-state { display: none; }
+
+/* édition (page de réglages du compagnon) : glisser une carte, S / M / L, ×, « + » sur une case libre */
+.dha-stage.editing .guide { pointer-events: auto; z-index: 0; }
+.dha-stage.editing .grid { z-index: 1; pointer-events: none; }
+.dha-stage.editing .grid > .cbox { pointer-events: auto; }
+.dha-stage.editing .grid .in { pointer-events: none; opacity: .55; }
+.dha-stage .guide .add { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; border-radius: 16px; background: transparent; color: #3a3a3a; font-size: 34px; line-height: 1; cursor: pointer; }
+.dha-stage .guide .add:hover, .dha-stage .guide .add:active { color: var(--accent); background: #0d0d0d; }
+.dha-stage .ed { position: absolute; inset: 0; border: 2px dashed var(--accent); border-radius: 18px; cursor: grab; touch-action: none; }
+.dha-stage .cbox.drag { z-index: 5; }
+.dha-stage .cbox.drag .ed { cursor: grabbing; background: rgba(16, 185, 129, .06); }
+.dha-stage .cbox.bad .ed { border-color: var(--alert); }
+.dha-stage .ed button { position: absolute; width: 60px; height: 60px; border-radius: 50%; border: 2px solid #2a2a2a; background: #080808; color: var(--lit); font-size: 22px; letter-spacing: .1em; cursor: pointer; }
+.dha-stage .ed .ed-x { top: 8px; right: 8px; font-size: 30px; }
+.dha-stage .ed .ed-sz { bottom: 8px; right: 8px; color: var(--accent); border-color: var(--accent); }
+.dha-stage .picker { left: 56px; top: 148px; height: 500px; z-index: 6; display: flex; flex-direction: column; gap: 20px; padding: 24px 28px; box-sizing: border-box; border: 2px solid var(--accent); border-radius: 18px; background: #080808; }
+.dha-stage.xl .picker { width: 2424px; }
+.dha-stage.l .picker { width: 1576px; }
+.dha-stage.m .picker { width: 728px; }
+.dha-stage.notabs .picker { top: 100px; height: 548px; }
+.dha-stage .pk-head { display: flex; justify-content: space-between; align-items: center; }
+.dha-stage .pk-cancel { height: 60px; padding: 0 28px; border-radius: 30px; border: 2px solid #2a2a2a; background: transparent; color: var(--lit); font-size: 18px; letter-spacing: .2em; text-transform: uppercase; cursor: pointer; }
+.dha-stage .pk-list { flex: 1; min-height: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px 28px; overflow-y: auto; align-content: start; scrollbar-width: thin; scrollbar-color: #2a2a2a transparent; }
+.dha-stage.l .pk-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.dha-stage.m .pk-list { grid-template-columns: minmax(0, 1fr); }
+.dha-stage .pk-sep { grid-column: 1 / -1; margin-top: 8px; font-size: 16px; line-height: 22px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); opacity: .6; }
+.dha-stage .pk-row { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.dha-stage .pk-who { flex: 1; min-width: 0; }
+.dha-stage .pk-nm { font-size: 22px; line-height: 28px; color: var(--lit); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dha-stage .pk-k { font-size: 16px; line-height: 22px; letter-spacing: .12em; text-transform: uppercase; color: var(--label); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dha-stage .pk-sz { flex: none; width: 60px; height: 60px; border-radius: 50%; border: 2px solid var(--accent); background: transparent; color: var(--accent); font-size: 22px; cursor: pointer; }
+.dha-stage .pk-sz:disabled { border-color: #2a2a2a; color: #3a3a3a; cursor: default; }
+.dha-stage .pk-none { font-size: 20px; letter-spacing: .1em; text-transform: uppercase; color: var(--label); }
+
+/* ---------------------------------------------------------------- les cartes */
+.dot-homeassistant .in.card { box-sizing: border-box; padding: 22px 24px; display: flex; flex-direction: column; justify-content: space-between; border: 2px solid #1d1d1d; border-radius: 18px; cursor: pointer; user-select: none; touch-action: none; overflow: hidden; }
+.dot-homeassistant .in.card.ro { cursor: default; }
+.dot-homeassistant .in.card:active:not(.ro), .dot-homeassistant .in.card.flash { border-color: var(--accent); background: #0d0d0d; }
+.dot-homeassistant .in.card.na { opacity: .45; cursor: default; }
+/* texte calé en haut du pictogramme, pas centré */
+.dot-homeassistant .c-head { display: flex; align-items: flex-start; gap: 22px; min-width: 0; }
+.dot-homeassistant .c-head canvas { flex: none; }
+.dot-homeassistant .c-who { flex: 1; min-width: 0; margin-top: -4px; } /* Fira Code 24 px : haut des lettres hautes au niveau du haut des points */
+.dot-homeassistant .c-nm { font-size: 24px; line-height: 30px; letter-spacing: .06em; color: var(--lit); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dot-homeassistant .c-ar { margin-top: 4px; font-size: 18px; line-height: 24px; letter-spacing: .12em; text-transform: uppercase; color: var(--label); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dot-homeassistant .c-ar.go, .dot-homeassistant .c-v .k.go { color: var(--accent); }
+/* valeurs (capteur, thermostat) : un seul bloc centré dans la largeur de la carte, chaque valeur centrée sur son libellé */
+.dot-homeassistant .c-vals { display: flex; justify-content: center; gap: 56px; }
+.dot-homeassistant .c-vals.tight { gap: 28px; }
+.dot-homeassistant .c-vals.tight .val { font-size: 42px; }
+.dot-homeassistant .c-v { text-align: center; }
+.dot-homeassistant .c-v .val { font-size: 48px; line-height: 56px; color: var(--lit); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.dot-homeassistant .c-v .val small { font-size: 22px; color: var(--label); margin-left: 6px; letter-spacing: .06em; }
+.dot-homeassistant .c-v .k { font-size: 18px; line-height: 24px; letter-spacing: .12em; text-transform: uppercase; color: var(--label); }
+.dot-homeassistant .c-st { font-size: 20px; line-height: 24px; letter-spacing: .12em; text-transform: uppercase; color: var(--label); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dot-homeassistant .c-st.go { color: var(--accent); }
+/* listes (mises à jour, services) : une ligne par élément, sous l'en-tête */
+.dot-homeassistant .in.card.list { justify-content: flex-start; }
+.dot-homeassistant .c-list { flex: 1; display: flex; flex-direction: column; gap: 6px; margin-top: 22px; min-height: 0; overflow: hidden; }
+.dot-homeassistant .c-li { position: relative; flex: none; display: flex; align-items: center; gap: 14px; height: 36px; padding: 0 2px; font-size: 18px; line-height: 24px; letter-spacing: .06em; color: var(--lit); border-radius: 8px; }
+.dot-homeassistant .c-li .n { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dot-homeassistant .c-li .r { flex: none; white-space: nowrap; font-size: 16px; letter-spacing: .1em; text-transform: uppercase; color: var(--label); font-variant-numeric: tabular-nums; }
+.dot-homeassistant .c-li .r.up { color: var(--accent); }
+.dot-homeassistant .c-li .r.err { color: var(--alert); }
+.dot-homeassistant .c-li i { flex: none; width: 12px; height: 12px; border-radius: 50%; background: var(--label); opacity: .5; }
+.dot-homeassistant .c-li i.ok { background: var(--accent); opacity: 1; }
+.dot-homeassistant .c-li i.err { background: var(--alert); opacity: 1; }
+.dot-homeassistant .c-li.hold { cursor: pointer; touch-action: none; }
+.dot-homeassistant .c-li .fill { position: absolute; left: 0; bottom: -2px; }
+.dot-homeassistant .c-more { margin-top: auto; font-size: 16px; letter-spacing: .14em; text-transform: uppercase; color: var(--label); }
+/* boutons en points (3 × 3, croix allumée, angles éteints) à droite du pictogramme, l'un au-dessus de l'autre :
+   3 + 1 + 3 = 7 rangées, la hauteur du pictogramme */
+.dot-homeassistant .c-btns { flex: none; display: flex; flex-direction: column; gap: 12px; }
+.dot-homeassistant .c-btn { display: block; padding: 6px; margin: -6px; border: 0; border-radius: 10px; background: transparent; cursor: pointer; }
+.dot-homeassistant .c-btn:active canvas { filter: brightness(1.3); }
+.dot-homeassistant .c-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
