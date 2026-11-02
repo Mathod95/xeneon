@@ -90,8 +90,9 @@ fn printer(t: &Target) -> Shared {
     p
 }
 
-/// TLS : certificat de l'imprimante accepté tel quel (signé par Bambu Lab, pas par une autorité publique),
-/// signatures quand même vérifiées.
+/// TLS : certificat de l'imprimante accepté tel quel (signé par Bambu Lab, pas par une autorité publique). Les signatures
+/// de l'échange ne sont pas vérifiées non plus : elles ne prouveraient rien de plus sur un certificat qu'on ne vérifie pas,
+/// et leur lecture peut échouer sur le format du certificat de l'imprimante.
 #[derive(Debug)]
 struct PrinterCert(Arc<rustls::crypto::CryptoProvider>);
 
@@ -99,11 +100,11 @@ impl ServerCertVerifier for PrinterCert {
     fn verify_server_cert(&self, _: &CertificateDer<'_>, _: &[CertificateDer<'_>], _: &ServerName<'_>, _: &[u8], _: UnixTime) -> Result<ServerCertVerified, rustls::Error> {
         Ok(ServerCertVerified::assertion())
     }
-    fn verify_tls12_signature(&self, m: &[u8], c: &CertificateDer<'_>, d: &DigitallySignedStruct) -> Result<HandshakeSignatureValid, rustls::Error> {
-        rustls::crypto::verify_tls12_signature(m, c, d, &self.0.signature_verification_algorithms)
+    fn verify_tls12_signature(&self, _: &[u8], _: &CertificateDer<'_>, _: &DigitallySignedStruct) -> Result<HandshakeSignatureValid, rustls::Error> {
+        Ok(HandshakeSignatureValid::assertion())
     }
-    fn verify_tls13_signature(&self, m: &[u8], c: &CertificateDer<'_>, d: &DigitallySignedStruct) -> Result<HandshakeSignatureValid, rustls::Error> {
-        rustls::crypto::verify_tls13_signature(m, c, d, &self.0.signature_verification_algorithms)
+    fn verify_tls13_signature(&self, _: &[u8], _: &CertificateDer<'_>, _: &DigitallySignedStruct) -> Result<HandshakeSignatureValid, rustls::Error> {
+        Ok(HandshakeSignatureValid::assertion())
     }
     fn supported_verify_schemes(&self) -> Vec<SignatureScheme> {
         self.0.signature_verification_algorithms.supported_schemes()
@@ -192,12 +193,14 @@ fn run(ip: &str, serial: &str, code: &str, p: Shared) {
 /// Message d'erreur affiché sous « Printer offline », en anglais comme tout l'écran.
 fn error_text(e: &str) -> String {
     let l = e.to_lowercase();
-    if l.contains("not authorized") || l.contains("bad user") || l.contains("refused") && l.contains("auth") {
+    if l.contains("notauthorized") || l.contains("not authorized") || l.contains("badusername") || l.contains("bad user") {
         "Wrong access code · check it in Dot Companion".into()
     } else if l.contains("timed out") || l.contains("timeout") || l.contains("unreachable") || l.contains("no route") || l.contains("refused") {
         "Printer unreachable · check its IP in Dot Companion".into()
     } else {
-        "Check IP and access code in Dot Companion".into()
+        // cause non reconnue : le message brut, pour comprendre (court, sur une ligne)
+        let raw: String = e.split_whitespace().collect::<Vec<_>>().join(" ").chars().take(140).collect();
+        format!("Connection failed · {raw}")
     }
 }
 
@@ -478,6 +481,14 @@ mod tests {
         let s = build(&g, "01P00A1");
         assert_eq!(s["state"], "finished");
         assert_eq!(s["last"]["file"], "Benchy");
+    }
+
+    #[test]
+    fn messages() {
+        assert!(error_text("Connection refused, return code: `NotAuthorized`").starts_with("Wrong access code"));
+        assert!(error_text("Connection refused, return code: `BadUserNamePassword`").starts_with("Wrong access code"));
+        assert!(error_text("I/O: Connection timed out (os error 110)").starts_with("Printer unreachable"));
+        assert_eq!(error_text("TLS: Io(bizarre)"), "Connection failed · TLS: Io(bizarre)");
     }
 
     #[test]
