@@ -25,7 +25,9 @@ La référence visuelle est [`mockups/reference.html`](mockups/reference.html) (
 | Show unlit dots | activé |
 | Couleurs | celles de la carte « Paramètres globaux » |
 
-La disposition des cartes (`haLayout`, caché) se règle sur l’aperçu de la page : glisser une carte, S / M / L pour sa taille, × pour la retirer, « + » sur une case libre pour ajouter une entité. Une disposition par onglet ; sans disposition, les cartes se rangent d’elles-mêmes.
+La disposition des cartes (`haLayout`, caché) se règle sur l’aperçu de la page : glisser une carte, S / M / L pour sa taille, × pour la retirer. « + » sur une case libre (ou toucher une carte) ouvre le formulaire de la carte : l’entité (toutes celles de Home Assistant, avec une recherche), son nom (pré-rempli), son icône, sa taille, ce qu’elle montre (« Show ») et « Touch control », avec l’aperçu de la carte. Une disposition par onglet ; sans disposition, les cartes se rangent d’elles-mêmes.
+
+Toute entité peut avoir sa carte : celles qui ne sont ni lumière, interrupteur, volet, thermostat, serrure, scène ou automatisation (capteur binaire, personne, météo, lecteur, capteur texte…) affichent leur état.
 
 ## Tailles
 

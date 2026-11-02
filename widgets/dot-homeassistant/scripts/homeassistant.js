@@ -13,7 +13,8 @@
  *   DotHomeAssistant.card(entity, rows, settings)  // une carte seule (section Cartes de la maquette), exemples
  *
  * Réglages (tous facultatifs) : showTabs, showUnlit, accent, lit, unlit, label, layout (texte JSON :
- * { "<onglet>": [{ key, col, row, h }] }). Sans `state`, l'exemple de la maquette (demo()) : les touchers le modifient.
+ * { "<onglet>": [{ key, col, row, h, name?, pic?, hide?: [parties cachées], ro? }] }, voir parts()).
+ * Sans `state`, l'exemple de la maquette (demo()) : les touchers le modifient.
  */
 (function () {
 	"use strict";
@@ -22,9 +23,17 @@
 	var COLS = { xl: 6, l: 4, m: 2, s: 0 }, ROWS = 6, PITCH = 12, BAR = 12;
 	var DEFAULTS = { showTabs: true, showUnlit: true, grid: false, accent: "#10b981", lit: "#f2f0e9", unlit: "#1c1c1c", label: "#b8b6b0", layout: "" };
 	var SIZE_NAME = { 2: "Small · 1 × 2", 3: "Medium · 1 × 3", 6: "Tall · 1 × 6" };
-	var KIND = { light: "Light", plug: "Switch", cover: "Cover", climate: "Thermostat", lock: "Lock", scene: "Scene", auto: "Automation", sensor: "Sensor", power: "Power", th: "Temperature · humidity", list: "List" };
+	var KIND = { light: "Light", plug: "Switch", cover: "Cover", climate: "Thermostat", lock: "Lock", scene: "Scene", auto: "Automation", sensor: "Sensor", power: "Power", th: "Temperature · humidity", binary: "Binary sensor", state: "State", list: "List" };
 	// tailles possibles d'une carte, en rangées (la première est celle par défaut)
-	var SIZES = { light: [2, 3], plug: [2, 3], scene: [2, 3], auto: [2, 3], cover: [3], climate: [3], lock: [3], sensor: [3], power: [3], th: [3], list: [6, 3] };
+	var SIZES = { light: [2, 3], plug: [2, 3], scene: [2, 3], auto: [2, 3], cover: [3], climate: [3], lock: [3], sensor: [3, 2], power: [3, 2], th: [3], binary: [2, 3], state: [3, 2], list: [6, 3] };
+	// cartes qui montrent une valeur (capteur, état) : en petite taille, la valeur passe sous le nom
+	var VALUE = { sensor: 1, power: 1, binary: 1, state: 1 };
+	// cartes qui commandent quelque chose : le toucher peut être coupé (« Touch control »)
+	var CONTROL = { light: 1, plug: 1, cover: 1, climate: 1, lock: 1, scene: 1, auto: 1 };
+	var DOMAIN_NAME = { light: "Light", "switch": "Switch", input_boolean: "Toggle", fan: "Fan", cover: "Cover", climate: "Thermostat", lock: "Lock", scene: "Scene", script: "Script", automation: "Automation", sensor: "Sensor", binary_sensor: "Binary sensor", person: "Person", device_tracker: "Tracker", weather: "Weather", sun: "Sun", media_player: "Media player", input_select: "Select", select: "Select", input_number: "Number", number: "Number", input_text: "Text", vacuum: "Vacuum", alarm_control_panel: "Alarm", water_heater: "Water heater", humidifier: "Humidifier", calendar: "Calendar", button: "Button", input_button: "Button", siren: "Siren", valve: "Valve", lawn_mower: "Mower", remote: "Remote" };
+	var DC_NAME = { temperature: "Temperature", humidity: "Humidity", power: "Power", energy: "Energy", battery: "Battery", illuminance: "Light", carbon_dioxide: "CO₂", pm25: "PM2.5", voltage: "Voltage", current: "Current", pressure: "Pressure", door: "Door", window: "Window", garage_door: "Garage door", opening: "Opening", motion: "Motion", occupancy: "Occupancy", presence: "Presence", moisture: "Moisture", smoke: "Smoke", connectivity: "Connectivity", plug: "Plug" };
+	// icônes proposées dans le formulaire d'une carte, dans cet ordre
+	var PIC_LIST = ["light", "group", "plug", "fan", "tv", "climate", "drop", "sun", "cover", "door", "lock", "home", "person", "sensor", "power", "scene", "auto", "update", "services", "dot"];
 
 	// pictogrammes 7 × 7 points
 	var PICS = {
@@ -39,7 +48,15 @@
 		group: [".......", ".#...#.", "#.#.#.#", "#.#.#.#", ".#...#.", ".#...#.", "......."],
 		auto: ["..#....", "..##...", "..###..", "..####.", "..###..", "..##...", "..#...."],
 		update: ["...#...", "...#...", ".#.#.#.", "..###..", "...#...", "#.....#", "#######"],
-		services: ["#######", "#.....#", "#######", ".......", "#######", "#.....#", "#######"]
+		services: ["#######", "#.....#", "#######", ".......", "#######", "#.....#", "#######"],
+		fan: ["##...##", "###.###", ".##.##.", "...#...", ".##.##.", "###.###", "##...##"],
+		tv: ["#######", "#.....#", "#.....#", "#.....#", "#######", "...#...", ".#####."],
+		drop: ["...#...", "..###..", "..###..", ".#####.", ".#####.", ".#####.", "..###.."],
+		sun: ["#..#..#", ".#...#.", "..###..", "#.###.#", "..###..", ".#...#.", "#..#..#"],
+		door: [".#####.", ".#...#.", ".#...#.", ".#..##.", ".#...#.", ".#...#.", ".#####."],
+		home: ["...#...", "..###..", ".#####.", "#######", ".#...#.", ".#.#.#.", ".#.#.#."],
+		person: ["..###..", "..###..", "..###..", ".......", ".#####.", "#######", "#######"],
+		dot: [".......", "..###..", ".#####.", ".#####.", ".#####.", "..###..", "......."]
 	};
 	// couleurs proposées au toucher du bouton couleur, blancs au toucher du bouton température
 	var LIGHT_COLORS = ["#ffb35c", "#ff5a4e", "#ff6fd8", "#8b7bff", "#4fa3ff", "#3fe0a0"];
@@ -53,13 +70,13 @@
 		return { cv: cv, ctx: ctx };
 	}
 	function dot(ctx, x, y, r) { ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill(); }
-	function pic(key, on, c) {
-		var g = PICS[key] || PICS.sensor, k = canvas(7 * PITCH, 7 * PITCH);
+	function pic(key, on, c, pitch) {
+		var g = PICS[key] || PICS.sensor, P = pitch || PITCH, k = canvas(7 * P, 7 * P);
 		for (var y = 0; y < 7; y++) for (var x = 0; x < 7; x++) {
 			var col = g[y][x] === "#" ? (on ? c.accent : c.lit) : c.unlit;
 			if (!col) continue;
 			k.ctx.globalAlpha = g[y][x] === "#" && !on ? 0.55 : 1;
-			k.ctx.fillStyle = col; dot(k.ctx, x * PITCH + PITCH / 2, y * PITCH + PITCH / 2, PITCH * 0.38);
+			k.ctx.fillStyle = col; dot(k.ctx, x * P + P / 2, y * P + P / 2, P * 0.38);
 		}
 		return k.cv;
 	}
@@ -89,6 +106,50 @@
 	function kelvinIndex(k) { return nearest(KELVINS, function (x) { return Math.abs(x[0] - (k || 2700)); }); }
 	function domain(id) { return String(id).split(".")[0]; }
 	function fmt1(x) { return x == null ? "--" : (Math.round(x * 10) / 10).toFixed(1); }
+	// « partlycloudy », « not_home » → « Partly cloudy », « Not home »
+	function pretty(v) {
+		var t = String(v == null ? "" : v).replace(/^partlycloudy$/, "partly cloudy").replace(/^clear-night$/, "clear night").replace(/[_-]+/g, " ").trim();
+		return t ? t.charAt(0).toUpperCase() + t.slice(1) : "--";
+	}
+	function domainName(id) { var d = domain(id); return DOMAIN_NAME[d] || pretty(d); }
+	// texte d'un capteur binaire selon sa classe
+	function binText(dc, on) {
+		if (["door", "window", "garage_door", "opening"].indexOf(dc) >= 0) return on ? "Open" : "Closed";
+		if (["motion", "occupancy", "presence"].indexOf(dc) >= 0) return on ? "Detected" : "Clear";
+		if (dc === "moisture") return on ? "Wet" : "Dry";
+		if (dc === "smoke" || dc === "gas") return on ? "Detected" : "Clear";
+		if (dc === "connectivity") return on ? "Connected" : "Disconnected";
+		return on ? "On" : "Off";
+	}
+	// valeur d'une carte capteur ou état : { v, u, k (libellé), on }
+	function valueOf(e) {
+		if (e.type === "binary") return { v: binText(e.dc, e.on), u: "", k: DC_NAME[e.dc] || "State", on: !!e.on };
+		if (e.type === "state") return { v: pretty(e.value), u: e.unit || "", k: domainName(e.id), on: ["on", "home", "playing", "open", "active", "cleaning", "heat", "cool"].indexOf(e.value) >= 0, text: !/^-?[\d.]+$/.test(String(e.value)) };
+		return { v: e.value == null ? "--" : String(e.value), u: e.unit || "", k: e.type === "power" ? "Power" : DC_NAME[e.dc] || "Value", on: false };
+	}
+	function defaultPic(e) {
+		if (e.type === "th") return "climate";
+		if (e.type === "light") return e.members != null ? "group" : "light";
+		if (e.type === "binary") return ["door", "window", "garage_door", "opening"].indexOf(e.dc) >= 0 ? "door" : e.dc === "moisture" ? "drop" : "sensor";
+		if (e.type === "plug") return domain(e.id) === "fan" ? "fan" : "plug";
+		if (e.type === "state") return { person: "person", device_tracker: "person", weather: "sun", sun: "sun", media_player: "tv", fan: "fan" }[domain(e.id)] || "sensor";
+		if (e.type === "sensor") return e.dc === "humidity" || e.dc === "moisture" ? "drop" : e.dc === "temperature" ? "climate" : "sensor";
+		return PICS[e.type] ? e.type : "sensor";
+	}
+	// options d'une carte (enregistrées avec sa place) : name, pic, hide (parties cachées), ro (toucher coupé)
+	function shown(o, k) { return !(o && o.hide && o.hide.indexOf(k) >= 0); }
+	// parties d'une carte que le formulaire propose de cacher : [clé, libellé]
+	function parts(item) {
+		if (item.list) return [["sub", item.list === "update" ? "Count" : "Running count"]];
+		var e = item.e, t = e.type, p = [["sub", t === "auto" ? "Last run" : t === "light" && e.members != null ? "Lights on" : "Room"]];
+		if (t === "light") { p.push(["bar", "Brightness bar"]); if (e.color) p.push(["color", "Color button"]); if (e.white) p.push(["white", "White button"]); }
+		if (t === "cover") p.push(["bar", "Position bar"]);
+		if (t === "climate") p.push(["cur", "Current"], ["target", "Target"], ["btns", "± buttons"]);
+		if (t === "th") p.push(["temp", "Temperature"], ["hum", "Humidity"]);
+		if (VALUE[t]) p.push(["val", "Value"], ["unit", "Unit"], ["k", "Label"]);
+		if (t === "plug" || t === "lock" || t === "scene") p.push(["st", "State"]);
+		return p;
+	}
 	// dernier lancement d'une automatisation
 	function ago(iso) {
 		if (!iso) return "Never";
@@ -131,7 +192,15 @@
 			{ id: "switch.coffee", type: "plug", name: "Coffee machine", area: "kitchen", on: false },
 			{ id: "switch.tv", type: "plug", name: "TV", area: "living", on: true },
 			{ id: "switch.monitor", type: "plug", name: "Monitor", area: "office", on: true },
-			{ id: "sensor.co2", type: "sensor", name: "CO₂", area: "office", value: 640, unit: "ppm" }
+			{ id: "sensor.co2", type: "sensor", name: "CO₂", area: "office", value: 640, unit: "ppm", dc: "carbon_dioxide" },
+			{ id: "sensor.bedroom_temperature", type: "sensor", name: "Bedroom temperature", area: "bedroom", value: 19.8, unit: "°C", dc: "temperature" },
+			{ id: "sensor.bedroom_humidity", type: "sensor", name: "Bedroom humidity", area: "bedroom", value: 52, unit: "%", dc: "humidity" },
+			{ id: "binary_sensor.front_door", type: "binary", name: "Front door contact", area: "entrance", on: false, dc: "door" },
+			{ id: "binary_sensor.hall_motion", type: "binary", name: "Hall motion", area: "entrance", on: true, dc: "motion" },
+			{ id: "person.alex", type: "state", name: "Alex", value: "home" },
+			{ id: "weather.home", type: "state", name: "Forecast", value: "partlycloudy" },
+			{ id: "media_player.living_tv", type: "state", name: "Living room TV", area: "living", value: "playing" },
+			{ id: "sensor.washing_machine", type: "state", name: "Washing machine", area: "kitchen", value: "running" }
 		];
 		var U = [
 			{ id: "update.core", name: "Home Assistant Core", ver: "2026.11.0" }, { id: "update.os", name: "Home Assistant OS", ver: "17.1" },
@@ -172,11 +241,12 @@
 	}
 
 	// ---------------------------------------------------------------- les cartes
-	// ctx : { c (couleurs), call(domain, service, entity, data), redraw() }
-	function head(kind, on, name, area, c) {
+	// x : { c (couleurs), st (état), call(domain, service, entity, data), redraw() } ; o : options de la carte et sa taille (h)
+	function head(kind, on, name, sub, c) {
 		var h = el("div", "c-head");
 		h.appendChild(pic(kind, on, c));
-		var who = el("div", "c-who"); who.appendChild(el("p", "c-nm", name)); who.appendChild(el("p", "c-ar", area));
+		var who = el("div", "c-who"); who.appendChild(el("p", "c-nm", name));
+		if (sub !== null) who.appendChild(el("p", "c-ar", sub));
 		h.appendChild(who);
 		return h;
 	}
@@ -187,137 +257,168 @@
 		if (ev.clientY < r.top - pad || ev.clientY > r.bottom + pad) return null;
 		return Math.max(0, Math.min(1, (ev.clientX - r.left) / r.width));
 	}
-	function draw(inn, e, x) {
-		var c = x.c, st = x.st;
+	function vals(items, tight) {
+		var vs = el("div", "c-vals" + (tight ? " tight" : ""));
+		items.forEach(function (y) {
+			var v0 = el("div", "c-v"), vp = el("p", "val" + (y[3] ? " txt" : ""), y[0]);
+			if (y[1]) vp.appendChild(el("small", "", y[1]));
+			v0.appendChild(vp);
+			if (y[2] !== null) { var k = el("p", "k", y[2]); if (y[4]) k.classList.add("go"); v0.appendChild(k); }
+			vs.appendChild(v0);
+		});
+		return vs;
+	}
+	function draw(inn, e, x, o) {
+		o = o || {};
+		var c = x.c, st = x.st, rows = o.h || 3, ctl = !o.ro;
+		var name = o.name || e.name, icon = o.pic && PICS[o.pic] ? o.pic : defaultPic(e), sub = shown(o, "sub");
 		inn.className = "in card"; inn.innerHTML = "";
-		if (e.na) { inn.classList.add("na"); inn.appendChild(head(e.type === "th" ? "climate" : e.type, false, e.name, "Unavailable", c)); return; }
+		if (!ctl || !CONTROL[e.type]) inn.classList.add("ro");
+		if (e.na) { inn.classList.add("na"); inn.appendChild(head(icon, false, name, "Unavailable", c)); return; }
 		var w = function () { return Math.max(60, (inn.clientWidth || 387) - 48); };
 		var area = areaName(st, e.area);
 
 		if (e.type === "light") {
 			var group = e.members != null, white = e.mode === "white";
-			var h = head(group ? "group" : "light", e.on, e.name, group ? e.membersOn + " / " + e.members + " on" : area, c);
-			if (e.color || e.white) {
+			var h = head(icon, e.on, name, !sub ? null : group ? e.membersOn + " / " + e.members + " on" : area, c);
+			var wantC = e.color && shown(o, "color"), wantW = e.white && shown(o, "white");
+			if (wantC || wantW) {
 				var btns = el("div", "c-btns"), colorBtn = el("button", "c-btn"), tempBtn = el("button", "c-btn");
 				colorBtn.type = tempBtn.type = "button";
 				colorBtn.setAttribute("aria-label", "Color"); tempBtn.setAttribute("aria-label", "White temperature");
 				colorBtn.appendChild(cross(LIGHT_COLORS[colorIndex(e.rgb)], white ? 0.4 : 1, c));
 				tempBtn.appendChild(cross(KELVINS[kelvinIndex(e.kelvin)][1], white ? 1 : 0.4, c));
-				colorBtn.addEventListener("click", function (ev) {
-					ev.stopPropagation();
-					var i = white ? colorIndex(e.rgb) : (colorIndex(e.rgb) + 1) % LIGHT_COLORS.length;
-					x.call("light", "turn_on", e.id, { rgb_color: rgbOf(LIGHT_COLORS[i]) });
-				});
-				tempBtn.addEventListener("click", function (ev) {
-					ev.stopPropagation();
-					var i = white ? (kelvinIndex(e.kelvin) + 1) % KELVINS.length : kelvinIndex(e.kelvin);
-					x.call("light", "turn_on", e.id, { color_temp_kelvin: KELVINS[i][0] });
-				});
-				colorBtn.hidden = !e.color; tempBtn.hidden = !e.white;
+				if (ctl) {
+					colorBtn.addEventListener("click", function (ev) {
+						ev.stopPropagation();
+						var i = white ? colorIndex(e.rgb) : (colorIndex(e.rgb) + 1) % LIGHT_COLORS.length;
+						x.call("light", "turn_on", e.id, { rgb_color: rgbOf(LIGHT_COLORS[i]) });
+					});
+					tempBtn.addEventListener("click", function (ev) {
+						ev.stopPropagation();
+						var i = white ? (kelvinIndex(e.kelvin) + 1) % KELVINS.length : kelvinIndex(e.kelvin);
+						x.call("light", "turn_on", e.id, { color_temp_kelvin: KELVINS[i][0] });
+					});
+				} else colorBtn.disabled = tempBtn.disabled = true;
+				colorBtn.hidden = !wantC; tempBtn.hidden = !wantW;
 				btns.appendChild(colorBtn); btns.appendChild(tempBtn); h.appendChild(btns);
 			}
 			inn.appendChild(h);
-			var b = bar(w(), e.lvl, BAR, c, e.on); inn.appendChild(b);
-			inn.addEventListener("click", function (ev) {
-				var f = onBar(ev, b);
+			var b = null;
+			if (shown(o, "bar")) { b = bar(w(), e.lvl, BAR, c, e.on); inn.appendChild(b); }
+			if (ctl) inn.addEventListener("click", function (ev) {
+				var f = b ? onBar(ev, b) : null;
 				if (f !== null) x.call("light", "turn_on", e.id, { brightness_pct: Math.max(5, Math.round(f * 100)) });
 				else x.call("light", "toggle", e.id);
 			});
 			return;
 		}
 		if (e.type === "th") {
-			inn.classList.add("ro");
-			inn.appendChild(head("climate", false, e.name, area, c));
-			var vals = el("div", "c-vals");
-			[[fmt1(e.temp), "°C", "Temperature"], [e.hum == null ? "--" : String(Math.round(e.hum)), "%", "Humidity"]].forEach(function (y) {
-				var v0 = el("div", "c-v"), vp = el("p", "val", y[0]); vp.appendChild(el("small", "", y[1]));
-				v0.appendChild(vp); v0.appendChild(el("p", "k", y[2])); vals.appendChild(v0);
-			});
-			inn.appendChild(vals);
+			inn.appendChild(head(icon, false, name, sub ? area : null, c));
+			var items = [];
+			if (shown(o, "temp")) items.push([fmt1(e.temp), "°C", "Temperature"]);
+			if (shown(o, "hum")) items.push([e.hum == null ? "--" : String(Math.round(e.hum)), "%", "Humidity"]);
+			if (items.length) inn.appendChild(vals(items));
 			return;
 		}
 		if (e.type === "auto") {
 			var running = e.running && Date.now() - e.running < 1600;
-			var ha = head("auto", running, e.name, !e.on ? "Disabled" : running ? "Running…" : "Ran · " + (st && st.demo ? e.last : ago(e.last)), c);
-			if (running) ha.querySelector(".c-ar").classList.add("go");
+			var ha = head(icon, running, name, !sub ? null : !e.on ? "Disabled" : running ? "Running…" : "Ran · " + (st && st.demo ? e.last : ago(e.last)), c);
+			var ar = ha.querySelector(".c-ar"); if (running && ar) ar.classList.add("go");
 			if (!e.on) { inn.classList.add("ro"); ha.style.opacity = 0.45; }
 			inn.appendChild(ha);
-			if (e.on) inn.addEventListener("click", function () { x.call("automation", "trigger", e.id); setTimeout(x.redraw, 1700); });
+			if (e.on && ctl) inn.addEventListener("click", function () { x.call("automation", "trigger", e.id); setTimeout(x.redraw, 1700); });
+			return;
+		}
+		if (VALUE[e.type]) {
+			// capteur, capteur binaire, autre état : en petite taille, la valeur sous le nom ; sinon la pièce, et la valeur en grand
+			var vo = valueOf(e), unit = shown(o, "unit") ? vo.u : "";
+			if (rows < 3) {
+				var hs = head(icon, vo.on, name, shown(o, "val") ? vo.v + (unit ? " " + unit : "") : sub ? area : null, c);
+				var a2 = hs.querySelector(".c-ar"); if (vo.on && a2 && shown(o, "val")) a2.classList.add("go");
+				inn.appendChild(hs);
+				return;
+			}
+			inn.appendChild(head(icon, vo.on, name, sub ? area : null, c));
+			if (shown(o, "val")) inn.appendChild(vals([[vo.v, unit, shown(o, "k") ? vo.k : null, vo.text || e.type === "binary", vo.on]]));
 			return;
 		}
 
 		// autres entités : pictogramme, nom, pièce ; dessous, ce qui sert (barre, valeurs, état) sur toute la largeur
 		var on = isOn(e), flash = e.flash && Date.now() - e.flash < 1500;
-		var ro = e.type === "sensor" || e.type === "power";
-		if (ro) inn.classList.add("ro");
-		var hd = head(e.type, on || flash, e.name, area, c);
+		var hd = head(icon, on || flash, name, sub ? area : null, c);
 		inn.appendChild(hd);
 		var stateRow = function (text, hot) { var p0 = el("p", "c-st" + (hot ? " go" : ""), text); inn.appendChild(p0); return p0; };
 		if (e.type === "climate") {
-			var cb = el("div", "c-btns"), plus = el("button", "c-btn"), minus = el("button", "c-btn"), step = e.step || 0.5;
-			plus.type = minus.type = "button"; plus.setAttribute("aria-label", "Raise target"); minus.setAttribute("aria-label", "Lower target");
-			plus.appendChild(cross(c.lit, 1, c)); minus.appendChild(cross(c.lit, 1, c, ["...", "###", "..."]));
-			plus.addEventListener("click", function (ev) { ev.stopPropagation(); if (e.target != null) x.call("climate", "set_temperature", e.id, { temperature: Math.min(e.max || 35, e.target + step) }); });
-			minus.addEventListener("click", function (ev) { ev.stopPropagation(); if (e.target != null) x.call("climate", "set_temperature", e.id, { temperature: Math.max(e.min || 7, e.target - step) }); });
-			cb.appendChild(plus); cb.appendChild(minus); hd.appendChild(cb);
+			if (shown(o, "btns")) {
+				var cb = el("div", "c-btns"), plus = el("button", "c-btn"), minus = el("button", "c-btn"), step = e.step || 0.5;
+				plus.type = minus.type = "button"; plus.setAttribute("aria-label", "Raise target"); minus.setAttribute("aria-label", "Lower target");
+				plus.appendChild(cross(c.lit, 1, c)); minus.appendChild(cross(c.lit, 1, c, ["...", "###", "..."]));
+				if (ctl) {
+					plus.addEventListener("click", function (ev) { ev.stopPropagation(); if (e.target != null) x.call("climate", "set_temperature", e.id, { temperature: Math.min(e.max || 35, e.target + step) }); });
+					minus.addEventListener("click", function (ev) { ev.stopPropagation(); if (e.target != null) x.call("climate", "set_temperature", e.id, { temperature: Math.max(e.min || 7, e.target - step) }); });
+				} else plus.disabled = minus.disabled = true;
+				cb.appendChild(plus); cb.appendChild(minus); hd.appendChild(cb);
+			}
 			inn.classList.add("ro");
-		}
-		if (e.type === "climate" || ro) {
-			var vs = el("div", "c-vals" + (e.type === "climate" ? " tight" : "")), items = e.type === "climate"
-				? [[fmt1(e.cur), "°C", "Current"], [fmt1(e.target), "°C", "Target"]]
-				: [[e.value == null ? "--" : String(e.value), e.unit || "", e.type === "power" ? "Power" : e.name]];
-			items.forEach(function (y, i) {
-				var v0 = el("div", "c-v"), vp = el("p", "val", y[0]); vp.appendChild(el("small", "", y[1]));
-				var k = el("p", "k", y[2]);
-				if (e.type === "climate" && i === 1 && on) k.classList.add("go");
-				v0.appendChild(vp); v0.appendChild(k); vs.appendChild(v0);
-			});
-			inn.appendChild(vs);
+			var ci = [];
+			if (shown(o, "cur")) ci.push([fmt1(e.cur), "°C", "Current"]);
+			if (shown(o, "target")) ci.push([fmt1(e.target), "°C", "Target", false, on]);
+			if (ci.length) inn.appendChild(vals(ci, ci.length > 1));
 		}
 		if (e.type === "cover") {
-			var cvb = bar(w(), e.lvl, BAR, c, true); inn.appendChild(cvb);
-			inn.addEventListener("click", function (ev) {
-				var f = onBar(ev, cvb);
+			var cvb = null;
+			if (shown(o, "bar")) { cvb = bar(w(), e.lvl, BAR, c, true); inn.appendChild(cvb); }
+			if (ctl) inn.addEventListener("click", function (ev) {
+				var f = cvb ? onBar(ev, cvb) : null;
 				if (f !== null) x.call("cover", "set_cover_position", e.id, { position: Math.round(f * 10) * 10 });
 				else x.call("cover", e.lvl > 0 ? "close_cover" : "open_cover", e.id);
 			});
 		}
 		if (e.type === "lock") {
 			// garder le doigt 1 s : la barre se remplit, puis verrouille ou déverrouille
-			var lb = el("div"), lt = stateRow((e.on ? "Locked" : "Unlocked") + " · hold 1 s", e.on);
+			var lb = el("div"), lt = shown(o, "st") || ctl ? stateRow((e.on ? "Locked" : "Unlocked") + (ctl ? " · hold 1 s" : ""), e.on) : null;
+			if (!ctl) return;
 			inn.insertBefore(lb, lt); lb.hidden = true;
 			var raf = null, t0 = 0;
-			var stop = function () { if (raf) cancelAnimationFrame(raf); raf = null; lb.hidden = true; lt.hidden = false; };
+			var stop = function () { if (raf) cancelAnimationFrame(raf); raf = null; lb.hidden = true; if (lt) lt.hidden = false; };
 			inn.addEventListener("pointerdown", function (ev) {
 				ev.preventDefault(); t0 = performance.now();
 				(function stepf(now) {
 					var p = Math.min(1, (now - t0) / 1000);
-					lt.hidden = true; lb.hidden = false; lb.innerHTML = ""; lb.appendChild(bar(w(), p, BAR, c, true));
+					if (lt) lt.hidden = true; lb.hidden = false; lb.innerHTML = ""; lb.appendChild(bar(w(), p, BAR, c, true));
 					if (p >= 1) { raf = null; x.call("lock", e.on ? "unlock" : "lock", e.id); return; }
 					raf = requestAnimationFrame(stepf);
 				})(t0);
 			});
 			["pointerup", "pointerleave", "pointercancel"].forEach(function (n) { inn.addEventListener(n, stop); });
 		}
-		if (e.type === "plug") { stateRow(e.on ? "On" : "Off", e.on); inn.addEventListener("click", function () { x.call(domain(e.id), "toggle", e.id); }); }
+		if (e.type === "plug") {
+			if (shown(o, "st")) stateRow(e.on ? "On" : "Off", e.on);
+			if (ctl) inn.addEventListener("click", function () { x.call(domain(e.id), "toggle", e.id); });
+		}
 		if (e.type === "scene") {
-			stateRow(flash ? "Activated" : "Tap to run", flash);
-			inn.addEventListener("click", function () { x.call(domain(e.id), "turn_on", e.id); setTimeout(x.redraw, 1600); });
+			if (shown(o, "st")) stateRow(flash ? "Activated" : ctl ? "Tap to run" : "Scene", flash);
+			if (ctl) inn.addEventListener("click", function () { x.call(domain(e.id), "turn_on", e.id); setTimeout(x.redraw, 1600); });
 		}
 	}
 	// listes : mises à jour (garder le doigt 1 s sur une ligne l'installe) et intégrations
-	function drawList(inn, kind, x) {
-		var c = x.c, st = x.st || {};
+	function drawList(inn, kind, x, o) {
+		o = o || {};
+		var c = x.c, st = x.st || {}, ctl = !o.ro;
 		inn.className = "in card ro list"; inn.innerHTML = "";
 		var ups = (st.updates || []), svc = st.services || [];
 		var bad = svc.filter(function (s) { return s.st !== "ok"; }).length;
-		inn.appendChild(head(kind === "update" ? "update" : "services", kind === "update" ? ups.length > 0 : bad === 0, kind === "update" ? "Updates" : "Services",
-			kind === "update" ? (ups.length ? ups.length + " available" : "Up to date") : (svc.length - bad) + " / " + svc.length + " running", c));
+		var icon = o.pic && PICS[o.pic] ? o.pic : kind === "update" ? "update" : "services";
+		inn.appendChild(head(icon, kind === "update" ? ups.length > 0 : bad === 0, o.name || (kind === "update" ? "Updates" : "Services"),
+			!shown(o, "sub") ? null : kind === "update" ? (ups.length ? ups.length + " available" : "Up to date") : (svc.length - bad) + " / " + svc.length + " running", c));
 		var list = el("div", "c-list"), max = Math.max(1, Math.floor(((inn.clientHeight || 500) - 140) / 42));
 		if (kind === "update") {
 			ups.slice(0, max).forEach(function (u) {
-				var li = el("div", "c-li hold"); li.setAttribute("role", "button"); li.setAttribute("aria-label", "Hold to install " + u.name);
+				var li = el("div", "c-li" + (ctl ? " hold" : "")); li.setAttribute("role", "button"); li.setAttribute("aria-label", "Hold to install " + u.name);
 				li.appendChild(el("span", "n", u.name)); li.appendChild(el("span", "r up", u.installing ? "Installing…" : u.ver || ""));
+				list.appendChild(li);
+				if (!ctl) return;
 				var raf = null, t0 = 0, fill = el("div", "fill"); li.appendChild(fill);
 				var stop = function () { if (raf) cancelAnimationFrame(raf); raf = null; fill.innerHTML = ""; };
 				li.addEventListener("pointerdown", function (ev) {
@@ -330,9 +431,8 @@
 					})(t0);
 				});
 				["pointerup", "pointerleave", "pointercancel"].forEach(function (n) { li.addEventListener(n, stop); });
-				list.appendChild(li);
 			});
-			list.appendChild(el("p", "c-more", !ups.length ? "Nothing to install" : ups.length > max ? "+ " + (ups.length - max) + " more" : "Hold a line 1 s to install"));
+			list.appendChild(el("p", "c-more", !ups.length ? "Nothing to install" : ups.length > max ? "+ " + (ups.length - max) + " more" : ctl ? "Hold a line 1 s to install" : ""));
 		} else {
 			svc.slice(0, max).forEach(function (s) {
 				var li = el("div", "c-li"); li.appendChild(el("i", s.st === "ok" ? "ok" : s.st === "err" ? "err" : ""));
@@ -359,8 +459,8 @@
 		var x = { c: c, st: DEMO_ST, redraw: redraw, call: function (d, sv, id, data) { applyLocal(DEMO_ST, { domain: d, service: sv, entity: id, data: data }); redraw(); } };
 		function redraw() {
 			var fresh = inn.cloneNode(false); root.replaceChild(fresh, inn); inn = fresh;
-			if (key.indexOf("list:") === 0) drawList(inn, key.slice(5), x);
-			else { var e = DEMO_ST.entities.filter(function (y) { return y.id === key; })[0]; if (e) draw(inn, e, x); }
+			if (key.indexOf("list:") === 0) drawList(inn, key.slice(5), x, { h: rows });
+			else { var e = DEMO_ST.entities.filter(function (y) { return y.id === key; })[0]; if (e) draw(inn, e, x, { h: rows }); }
 		}
 		setTimeout(redraw, 0); redraw();
 		return root;
@@ -384,7 +484,7 @@
 		function settings() { var s = getSettings() || {}, o = {}; for (var k in DEFAULTS) o[k] = s[k] === undefined || s[k] === null ? DEFAULTS[k] : s[k]; return o; }
 		var real = typeof opts.state === "function";
 		var demoSt = real ? null : demo();
-		var tab = "fav", adding = null, layouts = {}, layoutText = null, st = null;
+		var tab = "fav", layouts = {}, layoutText = null, st = null;
 
 		stage.classList.add("dot-homeassistant", "dha-stage");
 		stage.innerHTML = MARKUP;
@@ -402,7 +502,7 @@
 		function entities() { return (st && st.entities) || []; }
 		function catalog() {
 			var k = {};
-			entities().forEach(function (e) { k[e.id] = { e: e, name: e.name, kind: KIND[e.type] || e.type, area: e.area, sizes: SIZES[e.type] || [3] }; });
+			entities().forEach(function (e) { k[e.id] = { e: e, name: e.name, kind: e.type === "th" ? KIND.th : domainName(e.id), area: e.area, sizes: SIZES[e.type] || [3] }; });
 			if (st && st.updates) k["list:update"] = { list: "update", name: "Updates", kind: "List", sizes: SIZES.list };
 			if (st && st.services && st.services.length) k["list:services"] = { list: "services", name: "Services", kind: "List", sizes: SIZES.list };
 			return k;
@@ -438,8 +538,17 @@
 			var lay = Array.isArray(mine) ? mine.filter(function (it) { return cat[it.key] && it.col >= 1 && it.col <= COLS[size]; }) : autoLayout();
 			return lay;
 		}
+		// une place : { key, col, row, h } et ses options (name, pic, hide, ro), seulement quand elles changent quelque chose
+		function clean(it) {
+			var o = { key: it.key, col: it.col, row: it.row, h: it.h };
+			if (it.name) o.name = it.name;
+			if (it.pic) o.pic = it.pic;
+			if (it.hide && it.hide.length) o.hide = it.hide.slice();
+			if (it.ro) o.ro = true;
+			return o;
+		}
 		function save(lay) {
-			layouts[tab] = lay.map(function (it) { return { key: it.key, col: it.col, row: it.row, h: it.h }; });
+			layouts[tab] = lay.map(clean);
 			layoutText = JSON.stringify(layouts);
 			if (opts.onLayout) opts.onLayout(layoutText);
 			render();
@@ -481,39 +590,144 @@
 			});
 			ed.addEventListener("pointerup", function (ev) {
 				if (!drag) return; drag = false;
+				// toucher sans glisser : le formulaire de la carte
+				if (Math.abs(ev.clientX - x0) / k < 10 && Math.abs(ev.clientY - y0) / k < 10) { b.classList.remove("drag"); b.style.transform = ""; openForm(lay, it, null); return; }
 				var t = target(ev);
 				if ((t.col !== it.col || t.row !== it.row) && free(lay, t.col, t.row, it.h, it)) { it.col = t.col; it.row = t.row; save(lay); }
 				else render();
 			});
 			ed.addEventListener("pointercancel", function () { drag = false; render(); });
 		}
-		// « + » sur une case libre : choisir l'entité et la taille de sa carte (celles de l'onglet d'abord)
-		function openPicker(lay) {
-			var pk = v("picker"); pk.hidden = false; pk.innerHTML = "";
-			var all = catalog(), used = lay.map(function (it) { return it.key; });
+		// formulaire d'une carte (« + » sur une case libre, ou toucher une carte en édition) : l'entité à choisir dans
+		// la liste de Home Assistant (celles de l'onglet d'abord), puis nom, icône, taille, ce qui est montré et le toucher,
+		// avec l'aperçu de la carte. Il reste en place pendant que l'état se met à jour (rien n'est perdu en cours de saisie).
+		var form = null;
+		function openForm(lay, it, at) {
+			form = { idx: it ? lay.indexOf(it) : -1, col: it ? it.col : at.col, row: it ? it.row : at.row, key: it ? it.key : null, h: it ? it.h : 0,
+				name: it ? it.name || (catalog()[it.key] || {}).name || "" : "", pic: it && it.pic || "", hide: (it && it.hide || []).slice(), ro: !!(it && it.ro), q: "" };
+			buildForm();
+		}
+		function closeForm() { form = null; render(); }
+		function formFree(h) { var lay = layout(); return free(lay, form.col, form.row, h, form.idx >= 0 ? lay[form.idx] : null); }
+		function buildForm() {
+			var pk = v("picker"), cat = catalog(), c = colorsOf(settings());
+			pk.hidden = false; pk.innerHTML = ""; pk.className = "picker form";
 			var hd = el("div", "pk-head");
-			hd.appendChild(el("p", "w-lbl", "Add a card · column " + adding.col + " · row " + adding.row));
-			var cancel = el("button", "pk-cancel", "Cancel"); cancel.type = "button";
-			cancel.addEventListener("click", function () { adding = null; render(); });
-			hd.appendChild(cancel); pk.appendChild(hd);
-			var list = el("div", "pk-list"), keys = Object.keys(all).filter(function (key) { return used.indexOf(key) < 0; });
-			var here = keys.filter(function (key) { return tab !== "fav" && all[key].area === tab; }), rest = keys.filter(function (key) { return here.indexOf(key) < 0; });
-			function row(key) {
-				var it = all[key], r = el("div", "pk-row"), who = el("div", "pk-who");
-				who.appendChild(el("p", "pk-nm", it.name)); who.appendChild(el("p", "pk-k", it.kind + (it.area ? " · " + areaName(st, it.area) : "")));
-				r.appendChild(who);
-				it.sizes.slice().sort(function (a, b) { return a - b; }).forEach(function (h) {
-					var bt = el("button", "pk-sz", h === 2 ? "S" : h === 3 ? "M" : "L"); bt.type = "button"; bt.title = SIZE_NAME[h];
-					bt.disabled = !free(lay, adding.col, adding.row, h);
-					bt.addEventListener("click", function () { lay.push({ key: key, col: adding.col, row: adding.row, h: h }); adding = null; save(lay); });
-					r.appendChild(bt);
+			hd.appendChild(el("p", "w-lbl", (form.idx >= 0 ? "Edit card" : "Add a card") + " · column " + form.col + " · row " + form.row));
+			var acts = el("div", "f-acts");
+			function act(text, cls, f) { var b = el("button", "pk-cancel " + (cls || ""), text); b.type = "button"; b.addEventListener("click", f); acts.appendChild(b); return b; }
+			if (form.idx >= 0) act("Remove", "f-rm", function () { var lay = layout(); lay.splice(form.idx, 1); form = null; save(lay); });
+			act("Cancel", "", closeForm);
+			var ok = act(form.idx >= 0 ? "Save" : "Add card", "f-ok", function () {
+				if (!form.key || !cat[form.key]) return;
+				var lay = layout(), it = { key: form.key, col: form.col, row: form.row, h: form.h, name: form.name !== cat[form.key].name ? form.name.trim() : "", pic: form.pic, hide: form.hide, ro: form.ro };
+				if (form.idx >= 0) lay[form.idx] = it; else lay.push(it);
+				form = null; save(lay);
+			});
+			hd.appendChild(acts); pk.appendChild(hd);
+
+			var body = el("div", "f-body"); pk.appendChild(body);
+			// colonne 1 : l'entité
+			var c1 = el("div", "f-col f-ent"), search = el("input", "f-in");
+			c1.appendChild(el("p", "f-lbl", "Entity"));
+			search.type = "text"; search.placeholder = "Search name, room or entity id"; search.value = form.q; search.spellcheck = false;
+			c1.appendChild(search);
+			var list = el("div", "f-list"); c1.appendChild(list); body.appendChild(c1);
+			var c2 = el("div", "f-col f-card"), c3 = el("div", "f-col f-show"), c4 = el("div", "f-col f-prev");
+			body.appendChild(c2); body.appendChild(c3); body.appendChild(c4);
+
+			var used = layout().map(function (it) { return it.key; });
+			function rows() {
+				list.innerHTML = "";
+				var q = form.q.toLowerCase().trim(), keys = Object.keys(cat).filter(function (key) {
+					if (!q) return true;
+					var it = cat[key];
+					return (it.name + " " + key + " " + it.kind + " " + areaName(st, it.area)).toLowerCase().indexOf(q) >= 0;
 				});
-				list.appendChild(r);
+				var here = keys.filter(function (key) { return tab !== "fav" && cat[key].area === tab; }), rest = keys.filter(function (key) { return here.indexOf(key) < 0; });
+				function row(key) {
+					var it = cat[key], r = el("button", "f-row" + (key === form.key ? " on" : "")), who = el("span", "f-who");
+					r.type = "button";
+					who.appendChild(el("span", "pk-nm", it.name));
+					who.appendChild(el("span", "pk-k", it.kind + (it.area ? " · " + areaName(st, it.area) : "") + (used.indexOf(key) >= 0 && key !== form.key ? " · on this tab" : "")));
+					r.appendChild(pic(it.e ? defaultPic(it.e) : it.list === "update" ? "update" : "services", false, c, 6));
+					r.appendChild(who);
+					r.addEventListener("click", function () {
+						if (form.key === key) return;
+						form.key = key; form.name = it.name; form.pic = ""; form.hide = []; form.ro = false;
+						form.h = it.sizes.filter(formFree)[0] || 0;
+						rows(); options();
+					});
+					list.appendChild(r);
+				}
+				if (here.length) { list.appendChild(el("p", "pk-sep", areaName(st, tab))); here.forEach(row); if (rest.length) list.appendChild(el("p", "pk-sep", "Everything else")); }
+				rest.forEach(row);
+				if (!keys.length) list.appendChild(el("p", "pk-none", "No entity found"));
 			}
-			if (here.length) { list.appendChild(el("p", "pk-sep", areaName(st, tab))); here.forEach(row); list.appendChild(el("p", "pk-sep", "Everything else")); }
-			rest.forEach(row);
-			if (!keys.length) list.appendChild(el("p", "pk-none", "Every entity is already on this tab"));
-			pk.appendChild(list);
+			search.addEventListener("input", function () { form.q = search.value; rows(); });
+
+			// colonnes 2 à 4 : nom, icône, taille ; parties montrées et toucher ; aperçu
+			function options() {
+				c2.innerHTML = ""; c3.innerHTML = ""; c4.innerHTML = "";
+				var it = form.key && cat[form.key];
+				ok.disabled = !it || !form.h;
+				if (!it) { c2.appendChild(el("p", "pk-none", "Choose an entity")); return; }
+				c2.appendChild(el("p", "f-lbl", "Name"));
+				var nm = el("input", "f-in"); nm.type = "text"; nm.value = form.name; nm.placeholder = it.name; nm.spellcheck = false;
+				nm.addEventListener("input", function () { form.name = nm.value; preview(); });
+				c2.appendChild(nm);
+				c2.appendChild(el("p", "f-lbl", "Icon"));
+				var pics = el("div", "f-pics"), cur = form.pic || (it.e ? defaultPic(it.e) : it.list === "update" ? "update" : "services");
+				PIC_LIST.forEach(function (key) {
+					var b = el("button", "f-pic" + (key === cur ? " on" : "")); b.type = "button"; b.setAttribute("aria-label", key);
+					b.appendChild(pic(key, key === cur, c, 6));
+					b.addEventListener("click", function () { form.pic = key; options(); });
+					pics.appendChild(b);
+				});
+				c2.appendChild(pics);
+				c2.appendChild(el("p", "f-lbl", "Size"));
+				var sz = el("div", "f-sizes");
+				it.sizes.slice().sort(function (a, b) { return a - b; }).forEach(function (h) {
+					var b = el("button", "f-chip" + (h === form.h ? " on" : ""), SIZE_NAME[h]); b.type = "button";
+					b.disabled = !formFree(h);
+					b.addEventListener("click", function () { form.h = h; options(); });
+					sz.appendChild(b);
+				});
+				c2.appendChild(sz);
+
+				c3.appendChild(el("p", "f-lbl", "Show"));
+				function toggle(label, on, f) {
+					var b = el("button", "f-tg" + (on ? " on" : "")); b.type = "button"; b.setAttribute("aria-pressed", on ? "true" : "false");
+					b.appendChild(el("i")); b.appendChild(el("span", "", label));
+					b.addEventListener("click", function () { f(); options(); });
+					c3.appendChild(b);
+				}
+				parts(it).forEach(function (p) {
+					toggle(p[1], form.hide.indexOf(p[0]) < 0, function () {
+						var i = form.hide.indexOf(p[0]); if (i >= 0) form.hide.splice(i, 1); else form.hide.push(p[0]);
+					});
+				});
+				if (it.list === "update" || (it.e && CONTROL[it.e.type])) toggle("Touch control", !form.ro, function () { form.ro = !form.ro; });
+				preview();
+			}
+			function preview() {
+				c4.innerHTML = "";
+				var it = form.key && cat[form.key];
+				if (!it || !form.h) return;
+				c4.appendChild(el("p", "f-lbl", "Preview"));
+				var hgt = form.h * (400 / 6 + 20) - 20, room = 384, k = Math.min(1, room / hgt);
+				var wrap = el("div", "f-pv"), inn = el("div", "in");
+				wrap.style.width = 387 * k + "px"; wrap.style.height = hgt * k + "px";
+				inn.style.width = "387px"; inn.style.height = hgt + "px"; inn.style.transform = "scale(" + k + ")"; inn.style.transformOrigin = "0 0";
+				wrap.appendChild(inn); c4.appendChild(wrap);
+				var o = { h: form.h, name: form.name.trim() && form.name !== it.name ? form.name.trim() : "", pic: form.pic, hide: form.hide, ro: form.ro };
+				var x = { c: c, st: st, call: function () {}, redraw: function () {} };
+				var go = function () { if (it.list) drawList(inn, it.list, x, o); else draw(inn, it.e, x, o); };
+				go(); requestAnimationFrame(go);
+			}
+			rows(); options();
+			if (form.key) { var on = list.querySelector(".f-row.on"); if (on) on.scrollIntoView({ block: "nearest" }); }
+			else setTimeout(function () { try { search.focus(); } catch (e) {} }, 0);
 		}
 
 		// ------------------------------------------------ rendu
@@ -535,12 +749,13 @@
 			[{ id: "fav", name: "Favorites" }].concat(areas).forEach(function (a) {
 				var b = el("button", "tab", a.name); b.type = "button"; b.setAttribute("role", "tab");
 				b.setAttribute("aria-selected", a.id === tab ? "true" : "false");
-				b.addEventListener("click", function () { tab = a.id; adding = null; render(); });
+				b.addEventListener("click", function () { tab = a.id; form = null; render(); });
 				tabs.appendChild(b);
 			});
 
 			var grid = v("grid"), guide = v("guide"), picker = v("picker"), empty = v("empty");
-			grid.innerHTML = ""; guide.innerHTML = ""; guide.hidden = true; picker.hidden = true;
+			grid.innerHTML = ""; guide.innerHTML = ""; guide.hidden = true;
+			if (!form) { picker.hidden = true; picker.innerHTML = ""; }
 			var noLayout = cols === 0;
 			empty.hidden = !offline && !noLayout;
 			grid.hidden = offline || noLayout;
@@ -548,6 +763,7 @@
 			else if (noLayout) { v("big").textContent = "Too small"; v("sm").textContent = "Use M, L or XL"; }
 			var edit = editing() && !offline;
 			stage.classList.toggle("editing", edit);
+			if (form && !edit) { form = null; picker.hidden = true; picker.innerHTML = ""; }
 			if (offline || noLayout) return;
 
 			var lay = layout(), cat = catalog();
@@ -557,7 +773,7 @@
 				b.style.gridColumn = it.col; b.style.gridRow = it.row + " / span " + it.h;
 				b.appendChild(inn); grid.appendChild(b);
 				var item = cat[it.key];
-				if (item.list) drawList(inn, item.list, x); else draw(inn, item.e, x);
+				if (item.list) drawList(inn, item.list, x, it); else draw(inn, item.e, x, it);
 				if (edit) editCard(b, it, lay);
 			});
 			// les barres et les listes dépendent de la taille de la carte : second passage une fois la grille posée
@@ -568,14 +784,12 @@
 					var cell = el("i");
 					if (free(lay, q, r, 1)) {
 						var add = el("button", "add", "+"); add.type = "button"; add.setAttribute("aria-label", "Add a card");
-						(function (q, r) { add.addEventListener("click", function () { adding = { col: q, row: r }; render(); }); })(q, r);
+						(function (q, r) { add.addEventListener("click", function () { openForm(lay, null, { col: q, row: r }); }); })(q, r);
 						cell.appendChild(add);
 					}
 					guide.appendChild(cell);
 				}
-				if (adding) openPicker(lay);
 			} else {
-				adding = null;
 				// case « Grille » de la maquette : les cases, sans édition
 				if (s.grid) { guide.hidden = false; for (var gi = 0; gi < ROWS * cols; gi++) guide.appendChild(el("i")); }
 			}
@@ -593,7 +807,7 @@
 			setSize: function (s) { setSize(s); stage.__sized = false; render(); },
 			size: function () { return size; },
 			slot: function () { return SLOTS[size]; },
-			resetLayout: function () { layouts = {}; layoutText = ""; if (opts.onLayout) opts.onLayout(""); render(); }
+			resetLayout: function () { layouts = {}; layoutText = ""; form = null; if (opts.onLayout) opts.onLayout(""); render(); }
 		};
 	}
 

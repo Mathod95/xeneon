@@ -262,7 +262,6 @@ pub fn build(states: &[Value], areas: &[Value], devices: &[Value], entries: &[Va
 
     // capteurs de température et d'humidité d'un même appareil : une seule carte
     let mut th: Vec<(String, String, Option<String>, Option<String>)> = vec![]; // (appareil, nom, température, humidité)
-    let mut in_th: Vec<String> = vec![];
     for d in devices {
         let (Some(eid), Some(dev)) = (d[0].as_str(), d[1].as_str()) else { continue };
         let Some(s) = by_id.get(eid) else { continue };
@@ -286,10 +285,6 @@ pub fn build(states: &[Value], areas: &[Value], devices: &[Value], entries: &[Va
         let Some(t) = t else { continue };
         let num = |id: &Option<String>| id.as_ref().and_then(|i| by_id.get(i.as_str())).and_then(|s| s["state"].as_str()).and_then(|x| x.parse::<f64>().ok());
         let ts = by_id[t.as_str()];
-        in_th.push(t.clone());
-        if let Some(h) = hm {
-            in_th.push(h.clone());
-        }
         let name = if dname.is_empty() { name_of(ts) } else { dname.clone() };
         out.push(json!({ "id": format!("th:{dev}"), "type": "th", "name": name, "area": area(t), "temp": num(&Some(t.clone())).map(round1), "hum": num(hm).map(f64::round), "tempUnit": attr(ts, "unit_of_measurement").and_then(Value::as_str).unwrap_or("°C") }));
     }
@@ -354,15 +349,25 @@ pub fn build(states: &[Value], areas: &[Value], devices: &[Value], entries: &[Va
                 e["last"] = attr(s, "last_triggered").cloned().unwrap_or(Value::Null);
             }
             "sensor" => {
-                let Ok(v) = st.parse::<f64>() else { continue };
-                if in_th.iter().any(|x| x == id) {
-                    continue;
-                }
                 let unit = attr(s, "unit_of_measurement").and_then(Value::as_str).unwrap_or("");
                 let class = attr(s, "device_class").and_then(Value::as_str).unwrap_or("");
-                e["type"] = json!(if class == "power" { "power" } else { "sensor" });
-                e["value"] = json!(if v.abs() >= 100.0 { v.round() } else { round1(v) });
                 e["unit"] = json!(unit);
+                e["dc"] = json!(class);
+                match st.parse::<f64>() {
+                    Ok(v) => {
+                        e["type"] = json!(if class == "power" { "power" } else { "sensor" });
+                        e["value"] = json!(if v.abs() >= 100.0 { v.round() } else { round1(v) });
+                    }
+                    Err(_) => {
+                        e["type"] = json!("state");
+                        e["value"] = json!(st);
+                    }
+                }
+            }
+            "binary_sensor" => {
+                e["type"] = json!("binary");
+                e["on"] = json!(st == "on");
+                e["dc"] = json!(attr(s, "device_class").and_then(Value::as_str).unwrap_or(""));
             }
             "update" => {
                 if st == "on" {
@@ -371,7 +376,15 @@ pub fn build(states: &[Value], areas: &[Value], devices: &[Value], entries: &[Va
                 }
                 continue;
             }
-            _ => continue,
+            // ce qui n'a rien à montrer sur une carte
+            "zone" | "persistent_notification" | "tts" | "stt" | "conversation" | "wake_word" | "event" | "image" | "camera" | "tag" | "todo" | "notify" | "ai_task" | "assist_satellite" | "" => continue,
+            // le reste (personne, météo, lecteur, sélection…) : son état, en texte
+            _ => {
+                e["type"] = json!("state");
+                e["value"] = json!(st);
+                e["unit"] = json!(attr(s, "unit_of_measurement").and_then(Value::as_str).unwrap_or(""));
+                e["dc"] = json!(attr(s, "device_class").and_then(Value::as_str).unwrap_or(""));
+            }
         }
         out.push(e);
     }
@@ -472,6 +485,9 @@ mod tests {
             s("update.core", "on", json!({ "title": "Home Assistant Core", "latest_version": "2026.11.0", "in_progress": false })),
             s("update.os", "off", json!({ "title": "Home Assistant OS" })),
             s("switch.tv", "unavailable", json!({ "friendly_name": "TV" })),
+            s("binary_sensor.door", "on", json!({ "device_class": "door", "friendly_name": "Door" })),
+            s("person.alex", "home", json!({ "friendly_name": "Alex" })),
+            s("zone.home", "0", json!({ "friendly_name": "Home" })),
         ];
         let areas = vec![json!({ "id": "living", "name": "Living room", "e": ["light.ceiling", "climate.living"] })];
         let devices = vec![json!(["sensor.bed_t", "dev1", "Bedroom sensor"]), json!(["sensor.bed_h", "dev1", "Bedroom sensor"])];
@@ -485,9 +501,15 @@ mod tests {
         assert_eq!(e("th:dev1")["temp"], json!(19.8));
         assert_eq!(e("th:dev1")["hum"], json!(52.0));
         assert_eq!(e("th:dev1")["name"], json!("Bedroom sensor"));
-        assert!(e("sensor.bed_t").is_null());
+        // chaque capteur reste aussi proposé seul (formulaire d'une carte)
+        assert_eq!(e("sensor.bed_t")["dc"], json!("temperature"));
         assert_eq!(e("sensor.power")["type"], json!("power"));
-        assert!(e("sensor.text").is_null());
+        assert_eq!(e("sensor.text")["type"], json!("state"));
+        assert_eq!(e("sensor.text")["value"], json!("hello"));
+        assert_eq!(e("binary_sensor.door")["on"], json!(true));
+        assert_eq!(e("binary_sensor.door")["dc"], json!("door"));
+        assert_eq!(e("person.alex")["value"], json!("home"));
+        assert!(e("zone.home").is_null());
         assert_eq!(e("climate.living")["cur"], json!(21.4));
         assert_eq!(e("lock.front")["on"], json!(true));
         assert_eq!(e("switch.tv")["na"], json!(true));
