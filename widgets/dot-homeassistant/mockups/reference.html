@@ -66,10 +66,36 @@ h2 { font-family: var(--mono); font-weight: 500; font-size: 13px; letter-spacing
 /* grille de placement (XL : 6 colonnes × 6 rangées de 67 px, 20 px d'écart) : une lumière prend 2 rangées (153 px),
    une carte 3 (240 px), une liste 6 (500 px) ; chaque carte a sa colonne et sa rangée */
 .stage .grid.cells { grid-template-rows: repeat(6, minmax(0, 1fr)); }
-.stage .grid.cells > .cbox { min-width: 0; min-height: 0; }
+.stage .grid.cells > .cbox { position: relative; min-width: 0; min-height: 0; }
+td .ok { color: #10b981; font-size: 13px; white-space: nowrap; }
 .stage .grid.cells > .cbox > .in { position: static; width: 100%; height: 100%; }
 .stage .guide { display: grid; gap: 20px; pointer-events: none; }
-.stage .guide i { border: 2px dashed #262626; border-radius: 18px; }
+.stage .guide i { position: relative; border: 2px dashed #262626; border-radius: 18px; }
+/* édition (simule la page de réglages du compagnon) : glisser une carte, S / M / L, ×, « + » sur une case libre */
+.stage.editing .guide { pointer-events: auto; z-index: 0; }
+.stage.editing .grid { z-index: 1; pointer-events: none; }
+.stage.editing .grid > .cbox { pointer-events: auto; position: relative; }
+.stage.editing .grid .in { pointer-events: none; opacity: .55; }
+.stage .guide .add { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; border-radius: 16px; background: transparent; color: #3a3a3a; font-size: 34px; line-height: 1; cursor: pointer; }
+.stage .guide .add:hover, .stage .guide .add:active { color: var(--accent); background: #0d0d0d; }
+.stage .ed { position: absolute; inset: 0; border: 2px dashed var(--accent); border-radius: 18px; cursor: grab; touch-action: none; }
+.stage .cbox.drag { z-index: 5; }
+.stage .cbox.drag .ed { cursor: grabbing; background: rgba(16, 185, 129, .06); }
+.stage .cbox.bad .ed { border-color: #ed403b; }
+.stage .ed button { position: absolute; width: 60px; height: 60px; border-radius: 50%; border: 2px solid #2a2a2a; background: #080808; color: var(--lit); font-size: 22px; letter-spacing: .1em; cursor: pointer; }
+.stage .ed .ed-x { top: 8px; right: 8px; font-size: 30px; }
+.stage .ed .ed-sz { bottom: 8px; right: 8px; color: var(--accent); border-color: var(--accent); }
+.stage .ed [hidden] { display: none; }
+.stage .picker { left: 56px; top: 148px; width: 2424px; height: 500px; z-index: 6; display: flex; flex-direction: column; gap: 20px; padding: 24px 28px; box-sizing: border-box; border: 2px solid var(--accent); border-radius: 18px; background: #080808; }
+.stage .picker .pk-head { position: static; display: flex; justify-content: space-between; align-items: center; }
+.stage .picker .pk-cancel { height: 60px; padding: 0 28px; border-radius: 30px; border: 2px solid #2a2a2a; background: transparent; color: var(--lit); font-size: 18px; letter-spacing: .2em; text-transform: uppercase; cursor: pointer; }
+.stage .picker .pk-list { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px 28px; overflow: hidden; align-content: start; }
+.stage .picker .pk-row { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.stage .picker .pk-who { flex: 1; min-width: 0; }
+.stage .picker .pk-nm { font-size: 22px; line-height: 28px; color: var(--lit); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.stage .picker .pk-k { font-size: 16px; line-height: 22px; letter-spacing: .12em; text-transform: uppercase; color: var(--label); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.stage .picker .pk-sz { flex: none; width: 60px; height: 60px; border-radius: 50%; border: 2px solid var(--accent); background: transparent; color: var(--accent); font-size: 22px; cursor: pointer; }
+.stage .picker .pk-sz:disabled { border-color: #2a2a2a; color: #3a3a3a; cursor: default; }
 /* nouvelles cartes (lumière, capteur) : même cadre que les tuiles */
 .cbox .in.card { padding: 22px 24px; display: flex; flex-direction: column; justify-content: space-between; border: 2px solid #1d1d1d; border-radius: 18px; cursor: pointer; user-select: none; touch-action: none; }
 .cbox .in.card.ro { cursor: default; }
@@ -266,6 +292,7 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
           <div class="tabs" role="tablist" aria-label="Pièces" id="tabs"></div>
           <div class="guide" id="guide" hidden></div>
           <div class="grid" id="grid"></div>
+          <div class="picker" id="picker" hidden></div>
           <div class="w-empty" id="empty" hidden><p class="big">Home Assistant offline</p><p class="sm">Check URL and token in Dot Companion</p></div>
         </div>
       </div>
@@ -278,6 +305,8 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
       </div>
       <label><input type="checkbox" id="showTabs" checked> Show rooms</label>
       <label><input type="checkbox" id="showGrid"> Grille</label>
+      <label><input type="checkbox" id="editMode"> Édition</label>
+      <button type="button" class="preset" id="resetLayout">Disposition par défaut</button>
       <label><input type="checkbox" id="showUnlit" checked> Show unlit dots</label>
       <label>Accent color <input type="color" id="accentColor" value="#10b981"></label>
       <label>Lit dot color <input type="color" id="litColor" value="#f2f0e9"></label>
@@ -343,8 +372,8 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
           <tr class="todo"><td>12</td><td>Automatisations</td><td>Entités <code>automation.*</code> : un toucher la lance (<code>automation.trigger</code>), « RUNNING… » en accent puis l'heure du dernier lancement (<code>last_triggered</code>). Une automatisation désactivée est grisée. Les scripts (<code>script.*</code>) et les scènes pourront utiliser la même carte.</td></tr>
           <tr class="todo"><td>13</td><td>Mises à jour</td><td>Entités <code>update.*</code> : Home Assistant Core, OS, modules complémentaires, HACS, firmwares des appareils. Une ligne par mise à jour : nom, version disponible. Garder le doigt 1 s sur une ligne l'installe (<code>update.install</code>), la barre se remplit pendant l'appui. Rien à installer : « UP TO DATE ».</td></tr>
           <tr class="todo"><td>14</td><td>Services</td><td>Modules complémentaires (API Supervisor : démarré, arrêté) et intégrations (<code>config_entries</code> : chargée, erreur). Point en accent = en marche, rouge = erreur, gris = arrêté. Les modules complémentaires n'existent qu'avec Home Assistant OS ou Supervised.</td></tr>
-          <tr class="todo"><td>15</td><td>Grille</td><td>L'écran est une grille : en XL, 6 colonnes de 387 px et 6 rangées de 67 px, 20 px d'écart (case « Grille » des réglages simulés pour la voir). Trois tailles de carte, qui tombent juste sur les rangées : <b>petite</b> 1 × 2 (153 px : lumière, groupe de lumières), <b>moyenne</b> 1 × 3 (240 px : capteur, automatisation, thermostat, serrure, autres entités), <b>haute</b> 1 × 6 (500 px : mises à jour, services). Une colonne se remplit avec 3 petites, 2 moyennes ou 1 haute. Plus tard, une carte large (2 × 3) pour une courbe ou une caméra.</td></tr>
-          <tr class="todo"><td>16</td><td>Placement</td><td>Dans la page de réglages du compagnon, l'écran en direct avec la grille : « + » sur une case libre pour choisir l'entité et la taille de sa carte, glisser une carte pour la déplacer, la retirer. Les places (colonne, rangée, taille) sont gardées dans la configuration de la page Dot Hub ; l'Edge ne fait que les afficher. Chaque onglet (pièce ou Favorites) a sa propre disposition ; sans disposition, les cartes se rangent d'elles-mêmes, une colonne après l'autre. Dans la maquette, Favorites montre une disposition complète : 3 lumières, 2 capteurs, 2 automatisations, thermostat et serrure, mises à jour, services.</td></tr>
+          <tr><td>15</td><td>Grille</td><td>L'écran est une grille : en XL, 6 colonnes de 387 px et 6 rangées de 67 px, 20 px d'écart (case « Grille » des réglages simulés pour la voir). Trois tailles de carte, qui tombent juste sur les rangées : <b>petite</b> 1 × 2 (153 px : lumière, groupe de lumières), <b>moyenne</b> 1 × 3 (240 px : capteur, automatisation, thermostat, serrure, autres entités), <b>haute</b> 1 × 6 (500 px : mises à jour, services). Une colonne se remplit avec 3 petites, 2 moyennes ou 1 haute. Plus tard, une carte large (2 × 3) pour une courbe ou une caméra. <span class="ok">Validé le 2 novembre 2026.</span></td></tr>
+          <tr><td>16</td><td>Placement</td><td>Dans la page de réglages du compagnon, l'écran en direct avec la grille : « + » sur une case libre pour choisir l'entité et la taille de sa carte, glisser une carte pour la déplacer, la retirer. Les places (colonne, rangée, taille) sont gardées dans la configuration de la page Dot Hub ; l'Edge ne fait que les afficher. Chaque onglet (pièce ou Favorites) a sa propre disposition ; sans disposition, les cartes se rangent d'elles-mêmes, une colonne après l'autre. Dans la maquette, Favorites montre une disposition complète : 3 lumières, 2 capteurs, 2 automatisations, thermostat et serrure, mises à jour, services. Case « Édition » des réglages simulés : la même chose sur l'écran de la maquette (glisser une carte, S / M / L pour sa taille, × pour la retirer, « + » sur une case libre). <span class="ok">Validé le 2 novembre 2026.</span></td></tr>
         </tbody>
       </table>
     </div>
@@ -764,6 +793,112 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
   }
   if (window.ResizeObserver) new ResizeObserver(scaleCards).observe(frame);
 
+  // ---------------------------------------------------------------- grille et placement
+  // Chaque onglet a sa disposition : des cartes posées sur la grille (colonne, rangée, hauteur en rangées). Sur l'Edge,
+  // elle viendra de la configuration de la page Dot Hub ; on la modifie dans la page de réglages du compagnon,
+  // simulée ici par la case « Édition ». Sans disposition, les cartes se rangent une colonne après l'autre.
+  var ROWS = 6, LAYOUTS = {}, adding = null;
+  var SIZE_NAME = { 2: "Small · 1 × 2", 3: "Medium · 1 × 3", 6: "Tall · 1 × 6" };
+  function catalog(c) {
+    var k = {};
+    E.forEach(function (e) {
+      if (e.type === "light") k["light:" + e.id] = { name: e.name, kind: "Light", room: e.room, fav: e.fav, sizes: [2, 3], draw: function (inn) { lightCard(inn, e, c); } };
+      else if (!(e.type === "sensor" && e.unit === "°")) k["other:" + e.id] = { name: e.name, kind: e.type, room: e.room, fav: e.fav, sizes: [3], draw: function (inn) { otherCard(inn, e, c); } };
+    });
+    SENSORS.forEach(function (d, i) { k["sensor:" + i] = { name: d.name, kind: "Temperature · humidity", room: d.room, fav: d.fav, sizes: [3], draw: function (inn) { sensorCard(inn, d, c); } }; });
+    GROUPS.forEach(function (g, i) { k["group:" + i] = { name: g.name, kind: "Light group", sizes: [2, 3], draw: function (inn) { lightCard(inn, groupOf(g), c); } }; });
+    AUTOS.forEach(function (a, i) { k["auto:" + i] = { name: a.name, kind: "Automation", sizes: [2, 3], draw: function (inn) { autoCard(inn, a, c); } }; });
+    k["list:update"] = { name: "Updates", kind: "List", sizes: [6, 3], draw: function (inn) { listCard(inn, "update", c); } };
+    k["list:services"] = { name: "Services", kind: "List", sizes: [6, 3], draw: function (inn) { listCard(inn, "services", c); } };
+    return k;
+  }
+  // disposition par défaut : Favorites rempli ; une pièce, ses cartes une colonne après l'autre
+  function autoLayout(c) {
+    var COLS = size === "xl" ? 6 : 4, keys = [];
+    var inRoom = function (x) { return room === "fav" ? x.fav : x.room === room; };
+    var all = catalog(c);
+    E.filter(function (e) { return e.type === "light" && inRoom(e); }).slice(0, 3).forEach(function (e) { keys.push(["light:" + e.id, 2]); });
+    SENSORS.forEach(function (d, i) { if (inRoom(d) && keys.filter(function (x) { return x[0].indexOf("sensor") === 0; }).length < 2) keys.push(["sensor:" + i, 3]); });
+    if (room === "fav") keys.push(["auto:0", 3], ["auto:1", 3]);
+    E.filter(function (e) { return e.type !== "light" && all["other:" + e.id] && inRoom(e); }).slice(0, room === "fav" ? 2 : 12).forEach(function (e) { keys.push(["other:" + e.id, 3]); });
+    if (room === "fav") keys.push(["list:update", 6], ["list:services", 6]);
+    var col = 1, row = 1, out = [];
+    keys.forEach(function (k) {
+      if (row + k[1] - 1 > ROWS) { col++; row = 1; }
+      if (col > COLS) return;
+      out.push({ key: k[0], col: col, row: row, h: k[1] }); row += k[1];
+    });
+    return out;
+  }
+  function layoutOf(c) { var id = size + ":" + room; return LAYOUTS[id] || (LAYOUTS[id] = autoLayout(c)); }
+  // la place (colonne, rangée, hauteur) est-elle libre ? (sans compter la carte « skip »)
+  function free(lay, col, row, h, skip) {
+    if (row < 1 || row + h - 1 > ROWS) return false;
+    return !lay.some(function (it) { return it !== skip && it.col === col && it.row < row + h && row < it.row + it.h; });
+  }
+  // une carte en édition : la glisser pour la déplacer, changer sa taille, la retirer
+  function editCard(b, it, lay, COLS) {
+    var ed = el("div", "ed"), x = el("button", "ed-x", "×"), sz = el("button", "ed-sz", it.h === 2 ? "S" : it.h === 3 ? "M" : "L");
+    x.type = sz.type = "button"; x.setAttribute("aria-label", "Remove"); sz.setAttribute("aria-label", "Card size");
+    ed.appendChild(x); ed.appendChild(sz); b.appendChild(ed);
+    x.addEventListener("click", function (ev) { ev.stopPropagation(); lay.splice(lay.indexOf(it), 1); render(); });
+    var sizes = (catalog(colors())[it.key] || {}).sizes || [it.h];
+    sz.hidden = sizes.length < 2;
+    sz.addEventListener("click", function (ev) {
+      ev.stopPropagation();
+      var i = sizes.indexOf(it.h);
+      for (var n = 1; n < sizes.length; n++) { var h = sizes[(i + n) % sizes.length]; if (free(lay, it.col, it.row, h, it)) { it.h = h; break; } }
+      render();
+    });
+    [x, sz].forEach(function (bt) { bt.addEventListener("pointerdown", function (ev) { ev.stopPropagation(); }); });
+    var k = 1, x0 = 0, y0 = 0, drag = false;
+    ed.addEventListener("pointerdown", function (ev) {
+      k = frame.clientWidth / SIZES[size].w; x0 = ev.clientX; y0 = ev.clientY; drag = true;
+      ed.setPointerCapture(ev.pointerId); b.classList.add("drag");
+    });
+    ed.addEventListener("pointermove", function (ev) {
+      if (!drag) return;
+      b.style.transform = "translate(" + (ev.clientX - x0) / k + "px," + (ev.clientY - y0) / k + "px)";
+      var t = target(ev); b.classList.toggle("bad", !free(lay, t.col, t.row, it.h, it));
+    });
+    function target(ev) {
+      var g = v("grid"), cw = (g.clientWidth + 20) / COLS, ch = (g.clientHeight + 20) / ROWS;
+      return { col: Math.max(1, Math.min(COLS, it.col + Math.round((ev.clientX - x0) / k / cw))), row: it.row + Math.round((ev.clientY - y0) / k / ch) };
+    }
+    function end(ev) {
+      if (!drag) return; drag = false;
+      var t = target(ev);
+      if (free(lay, t.col, t.row, it.h, it)) { it.col = t.col; it.row = t.row; }
+      render();
+    }
+    ed.addEventListener("pointerup", end);
+    ed.addEventListener("pointercancel", function () { drag = false; render(); });
+  }
+  // « + » sur une case libre : choisir l'entité et la taille de sa carte
+  function openPicker(pk, lay, c) {
+    pk.hidden = false;
+    var all = catalog(c), used = lay.map(function (it) { return it.key; });
+    var hd = el("div", "pk-head");
+    hd.appendChild(el("p", "w-lbl", "Add a card · column " + adding.col + " · row " + adding.row));
+    var cancel = el("button", "pk-cancel", "Cancel"); cancel.type = "button";
+    cancel.addEventListener("click", function () { adding = null; render(); });
+    hd.appendChild(cancel); pk.appendChild(hd);
+    var list = el("div", "pk-list");
+    Object.keys(all).filter(function (key) { return used.indexOf(key) < 0; }).forEach(function (key) {
+      var it = all[key], row = el("div", "pk-row");
+      var who = el("div", "pk-who"); who.appendChild(el("p", "pk-nm", it.name)); who.appendChild(el("p", "pk-k", it.kind + (it.room ? " · " + roomName(it.room) : "")));
+      row.appendChild(who);
+      it.sizes.slice().sort().forEach(function (h) {
+        var bt = el("button", "pk-sz", h === 2 ? "S" : h === 3 ? "M" : "L"); bt.type = "button"; bt.title = SIZE_NAME[h];
+        bt.disabled = !free(lay, adding.col, adding.row, h);
+        bt.addEventListener("click", function () { lay.push({ key: key, col: adding.col, row: adding.row, h: h }); adding = null; render(); });
+        row.appendChild(bt);
+      });
+      list.appendChild(row);
+    });
+    pk.appendChild(list);
+  }
+
   function render() {
     var c = colors(), Z = SIZES[size], offline = val("sample") === "offline";
     stage.style.setProperty("--accent", c.accent);
@@ -790,37 +925,41 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
     // Favorites : lumières, capteurs, automatisations, autres entités, puis mises à jour et services en pleine hauteur.
     // Plus tard, l'utilisateur choisira lui-même la carte, sa taille et sa place dans les réglages du compagnon.
     var guide = v("guide"); guide.innerHTML = ""; guide.hidden = true;
+    var picker = v("picker"); picker.innerHTML = ""; picker.hidden = true;
+    var editing = v("editMode").checked && (size === "xl" || size === "l");
+    stage.classList.toggle("editing", editing);
     grid.classList.toggle("cells", size === "xl" || size === "l");
     if (size === "xl" || size === "l") {
-      var COLS = size === "xl" ? 6 : 4, ROWS = 6;
-      var inRoom = function (x) { return room === "fav" ? x.fav : x.room === room; };
-      var cards = [];
-      E.filter(function (e) { return e.type === "light" && inRoom(e); }).slice(0, 3).forEach(function (e) { cards.push({ h: 2, draw: function (inn) { lightCard(inn, e, c); } }); });
-      SENSORS.filter(inRoom).slice(0, 2).forEach(function (d) { cards.push({ h: 3, draw: function (inn) { sensorCard(inn, d, c); } }); });
-      if (room === "fav") AUTOS.slice(0, 2).forEach(function (a) { cards.push({ h: 3, draw: function (inn) { autoCard(inn, a, c); } }); });
-      E.filter(function (e) { return e.type !== "light" && !(e.type === "sensor" && e.unit === "°") && inRoom(e); })
-        .slice(0, room === "fav" ? 2 : 12).forEach(function (e) { cards.push({ h: 3, draw: function (inn) { otherCard(inn, e, c); } }); });
-      if (room === "fav") ["update", "services"].forEach(function (k) { cards.push({ h: 6, draw: function (inn) { listCard(inn, k, c); } }); });
-      // une colonne après l'autre : une carte qui ne tient plus dans la colonne passe à la suivante
-      var col = 1, row = 1;
-      cards.forEach(function (k) {
-        if (row + k.h - 1 > ROWS) { col++; row = 1; }
-        if (col > COLS) return;
+      var COLS = size === "xl" ? 6 : 4, lay = layoutOf(c);
+      lay.forEach(function (it) {
+        var k = catalog(c)[it.key]; if (!k) return;
         var b = el("div", "cbox"), inn = el("div", "in");
-        b.style.gridColumn = col; b.style.gridRow = row + " / span " + k.h;
+        b.style.gridColumn = it.col; b.style.gridRow = it.row + " / span " + it.h;
         b.appendChild(inn); grid.appendChild(b); colorsOn(inn, c); k.draw(inn);
-        row += k.h;
+        if (editing) editCard(b, it, lay, COLS);
       });
-      if (v("showGrid").checked) {
+      if (v("showGrid").checked || editing) {
         guide.hidden = false;
         guide.style.top = grid.style.top; guide.style.height = grid.style.height;
-        for (var gi = 0; gi < COLS * ROWS; gi++) guide.appendChild(el("i"));
+        for (var r = 1; r <= ROWS; r++) for (var q = 1; q <= COLS; q++) {
+          var cell = el("i");
+          if (editing && free(lay, q, r, 1)) {
+            cell.className = "free";
+            var add = el("button", "add", "+"); add.type = "button"; add.setAttribute("aria-label", "Add a card");
+            (function (q, r) { add.addEventListener("click", function () { adding = { col: q, row: r }; render(); }); })(q, r);
+            cell.appendChild(add);
+          }
+          guide.appendChild(cell);
+        }
       }
+      if (editing && adding) openPicker(picker, lay, c);
     }
     drawCards(c);
   }
 
   document.querySelectorAll(".settings input").forEach(function (i) { i.addEventListener("input", render); i.addEventListener("change", render); });
+  v("editMode").addEventListener("change", function () { adding = null; });
+  v("resetLayout").addEventListener("click", function () { LAYOUTS = {}; adding = null; render(); });
   document.querySelectorAll(".preset[data-accent]").forEach(function (b) {
     b.addEventListener("click", function () { v("accentColor").value = b.getAttribute("data-accent"); render(); });
   });
