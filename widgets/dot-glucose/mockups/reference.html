@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Maquette de référence du Dot Glucose. Elle charge le rendu du module (styles/glucose.css, scripts/glucose.js) : la base pointe sur le dossier du module. -->
+<base href="../">
+<style>body { margin: 0; }</style>
+</head>
+<body>
+<title>Dot Glucose</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap">
+<link rel="stylesheet" href="styles/glucose.css">
+<script src="scripts/glucose.js"></script>
+<style>
+/* Layout : maquette de référence en taille réelle (choix S, M, L, XL) avec ses réglages, puis tableau des choix. Même univers que Dot Clock, un seul thème sombre. */
+:root {
+  --page: #080808;
+  --panel: #0a0a0a;
+  --line: #262626;
+  --text: #e6e6e6;
+  --muted: #8c8c8c;
+  --brand: #10b981;
+  --mono: "Fira Code", "Cascadia Mono", Consolas, monospace;
+  --sans: "Segoe UI", Selawik, system-ui, sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { background: var(--page); color: var(--text); }
+html { scrollbar-gutter: stable; }
+/* fond en points, le même que Dot Page */
+body { background-image: radial-gradient(circle, #161616 1.2px, transparent 1.6px); background-size: 22px 22px; }
+body {
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.55;
+  padding-block: 28px 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 1240px; margin: 0 auto; display: grid; gap: 48px; }  /* socle du site : 1240 px, 48 px entre les zones */
+header { display: grid; gap: 10px; }
+h1 { font-family: var(--mono); font-weight: 500; font-size: clamp(28px, 4vw, 44px); line-height: 1.1; margin: 0; letter-spacing: -.01em; }
+.lede { color: var(--muted); max-width: 72ch; margin: 0; }
+
+figure { margin: 0; display: grid; gap: 12px; min-width: 0; }
+.tag { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.tag b { color: var(--text); font-weight: 500; font-size: 14px; }
+figcaption { color: var(--muted); font-size: 14px; }
+
+/* tableau */
+.diff-head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; }
+h2 { font-family: var(--mono); font-weight: 500; font-size: 13px; letter-spacing: .2em; text-transform: uppercase; color: #b8b6b0; margin: 0; }  /* titres de section comme sur le site */
+.hint { color: var(--muted); font-size: 14px; margin: 0; }
+.table-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; }
+table { width: 100%; border-collapse: collapse; min-width: 640px; }
+th, td { text-align: left; padding: 14px 16px; vertical-align: top; border-bottom: 1px solid var(--line); }
+tr:last-child td { border-bottom: 0; }
+thead th { font-family: var(--mono); font-weight: 500; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); background: var(--panel); }
+td:first-child { font-family: var(--mono); color: var(--muted); width: 3.5em; font-variant-numeric: tabular-nums; }
+td:nth-child(2) { font-weight: 500; width: 15em; }
+tr.todo td:nth-child(3) { color: var(--muted); }
+code { font-family: var(--mono); font-size: 13px; color: var(--text); }
+
+/* réglages simulés */
+.settings { display: flex; flex-wrap: wrap; gap: 12px 28px; align-items: center; padding: 14px 16px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); }
+.settings label { display: inline-flex; align-items: center; gap: 10px; font-family: var(--mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); cursor: pointer; }
+.settings input[type=color] { width: 36px; height: 28px; padding: 0; border: 1px solid var(--line); border-radius: 6px; background: none; cursor: pointer; }
+.settings input[type=checkbox], .settings input[type=radio] { width: 18px; height: 18px; accent-color: var(--brand); cursor: pointer; }
+.settings .grp { display: inline-flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.settings .grp > span { font-family: var(--mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--text); }
+.preset { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; padding: 6px 10px; border-radius: 6px; border: 1px solid var(--line); background: transparent; color: var(--text); cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+.preset i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+.preset:focus-visible, .tab:focus-visible, .ses:focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; }
+.sizebar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; }
+.sizebar > span { font-family: var(--mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-right: 6px; }
+.sizebar .preset[aria-pressed="true"] { background: var(--text); color: #0a0a0a; border-color: var(--text); }
+
+/* cadre à l'échelle de l'XL : la largeur suit la vraie largeur de l'emplacement */
+.frame { position: relative; max-width: 100%; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: #080808; }
+.frame.xl { width: 100%; aspect-ratio: 2536 / 696; }
+.frame.l { width: calc(1688 / 2536 * 100%); aspect-ratio: 1688 / 696; }
+.frame.m { width: calc(840 / 2536 * 100%); aspect-ratio: 840 / 696; }
+.frame.s { width: calc(840 / 2536 * 100%); aspect-ratio: 840 / 344; }
+@media (max-width: 700px) { .frame.l, .frame.m, .frame.s { width: 100%; } }
+
+/* ---------- l'écran : le rendu vient de styles/glucose.css (classe .dot-glucose), ici seulement sa place dans le cadre */
+.stage { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
+/* Hero (gabarit modulePage, zone 2) : le nom du module en texte et la version de la maquette en capsule, l'accroche, puis les faits */
+.page-hero { display: grid; gap: 10px; }
+.page-hero-head { display: flex; align-items: flex-end; flex-wrap: wrap; gap: 10px 16px; }
+.page-title { font-family: "Fira Code", "Cascadia Mono", Consolas, monospace; font-weight: 500; font-size: 70px; line-height: 1.1; margin: 0; letter-spacing: -.01em; color: #e6e6e6; }
+/* version en capsule (comme les versions de la Roadmap de Dot Companion), son bas posé sur la ligne de base du titre */
+.mver { display: inline-block; margin-bottom: 16px; padding: 1px 10px; border: 1px solid #10b981; border-radius: 999px; font-family: "Fira Code", "Cascadia Mono", Consolas, monospace; font-size: 12px; letter-spacing: .1em; color: #10b981; white-space: nowrap; }
+.page-lede { margin: 0; max-width: none; color: var(--muted); font-size: 15px; }
+.page-facts { display: flex; flex-wrap: wrap; gap: 8px 28px; margin: 0; padding: 0; list-style: none; font-family: "Fira Code", "Cascadia Mono", Consolas, monospace; font-size: 13px; letter-spacing: .18em; text-transform: uppercase; color: #b8b6b0; }
+.page-facts b { color: #10b981; font-weight: 500; margin-right: .5em; }
+/* écran XL : le même que la Showcase de Dot Page (3.3) : le boîtier de l'Edge, l'écran 2560 × 720 sur fond noir,
+   et l'emplacement XL 2536 × 696 à 12 px du bord, où le module s'affiche à l'échelle */
+.edge { padding: clamp(6px, 1.2%, 18px); border-radius: clamp(10px, 1.6vw, 24px); background: linear-gradient(180deg, #161616, #0b0b0b); border: 1px solid #2a2a2a; box-shadow: 0 40px 80px -40px #000, inset 0 1px 0 #262626; }
+.screen { position: relative; aspect-ratio: 2560 / 720; max-width: 100%; overflow: hidden; border-radius: clamp(3px, .5vw, 8px); background: #000; }
+.screen > #frame { position: absolute; left: calc(12 / 2560 * 100%); top: calc(12 / 720 * 100%); width: calc(2536 / 2560 * 100%); height: calc(696 / 720 * 100%); max-width: none; aspect-ratio: auto; margin: 0; border: 0; border-radius: .473% / 1.724%; background: #080808; }
+/* pied de page, le même que sur les pages du site */
+.footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px 24px; font-family: "Fira Code", "Cascadia Mono", Consolas, monospace; font-size: 13px; letter-spacing: .24em; text-transform: uppercase; }
+.footer .red { color: #10b981; }
+.footer a { color: #b8b6b0; text-decoration: none; }
+</style>
+
+<div class="wrap">
+  <section class="page-hero">
+    <div class="page-hero-head"><h1 class="page-title">Dot Glucose</h1><span class="mver">v0.1</span></div>
+    <p class="page-lede">Première proposition, à valider point par point dans le tableau. La glycémie d'un capteur FreeStyle Libre (2 ou 3) en direct sur l'Edge : la valeur en gros points avec sa tendance, la courbe des dernières heures avec la plage cible, le temps dans la cible. Les données viennent de LibreLinkUp, par le compagnon. Pour garder un œil dessus, pas pour décider d'un traitement : les alarmes restent celles du téléphone. Les mesures sont des exemples fictifs.</p>
+    <ul class="page-facts"><li><b>9</b>réglages</li><li><b>1</b>taille</li><li><b>Oui</b>connexion externe</li></ul>
+  </section>
+
+  <figure>
+    <div class="edge"><div class="screen">
+      <div class="frame xl" id="frame">
+        <div class="stage" id="stage"></div>
+      </div>
+    </div></div>
+    <div class="settings" aria-label="Réglages simulés">
+      <div class="grp" role="radiogroup" aria-label="Exemple">
+        <span>Exemple</span>
+        <label><input type="radio" name="sample" value="range" checked> In range</label>
+        <label><input type="radio" name="sample" value="high"> High</label>
+        <label><input type="radio" name="sample" value="low"> Low</label>
+        <label><input type="radio" name="sample" value="stale"> No recent data</label>
+        <label><input type="radio" name="sample" value="starting"> Sensor starting</label>
+        <label><input type="radio" name="sample" value="offline"> Offline</label>
+      </div>
+      <div class="grp" role="radiogroup" aria-label="Units">
+        <span>Units</span>
+        <label><input type="radio" name="units" value="mgdl" checked> mg/dL</label>
+        <label><input type="radio" name="units" value="mmol"> mmol/L</label>
+      </div>
+      <label>Target range <select id="target"><option value="70-180" selected>70–180 mg/dL</option><option value="70-140">70–140 mg/dL</option><option value="80-200">80–200 mg/dL</option></select></label>
+      <div class="grp" role="radiogroup" aria-label="Graph">
+        <span>Graph</span>
+        <label><input type="radio" name="hours" value="3"> 3 h</label>
+        <label><input type="radio" name="hours" value="6"> 6 h</label>
+        <label><input type="radio" name="hours" value="12" checked> 12 h</label>
+        <label><input type="radio" name="hours" value="24"> 24 h</label>
+      </div>
+      <label><input type="checkbox" id="showUnlit" checked> Show unlit dots</label>
+      <label>Accent color <input type="color" id="accentColor" value="#10b981"></label>
+      <label>Lit dot color <input type="color" id="litColor" value="#f2f0e9"></label>
+      <label>Unlit dot color <input type="color" id="unlitColor" value="#1c1c1c"></label>
+      <label>Label color <input type="color" id="labelColor" value="#b8b6b0"></label>
+      <button type="button" class="preset" data-accent="#10b981"><i style="background:#10b981"></i>Émeraude</button>
+      <button type="button" class="preset" data-accent="#ed403b"><i style="background:#ed403b"></i>Rouge A</button>
+    </div>
+  </figure>
+
+  <section style="display:grid;gap:14px">
+    <div class="diff-head">
+      <h2>Choix de design</h2>
+      <p class="hint">Tout est à valider. Complété au fur et à mesure.</p>
+    </div>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>#</th><th>Élément</th><th>Proposition</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>Module</td><td>Module de Dot Hub servi par Dot Companion (<code>/m/glucose/</code>). Pas de widget iCUE autonome. Nom sans marque : « Dot Glucose ».</td></tr>
+          <tr class="todo"><td>2</td><td>Données</td><td>Par <b>LibreLinkUp</b>, l'appli de partage de FreeStyle : dans LibreLink, on invite un compte LibreLinkUp (le sien, avec une autre adresse), et le compagnon s'y connecte comme l'appli. Il lit la dernière valeur (à peu près toutes les minutes), la tendance, la courbe des 12 dernières heures (un point toutes les 15 min) et la date de fin du capteur. Marche pour le Libre 2 comme pour le Libre 3, puisque c'est l'appli LibreLink qui envoie les mesures. LibreView (rapports) n'a pas de données en direct.</td></tr>
+          <tr class="todo"><td>3</td><td>Compte</td><td>Adresse et mot de passe LibreLinkUp saisis dans la page de réglages du compagnon, chiffrés sur le PC (DPAPI), jamais renvoyés en clair. Région (Europe, États-Unis…) trouvée par le compagnon à la connexion.</td></tr>
+          <tr class="todo"><td>4</td><td>Accès non officiel</td><td>FreeStyle ne publie pas cette API. Elle est très utilisée (Nightscout, Home Assistant…), mais elle change parfois : le compagnon devra alors être mis à jour. En cas d'erreur, « LIBRELINKUP UNREACHABLE », jamais de valeur inventée.</td></tr>
+          <tr class="todo"><td>5</td><td>Valeur</td><td>Glycémie en gros points (police 5 × 7, comme Dot Clock), flèche de tendance 7 × 7 à côté (baisse rapide, baisse, stable, hausse, hausse rapide, comme LibreLinkUp), unité en dessous. Allumée dans la cible, en jaune si haute, en rouge si basse : jaune et rouge fixes, quelle que soit la couleur d'accent.</td></tr>
+          <tr class="todo"><td>6</td><td>État</td><td>En toutes lettres sous la valeur : « IN RANGE · STEADY », « HIGH · RISING », « LOW · FALLING », puis la plage cible.</td></tr>
+          <tr class="todo"><td>7</td><td>Courbe</td><td>Les dernières heures en points : une colonne toutes les 30 px, la mesure à sa hauteur (de 40 à 320 mg/dL), la plage cible marquée par des points un peu plus clairs, la dernière mesure cerclée. Limites de la plage à droite, heures en dessous. Un toucher change la durée : 3, 6, 12 ou 24 h (réglage « Graph » par défaut).</td></tr>
+          <tr class="todo"><td>8</td><td>Chiffres</td><td>En bas à gauche : temps dans la cible sur 24 h, moyenne sur 24 h, jours restants du capteur.</td></tr>
+          <tr class="todo"><td>9</td><td>Mesure ancienne</td><td>Plus de 15 min sans mesure : valeur grisée, sans flèche, « NO DATA FOR 18 MIN » en jaune, la courbe s'arrête à la dernière mesure.</td></tr>
+          <tr class="todo"><td>10</td><td>Capteur</td><td>Pendant la mise en route (1 h pour le Libre 2, quelques minutes pour le Libre 3) : « SENSOR STARTING » et l'heure de la première mesure ; « --- » à la place de la valeur.</td></tr>
+          <tr class="todo"><td>11</td><td>Unités</td><td>mg/dL ou mmol/L (une décimale, 1 mmol/L = 18 mg/dL). Plage cible au choix, 70–180 mg/dL par défaut (consensus international).</td></tr>
+          <tr class="todo"><td>12</td><td>Pas un outil médical</td><td>Pour garder un œil sur sa glycémie pendant qu'on est au PC. Les alarmes et les décisions de traitement restent celles du lecteur ou du téléphone.</td></tr>
+          <tr class="todo"><td>13</td><td>Libellés</td><td>« DOT GLUCOSE » en haut à gauche, à la même place et à la même taille que dans tous les modules (point à 56 / 51 px, texte à 80 / 44 px, Fira Code 18 px). À droite : le capteur et l'âge de la mesure (« LIBRE 3 · 1 MIN AGO »).</td></tr>
+          <tr class="todo"><td>14</td><td>Tailles</td><td><b>XL</b> seulement pour l'instant : valeur, état et chiffres à gauche, courbe à droite. S, M et L plus tard.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+  <footer class="footer">
+    <span class="red">For Xeneon Edge · Touch · Dot-matrix</span>
+    <a href="https://github.com/Mathod95/xeneon" target="_blank" rel="noopener">Mathod95/xeneon</a>
+  </footer>
+</div>
+
+<script>
+// Habillage de la maquette : réglages simulés. Le rendu de l'écran est celui du module (DotGlucose.mount).
+(function () {
+  "use strict";
+  function v(id) { return document.getElementById(id); }
+  function val(name) { return document.querySelector("input[name=" + name + "]:checked").value; }
+  var frame = v("frame"), stage = v("stage");
+  function settings() {
+    return { sample: val("sample"), units: val("units"), target: v("target").value, hours: val("hours"), showUnlit: v("showUnlit").checked,
+      accent: v("accentColor").value, lit: v("litColor").value, unlit: v("unlitColor").value, label: v("labelColor").value };
+  }
+  var g = DotGlucose.mount(stage, { size: "xl", settings: settings });
+  function fit() { stage.style.transform = "scale(" + frame.clientWidth / DotGlucose.slots.xl[0] + ")"; }
+  if (window.ResizeObserver) new ResizeObserver(fit).observe(frame); else window.addEventListener("resize", fit);
+  document.querySelectorAll(".settings input, .settings select").forEach(function (i) { i.addEventListener("input", g.render); i.addEventListener("change", g.render); });
+  document.querySelectorAll(".preset[data-accent]").forEach(function (b) {
+    b.addEventListener("click", function () { v("accentColor").value = b.getAttribute("data-accent"); g.render(); });
+  });
+  fit();
+})();
+</script>
+</body>
+</html>

@@ -30,5 +30,6 @@
   "dot-qbittorrent": "qBittorrent downloads: live upload and download speed, active torrents with progress, pause, resume and alternative speed limit.",
   "dot-portainer": "Docker containers through Portainer: state, CPU and memory, stacks, start, stop and restart with a tap.",
   "dot-radarr": "Radarr movies: downloads in progress with progress, upcoming releases and missing movies, search started with a tap.",
-  "dot-sonarr": "Sonarr series: episodes downloading, upcoming episodes and missing episodes, search started with a tap."
+  "dot-sonarr": "Sonarr series: episodes downloading, upcoming episodes and missing episodes, search started with a tap.",
+  "dot-glucose": "Live glucose from a FreeStyle Libre sensor (2 or 3): value in big dots with its trend, graph of the last hours with the target range, time in range over 24 h."
 }

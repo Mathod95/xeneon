@@ -4,7 +4,7 @@ Programme Windows qui sert Dot Hub. Il écoute uniquement sur `127.0.0.1:47800`.
 
 - `src/main.rs` : serveur HTTP, configuration (`%APPDATA%\Xeneon\config.json`), API des pages et des Dot Hub.
 - `web/` : accueil Dot Home (`home.html`), page de réglages (`settings.html`), script ajouté à chaque module (`hub/module.js`).
-- Modules : le dossier d’un widget est intégré tel quel dans l’exécutable (pour l’instant `widgets/dot-clock` et `widgets/dot-steam`), servi sur `/m/<id>/`.
+- Modules : le dossier d’un widget est intégré tel quel dans l’exécutable (pour l’instant `widgets/dot-clock`, `widgets/dot-steam` et `widgets/dot-bambulab`), servi sur `/m/<id>/`.
 - `mockups/reference.html` : maquette de référence (la vraie page de réglages avec une API simulée, l’icône de la zone de notification et son menu). Présentation pour les utilisateurs : `tools/site/companion.html` (Dot Page, `/companion/`).
 
 ## Routes
@@ -25,6 +25,8 @@ Programme Windows qui sert Dot Hub. Il écoute uniquement sur `127.0.0.1:47800`.
 | `GET /api/steam/avatar` | Dot Steam : avatar du compte connecté (cache de Steam) |
 | `POST /api/steam/open/<downloads\|library\|friends>` | Dot Steam : ouvre cette page de Steam (`steam://open/…`) |
 | `POST /api/steam/status/<online\|away\|invisible\|offline>` | Dot Steam : change le statut (`steam://friends/status/…`) |
+| `GET /api/bambulab/state?uid=<uniqueId>&page=<id>` | Dot Bambu Lab : état de l’imprimante de la page (MQTT sur TLS en réseau local, voir `src/bambulab.rs`) : progression, températures, AMS, erreur ; `offline` avec un message tant qu’elle ne répond pas |
+| `POST /api/bambulab/<light\|pause\|resume\|stop>?page=<id>` | Dot Bambu Lab : lampe (bascule), pause, reprise, arrêt, publiés sur `device/<numéro de série>/request` |
 | `POST /api/open-settings` | ouvre la page de réglages dans le navigateur par défaut du PC (bouton « SETTINGS » de l’accueil ; un appel toutes les 3 s au plus) |
 | `GET` / `PUT /api/startup` | démarrage avec Windows (`{ supported, enabled }` ; `PUT { "enabled": true\|false }`) : valeur « Dot Companion » de `HKCU\Software\Microsoft\Windows\CurrentVersion\Run`, activée à la première ouverture |
 | `GET /api/update` · `POST /api/update/check` · `POST /api/update/install` | mise à jour depuis l’app : `{ current, latest, available, checked, checking, installing, error }` ; l’installation télécharge l’exe de la dernière release GitHub, vérifie son SHA-256, se remplace et redémarre |

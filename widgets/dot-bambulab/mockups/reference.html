@@ -64,6 +64,7 @@ thead th { font-family: var(--mono); font-weight: 500; font-size: 12px; letter-s
 td:first-child { font-family: var(--mono); color: var(--muted); width: 3.5em; font-variant-numeric: tabular-nums; }
 td:nth-child(2) { font-weight: 500; width: 15em; }
 tr.todo td:nth-child(3) { color: var(--muted); }
+.ok { color: #10b981; font-size: 13px; white-space: nowrap; }
 code { font-family: var(--mono); font-size: 13px; color: var(--text); }
 
 /* réglages simulés */
@@ -135,8 +136,8 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
       </div>
       <div class="grp" role="radiogroup" aria-label="Printer">
         <span>Printer</span>
-        <label><input type="radio" name="model" value="X1C" checked> X1C</label>
-        <label><input type="radio" name="model" value="P1S"> P1S</label>
+        <label><input type="radio" name="model" value="X1C"> X1C</label>
+        <label><input type="radio" name="model" value="P1S" checked> P1S</label>
         <label><input type="radio" name="model" value="A1"> A1</label>
       </div>
       <label><input type="checkbox" id="showAms" checked> Show AMS</label>
@@ -146,7 +147,6 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
       <label>Unlit dot color <input type="color" id="unlitColor" value="#1c1c1c"></label>
       <label>Label color <input type="color" id="labelColor" value="#b8b6b0"></label>
       <button type="button" class="preset" data-accent="#10b981"><i style="background:#10b981"></i>Émeraude</button>
-      <button type="button" class="preset" data-accent="#00ae42"><i style="background:#00ae42"></i>Vert Bambu</button>
       <button type="button" class="preset" data-accent="#ed403b"><i style="background:#ed403b"></i>Rouge A</button>
     </div>
   </figure>
@@ -154,24 +154,24 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
   <section style="display:grid;gap:14px">
     <div class="diff-head">
       <h2>Choix de design</h2>
-      <p class="hint">Tout est à valider. Complété au fur et à mesure.</p>
+      <p class="hint">Validé le 1er novembre 2026, pour un P1S en réseau local.</p>
     </div>
     <div class="table-scroll">
       <table>
         <thead><tr><th>#</th><th>Élément</th><th>Proposition</th></tr></thead>
         <tbody>
           <tr><td>1</td><td>Module</td><td>Module de Dot Hub servi par Dot Companion (<code>/m/bambulab/</code>). Pas de widget iCUE autonome.</td></tr>
-          <tr class="todo"><td>2</td><td>Données</td><td>Le compagnon se connecte à l'imprimante en réseau local : MQTT sur TLS, port <code>8883</code>, utilisateur <code>bblp</code>, mot de passe = code d'accès LAN affiché sur l'imprimante, sujet <code>device/&lt;numéro de série&gt;/report</code>. Une demande <code>pushall</code> au démarrage donne l'état complet, puis l'imprimante envoie les changements. Adresse IP, numéro de série et code d'accès se règlent dans la page de réglages du compagnon et restent sur le PC.</td></tr>
-          <tr class="todo"><td>3</td><td>Progression</td><td>Pourcentage en gros points (<code>mc_percent</code>), le signe % en couleur d'accent, barre de points, nom du fichier (<code>subtask_name</code>), couche en cours sur total (<code>layer_num</code>, <code>total_layer_num</code>), temps restant (<code>mc_remaining_time</code>) et heure de fin calculée, vitesse (Silent, Standard, Sport, Ludicrous).</td></tr>
-          <tr class="todo"><td>4</td><td>Températures</td><td>Buse et plateau avec la consigne en petit et une barre qui se remplit pendant la chauffe. Chambre sur X1C (seul modèle avec la sonde) ; sur P1S et A1, la vitesse du ventilateur de pièce à la place.</td></tr>
-          <tr class="todo"><td>5</td><td>AMS</td><td>Une bobine en points par emplacement, de la couleur du filament (<code>tray_color</code>), remplie selon le reste estimé (<code>remain</code>), type en dessous. L'emplacement en cours est marqué « ▶ IN USE » en accent. Masquable (« Show AMS ») ; caché sans AMS et en M et S.</td></tr>
-          <tr class="todo"><td>6</td><td>Commandes</td><td>Lampe de la chambre, pause / reprise (bouton plein), stop. Stop demande de garder le doigt 2 s (un anneau se remplit) pour éviter d'annuler une impression par erreur. Pas de commandes en S.</td></tr>
-          <tr class="todo"><td>7</td><td>Erreurs</td><td>Erreur HMS ou arrêt de l'imprimante : point du libellé et état en rouge, message en clair sous la progression (par exemple « FILAMENT RAN OUT · AMS SLOT 2 »). Le rouge reste fixe, quelle que soit la couleur d'accent.</td></tr>
-          <tr class="todo"><td>8</td><td>Libellés</td><td>« DOT BAMBU LAB » en haut à gauche, à la même place et à la même taille que dans tous les modules (point à 56 / 51 px, texte à 80 / 44 px, Fira Code 18 px), point qui pulse pendant l'impression, toucher qui ramène à Dot Home. À droite : modèle et état (PRINTING, PAUSED, ERROR, DONE, IDLE, OFFLINE).</td></tr>
-          <tr class="todo"><td>9</td><td>Couleurs</td><td>Couleurs communes de la carte « Paramètres globaux » de Dot Companion. Vert Bambu <code>#00AE42</code> proposé comme accent.</td></tr>
-          <tr class="todo"><td>10</td><td>Sans impression</td><td>« READY » et la dernière impression ; températures et AMS restent visibles, pause et stop grisés. Imprimante injoignable : « PRINTER OFFLINE » et « CHECK IP AND ACCESS CODE IN DOT COMPANION », jamais de valeur inventée.</td></tr>
-          <tr class="todo"><td>11</td><td>Plus tard</td><td>Vignette du plateau en trame de points (dans le fichier 3MF, à lire par FTPS sur l'imprimante) et image de la caméra. Plusieurs imprimantes : une instance du module par imprimante.</td></tr>
-          <tr class="todo"><td>12</td><td>Tailles</td><td><b>XL</b> : progression à gauche, températures au centre, AMS et commandes à droite.<br><b>L</b> : progression à gauche ; températures, AMS et commandes à droite.<br><b>M</b> : progression, températures en ligne, commandes en bas.<br><b>S</b> : progression, buse et plateau, sans libellés ni commandes.</td></tr>
+          <tr><td>2</td><td>Données</td><td>Le compagnon se connecte à l'imprimante en réseau local : MQTT sur TLS, port 8883, utilisateur <code>bblp</code>, mot de passe = code d'accès LAN affiché sur l'imprimante, sujet <code>device/&lt;numéro de série&gt;/report</code> (certificat de l'imprimante accepté tel quel). Une demande <code>pushall</code> au démarrage puis toutes les 5 min donne l'état complet (le P1S n'envoie ensuite que les changements). Adresse IP, numéro de série et code d'accès (chiffré, DPAPI) se règlent dans la page de réglages du compagnon et restent sur le PC. Testé sur un P1S en « LAN only », en Wi-Fi. <span class="ok">Validé le 1er novembre 2026.</span></td></tr>
+          <tr><td>3</td><td>Progression</td><td>Pourcentage en gros points (<code>mc_percent</code>), le signe % en couleur d'accent, barre de points, nom du fichier (<code>subtask_name</code>), couche en cours sur total (<code>layer_num</code>, <code>total_layer_num</code>), temps restant (<code>mc_remaining_time</code>) et heure de fin calculée, vitesse (Silent, Standard, Sport, Ludicrous). <span class="ok">Validé le 1er novembre 2026.</span></td></tr>
+          <tr><td>4</td><td>Températures</td><td>Buse et plateau avec la consigne en petit et une barre qui se remplit pendant la chauffe. Chambre sur X1C (seul modèle avec la sonde) ; sur P1S et A1, la vitesse du ventilateur de pièce à la place. <span class="ok">Validé le 1er novembre 2026.</span></td></tr>
+          <tr><td>5</td><td>AMS</td><td>Une bobine en points par emplacement, de la couleur du filament (<code>tray_color</code>), remplie selon le reste estimé (<code>remain</code>), type en dessous. L'emplacement en cours est marqué « ▶ IN USE » en accent. Masquable (« Show AMS ») ; caché sans AMS et en M et S. <span class="ok">Validé le 1er novembre 2026.</span></td></tr>
+          <tr><td>6</td><td>Commandes</td><td>Lampe de la chambre, pause / reprise (bouton plein), stop. Stop demande de garder le doigt 2 s (un anneau se remplit) pour éviter d'annuler une impression par erreur. Pas de commandes en S. <b>D'abord en lecture seule</b> : les firmwares récents peuvent refuser les commandes d'outils tiers sans le « mode développeur » du réseau local ; les boutons sont branchés quand c'est vérifié sur le P1S. <span class="ok">Validé le 1er novembre 2026.</span></td></tr>
+          <tr><td>7</td><td>Erreurs</td><td>Erreur HMS ou arrêt de l'imprimante : point du libellé et état en rouge, message en clair sous la progression (par exemple « FILAMENT RAN OUT · AMS SLOT 2 ») pour les codes HMS les plus courants, le code brut sinon. Le rouge reste fixe, quelle que soit la couleur d'accent. <span class="ok">Validé le 1er novembre 2026.</span></td></tr>
+          <tr><td>8</td><td>Libellés</td><td>« DOT BAMBU LAB » en haut à gauche, à la même place et à la même taille que dans tous les modules (point à 56 / 51 px, texte à 80 / 44 px, Fira Code 18 px), point qui pulse pendant l'impression, toucher qui ramène à Dot Home. À droite : modèle et état (PRINTING, PAUSED, ERROR, DONE, IDLE, OFFLINE). <span class="ok">Validé le 1er novembre 2026.</span></td></tr>
+          <tr><td>9</td><td>Couleurs</td><td>Couleurs communes de la carte « Paramètres globaux » de Dot Companion, comme tous les modules : pas de couleur d'accent propre (le vert Bambu n'est plus proposé). <span class="ok">Validé le 1er novembre 2026.</span></td></tr>
+          <tr><td>10</td><td>Sans impression</td><td>« READY » et la dernière impression ; températures et AMS restent visibles, pause et stop grisés. Imprimante injoignable : « PRINTER OFFLINE » et « CHECK IP AND ACCESS CODE IN DOT COMPANION », jamais de valeur inventée. <span class="ok">Validé le 1er novembre 2026.</span></td></tr>
+          <tr><td>11</td><td>Plus tard</td><td>Vignette du plateau en trame de points (dans le fichier 3MF, à lire par FTPS sur l'imprimante) et image de la caméra. Plusieurs imprimantes : une page Dot Hub par imprimante, avec ses propres réglages. <span class="ok">Validé le 1er novembre 2026.</span></td></tr>
+          <tr><td>12</td><td>Tailles</td><td><b>XL</b> d'abord, comme tous les modules pour l'instant : progression à gauche, températures au centre, AMS et commandes à droite. L, M et S restent dans le code de la maquette et seront repris plus tard. <span class="ok">Validé le 1er novembre 2026.</span></td></tr>
         </tbody>
       </table>
     </div>

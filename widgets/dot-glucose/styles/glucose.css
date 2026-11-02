@@ -1,0 +1,43 @@
+/*
+ * Dot Glucose : le rendu (scène en pixels réels de l'emplacement), partagé par la maquette de référence,
+ * Dot Page et, plus tard, le module servi par Dot Companion. Tout est rangé sous .dot-glucose.
+ */
+.dot-glucose { position: relative; overflow: hidden; background: #080808; --accent: #10b981; --lit: #f2f0e9; --label: #b8b6b0; --unlit: #1c1c1c; --low: #ed403b; --high: #f5b942; font-family: "Fira Code", Consolas, monospace; font-variant-ligatures: none; color: var(--lit); }
+.dot-glucose.xl { width: 2536px; height: 696px; }
+.dot-glucose.l { width: 1688px; height: 696px; }
+.dot-glucose.m { width: 840px; height: 696px; }
+.dot-glucose.s { width: 840px; height: 344px; }
+.dot-glucose > * { position: absolute; }
+.dot-glucose p { margin: 0; }
+.dot-glucose canvas { display: block; }
+.dot-glucose [hidden] { display: none !important; }
+.dot-glucose .w-lbl { white-space: nowrap; font-size: 18px; line-height: 24px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); }
+
+/* libellé « ● DOT GLUCOSE » : même place et même taille dans tous les modules ; à droite, le capteur et l'âge de la mesure */
+.dot-glucose .w-dot { left: 56px; top: 51px; width: 10px; height: 10px; border-radius: 50%; background: var(--accent); }
+.dot-glucose .w-name { left: 80px; top: 44px; }
+.dot-glucose .w-state { right: 56px; top: 44px; }
+.dot-glucose.stale .w-state, .dot-glucose.offline .w-state { color: var(--high); }
+
+/* valeur actuelle : glycémie en gros points, flèche de tendance, unité */
+.dot-glucose .g-now { display: flex; align-items: flex-end; gap: 40px; }
+.dot-glucose .g-now .unit { margin-bottom: 4px; font-size: 22px; line-height: 28px; letter-spacing: .14em; text-transform: uppercase; color: var(--label); }
+.dot-glucose .g-status { font-size: 30px; line-height: 38px; letter-spacing: .12em; text-transform: uppercase; color: var(--c, var(--lit)); }
+.dot-glucose .g-sub { font-size: 20px; line-height: 28px; letter-spacing: .1em; text-transform: uppercase; color: var(--label); }
+
+/* chiffres des 24 dernières heures */
+.dot-glucose .g-stats { display: flex; gap: 72px; }
+.dot-glucose .g-stats .k { font-size: 18px; line-height: 24px; letter-spacing: .2em; text-transform: uppercase; color: var(--label); }
+.dot-glucose .g-stats .v { margin-top: 6px; font-size: 44px; line-height: 54px; color: var(--lit); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.dot-glucose .g-stats .v small { margin-left: 8px; font-size: 22px; color: var(--label); }
+
+/* courbe : un toucher change la durée affichée */
+.dot-glucose .g-graph { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.dot-glucose .g-graph .head { display: flex; justify-content: space-between; margin-bottom: 18px; }
+
+/* XL : valeur, état et chiffres à gauche, courbe à droite */
+.dot-glucose.xl .g-now { left: 56px; top: 120px; }
+.dot-glucose.xl .g-status { left: 56px; top: 372px; }
+.dot-glucose.xl .g-sub { left: 56px; top: 414px; }
+.dot-glucose.xl .g-stats { left: 56px; bottom: 56px; }
+.dot-glucose.xl .g-graph { left: 1000px; top: 112px; width: 1480px; height: 536px; }

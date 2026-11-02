@@ -8,6 +8,7 @@ on:
       - "companion/**"
       - "widgets/dot-clock/**"
       - "widgets/dot-steam/**"
+      - "widgets/dot-bambulab/**"
       - ".github/workflows/companion.yml"
   workflow_dispatch:
 

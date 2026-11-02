@@ -6,6 +6,7 @@
 //! - sert l'accueil Dot Hub, la page de réglages et les modules (pour l'instant : Clock) ;
 //! - ouvre la page de réglages dans le navigateur du PC quand on touche SETTINGS sur l'Edge ;
 //! - module Steam (Dot Steam) : jeux, téléchargements, jeu en cours, amis, lancement (voir `steam.rs`) ;
+//! - module Bambu Lab (Dot Bambu Lab) : imprimante 3D en réseau local, MQTT sur TLS (voir `bambulab.rs`) ;
 //! - garde les secrets des modules (clés d'API) chiffrés avec DPAPI sous Windows ;
 //! - garde les pages de Dot Hub (un module ajouté avec « + » et ses réglages, communes à tous les Dot Hub),
 //!   la page affichée par chaque Dot Hub (clé = `uniqueId` iCUE) et les couleurs communes
@@ -26,6 +27,7 @@ use std::sync::{Mutex, MutexGuard, OnceLock};
 use std::time::{SystemTime, UNIX_EPOCH};
 use tiny_http::{Header, Method, Request, Response, Server, StatusCode};
 
+mod bambulab;
 mod steam;
 #[cfg(any(windows, feature = "check-win"))]
 mod tray;
@@ -37,6 +39,7 @@ const VERSION: &str = env!("CARGO_PKG_VERSION");
 static WEB: Dir = include_dir!("$CARGO_MANIFEST_DIR/web");
 static CLOCK: Dir = include_dir!("$CARGO_MANIFEST_DIR/../widgets/dot-clock");
 static STEAM: Dir = include_dir!("$CARGO_MANIFEST_DIR/../widgets/dot-steam");
+static BAMBULAB: Dir = include_dir!("$CARGO_MANIFEST_DIR/../widgets/dot-bambulab");
 
 struct Module {
     id: &'static str,
@@ -48,6 +51,7 @@ fn modules() -> Vec<Module> {
     vec![
         Module { id: "clock", name: "Dot Clock", files: &CLOCK },
         Module { id: "steam", name: "Dot Steam", files: &STEAM },
+        Module { id: "bambulab", name: "Dot Bambu Lab", files: &BAMBULAB },
     ]
 }
 
@@ -448,6 +452,11 @@ fn handle(mut req: Request, cfg: &mut Config) {
                     None => not_found(req),
                 }
             }
+            // Dot Bambu Lab : état de l'imprimante d'une page (?page=<id>, sinon la page affichée par le Dot Hub ?uid=)
+            "bambulab" if seg(2) == "state" => {
+                let t = bambulab_target(cfg, &url);
+                send_json(req, 200, &bambulab::state(&t))
+            }
             "update" => send_json(req, 200, &update::status_json()),
             "startup" => send_json(req, 200, &json!({ "supported": startup::supported(), "enabled": startup::enabled() })),
             "theme" => send_json(req, 200, &json!({ "theme": theme_full(cfg), "version": cfg.theme_version, "defaults": THEME_DEFAULTS.iter().map(|(k, v)| (k.to_string(), Value::String(v.to_string()))).collect::<Map<String, Value>>() })),
@@ -624,6 +633,13 @@ fn handle(mut req: Request, cfg: &mut Config) {
             send_json(req, if ok { 200 } else { 400 }, &json!({ "ok": ok }))
         }
 
+        // Dot Bambu Lab : lampe, pause, reprise, arrêt (POST /api/bambulab/<commande>?page=… ou ?uid=…)
+        (Method::Post, "api") if seg(1) == "bambulab" => {
+            let t = bambulab_target(cfg, &url);
+            let ok = bambulab::command(&t, seg(2));
+            send_json(req, if ok { 200 } else { 400 }, &json!({ "ok": ok }))
+        }
+
         (Method::Delete, "api") if seg(1) == "instance" => {
             cfg.instances.remove(seg(2));
             save_config(cfg);
@@ -631,6 +647,21 @@ fn handle(mut req: Request, cfg: &mut Config) {
         }
 
         _ => not_found(req),
+    }
+}
+
+/// Imprimante d'une page de Dot Hub : ?page=<id>, sinon la page affichée par le Dot Hub ?uid=<uniqueId>.
+fn bambulab_target(cfg: &Config, url: &str) -> bambulab::Target {
+    let mut page = query(url, "page");
+    if page.is_empty() {
+        page = cfg.instances.get(&query(url, "uid")).and_then(|i| i.page.clone()).unwrap_or_default();
+    }
+    let settings = cfg.pages.iter().find(|p| p.id == page).map(|p| p.settings.clone()).unwrap_or_default();
+    let text = |k: &str| settings.get(k).and_then(Value::as_str).unwrap_or("").trim().to_string();
+    bambulab::Target {
+        ip: text("printerIp"),
+        serial: text("printerSerial").to_uppercase(),
+        code: settings.get("printerAccessCode").and_then(Value::as_str).and_then(unseal).unwrap_or_default().trim().to_string(),
     }
 }
 
@@ -715,7 +746,7 @@ fn open_url(url: &str) -> bool {
 // ---------------------------------------------------------------- secrets des modules
 
 /// Réglages secrets : jamais renvoyés en clair, gardés chiffrés (DPAPI, liés au compte Windows).
-const SECRET_KEYS: [&str; 1] = ["steamApiKey"];
+const SECRET_KEYS: [&str; 2] = ["steamApiKey", "printerAccessCode"];
 const MASK: &str = "••••••••";
 
 fn b64(data: &[u8]) -> String {

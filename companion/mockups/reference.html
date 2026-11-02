@@ -162,7 +162,7 @@ tr.todo td:nth-child(3) { color: var(--muted); }
       <div class="idea-box">
         <h3>Pourquoi c'est faisable</h3>
         <ul>
-          <li><b>Le rendu des modules existe déjà</b> : le compagnon sert les vraies pages des modules (Dot Clock, Dot Steam), et c'est le même rendu dans les maquettes et sur l'Edge. Il suffit de les afficher dans un cadre d'Edge, comme sur Dot Page.</li>
+          <li><b>Le rendu des modules existe déjà</b> : le compagnon sert les vraies pages des modules (Dot Clock, Dot Steam, Dot Bambu Lab), et c'est le même rendu dans les maquettes et sur l'Edge. Il suffit de les afficher dans un cadre d'Edge, comme sur Dot Page.</li>
           <li><b>Le direct existe presque</b> : un module relit ses réglages toutes les 2 s ; la page de réglages peut en plus envoyer chaque changement à l'aperçu (<code>postMessage</code>) pour qu'il soit instantané.</li>
           <li><b>Les vraies données</b> : sur le PC, l'aperçu montre les vrais jeux Steam, la vraie heure, etc., puisque c'est le compagnon qui les fournit.</li>
         </ul>
@@ -179,12 +179,12 @@ tr.todo td:nth-child(3) { color: var(--muted); }
         <h3>Limites</h3>
         <ul>
           <li><b>La place sur l'Edge</b> : iCUE ne dit pas au compagnon où chaque widget est posé ni sur quelle page. Sa taille (S, M, L, XL) peut être envoyée par le module au compagnon (petit ajout), pas sa position. Chaque Dot Hub s'affiche donc à sa vraie taille, sans reproduire exactement la disposition ; option : le placer soi-même dans l'aperçu, pour l'affichage seulement.</li>
-          <li><b>Les modules pas encore codés</b> : seuls Dot Clock et Dot Steam tournent en direct aujourd'hui ; les autres arriveront au fur et à mesure qu'ils seront codés.</li>
+          <li><b>Les modules pas encore codés</b> : seuls Dot Clock, Dot Steam et Dot Bambu Lab tournent en direct aujourd'hui ; les autres arriveront au fur et à mesure qu'ils seront codés.</li>
         </ul>
       </div>
     </div>
     <ol class="idea-steps">
-      <li><b>Maquette</b> : l'Edge en direct avec les Dot Hub d'exemple et les vrais Dot Clock et Dot Steam, réglages au style des maquettes.</li>
+      <li><b>Maquette</b> : l'Edge en direct avec les Dot Hub d'exemple et les vrais Dot Clock, Dot Steam et Dot Bambu Lab, réglages au style des maquettes.</li>
       <li><b>Compagnon</b> : la même page dans <code>companion/web/settings.html</code>, taille envoyée par chaque Dot Hub, mode aperçu dans les modules.</li>
     </ol>
   </section>
@@ -228,7 +228,7 @@ tr.todo td:nth-child(3) { color: var(--muted); }
   // ---------- Dot Hub d'exemple : la place du compagnon
   var now = Date.now();
   var STATE = {
-    modules: [{ id: "clock", name: "Dot Clock" }, { id: "steam", name: "Dot Steam" }],
+    modules: [{ id: "clock", name: "Dot Clock" }, { id: "steam", name: "Dot Steam" }, { id: "bambulab", name: "Dot Bambu Lab" }],
     // un Dot Hub posé dans iCUE, sur l'accueil ; pas encore de page (la carte DOT HUB n'a que « + »)
     instances: { "c0rs41r-edge-a1b2": { name: "", page: null, last_seen: now - 40000, version: 1, identify: 0 } },
     pages: [], nextPage: 1,
@@ -245,6 +245,14 @@ tr.todo td:nth-child(3) { color: var(--muted); }
       downloads: [{ appid: 5, name: "Tidebound", progress: 0.62, total: 6.2e9, speed: 38e6, eta: 240, status: "downloading" }],
       friends: { enabled: true, error: null, list: [{ name: "Nova", game: "Starfall Drift", online: true }, { name: "Kiro", game: "Ember Rally", online: true }, { name: "Atlas", game: null, online: true }] },
       profile: { name: "Mathod", avatar: false, status: "online" }
+    };
+  }
+  // état d'imprimante d'exemple pour l'aperçu de Dot Bambu Lab (même format que bambulab::state de main.rs)
+  function bambulabState() {
+    return {
+      state: "printing", model: "P1S", pct: 42, layer: 88, layers: 240, left: 131, file: "Desk_hook_v3", speed: "Standard",
+      nozzle: { v: 219, t: 220 }, bed: { v: 60, t: 60 }, fan: 100, light: true, tray: 0,
+      ams: [{ type: "PLA", color: "#000000", remain: 0.9 }, { type: "PLA", color: "#ffffff", remain: 0.4 }, { type: "PETG", color: "#ff6a00", remain: null }, {}]
     };
   }
   var toastTimer = null;
@@ -287,6 +295,9 @@ tr.todo td:nth-child(3) { color: var(--muted); }
     }
     if (path === "/api/theme" && m === "GET") return json({ theme: STATE.theme, version: 1, defaults: STATE.defaults });
     if (path === "/api/steam/state") return json(steamState());
+    if (path === "/api/bambulab/state") return json(bambulabState());
+    var bcmd = /^\/api\/bambulab\/(light|pause|resume|stop)$/.exec(path);
+    if (bcmd && m === "POST") { toast({ light: "La lampe de l'imprimante s'allumerait ou s'éteindrait", pause: "L'impression se mettrait en pause", resume: "L'impression reprendrait", stop: "L'impression serait annulée" }[bcmd[1]]); return json({ ok: true }); }
     if (path === "/api/startup" && m === "GET") return json({ supported: true, enabled: STATE.startup });
     if (path === "/api/startup" && m === "PUT") { STATE.startup = !!(body && body.enabled); toast(STATE.startup ? "Dot Companion démarrera avec Windows" : "Dot Companion ne démarrera plus avec Windows"); return json({ ok: true, supported: true, enabled: STATE.startup }); }
     if (path === "/api/health") return json({ ok: true, version: "0.5.0" });
@@ -317,9 +328,10 @@ tr.todo td:nth-child(3) { color: var(--muted); }
       fetch("companion/web/settings.html").then(function (r) { return r.text(); }),
       fetch("widgets/dot-clock/index.html").then(function (r) { return r.text(); }),
       fetch("widgets/dot-steam/index.html").then(function (r) { return r.text(); }),
-      fetch("companion/web/home.html").then(function (r) { return r.text(); })
+      fetch("companion/web/home.html").then(function (r) { return r.text(); }),
+      fetch("widgets/dot-bambulab/index.html").then(function (r) { return r.text(); })
     ]).then(function (res) {
-      PAGES.clock = res[1]; PAGES.steam = res[2]; PAGES.home = res[3];
+      PAGES.clock = res[1]; PAGES.steam = res[2]; PAGES.home = res[3]; PAGES.bambulab = res[4];
       var fonts = new URL("widgets/dot-clock/resources/fonts/", ROOT).href;
       var html = res[0].replace(/url\("\/m\/clock\/resources\/fonts\//g, 'url("' + fonts)
         .replace("<head>", "<head><script>window.fetch = function (u, o) { return parent.__dotCompanionApi(u, o); }; window.__dotPreviewFrame = function (f, uid, inst, opts) { parent.__dotCompanionPreview(f, uid, inst, opts); };<\/script>");

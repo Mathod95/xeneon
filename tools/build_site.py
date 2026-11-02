@@ -348,6 +348,9 @@ COMPANION_FILES = [
     "widgets/dot-steam/styles",
     "widgets/dot-steam/scripts",
     "widgets/dot-steam/resources",
+    "widgets/dot-bambulab/index.html",
+    "widgets/dot-bambulab/styles",
+    "widgets/dot-bambulab/scripts",
 ]
 
 
@@ -411,6 +414,7 @@ LIVE_MODULES = {
     "dot-bambulab": ("bambulab", "DotBambuLab"),
     "dot-plex": ("plex", "DotPlex"),
     "dot-github": ("github", "DotGitHub"),
+    "dot-glucose": ("glucose", "DotGlucose"),
 }
 
 

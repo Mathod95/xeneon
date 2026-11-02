@@ -1,47 +1,24 @@
 {
-  "_note": "Source de Dot Release (site /releases/ et artefact). Une entrée par version, de la plus récente à la plus ancienne. « next » = ce qui est sur main sans tag. Chaque ligne en français (fr) et en anglais (en). `code` entre accents graves.",
+  "_note": "Source de Dot Release (site /releases/ et artefact). Une entrée par version, de la plus récente à la plus ancienne. « next » = ce qui est sur main sans tag. Chaque ligne en français (fr) et en anglais (en). `code` entre accents graves. Le champ « site » d'une version garde ce qui ne touche que le site et les maquettes (pas affiché : la page ne parle que de ce qu'on installe).",
   "releases": [
     {
       "version": "next",
       "date": "2026-10-30",
       "title": {
-        "fr": "Dot Steam 0.2",
-        "en": "Dot Steam 0.2"
+        "fr": "Pages et Dot Bambu Lab",
+        "en": "Pages and Dot Bambu Lab"
       },
       "components": [
         "Dot Hub 0.4.0",
         "Dot Companion 0.5.0",
         "Dot Clock 0.1.3",
-        "Dot Steam 0.2.0"
+        "Dot Steam 0.2.0",
+        "Dot Bambu Lab 0.1.0"
       ],
       "new": [
         {
-          "fr": "Dot Steam : réglage Cover render, quatre rendus des jaquettes (Dots, Solid dots, Fine dots, image derrière une grille de points à l'opacité réglable)",
-          "en": "Dot Steam: Cover render setting, four cover renders (Dots, Solid dots, Fine dots, image behind a dot grid with adjustable opacity)"
-        },
-        {
-          "fr": "Dot Steam : panneau du bas au choix, téléchargements ou ton profil (avatar, pseudo, statut Online, Away, Invisible, Offline)",
-          "en": "Dot Steam: bottom panel of your choice, downloads or your profile (avatar, name, Online, Away, Invisible, Offline status)"
-        },
-        {
-          "fr": "Dot Steam : toucher DOWNLOADS ouvre la page des téléchargements de Steam",
-          "en": "Dot Steam: tapping DOWNLOADS opens the Steam downloads page"
-        },
-        {
-          "fr": "Dot Steam : réglages Show game names et Long names",
-          "en": "Dot Steam: Show game names and Long names settings"
-        },
-        {
-          "fr": "Dot Release : cette page, avec un bouton Releases sur Dot Page",
-          "en": "Dot Release: this page, with a Releases button on Dot Page"
-        },
-        {
-          "fr": "Dot Companion : page de présentation (bouton Companion) et maquette de référence de la page de réglages",
-          "en": "Dot Companion: overview page (Companion button) and reference mockup of the settings page"
-        },
-        {
-          "fr": "Dot Home Assistant : nouvelles cartes à valider (lumières, température et humidité, groupes, automatisations, mises à jour, services)",
-          "en": "Dot Home Assistant: new cards to review (lights, temperature and humidity, groups, automations, updates, services)"
+          "fr": "Dot Hub : pages, un module ajouté avec « + » (sur l'Edge ou dans les réglages) devient une tuile de l'accueil, avec ses propres réglages ; on peut ajouter le même module deux fois",
+          "en": "Dot Hub: pages, a module added with « + » (on the Edge or in the settings) becomes a home screen tile, with its own settings; the same module can be added twice"
         },
         {
           "fr": "Dot Companion 0.5.0 : plus de fenêtre console, une icône en points dans la zone de notification (clic gauche : réglages ; clic droit : menu)",
@@ -60,11 +37,67 @@
           "en": "Dot Companion: settings page redone, live DOT HUB card and one page per added module, Global settings card"
         },
         {
-          "fr": "Dot Hub : pages, un module ajouté avec « + » (sur l'Edge ou dans les réglages) devient une tuile de l'accueil, avec ses propres réglages ; on peut ajouter le même module deux fois",
-          "en": "Dot Hub: pages, a module added with « + » (on the Edge or in the settings) becomes a home screen tile, with its own settings; the same module can be added twice"
+          "fr": "Dot Bambu Lab : module codé (XL), l'imprimante 3D en réseau local (MQTT sur TLS) : progression, températures, AMS, erreurs, lampe, pause, reprise et arrêt ; adresse IP, numéro de série et code d'accès (chiffré) dans la page de réglages du compagnon",
+          "en": "Dot Bambu Lab: module coded (XL), your 3D printer on the local network (MQTT over TLS): progress, temperatures, AMS, errors, light, pause, resume and stop; IP address, serial number and access code (encrypted) in the companion settings page"
+        },
+        {
+          "fr": "Dot Steam : réglage Cover render, quatre rendus des jaquettes (Dots, Solid dots, Fine dots, image derrière une grille de points à l'opacité réglable)",
+          "en": "Dot Steam: Cover render setting, four cover renders (Dots, Solid dots, Fine dots, image behind a dot grid with adjustable opacity)"
+        },
+        {
+          "fr": "Dot Steam : panneau du bas au choix, téléchargements ou ton profil (avatar, pseudo, statut Online, Away, Invisible, Offline)",
+          "en": "Dot Steam: bottom panel of your choice, downloads or your profile (avatar, name, Online, Away, Invisible, Offline status)"
+        },
+        {
+          "fr": "Dot Steam : toucher DOWNLOADS ouvre la page des téléchargements de Steam",
+          "en": "Dot Steam: tapping DOWNLOADS opens the Steam downloads page"
+        },
+        {
+          "fr": "Dot Steam : réglages Show game names et Long names",
+          "en": "Dot Steam: Show game names and Long names settings"
         }
       ],
       "changed": [
+        {
+          "fr": "Dot Companion : au premier démarrage de 0.5.0, chaque Dot Hub (un module et ses réglages) devient une page, qu'il continue d'afficher",
+          "en": "Dot Companion: on first start of 0.5.0, each Dot Hub (a module and its settings) becomes a page, which it keeps showing"
+        },
+        {
+          "fr": "Dot Steam : progression et débit des téléchargements à jour pendant le téléchargement (taille de `steamapps/downloading`)",
+          "en": "Dot Steam: download progress and speed stay current while downloading (size of `steamapps/downloading`)"
+        },
+        {
+          "fr": "Dot Steam : un jeu sans jaquette verticale prend sa jaquette large, recadrée",
+          "en": "Dot Steam: a game without a portrait cover uses its wide cover, cropped"
+        }
+      ],
+      "fixed": [
+        {
+          "fr": "Dot Steam : les noms longs débordaient sur les jaquettes voisines",
+          "en": "Dot Steam: long names overflowed onto the next covers"
+        },
+        {
+          "fr": "Dot Steam : états des téléchargements mal lus (en cours, en pause, en attente)",
+          "en": "Dot Steam: download states were misread (downloading, paused, queued)"
+        }
+      ],
+      "site": [
+        {
+          "fr": "Dot Glucose : maquette, glycémie en direct d'un capteur FreeStyle Libre (valeur et tendance en points, courbe des dernières heures, temps dans la cible), par LibreLinkUp",
+          "en": "Dot Glucose: mockup, live glucose from a FreeStyle Libre sensor (value and trend in dots, graph of the last hours, time in range), through LibreLinkUp"
+        },
+        {
+          "fr": "Dot Release : cette page, avec un bouton Releases sur Dot Page",
+          "en": "Dot Release: this page, with a Releases button on Dot Page"
+        },
+        {
+          "fr": "Dot Companion : page de présentation (bouton Companion) et maquette de référence de la page de réglages",
+          "en": "Dot Companion: overview page (Companion button) and reference mockup of the settings page"
+        },
+        {
+          "fr": "Dot Home Assistant : nouvelles cartes à valider (lumières, température et humidité, groupes, automatisations, mises à jour, services)",
+          "en": "Dot Home Assistant: new cards to review (lights, temperature and humidity, groups, automations, updates, services)"
+        },
         {
           "fr": "Dot Page 2.0 : en-tête « ● DOT HUB », Dot Hub présenté comme une carte (pictogramme, statut, version), modules renommés « Les dots » en cartes entièrement cliquables avec leur version, nom du module affiché sous la Xeneon Edge cliquable",
           "en": "Dot Page 2.0: « ● DOT HUB » header, Dot Hub shown as a card (pictogram, status, version), modules renamed « The dots » as fully clickable cards with their version, module name under the Xeneon Edge now clickable"
@@ -90,34 +123,12 @@
           "en": "Design guide: homePage, subPage, modulePage and releasePage templates aligned (same Top, Hero and Footer), every value in the zone cards"
         },
         {
-          "fr": "Dot Companion : au premier démarrage de 0.5.0, chaque Dot Hub (un module et ses réglages) devient une page, qu'il continue d'afficher",
-          "en": "Dot Companion: on first start of 0.5.0, each Dot Hub (a module and its settings) becomes a page, which it keeps showing"
-        },
-        {
-          "fr": "Dot Steam : progression et débit des téléchargements à jour pendant le téléchargement (taille de `steamapps/downloading`)",
-          "en": "Dot Steam: download progress and speed stay current while downloading (size of `steamapps/downloading`)"
-        },
-        {
-          "fr": "Dot Steam : un jeu sans jaquette verticale prend sa jaquette large, recadrée",
-          "en": "Dot Steam: a game without a portrait cover uses its wide cover, cropped"
-        },
-        {
           "fr": "Toutes les maquettes ont le fond en points de Dot Page",
           "en": "Every mockup has the Dot Page dot background"
-        }
-      ],
-      "fixed": [
+        },
         {
           "fr": "Site : la page ne se décale plus quand la barre de défilement apparaît",
           "en": "Site: the page no longer shifts when the scrollbar appears"
-        },
-        {
-          "fr": "Dot Steam : les noms longs débordaient sur les jaquettes voisines",
-          "en": "Dot Steam: long names overflowed onto the next covers"
-        },
-        {
-          "fr": "Dot Steam : états des téléchargements mal lus (en cours, en pause, en attente)",
-          "en": "Dot Steam: download states were misread (downloading, paused, queued)"
         },
         {
           "fr": "Le compagnon est recompilé aussi quand seul Dot Steam change",

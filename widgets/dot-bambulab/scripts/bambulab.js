@@ -1,16 +1,19 @@
 /*
  * Dot Bambu Lab : le rendu, partagé par la maquette de référence (mockups/reference.html), Dot Page
- * et, plus tard, le module. Une seule source : ce qui est vu dans la maquette est exactement ce qui tourne ailleurs.
+ * et le module servi par Dot Companion (scripts/widget.js). Une seule source : ce qui est vu dans la maquette
+ * est exactement ce qui tourne sur l'Edge.
  *
- *   var bl = DotBambuLab.mount(stage, { size: "xl", settings: function () { … }, onState: function (state) { … } });
- *   bl.render();          // quand un réglage change
+ *   var bl = DotBambuLab.mount(stage, { size: "xl", settings: function () { … },
+ *     state: function () { … },              // module : l'état de l'imprimante envoyé par le compagnon (voir demo())
+ *     onCommand: function (cmd) { … } });    // module : light, pause, resume, stop
+ *   bl.render();          // quand un réglage ou l'état change
  *   bl.setSize("m");      // S, M, L ou XL
  *   bl.animate(false);    // arrête la mise à jour de l'heure de fin (vue cachée)
  *
  * `stage` reçoit la classe .dot-bambulab et la taille de l'emplacement. Réglages (tous facultatifs) :
- * sample (printing, paused, error, finished, idle, offline), model (X1C, P1S, A1), showAms, showUnlit,
- * accent, lit, unlit, label. `onState` est appelé quand l'écran change l'état (pause, reprise, arrêt).
- * L'impression, les températures et l'AMS sont des exemples : le module passera les vraies données.
+ * showAms, showUnlit, accent, lit, unlit, label ; dans la maquette et sur Dot Page, sans `state`, sample
+ * (printing, paused, error, finished, idle, offline) et model (X1C, P1S, A1) choisissent l'exemple dessiné,
+ * et `onState` est appelé quand un bouton de l'écran le change.
  */
 (function () {
 	"use strict";
@@ -22,7 +25,7 @@
 		m: { digit: 15, bar: 14, progW: 728, tempBar: 10, tempW: 0, spool: 0 },
 		s: { digit: 11, bar: 12, progW: 744, tempBar: 0, tempW: 0, spool: 0 }
 	};
-	var DEFAULTS = { sample: "printing", model: "X1C", showAms: true, showUnlit: true, accent: "#10b981", lit: "#f2f0e9", unlit: "#1c1c1c", label: "#b8b6b0" };
+	var DEFAULTS = { sample: "printing", model: "P1S", showAms: true, showUnlit: true, accent: "#10b981", lit: "#f2f0e9", unlit: "#1c1c1c", label: "#b8b6b0" };
 	var STATES = ["printing", "paused", "error", "finished", "idle", "offline"];
 	var MARKUP =
 		'<span class="w-dot"></span>' +
@@ -108,8 +111,15 @@
 		return cv;
 	}
 	function dur(min) { var h = Math.floor(min / 60), m = min % 60; return (h ? h + "h " : "") + m + "m"; }
+	function clock(ms) { var d = new Date(ms); return (d.getHours() < 10 ? "0" : "") + d.getHours() + ":" + (d.getMinutes() < 10 ? "0" : "") + d.getMinutes(); }
 	function eta(min) { var d = new Date(Date.now() + min * 60000); return (d.getHours() < 10 ? "0" : "") + d.getHours() + ":" + (d.getMinutes() < 10 ? "0" : "") + d.getMinutes(); }
 
+	// ---------------------------------------------------------------- état de l'imprimante
+	// Le même état sert partout : le compagnon l'envoie au module (GET /api/bambulab/state), la maquette et
+	// Dot Page le fabriquent avec demo(). Champs : state (printing, paused, error, finished, idle, offline),
+	// model, pct, layer, layers, left (min), file, speed, nozzle {v, t}, bed {v, t}, chamber (°, X1C) ou fan (%),
+	// ams [{ color, type, remain (0 à 1) }], tray (emplacement en cours), error, light, last { file, ago },
+	// hint (texte sous « Printer offline »).
 	var JOB = { file: "Benchy_hull_v2.3mf", pct: 67, layer: 142, layers: 212, left: 84, speed: "Standard" };
 	var AMS = [
 		{ color: "#f2f0e9", type: "PLA Basic", remain: 0.82 },
@@ -117,88 +127,105 @@
 		{ color: "#e9862b", type: "PLA Matte", remain: 0.55 },
 		{ color: "#1a1a1a", type: "PLA Basic", remain: 0.31 }
 	];
-	var ACTIVE = 2;
+	// exemples de la maquette et de Dot Page : jamais sur l'Edge, où le module passe toujours l'état du compagnon
+	function demo(sample, model, light) {
+		var active = sample === "printing" || sample === "paused" || sample === "error";
+		var st = { state: sample, model: model, light: light, file: JOB.file, pct: sample === "finished" ? 100 : JOB.pct, layer: JOB.layer, layers: JOB.layers,
+			left: JOB.left, speed: JOB.speed, duration: 192, nozzle: { v: active ? 219 : 27, t: active ? 220 : 0 }, bed: { v: active ? 61 : 25, t: active ? 65 : 0 },
+			ams: AMS, tray: active ? 2 : null, error: sample === "error" ? "Filament ran out · AMS slot 2" : null, last: { file: "Cable_clip_x8.3mf", ago: "2h ago" } };
+		if (model === "X1C") st.chamber = active ? 38 : 24; else st.fan = active ? 80 : 0;
+		return st;
+	}
 
 	function mount(stage, opts) {
 		opts = opts || {};
 		var size = SLOTS[opts.size] ? opts.size : "xl";
 		var getSettings = typeof opts.settings === "function" ? opts.settings : function () { return opts.settings || {}; };
 		function settings() { var s = getSettings() || {}, o = {}; for (var k in DEFAULTS) o[k] = s[k] === undefined ? DEFAULTS[k] : s[k]; return o; }
+		var real = typeof opts.state === "function";   // le module sur l'Edge : l'état vient du compagnon
 
 		stage.classList.add("dot-bambulab");
 		stage.innerHTML = MARKUP;
 		function v(k) { return stage.querySelector('[data-k="' + k + '"]'); }
-		var lamp = true, state = null, sample = null;
+		// maquette : l'exemple choisi, modifié par les boutons de l'écran
+		var lamp = true, override = null, sample = null, st = null;
+
+		function current(s) {
+			if (real) return opts.state() || { state: "offline", hint: "Connecting to the printer…" };
+			if (s.sample !== sample) { sample = s.sample; override = null; }
+			return demo(override || sample, s.model, lamp);
+		}
 
 		function render() {
-			var s = settings(), model = s.model, Z = SIZES[size];
-			// un exemple choisi dans la maquette pose l'état (impression, pause…)
-			if (s.sample !== sample) { sample = s.sample; state = sample; }
+			var s = settings(), Z = SIZES[size];
+			st = current(s);
+			var state = st.state, model = st.model || "";
 			var c = { lit: s.lit, unlit: s.showUnlit ? s.unlit : null, accent: s.accent, label: s.label, alert: "#ed403b" };
 			stage.style.setProperty("--accent", c.accent);
 			stage.style.setProperty("--lit", c.lit);
 			stage.style.setProperty("--label", c.label);
 			var active = state === "printing" || state === "paused" || state === "error";
 			STATES.forEach(function (k) { stage.classList.toggle(k, k === state); });
-			v("state").textContent = model + " · " + { printing: "PRINTING", paused: "PAUSED", error: "ERROR", finished: "DONE", idle: "IDLE", offline: "OFFLINE" }[state];
+			v("state").textContent = (model ? model + " · " : "") + { printing: "PRINTING", paused: "PAUSED", error: "ERROR", finished: "DONE", idle: "IDLE", offline: "OFFLINE" }[state];
 
 			// progression
 			var prog = v("prog"); prog.innerHTML = "";
 			if (state === "offline") {
 				prog.appendChild(el("p", "big", "Printer offline"));
-				prog.appendChild(el("p", "sub", "Check IP and access code in Dot Companion"));
+				prog.appendChild(el("p", "sub", st.hint || "Check IP and access code in Dot Companion"));
 			} else if (state === "idle") {
 				prog.appendChild(el("p", "big", "Ready"));
-				prog.appendChild(el("p", "sub", "Last print · Cable_clip_x8.3mf · 2h ago"));
+				prog.appendChild(el("p", "sub", st.last && st.last.file ? "Last print · " + st.last.file + (st.last.ago ? " · " + st.last.ago : "") : "No print yet"));
 			} else {
-				var pct = state === "finished" ? 100 : JOB.pct;
+				var pct = state === "finished" ? 100 : Math.round(st.pct || 0);
 				prog.appendChild(dotText(pct + "%", Z.digit, c));
 				var b = el("div", "bar"); b.appendChild(bar(Z.progW, pct / 100, Z.bar, c, state === "error" ? c.alert : null)); prog.appendChild(b);
-				prog.appendChild(el("p", "file ell", JOB.file.replace(/\.3mf$/i, "")));
+				prog.appendChild(el("p", "file ell", String(st.file || "--").replace(/\.(gcode\.)?3mf$/i, "")));
 				var info = el("div", "info");
 				if (state === "finished") {
-					info.appendChild(el("span", "left", "Done at " + eta(-12)));
-					info.appendChild(el("span", "", "3h 12m · " + JOB.layers + " layers"));
+					info.appendChild(el("span", "left", "Done" + (st.doneAt ? " at " + clock(st.doneAt) : "")));
+					if (st.layers) info.appendChild(el("span", "", (st.duration ? dur(st.duration) + " · " : "") + st.layers + " layers"));
 				} else {
-					info.appendChild(el("span", "", "Layer " + JOB.layer + " / " + JOB.layers));
-					info.appendChild(el("span", "left", dur(JOB.left) + " left"));
-					if (size !== "s") info.appendChild(el("span", "", "Ends " + eta(JOB.left)));
-					if (size === "xl") info.appendChild(el("span", "", JOB.speed));
+					if (st.layers) info.appendChild(el("span", "", "Layer " + (st.layer || 0) + " / " + st.layers));
+					if (st.left != null) info.appendChild(el("span", "left", dur(st.left) + " left"));
+					if (st.left != null && size !== "s") info.appendChild(el("span", "", "Ends " + eta(st.left)));
+					if (size === "xl" && st.speed) info.appendChild(el("span", "", st.speed));
 				}
 				prog.appendChild(info);
-				if (state === "error") prog.appendChild(el("p", "alert ell", "Filament ran out · AMS slot 2"));
+				if (st.error) prog.appendChild(el("p", "alert ell", st.error));
 			}
 
-			// températures
+			// températures (le P1S et l'A1 n'ont pas de sonde de chambre : ventilateur de pièce à la place)
 			var temps = v("temps"); temps.innerHTML = ""; temps.hidden = state === "offline";
+			var nz = st.nozzle || {}, bd = st.bed || {};
 			var T = [
-				{ k: "Nozzle", v: active ? 219 : 27, t: active ? 220 : 0 },
-				{ k: "Bed", v: active ? 61 : 25, t: active ? 65 : 0 },
-				model === "X1C" ? { k: "Chamber", v: active ? 38 : 24, t: 0 } : { k: "Part fan", v: active ? 80 : 0, t: 0, unit: "%" }
+				{ k: "Nozzle", v: nz.v, t: nz.t },
+				{ k: "Bed", v: bd.v, t: bd.t },
+				st.chamber != null ? { k: "Chamber", v: st.chamber, t: 0 } : { k: "Part fan", v: st.fan, t: 0, unit: "%" }
 			];
 			T.forEach(function (x) {
 				var d = el("div", "tmp");
 				d.appendChild(el("p", "k", x.k));
-				var vv = el("p", "v", x.v + (x.unit || "°"));
-				vv.appendChild(el("small", "", x.t ? "/ " + x.t + "°" : ""));
+				var vv = el("p", "v", x.v == null ? "--" : Math.round(x.v) + (x.unit || "°"));
+				vv.appendChild(el("small", "", x.t ? "/ " + Math.round(x.t) + "°" : ""));
 				d.appendChild(vv);
-				if (Z.tempW && x.t) { var hb = el("div", "hb"); hb.appendChild(bar(Z.tempW, x.v / x.t, Z.tempBar, c)); d.appendChild(hb); }
+				if (Z.tempW && x.t) { var hb = el("div", "hb"); hb.appendChild(bar(Z.tempW, (x.v || 0) / x.t, Z.tempBar, c)); d.appendChild(hb); }
 				else if (Z.tempW) { var sp = el("div", "hb"); sp.style.height = Z.tempBar + "px"; d.appendChild(sp); }
 				temps.appendChild(d);
 			});
-			v("mini").innerHTML = state === "offline" ? "" : "NOZZLE <b>" + T[0].v + "°</b><br>BED <b>" + T[1].v + "°</b>";
+			v("mini").innerHTML = state === "offline" ? "" : "NOZZLE <b>" + (nz.v == null ? "--" : Math.round(nz.v)) + "°</b><br>BED <b>" + (bd.v == null ? "--" : Math.round(bd.v)) + "°</b>";
 
 			// AMS
-			var ams = v("ams"), slots = v("slots"); slots.innerHTML = "";
-			ams.hidden = state === "offline" || !s.showAms || !Z.spool;
-			v("amsLbl").textContent = (model === "A1" ? "AMS lite" : "AMS") + " · 4 slots";
-			if (!ams.hidden) AMS.forEach(function (a, i) {
-				var on = active && i === ACTIVE;
+			var ams = v("ams"), slots = v("slots"), trays = st.ams || []; slots.innerHTML = "";
+			ams.hidden = state === "offline" || !s.showAms || !Z.spool || !trays.length;
+			v("amsLbl").textContent = (model === "A1" || model === "A1 mini" ? "AMS lite" : "AMS") + " · " + trays.length + " slots";
+			if (!ams.hidden) trays.forEach(function (a, i) {
+				var on = active && i === st.tray, empty = !a || !a.type;
 				var sl = el("div", "spool-slot" + (on ? " on" : ""));
 				sl.style.width = (Z.spool + 24) + "px";
-				sl.appendChild(spool(Z.spool, a.color, a.remain, on, c));
-				sl.appendChild(el("p", "ty ell", a.type));
-				sl.appendChild(el("p", "re", on ? "▶ In use" : Math.round(a.remain * 100) + "%"));
+				sl.appendChild(spool(Z.spool, empty ? "#1c1c1c" : a.color || "#5a5a5a", empty || a.remain == null ? 0 : a.remain, on, c));
+				sl.appendChild(el("p", "ty ell", empty ? "Empty" : a.type));
+				sl.appendChild(el("p", "re", on ? "▶ In use" : empty || a.remain == null ? "--" : Math.round(a.remain * 100) + "%"));
 				slots.appendChild(sl);
 			});
 
@@ -207,14 +234,20 @@
 			v("pauseBtn").disabled = !canPause;
 			v("stopBtn").disabled = !canPause;
 			v("lampBtn").disabled = state === "offline";
-			v("lampBtn").classList.toggle("on", lamp && state !== "offline");
+			v("lampBtn").classList.toggle("on", !!st.light && state !== "offline");
 			v("pauseIcon").innerHTML = state === "printing" ? '<path d="M6 4h4v16H6zM14 4h4v16h-4z"/>' : '<path d="M7 4v16l13-8z"/>';
 			v("hint").hidden = !canPause;
 		}
 
-		function setState(x) { state = x; if (opts.onState) opts.onState(x); render(); }
-		v("pauseBtn").addEventListener("click", function () { setState(state === "printing" ? "paused" : "printing"); });
-		v("lampBtn").addEventListener("click", function () { lamp = !lamp; render(); });
+		// boutons : sur l'Edge, une commande pour le compagnon ; dans la maquette, l'exemple change
+		function command(cmd) {
+			if (real) { if (opts.onCommand) opts.onCommand(cmd); return; }
+			if (cmd === "light") lamp = !lamp;
+			else { override = cmd === "pause" ? "paused" : cmd === "resume" ? "printing" : "idle"; if (opts.onState) opts.onState(override); }
+			render();
+		}
+		v("pauseBtn").addEventListener("click", function () { if (st) command(st.state === "printing" ? "pause" : "resume"); });
+		v("lampBtn").addEventListener("click", function () { command("light"); });
 		// stop : garder le doigt 2 s
 		var hold = null, t0 = 0;
 		function cancelHold() { if (hold) cancelAnimationFrame(hold); hold = null; v("ring").style.setProperty("--p", 0); }
@@ -224,7 +257,7 @@
 			(function step(now) {
 				var p = Math.min(1, (now - t0) / 2000);
 				v("ring").style.setProperty("--p", p);
-				if (p >= 1) { cancelHold(); setState("idle"); return; }
+				if (p >= 1) { cancelHold(); command("stop"); return; }
 				hold = requestAnimationFrame(step);
 			})(t0);
 		});
@@ -246,9 +279,10 @@
 			render: render,
 			setSize: function (s) { setSize(s); render(); },
 			size: function () { return size; },
+			slot: function () { return SLOTS[size]; },
 			animate: animate
 		};
 	}
 
-	window.DotBambuLab = { mount: mount, slots: SLOTS, defaults: DEFAULTS };
+	window.DotBambuLab = { mount: mount, slots: SLOTS, defaults: DEFAULTS, demo: demo };
 })();

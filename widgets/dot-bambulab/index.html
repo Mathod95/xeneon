@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Dot Bambu Lab</title>
+
+		<meta name="x-icue-property" content="printerIp" data-label="'Printer IP address (LAN)'" data-type="textfield" data-default="''" />
+		<meta name="x-icue-property" content="printerSerial" data-label="'Printer serial number'" data-type="textfield" data-default="''" />
+		<meta name="x-icue-property" content="printerAccessCode" data-label="'LAN access code (kept encrypted on this PC)'" data-type="textfield" data-default="''" />
+		<meta name="x-icue-property" content="showAms" data-label="'Show AMS'" data-type="switch" data-default="true" />
+		<meta name="x-icue-property" content="showUnlitDots" data-label="'Show unlit dots'" data-type="switch" data-default="true" />
+
+		<meta name="x-icue-property" content="dotAccentColor" data-label="'Accent color'" data-type="color" data-default="'#10B981'" />
+		<meta name="x-icue-property" content="litDotColor" data-label="'Lit dot color'" data-type="color" data-default="'#F2F0E9'" />
+		<meta name="x-icue-property" content="unlitDotColor" data-label="'Unlit dot color'" data-type="color" data-default="'#1C1C1C'" />
+		<meta name="x-icue-property" content="labelColor" data-label="'Label color'" data-type="color" data-default="'#B8B6B0'" />
+
+		<link rel="stylesheet" href="styles/bambulab.css" />
+		<link rel="stylesheet" href="styles/main.css" />
+	</head>
+	<body>
+		<div id="stage"></div>
+		<script src="scripts/sizes.js"></script>
+		<script src="scripts/bambulab.js"></script>
+		<script src="scripts/widget.js"></script>
+	</body>
+</html>
