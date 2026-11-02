@@ -65,6 +65,15 @@ td:first-child { font-family: var(--mono); color: var(--muted); width: 3.5em; fo
 td:nth-child(2) { font-weight: 500; width: 15em; }
 tr.todo td:nth-child(3) { color: var(--muted); }
 .ok { color: #10b981; font-size: 13px; white-space: nowrap; }
+/* roadmap, comme sur la page Dot Companion : un point fait est allumé, suivi de sa version en capsule (lien vers Dot Release) ; un point à faire est éteint */
+.bullets { margin: 0; padding: 0 0 0 18px; display: grid; gap: 8px; color: #b8b6b0; }
+.bullets li::marker { color: #3a3a3a; }
+.bullets b { color: #f2f0e9; font-weight: 600; }
+.bullets li.done { color: #f2f0e9; }
+.bullets li.done::marker { color: #10b981; }
+.bullets li.todo, .bullets li.todo b { color: #7d7b76; }
+.bullets .when { display: inline-block; margin-left: .6em; padding: 1px 10px; border: 1px solid #10b981; border-radius: 999px; font-family: var(--mono); font-size: 12px; letter-spacing: .1em; color: #10b981; text-decoration: none; white-space: nowrap; vertical-align: 1px; }
+.bullets .when:hover { background: #10b981; color: #080808; }
 code { font-family: var(--mono); font-size: 13px; color: var(--text); }
 
 /* réglages simulés */
@@ -170,12 +179,24 @@ code { font-family: var(--mono); font-size: 13px; color: var(--text); }
           <tr><td>8</td><td>Libellés</td><td>« DOT BAMBU LAB » en haut à gauche, à la même place et à la même taille que dans tous les modules (point à 56 / 51 px, texte à 80 / 44 px, Fira Code 18 px), point qui pulse pendant l'impression, toucher qui ramène à Dot Home. À droite : modèle et état (PRINTING, PAUSED, ERROR, DONE, IDLE, OFFLINE). <span class="ok">Validé le 1er novembre 2026.</span></td></tr>
           <tr><td>9</td><td>Couleurs</td><td>Couleurs communes de la carte « Paramètres globaux » de Dot Companion, comme tous les modules : pas de couleur d'accent propre (le vert Bambu n'est plus proposé). <span class="ok">Validé le 1er novembre 2026.</span></td></tr>
           <tr><td>10</td><td>Sans impression</td><td>« READY » et la dernière impression ; températures et AMS restent visibles, pause et stop grisés. Imprimante injoignable : « PRINTER OFFLINE » et « CHECK IP AND ACCESS CODE IN DOT COMPANION », jamais de valeur inventée. <span class="ok">Validé le 1er novembre 2026.</span></td></tr>
-          <tr><td>11</td><td>Plus tard</td><td>Vignette du plateau en trame de points (dans le fichier 3MF, à lire par FTPS sur l'imprimante). Plusieurs imprimantes : une page Dot Hub par imprimante, avec ses propres réglages. <span class="ok">Validé le 1er novembre 2026.</span></td></tr>
-          <tr><td>12</td><td>Tailles</td><td><b>XL</b> d'abord, comme tous les modules pour l'instant : progression à gauche, températures au centre, AMS et commandes à droite. L, M et S restent dans le code de la maquette et seront repris plus tard. <span class="ok">Validé le 1er novembre 2026.</span></td></tr>
-          <tr><td>13</td><td>Caméra</td><td>Bouton caméra à gauche de la lampe, ou toucher sur la progression : la dernière image de la caméra (image réelle, pas en points) remplace les températures et l'AMS, en 840 × 472 px (16:9) à la place des températures, avec « ● CAMERA · 1 FPS » et « TAP TO CLOSE » dessous. Progression et commandes restent visibles : on peut mettre en pause en regardant. Un toucher sur l'image la referme. P1S : images JPEG sur le port 6000 (TLS, même code d'accès), environ 1 par seconde, lues par le compagnon seulement quand la vue est ouverte ; X1C : flux RTSPS, plus tard. Dans la maquette, l'intérieur de l'imprimante est dessiné. <b>À valider.</b></td></tr>
+          <tr><td>11</td><td>Tailles</td><td><b>XL</b> d'abord, comme tous les modules pour l'instant : progression à gauche, températures au centre, AMS et commandes à droite. L, M et S restent dans le code de la maquette et seront repris plus tard. <span class="ok">Validé le 1er novembre 2026.</span></td></tr>
+          <tr><td>12</td><td>Caméra</td><td>Bouton caméra à gauche de la lampe, ou toucher sur la progression : la dernière image de la caméra (image réelle, pas en points) remplace les températures et l'AMS, en 840 × 472 px (16:9) à la place des températures, avec « ● CAMERA · 1 FPS » et « TAP TO CLOSE » dessous. Progression et commandes restent visibles : on peut mettre en pause en regardant. Un toucher sur l'image la referme. P1S : images JPEG sur le port 6000 (TLS, même code d'accès), environ 1 par seconde, lues par le compagnon seulement quand la vue est ouverte ; X1C : flux RTSPS, plus tard. Dans la maquette, l'intérieur de l'imprimante est dessiné. <b>À valider.</b></td></tr>
         </tbody>
       </table>
     </div>
+  </section>
+  <section style="display:grid;gap:14px" aria-labelledby="roadT">
+    <h2 id="roadT">Roadmap</h2>
+    <ul class="bullets">
+      <li class="todo"><b>Caméra</b>: la dernière image de l'imprimante à la place des températures et de l'AMS, avec le bouton caméra ou un toucher sur la progression (point 12). P1S d'abord (une image par seconde), flux du X1C ensuite.</li>
+      <li class="todo"><b>Vignette du plateau</b> en trame de points, lue dans le fichier 3MF sur l'imprimante.</li>
+      <li class="todo"><b>Plusieurs imprimantes</b>: une page Dot Hub par imprimante, avec ses propres réglages.</li>
+      <li class="todo"><b>Tailles L, M et S</b>, reprises après le XL comme pour tous les modules.</li>
+      <li class="done"><b>AMS</b>: couleur et nom de chaque filament, reste, emplacement en cours, humidité et température. <a class="when" href="__RELEASES__">0.1.0</a></li>
+      <li class="done"><b>Commandes</b>: lampe, pause, reprise, et arrêt en gardant le doigt 2 s. <a class="when" href="__RELEASES__">0.1.0</a></li>
+      <li class="done"><b>Progression, températures et erreurs</b> de l'imprimante, en direct sur l'Edge. <a class="when" href="__RELEASES__">0.1.0</a></li>
+      <li class="done"><b>Connexion en réseau local</b>: le compagnon parle à l'imprimante sans passer par le cloud, code d'accès chiffré sur le PC. <a class="when" href="__RELEASES__">0.1.0</a></li>
+    </ul>
   </section>
   <footer class="footer">
     <span class="red">For Xeneon Edge · Touch · Dot-matrix</span>

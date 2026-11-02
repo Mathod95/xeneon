@@ -328,10 +328,11 @@ SITE_TOP = """
 
 def with_site_top(html, urls):
     """La maquette avec l'en-tête du site en haut de sa page (juste après <div class="wrap">)."""
-    top = SITE_TOP
+    html = html.replace('<div class="wrap">', '<div class="wrap">' + SITE_TOP, 1)
+    # liens de l'en-tête, et ceux de la maquette elle-même (capsules de la Roadmap vers Dot Release)
     for k, v in urls.items():
-        top = top.replace("__" + k + "__", v)
-    return html.replace('<div class="wrap">', '<div class="wrap">' + top, 1)
+        html = html.replace("__" + k + "__", v)
+    return html
 
 
 # maquette de Dot Companion : companion/mockups/reference.html (base = racine du dépôt), avec les fichiers qu'elle charge
